@@ -1,0 +1,43 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.format": "explicit"
+  },
+  "prettier.singleQuote": true,
+  "javascript.format.insertSpaceBeforeFunctionParenthesis": false,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "eslint.validate": [
+    "html",
+    "javascript",
+    "typescript",
+    "javascriptreact",
+    "typescriptreact"
+  ],
+  "[ignore]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  },
+  "sonarlint.connectedMode.project": {
+    "connectionId": "equipoinnovaciondigital",
+    "projectKey": "EquipoInnovacionDigital_bcs-cdt-frontend"
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": false,
+    "editor.formatOnPaste": false,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.format": "never"
+    }
+  },
+  "editor.suggest.paths": true,
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.preferences.importModuleSpecifierEnding": "minimal",
+  "typescript.preferences.quoteStyle": "single",
+  "[dotenv]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  },
+  "editor.inlineSuggest.showToolbar": "onHover"
+}
