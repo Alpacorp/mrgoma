@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     const result = await pool
       .request()
       .query(
-        `SELECT * FROM dbo.Tires ORDER BY TireId OFFSET ${offset} ROWS FETCH NEXT ${pageSizeInt} ROWS ONLY`
+        `SELECT * FROM dbo.View_Tires ORDER BY TireId DESC OFFSET ${offset} ROWS FETCH NEXT ${pageSizeInt} ROWS ONLY`
       );
 
     const records: DocumentRecord[] = result.recordset;
