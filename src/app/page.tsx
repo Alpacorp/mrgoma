@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import type { DocumentRecord } from '@/app/api/tires/route';
+import { TiresData } from '@/app/interfaces/tires';
+import Card from '@/app/components/Card';
 
 export default function Home() {
   const [records, setRecords] = useState<DocumentRecord[]>([]);
@@ -9,7 +11,7 @@ export default function Home() {
   const [loading, setLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
-  const totalRecords = 100; // Asumimos que tienes este valor disponible
+  const totalRecords = 2000; // Asumimos que tienes este valor disponible
   const totalPages = Math.ceil(totalRecords / pageSize);
 
   const getTires = useCallback(
@@ -75,44 +77,45 @@ export default function Home() {
       {error ? (
         <div className="text-red-500">Error: {error}</div>
       ) : (
-        <div className="mt-6">
+        <div className="mt-6 overflow-auto w-full">
           <h3 className="text-2xl mb-3">Tires Register:</h3>
           <div className="relative">
-            <ul className="text-white">
-              {records.map((record) => (
-                <li key={record.id} className="text-white">
-                  {record.TireId} - {record.Code}
+            <ul className="text-white flex flex-wrap">
+              {records.map((record: TiresData) => (
+                <li key={record.TireId} className="list-none">
+                  <Card {...record} />
                 </li>
               ))}
             </ul>
-
             {loading && (
               <div className="absolute inset-0 flex items-center justify-center bg-black">
                 <div className="loader">Loading...</div>
               </div>
             )}
           </div>
-          <div className="mt-4 flex justify-between gap-1">
-            <button
-              onClick={handleFirstPage}
-              disabled={page === 1} // Deshabilitar si ya estás en la primera página
-              className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
-            >
-              First
-            </button>
-            <button
-              onClick={handlePreviousPage}
-              disabled={page === 1} // Deshabilitar el botón si estás en la primera página
-              className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
-            >
-              Previous
-            </button>
+          <div className="mt-4 flex justify-center gap-1">
+            <div className="flex gap-1">
+              <button
+                onClick={handleFirstPage}
+                disabled={page === 1} // Deshabilitar si ya estás en la primera página
+                className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
+              >
+                First
+              </button>
+              <button
+                onClick={handlePreviousPage}
+                disabled={page === 1} // Deshabilitar el botón si estás en la primera página
+                className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
+              >
+                Previous
+              </button>
+            </div>
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(
               (pageNumber) => (
                 <button
                   key={pageNumber}
                   onClick={() => handlePageClick(pageNumber)}
-                  className={`px-3 py-1 mx-1 rounded ${
+                  className={`px-3 py-1 rounded ${
                     pageNumber === page
                       ? 'bg-blue-600 text-white'
                       : 'bg-gray-700 text-white hover:bg-gray-600'
@@ -122,19 +125,22 @@ export default function Home() {
                 </button>
               )
             )}
-            <button
-              onClick={handleNextPage}
-              className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
-            >
-              Next
-            </button>
-            <button
-              onClick={handleLastPage}
-              disabled={page === totalPages} // Deshabilitarsiyaestásenlaúltimapágina"
-              className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
-            >
-              Last
-            </button>
+            <div className="flex gap-1">
+              <button
+                onClick={handleNextPage}
+                className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
+                disabled={page === totalPages} // Deshabilitar si ya estás en la última página
+              >
+                Next
+              </button>
+              <button
+                onClick={handleLastPage}
+                disabled={page === totalPages} // Deshabilitarsiyaestásenlaúltimapágina"
+                className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
+              >
+                Last
+              </button>
+            </div>
           </div>
           <div className="mt-4">
             <label htmlFor="pageSize" className="mr-2">
@@ -146,7 +152,6 @@ export default function Home() {
               onChange={handlePageSizeChange}
               className="px-4 py-2 bg-gray-700 rounded"
             >
-              <option value={5}>5</option>
               <option value={10}>10</option>
               <option value={20}>20</option>
               <option value={50}>50</option>
