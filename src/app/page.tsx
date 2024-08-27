@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import type { DocumentRecord } from '@/app/api/tires/route';
 import { TiresData } from '@/app/interfaces/tires';
 import Card from '@/app/components/Card';
+import { useGenerateFixedPagination } from '@/app/hooks/useGeneratePagination';
 
 export default function Home() {
   const [records, setRecords] = useState<DocumentRecord[]>([]);
@@ -11,8 +12,9 @@ export default function Home() {
   const [loading, setLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
-  const totalRecords = 2000; // Asumimos que tienes este valor disponible
+  const totalRecords = 50; // Asumimos que tienes este valor disponible
   const totalPages = Math.ceil(totalRecords / pageSize);
+  const maxVisiblePages = 5;
 
   const getTires = useCallback(
     async (page: number) => {
@@ -71,6 +73,16 @@ export default function Home() {
     setPage(totalPages);
   };
 
+  const pagination = useGenerateFixedPagination(
+    page,
+    totalPages,
+    maxVisiblePages
+  );
+
+  const availablePageSizes = [10, 20, 50].filter(
+    (size) => size <= totalRecords
+  );
+
   return (
     <main className="flex min-h-screen flex-col items-center p-24">
       <h1 className="text-4xl">Tires</h1>
@@ -100,22 +112,22 @@ export default function Home() {
                 disabled={page === 1} // Deshabilitar si ya estás en la primera página
                 className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
               >
-                First
+                &lt;&lt;
               </button>
               <button
                 onClick={handlePreviousPage}
                 disabled={page === 1} // Deshabilitar el botón si estás en la primera página
                 className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
               >
-                Previous
+                &lt;
               </button>
             </div>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-              (pageNumber) => (
+            {pagination.map((pageNumber, index) =>
+              typeof pageNumber === 'number' ? (
                 <button
-                  key={pageNumber}
+                  key={index}
                   onClick={() => handlePageClick(pageNumber)}
-                  className={`px-3 py-1 rounded ${
+                  className={`px-3 py-1 mx-1 rounded ${
                     pageNumber === page
                       ? 'bg-blue-600 text-white'
                       : 'bg-gray-700 text-white hover:bg-gray-600'
@@ -123,6 +135,10 @@ export default function Home() {
                 >
                   {pageNumber}
                 </button>
+              ) : (
+                <span key={index} className="px-3 py-1 mx-1 text-gray-500">
+                  {pageNumber}
+                </span>
               )
             )}
             <div className="flex gap-1">
@@ -131,32 +147,36 @@ export default function Home() {
                 className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
                 disabled={page === totalPages} // Deshabilitar si ya estás en la última página
               >
-                Next
+                &gt;
               </button>
               <button
                 onClick={handleLastPage}
                 disabled={page === totalPages} // Deshabilitarsiyaestásenlaúltimapágina"
                 className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
               >
-                Last
+                &gt;&gt;
               </button>
             </div>
           </div>
-          <div className="mt-4">
-            <label htmlFor="pageSize" className="mr-2">
-              Page Size:
-            </label>
-            <select
-              id="pageSize"
-              value={pageSize}
-              onChange={handlePageSizeChange}
-              className="px-4 py-2 bg-gray-700 rounded"
-            >
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-              <option value={50}>50</option>
-            </select>
-          </div>
+          {totalRecords >= 10 && (
+            <div className="mt-4">
+              <label htmlFor="pageSize" className="mr-2">
+                Page Size:
+              </label>
+              <select
+                id="pageSize"
+                value={pageSize}
+                onChange={handlePageSizeChange}
+                className="px-4 py-2 bg-gray-700 rounded"
+              >
+                {availablePageSizes.map((size) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
       )}
     </main>
