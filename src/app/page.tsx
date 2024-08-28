@@ -84,7 +84,7 @@ export default function Home() {
   );
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-24">
+    <main className="flex min-h-screen flex-col items-center xl:p-24 lg:p-24 md:p-2 sm:p-2">
       <h1 className="text-4xl">Tires</h1>
       {error ? (
         <div className="text-red-500">Error: {error}</div>
