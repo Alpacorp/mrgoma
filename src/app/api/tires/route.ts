@@ -5,7 +5,6 @@ export type DocumentRecord = {
   id: number;
   TireId: string;
   Code: string;
-  // Añade más campos según la estructura de tu tabla
 };
 
 export async function GET(req: NextRequest) {
@@ -13,11 +12,9 @@ export async function GET(req: NextRequest) {
   const page = searchParams.get('page') ?? '1';
   const pageSize = searchParams.get('pageSize') ?? '10';
 
-  // Convertir a enteros
   const pageInt = parseInt(page, 10);
   const pageSizeInt = parseInt(pageSize, 10);
 
-  // Calcular el desplazamiento
   const offset = (pageInt - 1) * pageSizeInt;
 
   try {
