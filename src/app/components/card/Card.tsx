@@ -17,7 +17,7 @@ function Card({ products }: { products: any }) {
                 </div>
                 <div className="relative mt-4">
                   <div className="flex justify-between items-center">
-                    <p className="mt-1 text-greenPrimary font-semibold text-2xl">
+                    <p className="mt-1 text-greenSecondary font-semibold text-2xl">
                       {product.price}
                     </p>
                     <button
@@ -52,7 +52,7 @@ function Card({ products }: { products: any }) {
                       <div
                         className={`pt-6 pb-3 px-12 text-sm ${
                           product.condition === 'new'
-                            ? 'bg-greenPrimary'
+                            ? 'bg-greenSecondary'
                             : 'bg-gray-600'
                         }`}
                       >
