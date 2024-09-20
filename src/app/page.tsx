@@ -4,12 +4,10 @@ import TopFilter from '@/app/components/topFilter/TopFilter';
 import TireCard from '@/app/components/card/Card';
 import Title from '@/app/components/title/Title';
 import MobileTopFilters from '@/app/components/mobileTopFilters/MobileTopFilters';
-//import LateralFilters from '@/app/components/lateralFilters/lateralFilters';
-const LateralFilters = lazy(
-  () => import('@/app/components/lateralFilters/LateralFilters')
-);
-
+import LateralFilters from '@/app/components/lateralFilters/LateralFilters';
 import MobileLateralFilters from '@/app/components/mobileLateralFilters/MobileLateralFilters';
+import { useContext } from 'react';
+import { FiltersContext } from '@/app/context/FiltersContext';
 
 import {
   Dialog,
@@ -32,6 +30,8 @@ import {
   Squares2X2Icon,
 } from '@heroicons/react/20/solid';
 
+
+
 //fin mis importaciones
 
 import {
@@ -41,7 +41,7 @@ import {
   useRef,
   useLayoutEffect,
   lazy,
-  Suspense
+  Suspense,
 } from 'react';
 import type { DocumentRecord } from '@/app/api/tires/route';
 import { TiresData } from '@/app/interfaces/tires';
@@ -234,7 +234,7 @@ export default function Home() {
     { name: 'Price: High to Low', href: '#', current: false },
   ];
 
-  function classNames(...classes) {
+  function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ');
   }
 
@@ -365,16 +365,19 @@ export default function Home() {
   const lateralMenuRef = useRef<HTMLDivElement>(null);
 
   const [lateralmenuWidth, setLateralMenuWidth] = useState<number>(0);
+  const {topMargin} = useContext(FiltersContext)
+
 
   //tamaño del menu lateral cuandos e hace resize o cuando carga el componente
+  useLayoutEffect(() => {
 
-  useEffect(() => {
-    const lateralMenu = lateralMenuRef.current;
-
+    const lateralMenu = lateralMenuRef !== null && lateralMenuRef.current;
+  
     const getLateralMenuWidth = () => {
-      const lateralMenuCurrentWidth = lateralMenu?.offsetWidth;
-      lateralMenuCurrentWidth !== undefined &&
-        setLateralMenuWidth(lateralMenuCurrentWidth);
+      if(lateralMenu){
+          const lateralMenuCurrentWidth = lateralMenu?.getBoundingClientRect().width;
+          lateralMenuCurrentWidth !== undefined && setLateralMenuWidth(lateralMenuCurrentWidth);
+      }
     };
 
     getLateralMenuWidth();
@@ -398,18 +401,17 @@ export default function Home() {
           </div>
           <section aria-labelledby="products-heading" className="pb-24">
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4 ">
-
               {/*lateral Filters desk*/}
-              <div ref={lateralMenuRef} className="hidden lg:block border border-red-500">
+              <div
+                ref={lateralMenuRef}
+                className="hidden lg:block"
+              >
                 {/* <div className='border-4 border-slate-950 fixed top-24 overflow-auto h-full]'> */}
                 <div
-                  style={{ width: `${lateralmenuWidth}px` }}
-                  className=" border-4 border-slate-950  fixed overflow-auto h-screen top-9"
-                > 
-                  <Suspense fallback={<div className='text-black'>lorem5000</div>}>
-                      <LateralFilters/>
-                  </Suspense>
-             
+                  style={{ width: `${lateralmenuWidth}px`, top: `${topMargin}px`}}
+                  className="fixed overflow-auto h-screen"
+                >
+                    <LateralFilters />
                 </div>
               </div>
 

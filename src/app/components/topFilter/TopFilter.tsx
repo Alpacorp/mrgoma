@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useRef, useLayoutEffect, useContext,useEffect } from 'react';
 import {
   Label,
   Listbox,
@@ -8,6 +8,7 @@ import {
   ListboxOptions,
 } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import { FiltersContext } from '@/app/context/FiltersContext';
 
 const section = [
   { id: 1, name: 4.8 },
@@ -29,16 +30,48 @@ const diameter = [
 
 const activeFilters = [{ value: 'Width', label: 'Width' },{ value: 'AspectRatio', label: 'AspectRatio' },{ value: 'Diameter', label: 'Diameter' }];
 
+
+
 function TopFilter() {
   const [sectionSelected, setSectiopnSelected] = useState(section[0]);
-  const [aspectRatioSelected, setAspectRatioSelected] = useState(
-    aspectRatio[0]
-  );
+  const [aspectRatioSelected, setAspectRatioSelected] = useState(aspectRatio[0]);
   const [diameterRatioSelected, setDiameterSelected] = useState(diameter[0]);
+
+  const topFiltersRef = useRef<HTMLFormElement>(null)
+  const [topFilterYpostion, setTopFilterYposition] = useState<number>(0);
+  const {setTopMargin} = useContext(FiltersContext)
+
+  //posicion del top filter
+  useLayoutEffect(() => {
+
+    const topFilters = topFiltersRef !== null && topFiltersRef.current;
+
+    const getTopFiltersYposition = () => {
+      if(topFilters){
+          const topFiltersCurrentYposition = topFilters?.getBoundingClientRect().top;
+          setTopFilterYposition(topFiltersCurrentYposition);
+      }
+    };
+
+    getTopFiltersYposition();
+
+    const topFiltersScroll = () => {
+      getTopFiltersYposition();
+    };
+    window.addEventListener('scroll', topFiltersScroll);
+
+    return () => window.removeEventListener('scroll', topFiltersScroll);
+  }, []);
+  //enviar esto como top de lateral filters
+  useEffect(()=> {
+    setTopMargin(topFilterYpostion)
+  },[topFilterYpostion])
+
+
 
   return (
     <form
-      className="grid grid-cols-12 gap-2 sm:gap-6 justify-between items-end w-full"
+      className="grid grid-cols-12 gap-2 sm:gap-6 justify-between items-end w-full" ref={topFiltersRef}
       action=""
     >
       <Listbox value={sectionSelected} onChange={setSectiopnSelected}>
