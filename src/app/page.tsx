@@ -8,6 +8,7 @@ import LateralFilters from '@/app/components/lateralFilters/LateralFilters';
 import MobileLateralFilters from '@/app/components/mobileLateralFilters/MobileLateralFilters';
 import { useContext } from 'react';
 import { FiltersContext } from '@/app/context/FiltersContext';
+import Header from '@/app/components/header/Header';
 
 import {
   Dialog,
@@ -392,6 +393,7 @@ export default function Home() {
 
   return (
     <div className="bg-white">
+        <Header/>
       <div>
         {/*Lateral Mobile filter dialog */}
         <MobileLateralFilters x={mobileFiltersOpen} y={setMobileFiltersOpen} />
@@ -430,7 +432,7 @@ export default function Home() {
                   </MobileTopFilters>
                 </div>
 
-                <h2 className="font-medium text-base  sm:mt-14">
+                <h2 className="font-semibold text-base  sm:mt-14 text-gray-900">
                   Results for Tires: 255/55 R18
                 </h2>
                 <div className="flex items-center justify-between mt-8">
@@ -474,18 +476,6 @@ export default function Home() {
                           </div>
                         </MenuItems>
                       </Menu>
-
-                      <button
-                        type="button"
-                        className="-m-2 ml-5 p-2 text-gray-400 hover:text-gray-500 sm:ml-7"
-                      >
-                        <span className="sr-only">View grid</span>
-                        <Squares2X2Icon
-                          aria-hidden="true"
-                          className="h-5 w-5"
-                        />
-                      </button>
-
                       <button
                         type="button"
                         onClick={() => setMobileFiltersOpen(true)}

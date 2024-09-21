@@ -68,8 +68,8 @@ function LateralFilters() {
   return (
     
     <form>
-      <h2 className="font-semibold mb-4">Lateral filters Filters </h2>
-      <Disclosure key={1} as="div" className="border-b border-gray-200 py-6">
+      <h2 className="font-semibold mb-4 text-gray-900">Filters</h2>
+      <Disclosure defaultOpen={true} key={1} as="div" className="border-b border-gray-200 py-6">
         <h3 className="-my-3 flow-root">
           <DisclosureButton className="group flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
             <span className="font-medium text-gray-900">Price</span>
@@ -102,7 +102,7 @@ function LateralFilters() {
           </div>
         </DisclosurePanel>
       </Disclosure>
-      <Disclosure key={1} as="div" className="border-b border-gray-200 py-6">
+      <Disclosure defaultOpen={true}  key={2} as="div" className="border-b border-gray-200 py-6">
         <h3 className="-my-3 flow-root">
           <DisclosureButton className="group flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
             <span className="font-medium text-gray-900">Tread Depth</span>
@@ -136,7 +136,7 @@ function LateralFilters() {
           </div>
         </DisclosurePanel>
       </Disclosure>
-      <Disclosure key={1} as="div" className="border-b border-gray-200 py-6">
+      <Disclosure defaultOpen={true}  key={3} as="div" className="border-b border-gray-200 py-6">
         <h3 className="-my-3 flow-root">
           <DisclosureButton className="group flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
             <span className="font-medium text-gray-900">Remaining life</span>

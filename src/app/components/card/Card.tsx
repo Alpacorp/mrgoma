@@ -1,18 +1,20 @@
 import React from 'react';
+import { ArrowDownOnSquareIcon, ClockIcon, WrenchIcon } from '@heroicons/react/24/outline';
+
 
 function Card({ products }: { products: any }) {
   return (
     <div className="bg-white">
       <div className="mx-auto">
-        <div className="mt-8 grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
+        <div className="mt-8 grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-3 xl:gap-x-8">
           {products.map((product: any) => (
             <div key={product.id}>
               <div className="relative">
-                <div className="relative h-72 w-full overflow-hidden rounded-lg">
+                <div className="relative z-20 h-72 w-full overflow-hidden rounded-lg">
                   <img
+                    className=" h-full w-full object-cover object-center transition duration-400 ease-in-out hover:scale-150"
                     alt={product.imageAlt}
                     src={product.imageSrc}
-                    className="h-full w-full object-cover object-center"
                   />
                 </div>
                 <div className="relative mt-4">
@@ -29,25 +31,38 @@ function Card({ products }: { products: any }) {
                   </div>
 
                   <h3 className="font-medium text-gray-900">{product.name}</h3>
-                  <p className="mt-1 text-gray-900 text-sm">
-                    <span>Patched: </span>
-                    {product.patched}
-                  </p>
-                  <p className="mt-1 text-gray-900 text-sm">
+                  <div className='flex items-end gap-3'>
+                    <WrenchIcon color='#8F8F8F' width={18} height={18}/>
+                      <p className="mt-1 text-gray-900 text-sm">
+                      <span>Patched: </span>
+                      {product.patched}
+                    </p>
+                  </div>
+                  
+                  <div className='flex items-end gap-3'>
+                    <ClockIcon color='#8F8F8F' width={18} height={18}/>
+                    <p className="mt-1 text-gray-900 text-sm">
                     <span>Remaining Life: </span>
                     {product.remainingLife}
-                  </p>
-                  <p className="mt-1 text-gray-900 text-sm">
-                    <span>Tread Depth: </span>
-                    {product.treadDepth}
-                  </p>
+                    </p>
+                  </div>
+
+
+                  <div className='flex items-center gap-3'>
+                    <ArrowDownOnSquareIcon color='#8F8F8F' width={19} height={19}/>
+                    <p className="mt-1 text-gray-900 text-sm">
+                      <span>Tread Depth: </span>
+                      {product.treadDepth}
+                    </p>
+                  </div>
+                  
                 </div>
                 <div className="absolute inset-x-0 top-0 flex h-72 items-end justify-end overflow-hidden rounded-lg p-4">
                   <div
                     aria-hidden="true"
                     className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black opacity-50"
                   />
-                  <div className="absolute text-lg font-semibold text-white -top-2 -left-12  text-center -rotate-45">
+                  <div className="absolute  z-30 text-lg font-semibold text-white -top-2 -left-12  text-center -rotate-45">
                     {
                       <div
                         className={`pt-6 pb-3 px-12 text-sm ${
@@ -60,7 +75,7 @@ function Card({ products }: { products: any }) {
                       </div>
                     }
                   </div>
-                  <div className="absolute text-lg font-semibold text-white right-1.5 bottom-1.5">
+                  <div className="absolute z-30 text-lg font-semibold text-white right-0 bottom-0">
                     {product.brand === 'goodYear' && (
                       <img
                         className="w-32"

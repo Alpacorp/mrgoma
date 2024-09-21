@@ -38,7 +38,7 @@ function TopFilter() {
   const [diameterRatioSelected, setDiameterSelected] = useState(diameter[0]);
 
   const topFiltersRef = useRef<HTMLFormElement>(null)
-  const [topFilterYpostion, setTopFilterYposition] = useState<number>(0);
+  const [topFilterYpostion, setTopFilterYposition] = useState<number>(800);
   const {setTopMargin} = useContext(FiltersContext)
 
   //posicion del top filter
