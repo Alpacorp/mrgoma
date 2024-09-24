@@ -23,7 +23,8 @@
       "@pages/*": ["./src/pages/*"],
       "@config/*": ["./src/app/config/*"],
       "@connection/*": ["./src/app/connection/*"],
-      "@api/*": ["./src/app/api/*"]
+      "@api/*": ["./src/app/api/*"],
+      "#public/*": ["./public/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
