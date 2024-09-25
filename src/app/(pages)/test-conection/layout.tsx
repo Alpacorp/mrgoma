@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   keywords: 'tires, miami, shop, tire shop, used tires, new tires',
 };
 
-export default function DetailLayout({
+export default function TestConectionLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

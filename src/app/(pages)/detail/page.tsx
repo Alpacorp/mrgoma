@@ -1,7 +1,7 @@
 import { NextPage } from 'next';
 
-const CatalogPage: NextPage = () => {
+const DetailPage: NextPage = () => {
   return <>Detail Page</>;
 };
 
-export default CatalogPage;
+export default DetailPage;

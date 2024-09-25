@@ -8,3 +8,4 @@ export { default as ProductItem } from './ProductItem/ProductItem';
 export { default as ProductName } from './ProductName/ProductName';
 export { default as SortingMenu } from './SortingMenu/SortingMenu';
 export { default as Title } from './Title/Title';
+export { default as ProductPrice } from './ProductPrice/ProductPrice';

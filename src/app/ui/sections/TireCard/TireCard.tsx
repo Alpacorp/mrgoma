@@ -13,6 +13,7 @@ import {
   ProductImage,
   ProductItem,
   ProductName,
+  ProductPrice,
 } from '@/app/ui/components';
 
 interface TireCardProps {
@@ -36,6 +37,7 @@ const TireCard: FC<TireCardProps> = ({
                   isHovered={hoveredProductId === product.id}
                 />
                 <div className="relative mt-4">
+                  <ProductPrice product={product} />
                   <ProductName product={product} />
                   <ProductItem
                     product={product.patched}
