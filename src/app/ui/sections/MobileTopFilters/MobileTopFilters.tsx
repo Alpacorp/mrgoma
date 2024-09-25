@@ -35,7 +35,6 @@ function MobileTopFilters({
         <div className="py-1">{children}</div>
         <div className="flex">
           <MenuItem>
-            {/* <button className="block  bg-red-600 w-6/12  px-4 py-2 text-center text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"></button> */}
             <button className="block  bg-black w-6/12  px-4 py-2.5 text-center text-sm text-white">
               Close
             </button>

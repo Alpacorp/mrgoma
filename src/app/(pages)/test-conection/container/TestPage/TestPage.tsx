@@ -13,7 +13,7 @@ export default function TestPage() {
   const [loading, setLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
-  const totalRecords = 100; // Asumimos que tienes este valor disponible
+  const totalRecords = 200; // Asumimos que tienes este valor disponible
   const totalPages = Math.ceil(totalRecords / pageSize);
   const maxVisiblePages = 10;
 

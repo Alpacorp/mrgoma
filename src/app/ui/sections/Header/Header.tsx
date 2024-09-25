@@ -1,13 +1,14 @@
 'use client';
+
 import React, { FC } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { menuItems } from '@/app/ui/sections/Header/MenuItems';
 import HamburguerMenu from '@/app/ui/components/HamburguerMenu/HamburguerMenu';
+import MenuMobile from '@/app/ui/sections/MenuMobile/MenuMobile';
 
 import { mrGomaLogo } from '#public/assets/images/Logo';
-import MenuMobile from '@/app/ui/sections/MenuMobile/MenuMobile';
 
 const Header: FC = () => {
   return (
@@ -28,7 +29,6 @@ const Header: FC = () => {
             priority
           />
         </Link>
-
         <div className="hidden lg:flex lg:gap-x-12 ">
           {menuItems.map((item) => (
             <Link
