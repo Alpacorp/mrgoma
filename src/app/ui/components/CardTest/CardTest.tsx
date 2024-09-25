@@ -2,7 +2,7 @@ import React from 'react';
 import { TiresData } from '@/app/interfaces/tires';
 import Image from 'next/image';
 
-const Card: React.FC<TiresData> = ({
+const CardTest: React.FC<TiresData> = ({
   TireId,
   Code,
   Size,
@@ -19,11 +19,12 @@ const Card: React.FC<TiresData> = ({
     <div className="bg-gray-800 text-white rounded-lg shadow-md p-4 m-2 w-64">
       <div className="mb-4">
         <Image
-          src={Image1 || defaultImage}
+          src={Image1 ?? defaultImage}
           alt={`Image of ${TireId}`}
           className="w-full h-48 object-cover rounded-lg"
           width={300}
           height={200}
+          priority
         />
       </div>
       <div>
@@ -57,4 +58,4 @@ const Card: React.FC<TiresData> = ({
   );
 };
 
-export default Card;
+export default CardTest;

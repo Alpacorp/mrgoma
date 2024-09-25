@@ -3,31 +3,52 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  width: 15rem;
+  width: 100%;
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+  background: rgb(243 244 246);
+  border-radius: 20px;
+  height: 0.5rem;
+}
+
+input[type='range']::-moz-range-track {
+  background: rgb(243 244 246);
+  border-radius: 20px;
+  height: 0.5rem;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -6px;
+  background-color: #20e96b;
+  height: 1.2rem;
+  width: 0.7rem;
+  border-radius: 3px;
+}
+
+input[type='range']::-moz-range-thumb {
+  background-color: #20e96b;
+  height: 1.2rem;
+  width: 0.7rem;
+  border-radius: 3px;
 }
