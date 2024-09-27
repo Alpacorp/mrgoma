@@ -118,7 +118,7 @@ const LateralFilters: FC = () => {
         <DisclosurePanel className="pt-6">
           <div className="space-y-4">
             <label htmlFor="remainingLife" className="text-sm text-gray-600">
-              1% - {rangeInputs.remainingLife}%
+              0% - {rangeInputs.remainingLife}%
             </label>
             <input
               className="w-full"

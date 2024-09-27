@@ -9,7 +9,7 @@ export const lateralItems = [
   },
   {
     id: 'patched',
-    name: 'Pathched',
+    name: 'Patched',
     options: [
       { value: 'yes', label: 'Yes', checked: false },
       { value: 'no', label: 'No', checked: false },
