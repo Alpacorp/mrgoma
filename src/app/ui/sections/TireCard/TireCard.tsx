@@ -1,3 +1,4 @@
+ "use client"
 import React, { FC, useState } from 'react';
 
 import {
@@ -37,8 +38,8 @@ const TireCard: FC<TireCardProps> = ({
                   isHovered={hoveredProductId === product.id}
                 />
                 <div className="relative mt-4">
-                  <ProductPrice product={product} />
-                  <ProductName product={product} />
+                  <ProductPrice price={product.price} />
+                  <ProductName type={3} size="lg" weight='medium' name={product.name} />
                   <ProductItem
                     product={product.patched}
                     title="Patched"
@@ -69,7 +70,7 @@ const TireCard: FC<TireCardProps> = ({
                     onMouseLeave={() => setHoveredProductId(null)}
                   />
                   <div className="absolute z-30 text-lg font-semibold text-white -top-2 -left-12 text-center -rotate-45">
-                    <ProductCondition product={product} />
+                    <ProductCondition condition={product.condition} />
                   </div>
                   <div className="absolute z-30 text-lg font-semibold text-white right-0 bottom-0">
                     {product.brandId && (

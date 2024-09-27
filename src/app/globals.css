@@ -5,6 +5,7 @@
 :root {
 }
 
+
 body {
   color: rgb(var(--foreground-rgb));
 }
@@ -51,4 +52,9 @@ input[type='range']::-moz-range-thumb {
   height: 1.2rem;
   width: 0.7rem;
   border-radius: 3px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: revert;
+  font-weight: revert;
 }
