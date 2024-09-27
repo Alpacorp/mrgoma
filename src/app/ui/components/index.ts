@@ -9,3 +9,6 @@ export { default as ProductName } from './ProductName/ProductName';
 export { default as SortingMenu } from './SortingMenu/SortingMenu';
 export { default as Title } from './Title/Title';
 export { default as ProductPrice } from './ProductPrice/ProductPrice';
+export { default as ProductDescription } from './ProductDescription/ProductDescription';
+export { default as ProductCarouselMiniature } from './ProductCarouselMiniature/ProductCarouselMiniature';
+export { default as CartButton } from './CartButton/CartButton';

@@ -4,7 +4,7 @@ import Image from 'next/image';
 interface BrandImageProps {
   product: {
     brand: string;
-    brandId: string;
+    brandId: number;
   };
 }
 

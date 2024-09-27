@@ -1,15 +1,13 @@
 import { FC } from 'react';
 
 interface ProductPriceProps {
-  product: {
     price: string;
-  };
 }
 
-const ProductPrice: FC<ProductPriceProps> = ({ product }) => {
+const ProductPrice: FC<ProductPriceProps> = ({ price }) => {
   return (
     <p className="mt-1 text-green-primary font-semibold text-2xl">
-      {product.price}
+      {price}
     </p>
   );
 };

@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 import Image from 'next/image';
 
 interface ProductImageProps {
@@ -10,11 +10,14 @@ interface ProductImageProps {
   isHovered?: boolean;
 }
 
-const ProductImage: FC<ProductImageProps> = ({ product, isHovered }) => {
+const ProductCarouselMiniature: FC<ProductImageProps> = ({
+  product,
+  isHovered,
+}) => {
   return (
     <div className="relative z-20 h-full w-full overflow-hidden rounded-lg">
       <Image
-        className={`product-image h-72 w-full object-cover object-center transition duration-400 ease-in-out ${
+        className={`product-image h-full w-full object-contain object-center transition duration-400 ease-in-out max-[400px]:object-cover ${
           isHovered ? 'scale-110 duration-300' : ''
         }`}
         alt={product.imageAlt}
@@ -29,4 +32,4 @@ const ProductImage: FC<ProductImageProps> = ({ product, isHovered }) => {
   );
 };
 
-export default ProductImage;
+export default ProductCarouselMiniature;
