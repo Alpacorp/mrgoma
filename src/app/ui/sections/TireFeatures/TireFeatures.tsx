@@ -7,11 +7,12 @@ import {
 } from '@headlessui/react';
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
 
-import { TireInformationProps, SingleTireDetails } from '@/app/interfaces/tires';
+import {
+  TireInformationProps,
+  SingleTireDetails,
+} from '@/app/interfaces/tires';
 
-
-
-const TireFeatures:FC<TireInformationProps> = ({singleTire}) => {
+const TireFeatures: FC<TireInformationProps> = ({ singleTire }) => {
   return (
     <div aria-labelledby="details-heading">
       <h2 id="details-heading" className="sr-only">
@@ -19,12 +20,8 @@ const TireFeatures:FC<TireInformationProps> = ({singleTire}) => {
       </h2>
 
       <div className="divide-y divide-gray-200 border-t">
-        {singleTire.details.map((detail:SingleTireDetails, index:number) => (
-          <Disclosure
-            defaultOpen={index === 0 && true}
-            key={detail.name}
-            as="div"
-          >
+        {singleTire.details.map((detail: SingleTireDetails, index: number) => (
+          <Disclosure defaultOpen={index === 0} key={detail.name} as="div">
             <h3>
               <DisclosureButton className="group relative flex w-full items-center justify-between py-6 text-left">
                 <span className="text-sm font-medium text-gray-900 group-data-[open]:text-indigo-600">
@@ -43,7 +40,7 @@ const TireFeatures:FC<TireInformationProps> = ({singleTire}) => {
               </DisclosureButton>
             </h3>
             <DisclosurePanel className="prose prose-sm pb-6">
-              <ul role="list">
+              <ul>
                 {detail.items.map((item: string) => (
                   <li key={item}>{item}</li>
                 ))}

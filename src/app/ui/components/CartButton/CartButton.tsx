@@ -2,12 +2,11 @@ import React, { FC } from 'react';
 
 import { ShoppingCartIcon } from '@heroicons/react/24/solid';
 
-interface CartBtnProps {
+interface CartButtonProps {
   message: string;
 }
 
-
-const CartBtn: FC<CartBtnProps> = ({ message }) => {
+const CartButton: FC<CartButtonProps> = ({ message }) => {
   return (
     <div className="mt-10 flex items-center">
       <button
@@ -26,4 +25,4 @@ const CartBtn: FC<CartBtnProps> = ({ message }) => {
   );
 };
 
-export default CartBtn;
+export default CartButton;

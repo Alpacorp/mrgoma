@@ -5,7 +5,7 @@ import {
   ProductName,
   ProductPrice,
   ProductDescription,
-  CartBtn,
+  CartButton,
 } from '@/app/ui/components';
 
 const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
@@ -22,7 +22,7 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
       <div className="mt-6">
         <ProductDescription description="The Zip Tote Basket is the perfect midpoint between shopping tote and comfy backpack. With convertible straps, you can hand carry, should sling, or backpack this convenient and spacious bag. The zip top and durable canvas construction keeps your goods protected for all-day use" />
       </div>
-      <CartBtn message="Add to cart" />
+      <CartButton message="Add to cart" />
     </div>
   );
 };
