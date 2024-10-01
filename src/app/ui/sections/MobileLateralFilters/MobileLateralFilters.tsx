@@ -153,7 +153,7 @@ function MobileLateralFilters() {
                     htmlFor="remainingLife"
                     className="text-sm text-gray-600"
                   >
-                    1% - {rangeInputs.remainingLife}%
+                    0% - {rangeInputs.remainingLife}%
                   </label>
                   <input
                     className="w-full"

@@ -18,7 +18,6 @@ const TireFeatures: FC<TireInformationProps> = ({ singleTire }) => {
       <h2 id="details-heading" className="sr-only">
         Additional details
       </h2>
-
       <div className="divide-y divide-gray-200 border-t">
         {singleTire.details.map((detail: SingleTireDetails, index: number) => (
           <Disclosure defaultOpen={index === 0} key={detail.name} as="div">

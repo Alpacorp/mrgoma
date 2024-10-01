@@ -12,3 +12,5 @@ export { default as ProductPrice } from './ProductPrice/ProductPrice';
 export { default as ProductDescription } from './ProductDescription/ProductDescription';
 export { default as ProductCarouselMiniature } from './ProductCarouselMiniature/ProductCarouselMiniature';
 export { default as CartButton } from './CartButton/CartButton';
+export {default as BenefitsItem} from './BenefitsItem/BenefitsItem';
+export {default as TerminologyItem} from './TerminologyItem/TerminologyItem' 
