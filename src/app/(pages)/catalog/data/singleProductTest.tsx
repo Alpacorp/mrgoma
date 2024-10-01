@@ -40,6 +40,7 @@ export const singleproductTest = {
     details: [
         {
           name: 'Features',
+          id:1,
           items: [
             'Multiple strap configurations',
             'Spacious interior with top zip',
@@ -52,6 +53,7 @@ export const singleproductTest = {
         },
         {
           name: 'Care',
+          id:2,
           items: [
             'Spot clean as needed',
             'Hand wash with mild soap',
@@ -61,6 +63,7 @@ export const singleproductTest = {
         },
         {
           name: 'Shipping',
+          id:3,
           items: [
             'Free shipping on orders over $300',
             'International shipping available',
