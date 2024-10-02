@@ -1,14 +1,14 @@
 import React from 'react';
 
-import { singleproductTest } from '@/app/(pages)/catalog/data/singleProductTest';
 import {
   ProductCarousel,
   TireInformation,
   TireFeatures,
   Terminology,
-  Benefits
+  Benefits,
 } from '@/app/ui/sections';
 
+import { singleproductTest } from '@/app/(pages)/catalog/data/singleProductTest';
 
 function Detail() {
   return (
@@ -28,10 +28,10 @@ function Detail() {
         </div>
       </div>
       <section className="bg-[#111828] text-white py-16">
-         <Terminology/>
+        <Terminology />
       </section>
       <section className="mt-8 mb-8">
-        <Benefits/>
+        <Benefits />
       </section>
     </div>
   );

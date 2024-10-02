@@ -9,4 +9,4 @@ export {default as TireInformation} from './TireInformation/TireInformation';
 export {default as TireFeatures} from './TireFeatures/TireFeatures';
 export {default as ProductCarousel} from './ProductCarousel/ProductCarousel';
 export {default as Terminology} from './Terminology/Terminology';
-export {default as Benefits} from './Benefits/Benefits'
+export {default as Benefits} from './Benefits/Benefits';
