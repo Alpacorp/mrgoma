@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import Image from 'next/image';
 
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 
@@ -9,7 +10,6 @@ import {
 } from '@/app/ui/components';
 
 import { TireInformationProps } from '@/app/interfaces/tires';
-import Image from 'next/image';
 
 const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
   return (
@@ -56,7 +56,7 @@ const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
               <Image
                 alt={image.alt}
                 src={image.src}
-                objectFit="contain"
+                // objectFit="contain"
                 className="h-full w-full object-cover object-center sm:rounded-lg"
                 width={500}
                 height={500}
