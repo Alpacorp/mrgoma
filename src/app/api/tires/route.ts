@@ -21,8 +21,12 @@ export async function GET(req: NextRequest) {
     const pool = await poolPromise;
     const result = await pool
       .request()
+      // .query(
+      //   `SELECT * FROM dbo.View_Tires ORDER BY TireId DESC OFFSET ${offset} ROWS FETCH NEXT ${pageSizeInt} ROWS ONLY`
+      // );
+      // .query(`SELECT * FROM dbo.View_Tires WHERE Code = '569927'`);
       .query(
-        `SELECT * FROM dbo.View_Tires ORDER BY TireId DESC OFFSET ${offset} ROWS FETCH NEXT ${pageSizeInt} ROWS ONLY`
+        `SELECT * FROM dbo.View_Tires WHERE Local = '0' AND Trash = 'false' AND RemainingLife > '70%' ORDER BY TireId OFFSET ${offset} ROWS FETCH NEXT ${pageSizeInt} ROWS ONLY`
       );
 
     const records: DocumentRecord[] = result.recordset;

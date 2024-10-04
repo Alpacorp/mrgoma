@@ -11,14 +11,14 @@ interface BrandImageProps {
 const BrandImage: FC<BrandImageProps> = ({ product }) => {
   return (
     <Image
-      className="w-32"
+      className="w-full h-10 max-w-[8.125rem] pl-1 object-contain object-center"
       src={`/assets/images/TireBrand/${product.brandId}-logo.png`}
       alt={product.brand}
       title={product.brand}
       aria-label={product.brand}
       priority
-      width={500}
-      height={500}
+      width={400}
+      height={300}
     />
   );
 };

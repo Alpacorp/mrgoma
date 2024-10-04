@@ -1,5 +1,7 @@
- "use client"
-import React, { FC, useState } from 'react';
+'use client';
+
+import React, { FC } from 'react';
+import Link from 'next/link';
 
 import {
   ArrowDownOnSquareIcon,
@@ -10,6 +12,7 @@ import {
 import {
   BrandImage,
   CtaButton,
+  DetailsButton,
   ProductCondition,
   ProductImage,
   ProductItem,
@@ -24,22 +27,39 @@ interface TireCardProps {
 const TireCard: FC<TireCardProps> = ({
   products,
 }: Readonly<{ products: any }>) => {
-  const [hoveredProductId, setHoveredProductId] = useState<number | null>(null);
-
   return (
-    <div className="bg-white">
-      <div className="mx-auto">
-        <div className="mt-8 grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-3 xl:gap-x-8">
-          {products.map((product: any) => (
-            <div key={product.id}>
-              <div className="relative">
-                <ProductImage
-                  product={product}
-                  isHovered={hoveredProductId === product.id}
-                />
-                <div className="relative mt-4">
-                  <ProductPrice price={product.price} />
-                  <ProductName type={3} size="lg" weight='medium' name={product.name} />
+    <>
+      {products.map((product: any) => (
+        <li
+          key={product.id}
+          className="bg-white rounded-lg overflow-hidden pb-2 shadow-[0px_1px_10px_rgba(0,0,0,0.1)]"
+        >
+          <div className="relative">
+            <div>
+              <Link href="/detail">
+                <ProductImage product={product} />
+              </Link>
+            </div>
+            <div className="relative mt-4 px-3">
+              <div className="flex justify-between items-center">
+                <ProductPrice price={product.price} />
+                {product.brandId && (
+                  <BrandImage
+                    product={{
+                      brand: product.brand,
+                      brandId: product.brandId,
+                    }}
+                  />
+                )}
+              </div>
+              <div className="flex justify-between mt-3">
+                <div>
+                  <ProductName
+                    type={3}
+                    size="lg"
+                    weight="medium"
+                    name={product.name}
+                  />
                   <ProductItem
                     product={product.patched}
                     title="Patched"
@@ -62,36 +82,26 @@ const TireCard: FC<TireCardProps> = ({
                     }
                   />
                 </div>
-                <div className="absolute inset-x-0 top-0 flex h-72 items-end justify-end overflow-hidden rounded-lg p-4 groupTest">
-                  <div
-                    aria-hidden="true"
-                    className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-t from-black opacity-30 z-30"
-                    onMouseEnter={() => setHoveredProductId(product.id)}
-                    onMouseLeave={() => setHoveredProductId(null)}
-                  />
-                  <div className="absolute z-30 text-lg font-semibold text-white -top-2 -left-12 text-center -rotate-45">
-                    <ProductCondition condition={product.condition} />
-                  </div>
-                  <div className="absolute z-30 text-lg font-semibold text-white right-0 bottom-0">
-                    {product.brandId && (
-                      <BrandImage
-                        product={{
-                          brand: product.brand,
-                          brandId: product.brandId,
-                        }}
-                      />
-                    )}
-                  </div>
+                <div>
+                  <DetailsButton onClick={() => console.log('Details')}>
+                    Details
+                  </DetailsButton>
                 </div>
               </div>
-              <div className="mt-6">
-                <CtaButton product={product} text="View Tire" />
+            </div>
+            <div className="inset-x-0 top-0 flex items-end justify-end overflow-hidden rounded-t-lg">
+              {/* <div className="absolute z-50 text-lg font-semibold text-white -top-2 -left-12 text-center -rotate-45"> */}
+              <div className="absolute z-30 text-lg font-semibold text-white top-0 left-0 text-center">
+                <ProductCondition condition={product.condition} />
               </div>
             </div>
-          ))}
-        </div>
-      </div>
-    </div>
+          </div>
+          <div className="mt-4 px-3">
+            <CtaButton product={product} text="View Tire" />
+          </div>
+        </li>
+      ))}
+    </>
   );
 };
 

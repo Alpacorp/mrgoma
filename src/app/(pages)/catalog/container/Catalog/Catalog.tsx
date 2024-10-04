@@ -31,21 +31,21 @@ const Catalog: FC = () => {
                 </div>
               </div>
               <div className="lg:col-span-3">
-                <div className="hidden sm:block sticky top-0 z-40 bg-white pb-4">
+                <div className="hidden sm:block sticky top-0 z-40 bg-gray-100 p-2 rounded-lg shadow-lg">
                   <TopFilter />
                 </div>
-                <div className="sticky block sm:hidden top-0 z-40  pt-4 pb-4 bg-white">
+                <div className="sticky block sm:hidden top-0 z-40 bg-white rounded-b-lg shadow-md my-4">
                   <MobileTopFilters>
                     <div className="p-4">
                       <TopFilter />
                     </div>
                   </MobileTopFilters>
                 </div>
-                <h2 className="font-semibold text-base  sm:mt-14 text-gray-900">
+                <h2 className="font-semibold text-base sm:mt-8 text-gray-400">
                   Results for Tires: 255/55 R18
                 </h2>
-                <div className="flex items-center justify-between mt-8">
-                  <h3 className="text-gray-400">91 Results</h3>
+                <div className="flex items-center justify-between mt-5">
+                  <h3 className="text-gray-400 text-base">91 Results</h3>
                   <div className="flex items-baseline justify-end">
                     <div className="flex items-center">
                       <SortingMenu />
@@ -53,8 +53,14 @@ const Catalog: FC = () => {
                     </div>
                   </div>
                 </div>
-                <div className="mt-12">
-                  <TireCard products={productsTest} />
+                <div className="mt-8 relative z-10">
+                  <div className="bg-white">
+                    <div className="mx-auto">
+                      <ul className="mt-3 grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-3 xl:gap-x-4">
+                        <TireCard products={productsTest} />
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

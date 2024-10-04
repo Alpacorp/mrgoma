@@ -4,7 +4,8 @@ export const productsTest = [
     name: 'G012',
     color: 'White and black',
     href: '#',
-    imageSrc: '/assets/images/llanta1.png',
+    imageSrc:
+      'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
     price: '$140',
@@ -20,7 +21,8 @@ export const productsTest = [
     name: 'G003 LT',
     color: 'White and black',
     href: '#',
-    imageSrc: '/assets/images/llanta3.jpg',
+    imageSrc:
+      'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
     price: '$220',
@@ -36,7 +38,8 @@ export const productsTest = [
     name: 'G003 LT',
     color: 'White and black',
     href: '#',
-    imageSrc: '/assets/images/llanta1.png',
+    imageSrc:
+      'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
     price: '$220',
@@ -52,7 +55,8 @@ export const productsTest = [
     name: 'G012',
     color: 'White and black',
     href: '#',
-    imageSrc: '/assets/images/llanta1.png',
+    imageSrc:
+      'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
     price: '$140',
@@ -68,7 +72,8 @@ export const productsTest = [
     name: 'G012',
     color: 'White and black',
     href: '#',
-    imageSrc: '/assets/images/llanta1.png',
+    imageSrc:
+      'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
     price: '$140',
@@ -84,7 +89,8 @@ export const productsTest = [
     name: 'G003 LT',
     color: 'White and black',
     href: '#',
-    imageSrc: '/assets/images/llanta3.jpg',
+    imageSrc:
+      'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
     price: '$220',
@@ -100,7 +106,8 @@ export const productsTest = [
     name: 'G003 LT',
     color: 'White and black',
     href: '#',
-    imageSrc: '/assets/images/llanta4.jpg',
+    imageSrc:
+      'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
     price: '$220',
@@ -116,7 +123,8 @@ export const productsTest = [
     name: 'G012',
     color: 'White and black',
     href: '#',
-    imageSrc: '/assets/images/llanta1.png',
+    imageSrc:
+      'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
     price: '$140',

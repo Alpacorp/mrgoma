@@ -7,7 +7,7 @@ interface ProductConditionProps {
 const ProductCondition: FC<ProductConditionProps> = ({ condition }) => {
   return (
     <div
-      className={`pt-6 pb-3 px-12 text-sm ${
+      className={`p-2 text-sm rounded-tl-lg rounded-br-lg ${
         condition === 'new' ? 'bg-green-primary' : 'bg-gray-600'
       }`}
     >

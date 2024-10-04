@@ -5,8 +5,9 @@ export { default as MobileLateralFilters } from './MobileLateralFilters/MobileLa
 export { default as MobileTopFilters } from './MobileTopFilters/MobileTopFilters';
 export { default as TopFilter } from './TopFilter/TopFilter';
 export { default as TireCard } from './TireCard/TireCard';
-export {default as TireInformation} from './TireInformation/TireInformation';
-export {default as TireFeatures} from './TireFeatures/TireFeatures';
-export {default as ProductCarousel} from './ProductCarousel/ProductCarousel';
-export {default as Terminology} from './Terminology/Terminology';
-export {default as Benefits} from './Benefits/Benefits';
+export { default as TireInformation } from './TireInformation/TireInformation';
+export { default as TireFeatures } from './TireFeatures/TireFeatures';
+export { default as ProductCarousel } from './ProductCarousel/ProductCarousel';
+export { default as Terminology } from './Terminology/Terminology';
+export { default as Benefits } from './Benefits/Benefits';
+export { default as Footer } from './Footer/Footer';

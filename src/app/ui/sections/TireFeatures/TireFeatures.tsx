@@ -23,7 +23,7 @@ const TireFeatures: FC<TireInformationProps> = ({ singleTire }) => {
           <Disclosure defaultOpen={index === 0} key={detail.name} as="div">
             <h3>
               <DisclosureButton className="group relative flex w-full items-center justify-between py-6 text-left">
-                <span className="text-sm font-medium text-gray-900 group-data-[open]:text-indigo-600">
+                <span className="text-sm font-medium text-gray-900 group-data-[open]:text-green-600">
                   {detail.name}
                 </span>
                 <span className="ml-6 flex items-center">
@@ -33,7 +33,7 @@ const TireFeatures: FC<TireInformationProps> = ({ singleTire }) => {
                   />
                   <MinusIcon
                     aria-hidden="true"
-                    className="hidden h-6 w-6 text-indigo-400 group-hover:text-indigo-500 group-data-[open]:block"
+                    className="hidden h-6 w-6 text-green-400 group-hover:text-green-500 group-data-[open]:block"
                   />
                 </span>
               </DisclosureButton>
