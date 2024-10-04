@@ -7,20 +7,17 @@ interface ProductImageProps {
     imageSrc: string;
     brand: string;
   };
-  isHovered?: boolean;
 }
 
-const ProductImage: FC<ProductImageProps> = ({ product, isHovered }) => {
+const ProductImage: FC<ProductImageProps> = ({ product }) => {
   return (
-    <div className="relative z-20 h-full w-full overflow-hidden rounded-lg">
+    <div className="relative z-30 h-full w-full overflow-hidden rounded-t-lg">
       <Image
-        className={`product-image h-72 w-full object-cover object-center transition duration-400 ease-in-out ${
-          isHovered ? 'scale-110 duration-300' : ''
-        }`}
+        className={`w-full object-contain object-center transition duration-400 ease-in-out hover:scale-105 duration-300`}
         alt={product.imageAlt}
         src={product.imageSrc}
-        title={product.brand}
-        aria-label={product.brand}
+        title={product.imageAlt}
+        aria-label={product.imageAlt}
         priority
         width={500}
         height={500}

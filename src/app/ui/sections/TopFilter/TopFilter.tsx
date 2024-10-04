@@ -47,7 +47,7 @@ function TopFilter() {
 
   return (
     <form
-      className="grid grid-cols-12 gap-2 sm:gap-6 justify-between items-end w-full"
+      className="grid grid-cols-12 gap-2 sm:gap-2 justify-between items-end w-full"
       action=""
     >
       <Listbox value={sectionSelected} onChange={setSectionSelected}>
