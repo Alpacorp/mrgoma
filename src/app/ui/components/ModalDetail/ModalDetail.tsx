@@ -78,7 +78,7 @@ function ModalDetail({ singleTire }: TireInformationProps) {
               >
                 Close
               </button>
-              <CtaButton product={singleTire} text='View Tire'  />
+              <CtaButton product={singleTire} text='View Tire'/>
             </div>
           </DialogPanel>
         </div>
