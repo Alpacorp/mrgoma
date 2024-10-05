@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 
 import { MenuProvider } from '@/app/context/ShowMenuContext';
 import { FiltersProvider } from '@/app/context/ShowFilterContext';
+import { DetailModalProvider } from '@/app/context/ShowDetailModal';
 
 import { Footer, Header } from '@/app/ui/sections';
 
@@ -25,15 +26,17 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.png" sizes="any" type="image/x-icon" />
       </head>
-      <FiltersProvider>
-        <MenuProvider>
-          <body className={inter.className}>
-            <Header />
-            {children}
-            <Footer />
-          </body>
-        </MenuProvider>
-      </FiltersProvider>
+      <DetailModalProvider>
+        <FiltersProvider>
+          <MenuProvider>
+            <body className={inter.className}>
+              <Header />
+              {children}
+              <Footer />
+            </body>
+          </MenuProvider>
+        </FiltersProvider>
+      </DetailModalProvider>
     </html>
   );
 }

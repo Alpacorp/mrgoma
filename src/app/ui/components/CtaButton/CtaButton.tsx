@@ -3,7 +3,6 @@ import Link from 'next/link';
 
 interface CtaButtonProps {
   product: {
-    href: string;
     name: string;
   };
   text: string;

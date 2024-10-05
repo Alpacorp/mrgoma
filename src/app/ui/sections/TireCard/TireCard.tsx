@@ -1,7 +1,6 @@
-'use client';
-
-import React, { FC } from 'react';
+import React, { FC, useContext } from 'react';
 import Link from 'next/link';
+import { ShowDetailModalContext } from '@/app/context/ShowDetailModal';
 
 import {
   ArrowDownOnSquareIcon,
@@ -27,6 +26,9 @@ interface TireCardProps {
 const TireCard: FC<TireCardProps> = ({
   products,
 }: Readonly<{ products: any }>) => {
+
+  const {setShowDetailModal } = useContext(ShowDetailModalContext);
+
   return (
     <>
       {products.map((product: any) => (
@@ -83,7 +85,7 @@ const TireCard: FC<TireCardProps> = ({
                   />
                 </div>
                 <div>
-                  <DetailsButton onClick={() => console.log('Details')}>
+                  <DetailsButton onClick={() => setShowDetailModal(true)}>
                     Details
                   </DetailsButton>
                 </div>
