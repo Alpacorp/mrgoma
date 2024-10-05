@@ -2,6 +2,9 @@
 
 import { FC } from 'react';
 
+import { productsTest } from '@/app/(pages)/catalog/data/productsTest';
+import { singleproductTest } from '@/app/(pages)/catalog/data/singleProductTest';
+
 import {
   LateralFilters,
   MobileLateralFilters,
@@ -10,9 +13,12 @@ import {
   TopFilter,
 } from '@/app/ui/sections';
 
-import { OpenFilters, Title, SortingMenu } from '@/app/ui/components';
+import { OpenFilters, Title, SortingMenu, ModalDetail } from '@/app/ui/components';
 
-import { productsTest } from '@/app/(pages)/catalog/data/productsTest';
+
+
+
+
 
 const Catalog: FC = () => {
   return (
@@ -67,6 +73,7 @@ const Catalog: FC = () => {
           </section>
         </main>
       </div>
+      <ModalDetail singleTire={singleproductTest}/>
     </main>
   );
 };

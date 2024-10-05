@@ -15,3 +15,5 @@ export { default as CartButton } from './CartButton/CartButton';
 export { default as BenefitsItem } from './BenefitsItem/BenefitsItem';
 export { default as TerminologyItem } from './TerminologyItem/TerminologyItem';
 export { default as DetailsButton } from './DetailsButton/DetailsButton';
+export {default as ModalDetail} from './ModalDetail/ModalDetail'
+
