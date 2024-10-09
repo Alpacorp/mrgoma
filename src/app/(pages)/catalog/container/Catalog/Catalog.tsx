@@ -15,11 +15,6 @@ import {
 
 import { OpenFilters, Title, SortingMenu, ModalDetail } from '@/app/ui/components';
 
-
-
-
-
-
 const Catalog: FC = () => {
   return (
     <main className="bg-white">
