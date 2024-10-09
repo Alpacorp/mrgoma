@@ -11,9 +11,15 @@ import {
   MobileTopFilters,
   TireCard,
   TopFilter,
+  Pagination,
 } from '@/app/ui/sections';
 
-import { OpenFilters, Title, SortingMenu, ModalDetail } from '@/app/ui/components';
+import {
+  OpenFilters,
+  Title,
+  SortingMenu,
+  ModalDetail,
+} from '@/app/ui/components';
 
 const Catalog: FC = () => {
   return (
@@ -62,13 +68,16 @@ const Catalog: FC = () => {
                       </ul>
                     </div>
                   </div>
+                  <div className="flex justify-center mt-16">
+                    <Pagination />
+                  </div>
                 </div>
               </div>
             </div>
           </section>
         </main>
       </div>
-      <ModalDetail singleTire={singleproductTest}/>
+      <ModalDetail singleTire={singleproductTest} />
     </main>
   );
 };
