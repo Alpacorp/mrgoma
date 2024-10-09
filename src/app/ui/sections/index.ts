@@ -11,3 +11,4 @@ export { default as ProductCarousel } from './ProductCarousel/ProductCarousel';
 export { default as Terminology } from './Terminology/Terminology';
 export { default as Benefits } from './Benefits/Benefits';
 export { default as Footer } from './Footer/Footer';
+export {default as SearchBar} from './SearchBar/SearchBar'
