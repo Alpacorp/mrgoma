@@ -63,7 +63,8 @@ const Catalog: FC = () => {
                 <div className="mt-8 relative z-10">
                   <div className="bg-white">
                     <div className="mx-auto">
-                      <ul className="mt-3 grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-3 xl:gap-x-4">
+                      {/* <ul className="mt-3 grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-3 xl:gap-x-4"> */}
+                      <ul className="mt-3"> 
                         <TireCard products={productsTest} />
                       </ul>
                     </div>

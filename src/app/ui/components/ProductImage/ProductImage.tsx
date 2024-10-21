@@ -11,7 +11,7 @@ interface ProductImageProps {
 
 const ProductImage: FC<ProductImageProps> = ({ product }) => {
   return (
-    <div className="relative z-30 h-full w-full overflow-hidden rounded-t-lg">
+    <div className="relative z-30 h-full w-full overflow-hidden rounded-lg">
       <Image
         className={`w-full object-contain object-center transition duration-400 ease-in-out hover:scale-105 duration-300`}
         alt={product.imageAlt}

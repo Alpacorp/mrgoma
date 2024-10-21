@@ -14,11 +14,11 @@ const ProductItem: FC<ProductItemProps> = ({
   icon,
 }) => {
   return (
-    <div className="flex items-end gap-3">
+    <div className="flex gap-3 items-start">
       {icon}
       {children}
-      <p className="mt-1 text-gray-900 text-sm">
-        <span>{title}: </span>
+      <p className=" text-gray-900 text-xs md:text-sm ">
+        <span className='font-semibold'>{title}: </span>
         {product}
       </p>
     </div>

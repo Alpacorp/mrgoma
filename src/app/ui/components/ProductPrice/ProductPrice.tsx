@@ -6,7 +6,7 @@ interface ProductPriceProps {
 
 const ProductPrice: FC<ProductPriceProps> = ({ price }) => {
   return (
-    <p className="mt-1 text-green-primary font-semibold text-2xl">
+    <p className="mt-1 text-green-primary font-semibold text-2xl sm:text-3xl">
       {price}
     </p>
   );
