@@ -77,7 +77,7 @@ const TireCard: FC<TireCardProps> = ({
          
               </div>
 
-              <div className="xs:flex justify-between bg-gray-100 py-2  px-4 rounded-2xl">
+              <div className="xs:flex justify-between bg-gray-100 py-2 px-2 xs:px-4  rounded-xl xs:rounded-2xl">
                 {product.features.map((feature: any, index: number) => {
                   return (
                     <>
@@ -104,7 +104,7 @@ const TireCard: FC<TireCardProps> = ({
                   transition
                   className="origin-top transition duration-300 ease-out data-[closed]:-translate-y-6 data-[closed]:opacity-0 xs:flex  justify-between gap-6"
                 >
-                  <ul className="text-sm mt-2 ">
+                  <ul className="text-sm mt-2 w-full">
                     {product.features.map((feature: any, index: number) => {
                       return (
                         <>
@@ -120,7 +120,7 @@ const TireCard: FC<TireCardProps> = ({
                       );
                     })}
                   </ul>
-                  <ul className="text-sm mt-2">
+                  <ul className="text-sm xs:mt-2 w-full">
                     {product.features.map((feature: any, index: number) => {
                       return (
                         <>
