@@ -39,6 +39,7 @@ const config: Config = {
     require('@tailwindcss/forms'),
     require('@tailwindcss/aspect-ratio'),
     require('@tailwindcss/typography'),
+    require('@headlessui/tailwindcss')
   ],
 };
 export default config;
