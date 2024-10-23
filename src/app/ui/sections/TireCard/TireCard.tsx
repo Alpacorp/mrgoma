@@ -4,6 +4,7 @@ import { ShowDetailModalContext } from '@/app/context/ShowDetailModal';
 
 import {
   ArrowDownOnSquareIcon,
+  ChevronRightIcon,
   ClockIcon,
   WrenchIcon,
 } from '@heroicons/react/24/outline';
@@ -24,7 +25,7 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from '@headlessui/react';
-import { ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import { ChevronDownIcon } from '@heroicons/react/20/solid';
 
 interface TireCardProps {
   products: any;
@@ -71,10 +72,9 @@ const TireCard: FC<TireCardProps> = ({
                     />
                   )}
                 </div>
-                <div className='w-full xs:w-auto mt-4 mb-1.5 xs:mt-0'>
+                <div className="w-full xs:w-auto mt-4 mb-1.5 xs:mt-0">
                   <CtaButton product={product} text="View Tire" />
                 </div>
-         
               </div>
 
               <div className="xs:flex justify-between bg-gray-100 py-2 px-2 xs:px-4  rounded-xl xs:rounded-2xl">
@@ -93,16 +93,17 @@ const TireCard: FC<TireCardProps> = ({
                 })}
               </div>
               <Disclosure>
+               
                 <DisclosureButton
                   data-open
-                  className="group flex items-center gap-2  w-full mt-4 text-sm justify-between font-bold"
+                  className="group flex items-center gap-2  w-full mt-4 text-sm justify-between font-bold "
                 >
                   More details
-                  <ChevronUpDownIcon className="w-5 h-5" />
+                  <ChevronDownIcon className="w-5 h-5 ui-open:rotate-180 ui-open:transform" />
                 </DisclosureButton>
                 <DisclosurePanel
                   transition
-                  className="origin-top transition duration-300 ease-out data-[closed]:-translate-y-6 data-[closed]:opacity-0 xs:flex  justify-between gap-6"
+                  className="origin-top xs:flex  justify-between gap-6"
                 >
                   <ul className="text-sm mt-2 w-full">
                     {product.features.map((feature: any, index: number) => {
