@@ -59,7 +59,6 @@ const TireCard: FC<TireCardProps> = ({
                 weight="bold"
                 name={product.name}
               />
-
               <div className="flex  flex-wrap xs:flex-nowrap mb-4 mt-4 items-center justify-between">
                 <div className="flex">
                   <ProductPrice price={product.price} />
@@ -76,12 +75,11 @@ const TireCard: FC<TireCardProps> = ({
                   <CtaButton product={product} text="View Tire" />
                 </div>
               </div>
-
               <div className="xs:flex justify-between bg-gray-100 py-2 px-2 xs:px-4  rounded-xl xs:rounded-2xl">
                 {product.features.map((feature: any, index: number) => {
                   return (
                     <>
-                      {index <= 2 && (
+                      {index <= 3 && (
                         <ProductItem
                           product={feature.value}
                           title={feature.name}
@@ -93,7 +91,6 @@ const TireCard: FC<TireCardProps> = ({
                 })}
               </div>
               <Disclosure>
-               
                 <DisclosureButton
                   data-open
                   className="group flex items-center gap-2  w-full mt-4 text-sm justify-between font-bold "
