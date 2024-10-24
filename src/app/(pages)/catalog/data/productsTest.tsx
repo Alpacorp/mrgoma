@@ -20,51 +20,56 @@ export const productsTest = [
     condition: 'new',
     features: [
       {
-        name: "Patched",
+        name: 'Patched',
         value: 'No',
         icon: <WrenchIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name:"Remaining life", 
+        name: 'Remaining life',
         value: '90%',
         icon: <ClockIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name: "Tread depth",
+        name: 'Tread depth',
         value: '10.0/32',
-        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18}/>,
+        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name: "Section width",
+        name: 'Run Flat',
+        value: 'No',
+        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18} />,
+      },
+      {
+        name: 'Section width',
         value: '255',
-        icon: ""
+        icon: '',
       },
       {
-        name: " Aspect ratio",
+        name: ' Aspect ratio',
         value: '55',
-        icon: ""
+        icon: '',
       },
       {
-        name: "Rim diameter",
+        name: 'Rim diameter',
         value: '20',
-        icon: ""
+        icon: '',
       },
       {
-        name: "Speed index",
+        name: 'Speed index',
         value: '22',
-        icon: ""
+        icon: '',
       },
       {
-        name: "Dot",
+        name: 'Dot',
         value: '0220',
-        icon: ""
+        icon: '',
       },
       {
-        name: " Product number",
+        name: ' Product number',
         value: '5446551',
-        icon: ""
+        icon: '',
       },
-    ] 
+    ],
   },
   {
     id: 2,
@@ -81,52 +86,56 @@ export const productsTest = [
     condition: 'used',
     features: [
       {
-        name: "Patched",
+        name: 'Patched',
         value: 'No',
         icon: <WrenchIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name:"Remaining life", 
+        name: 'Remaining life',
         value: '90%',
         icon: <ClockIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name: "Tread depth",
+        name: 'Tread depth',
         value: '10.0/32',
-        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18}/>,
+        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name: "Section width",
+        name: 'Run Flat',
+        value: 'Yes',
+        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18} />,
+      },
+      {
+        name: 'Section width',
         value: '255',
-        icon: ""
+        icon: '',
       },
       {
-        name: " Aspect ratio",
+        name: ' Aspect ratio',
         value: '55',
-        icon: ""
+        icon: '',
       },
       {
-        name: "Rim diameter",
+        name: 'Rim diameter',
         value: '20',
-        icon: ""
+        icon: '',
       },
       {
-        name: "Speed index",
+        name: 'Speed index',
         value: '22',
-        icon: ""
+        icon: '',
       },
       {
-        name: "Dot",
+        name: 'Dot',
         value: '0220',
-        icon: ""
+        icon: '',
       },
       {
-        name: " Product number",
+        name: ' Product number',
         value: '5446551',
-        icon: ""
+        icon: '',
       },
-    ] 
-
+    ],
   },
   {
     id: 3,
@@ -143,53 +152,56 @@ export const productsTest = [
     condition: 'new',
     features: [
       {
-        name: "Patched",
+        name: 'Patched',
         value: 'No',
         icon: <WrenchIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name:"Remaining life", 
+        name: 'Remaining life',
         value: '90%',
         icon: <ClockIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name: "Tread depth",
+        name: 'Tread depth',
         value: '10.0/32',
-        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18}/>,
+        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name: "Section width",
+        name: 'Run Flat',
+        value: 'No',
+        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18} />,
+      },
+      {
+        name: 'Section width',
         value: '255',
-        icon: ""
+        icon: '',
       },
       {
-        name: " Aspect ratio",
+        name: ' Aspect ratio',
         value: '55',
-        icon: ""
+        icon: '',
       },
       {
-        name: "Rim diameter",
+        name: 'Rim diameter',
         value: '20',
-        icon: ""
+        icon: '',
       },
       {
-        name: "Speed index",
+        name: 'Speed index',
         value: '22',
-        icon: ""
+        icon: '',
       },
       {
-        name: "Dot",
+        name: 'Dot',
         value: '0220',
-        icon: ""
+        icon: '',
       },
       {
-        name: " Product number",
+        name: ' Product number',
         value: '5446551',
-        icon: ""
+        icon: '',
       },
-   
-   
-    ] 
+    ],
   },
   {
     id: 4,
@@ -206,53 +218,56 @@ export const productsTest = [
     condition: 'new',
     features: [
       {
-        name: "Patched",
+        name: 'Patched',
         value: 'No',
         icon: <WrenchIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name:"Remaining life", 
+        name: 'Remaining life',
         value: '90%',
         icon: <ClockIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name: "Tread depth",
+        name: 'Tread depth',
         value: '10.0/32',
-        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18}/>,
+        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name: "Section width",
+        name: 'Run Flat',
+        value: 'No',
+        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18} />,
+      },
+      {
+        name: 'Section width',
         value: '255',
-        icon: ""
+        icon: '',
       },
       {
-        name: " Aspect ratio",
+        name: ' Aspect ratio',
         value: '55',
-        icon: ""
+        icon: '',
       },
       {
-        name: "Rim diameter",
+        name: 'Rim diameter',
         value: '20',
-        icon: ""
+        icon: '',
       },
       {
-        name: "speed index",
+        name: 'speed index',
         value: '22',
-        icon: ""
+        icon: '',
       },
       {
-        name: "Dot",
+        name: 'Dot',
         value: '0220',
-        icon: ""
+        icon: '',
       },
       {
-        name: " Product number",
+        name: ' Product number',
         value: '5446551',
-        icon: ""
+        icon: '',
       },
-   
-   
-    ] 
+    ],
   },
   {
     id: 5,
@@ -269,51 +284,56 @@ export const productsTest = [
     condition: 'new',
     features: [
       {
-        name: "Patched",
+        name: 'Patched',
         value: 'No',
         icon: <WrenchIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name:"Remaining life", 
+        name: 'Remaining life',
         value: '90%',
         icon: <ClockIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name: "Tread depth",
+        name: 'Tread depth',
         value: '10.0/32',
-        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18}/>,
+        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name: "Section width",
+        name: 'Run Flat',
+        value: 'No',
+        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18} />,
+      },
+      {
+        name: 'Section width',
         value: '255',
-        icon: ""
+        icon: '',
       },
       {
-        name: " Aspect ratio",
+        name: ' Aspect ratio',
         value: '55',
-        icon: ""
+        icon: '',
       },
       {
-        name: "Rim diameter",
+        name: 'Rim diameter',
         value: '20',
-        icon: ""
+        icon: '',
       },
       {
-        name: "speed index",
+        name: 'speed index',
         value: '22',
-        icon: ""
+        icon: '',
       },
       {
-        name: "Dot",
+        name: 'Dot',
         value: '0220',
-        icon: ""
+        icon: '',
       },
       {
-        name: " Product number",
+        name: ' Product number',
         value: '5446551',
-        icon: ""
+        icon: '',
       },
-    ] 
+    ],
   },
   {
     id: 6,
@@ -330,51 +350,56 @@ export const productsTest = [
     condition: 'used',
     features: [
       {
-        name: "Patched",
+        name: 'Patched',
         value: 'No',
         icon: <WrenchIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name:"Remaining life", 
+        name: 'Remaining life',
         value: '90%',
         icon: <ClockIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name: "Tread depth",
+        name: 'Tread depth',
         value: '10.0/32',
-        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18}/>,
+        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name: "Section width",
+        name: 'Run Flat',
+        value: 'Yes',
+        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18} />,
+      },
+      {
+        name: 'Section width',
         value: '255',
-        icon: ""
+        icon: '',
       },
       {
-        name: " Aspect ratio",
+        name: ' Aspect ratio',
         value: '55',
-        icon: ""
+        icon: '',
       },
       {
-        name: "Rim diameter",
+        name: 'Rim diameter',
         value: '20',
-        icon: ""
+        icon: '',
       },
       {
-        name: "speed index",
+        name: 'speed index',
         value: '22',
-        icon: ""
+        icon: '',
       },
       {
-        name: "Dot",
+        name: 'Dot',
         value: '0220',
-        icon: ""
+        icon: '',
       },
       {
-        name: " Product number",
+        name: ' Product number',
         value: '5446551',
-        icon: ""
+        icon: '',
       },
-    ] 
+    ],
   },
   {
     id: 7,
@@ -391,51 +416,56 @@ export const productsTest = [
     condition: 'new',
     features: [
       {
-        name: "Patched",
+        name: 'Patched',
         value: 'No',
         icon: <WrenchIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name:"Remaining life", 
+        name: 'Remaining life',
         value: '90%',
         icon: <ClockIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name: "Tread depth",
+        name: 'Tread depth',
         value: '10.0/32',
-        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18}/>,
+        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name: "Section width",
+        name: 'Run Flat',
+        value: 'Yes',
+        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18} />,
+      },
+      {
+        name: 'Section width',
         value: '255',
-        icon: ""
+        icon: '',
       },
       {
-        name: " Aspect ratio",
+        name: ' Aspect ratio',
         value: '55',
-        icon: ""
+        icon: '',
       },
       {
-        name: "Rim diameter",
+        name: 'Rim diameter',
         value: '20',
-        icon: ""
+        icon: '',
       },
       {
-        name: "speed index",
+        name: 'speed index',
         value: '22',
-        icon: ""
+        icon: '',
       },
       {
-        name: "Dot",
+        name: 'Dot',
         value: '0220',
-        icon: ""
+        icon: '',
       },
       {
-        name: " Product number",
+        name: ' Product number',
         value: '5446551',
-        icon: ""
+        icon: '',
       },
-    ] 
+    ],
   },
   {
     id: 8,
@@ -452,50 +482,55 @@ export const productsTest = [
     condition: 'new',
     features: [
       {
-        name: "Patched",
+        name: 'Patched',
         value: 'No',
         icon: <WrenchIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name:"Remaining life", 
+        name: 'Remaining life',
         value: '90%',
         icon: <ClockIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name: "Tread depth",
+        name: 'Tread depth',
         value: '10.0/32',
-        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18}/>,
+        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18} />,
       },
       {
-        name: "Section width",
+        name: 'Run Flat',
+        value: 'No',
+        icon: <ArrowDownOnSquareIcon color="#8F8F8F" width={18} height={18} />,
+      },
+      {
+        name: 'Section width',
         value: '255',
-        icon: ""
+        icon: '',
       },
       {
-        name: " Aspect ratio",
+        name: ' Aspect ratio',
         value: '55',
-        icon: ""
+        icon: '',
       },
       {
-        name: "Rim diameter",
+        name: 'Rim diameter',
         value: '20',
-        icon: ""
+        icon: '',
       },
       {
-        name: "speed index",
+        name: 'speed index',
         value: '22',
-        icon: ""
+        icon: '',
       },
       {
-        name: "Dot",
+        name: 'Dot',
         value: '0220',
-        icon: ""
+        icon: '',
       },
       {
-        name: " Product number",
+        name: ' Product number',
         value: '5446551',
-        icon: ""
+        icon: '',
       },
-    ] 
+    ],
   },
 ];
