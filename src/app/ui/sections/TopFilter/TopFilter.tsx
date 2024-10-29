@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 import {
   Label,
@@ -10,7 +11,13 @@ import {
   ListboxOptions,
 } from '@headlessui/react';
 
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react';
+
+import {
+  CheckIcon,
+  ChevronUpDownIcon,
+  QuestionMarkCircleIcon,
+} from '@heroicons/react/20/solid';
 
 const section = [
   { id: 1, name: 4.8 },
@@ -55,15 +62,42 @@ function TopFilter() {
           <Label className="block text-xs font-medium leading-6 text-gray-900">
             Width/Height
           </Label>
-          <ListboxButton className="text-sm hover:ring-2 hover:ring-green-primary relative w-full cursor-default rounded-md bg-white py-2.5 pl-3 pr-10 text-left text-gray-900  ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-primary sm:text-sm sm:leading-6">
-            <span className="block truncate">{sectionSelected.name}</span>
-            <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-              <ChevronUpDownIcon
-                aria-hidden="true"
-                className="h-5 w-5 text-green-primary"
-              />
-            </span>
-          </ListboxButton>
+          <div className="flex items-start">
+            <ListboxButton className="text-sm hover:ring-2 hover:ring-green-primary relative w-full cursor-default rounded-md bg-white py-2.5 pl-3 pr-10 text-left text-gray-900  ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-primary sm:text-sm sm:leading-6">
+              <span className="block truncate">{sectionSelected.name}</span>
+              <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                <ChevronUpDownIcon
+                  aria-hidden="true"
+                  className="h-5 w-5 text-green-primary"
+                />
+              </span>
+            </ListboxButton>
+
+            <Popover className="relative z-50">
+              <PopoverButton>
+                <QuestionMarkCircleIcon className="text-xs w-5 ml-1.5 text-gray-700" />
+              </PopoverButton>
+              <PopoverPanel
+                anchor="bottom"
+                className="flex flex-col z-50 bg-white p-5 ml-[100px] border shadow-sm rounded-xl"
+              >
+                <div className='w-44'>
+                <Image
+                  className={`w-full object-contain object-center transition duration-400 ease-in-out hover:scale-105 duration-300`}
+                  alt=""
+                  src="/assets/images/tireReference.PNG"
+                  title=""
+                  aria-label="D"
+                  priority
+                  width={500}
+                  height={500}
+                />
+                </div>
+                
+              </PopoverPanel>
+            </Popover>
+          </div>
+
           <ListboxOptions
             transition
             className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none data-[closed]:data-[leave]:opacity-0 data-[leave]:transition data-[leave]:duration-100 data-[leave]:ease-in sm:text-sm"

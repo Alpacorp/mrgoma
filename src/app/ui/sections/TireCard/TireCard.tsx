@@ -34,7 +34,7 @@ interface TireCardProps {
 const TireCard: FC<TireCardProps> = ({
   products,
 }: Readonly<{ products: any }>) => {
-  console.log('products', products);
+
   const { setShowDetailModal } = useContext(ShowDetailModalContext);
 
   return (
