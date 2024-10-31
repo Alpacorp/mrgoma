@@ -60,7 +60,7 @@ function TopFilter() {
           <Listbox value={sectionSelected} onChange={setSectionSelected}>
             <div className="relative col-span-12 sm:col-span-4">
               <Label className="block text-xs font-medium leading-6 text-gray-900">
-                Width/Height
+                Width
               </Label>
               <div className="flex items-start">
                 <ListboxButton className="text-sm hover:ring-2 hover:ring-green-primary relative w-full cursor-default rounded-md bg-white py-2.5 pl-3 pr-10 text-left text-gray-900  ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-primary sm:text-sm sm:leading-6">
@@ -87,7 +87,6 @@ function TopFilter() {
                     <span className="block truncate font-normal group-data-[selected]:font-semibold">
                       {section.name}
                     </span>
-
                     <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-green-primary group-data-[focus]:text-white [.group:not([data-selected])_&]:hidden">
                       <CheckIcon aria-hidden="true" className="h-5 w-5" />
                     </span>
@@ -102,7 +101,7 @@ function TopFilter() {
           >
             <div className="relative col-span-12 sm:col-span-4">
               <Label className="block text-xs font-medium leading-6 text-gray-900">
-                Aspect Ratio / Width
+                Sidewall
               </Label>
               <ListboxButton className="text-sm hover:ring-2 hover:ring-green-primary relative w-full cursor-default rounded-md bg-white py-2.5 pl-3 pr-10 text-left text-gray-900 ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-primary sm:text-sm sm:leading-6">
                 <span className="block truncate">
@@ -144,7 +143,7 @@ function TopFilter() {
           >
             <div className="relative col-span-12 sm:col-span-4">
               <Label className="block text-xs font-medium leading-6 text-gray-900">
-                Wheel Diameter
+                Diameter
               </Label>
               <ListboxButton className="text-sm hover:ring-2 hover:ring-green-primary relative w-full cursor-default rounded-md bg-white py-2.5 pl-3 pr-10 text-left text-gray-900 ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-primary sm:text-sm sm:leading-6">
                 <span className="block truncate">
