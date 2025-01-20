@@ -1,25 +1,18 @@
-import { FC, useContext } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-
 import { Dialog, DialogPanel } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-
-import { menuItems } from '@/app/ui/sections/Header/MenuItems';
+import Image from 'next/image';
+import Link from 'next/link';
+import { FC, useContext } from 'react';
 
 import { mrGomaLogo } from '#public/assets/images/Logo';
-
 import { ShowMenuContext } from '@/app/context/ShowMenuContext';
+import { menuItems } from '@/app/ui/sections/Header/MenuItems';
 
 const MenuMobile: FC = () => {
   const { showMenu, setShowMenu } = useContext(ShowMenuContext);
 
   return (
-    <Dialog
-      open={showMenu}
-      onClose={() => setShowMenu(false)}
-      className="lg:hidden border-4"
-    >
+    <Dialog open={showMenu} onClose={() => setShowMenu(false)} className="lg:hidden border-4">
       <div className="fixed inset-0 z-10" />
       <DialogPanel className="fixed inset-y-0 left-0 z-50 w-80 overflow-y-auto bg-white px-6 py-6 sm:w-sm sm:ring-1 sm:ring-gray-900/10 shadow-xl">
         <div className="flex items-center justify-between">
@@ -44,7 +37,7 @@ const MenuMobile: FC = () => {
         <div className="mt-6 flow-root">
           <div className="-my-6 divide-y divide-gray-500/10">
             <div className="space-y-2 py-6">
-              {menuItems.map((item) => (
+              {menuItems.map(item => (
                 <Link
                   key={item.name}
                   href={item.href}

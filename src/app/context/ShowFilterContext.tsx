@@ -12,21 +12,10 @@ export const ShowFilterContext = createContext<FilterContextType>({
   setShowFilter: (value: boolean) => {},
 });
 
-export const FiltersProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const FiltersProvider = ({ children }: { children: React.ReactNode }) => {
   const [showFilter, setShowFilter] = useState<boolean>(false);
 
-  const contextValue = useMemo(
-    () => ({ showFilter, setShowFilter }),
-    [showFilter, setShowFilter]
-  );
+  const contextValue = useMemo(() => ({ showFilter, setShowFilter }), [showFilter, setShowFilter]);
 
-  return (
-    <ShowFilterContext.Provider value={contextValue}>
-      {children}
-    </ShowFilterContext.Provider>
-  );
+  return <ShowFilterContext.Provider value={contextValue}>{children}</ShowFilterContext.Provider>;
 };

@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
-import { TireInformationProps } from '@/app/interfaces/tires';
 
+import { TireInformationProps } from '@/app/interfaces/tires';
 import {
   ProductName,
   ProductPrice,
@@ -15,12 +15,7 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
       <div className="flex justify-between">
         <div>
           <div className="mb-3">
-            <ProductName
-              type={1}
-              size="3xl"
-              weight="bold"
-              name={singleTire.name}
-            />
+            <ProductName type={1} size="3xl" weight="bold" name={singleTire.name} />
           </div>
           <div className="mt-3">
             <h2 className="sr-only">Product information</h2>

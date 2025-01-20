@@ -1,6 +1,5 @@
-import { FC, useContext } from 'react';
-
 import { FunnelIcon } from '@heroicons/react/20/solid';
+import { FC, useContext } from 'react';
 
 import { ShowFilterContext } from '@/app/context/ShowFilterContext';
 

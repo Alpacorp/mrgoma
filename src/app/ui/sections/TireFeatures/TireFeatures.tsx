@@ -1,16 +1,8 @@
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
+import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
 import React, { FC } from 'react';
 
-import {
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
-} from '@headlessui/react';
-import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
-
-import {
-  TireInformationProps,
-  SingleTireDetails,
-} from '@/app/interfaces/tires';
+import { TireInformationProps, SingleTireDetails } from '@/app/interfaces/tires';
 
 const TireFeatures: FC<TireInformationProps> = ({ singleTire }) => {
   return (

@@ -4,7 +4,7 @@ import { FC } from 'react';
 
 import { productsTest } from '@/app/(pages)/catalog/data/productsTest';
 import { singleproductTest } from '@/app/(pages)/catalog/data/singleProductTest';
-
+import { OpenFilters, Title, SortingMenu, ModalDetail, SearchTabs } from '@/app/ui/components';
 import {
   LateralFilters,
   MobileLateralFilters,
@@ -13,13 +13,6 @@ import {
   TopFilter,
   Pagination,
 } from '@/app/ui/sections';
-
-import {
-  OpenFilters,
-  Title,
-  SortingMenu,
-  ModalDetail,
-} from '@/app/ui/components';
 
 const Catalog: FC = () => {
   return (
@@ -39,7 +32,7 @@ const Catalog: FC = () => {
               </div>
               <div className="lg:col-span-3">
                 <div className="hidden sm:block sticky top-0 z-40 bg-gray-100 p-2 rounded-lg shadow-lg">
-                  <TopFilter />
+                  <SearchTabs />
                 </div>
                 <div className="sticky block sm:hidden top-0 z-40 bg-white rounded-b-lg shadow-md my-4">
                   <MobileTopFilters>

@@ -1,10 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import type { DocumentRecord } from '@/app/api/tires/route';
-import { TiresData } from '@/app/interfaces/tires';
 
+import type { DocumentRecord } from '@/app/api/tires/route';
 import { useGenerateFixedPagination } from '@/app/hooks/useGeneratePagination';
+import { TiresData } from '@/app/interfaces/tires';
 import CardTest from '@/app/ui/components/CardTest/CardTest';
 
 export default function TestPage() {
@@ -21,9 +21,7 @@ export default function TestPage() {
     async (page: number) => {
       setLoading(true);
       try {
-        const response = await fetch(
-          `/api/tires?page=${page}&pageSize=${pageSize}`
-        );
+        const response = await fetch(`/api/tires?page=${page}&pageSize=${pageSize}`);
         const data = await response.json();
         setRecords(data);
       } catch (error: any) {
@@ -40,18 +38,16 @@ export default function TestPage() {
   }, [getTires, page]);
 
   const handleNextPage = () => {
-    setPage((prevPage) => prevPage + 1);
+    setPage(prevPage => prevPage + 1);
   };
 
   const handlePreviousPage = () => {
     if (page > 1) {
-      setPage((prevPage) => prevPage - 1);
+      setPage(prevPage => prevPage - 1);
     }
   };
 
-  const handlePageSizeChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
+  const handlePageSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newPageSize = parseInt(event.target.value, 10);
 
     // Calcular la nueva página basada en la posición actual
@@ -74,15 +70,9 @@ export default function TestPage() {
     setPage(totalPages);
   };
 
-  const pagination = useGenerateFixedPagination(
-    page,
-    totalPages,
-    maxVisiblePages
-  );
+  const pagination = useGenerateFixedPagination(page, totalPages, maxVisiblePages);
 
-  const availablePageSizes = [10, 20, 50].filter(
-    (size) => size <= totalRecords
-  );
+  const availablePageSizes = [10, 20, 50].filter(size => size <= totalRecords);
 
   return (
     <main className="flex min-h-screen flex-col items-center xl:p-24 lg:p-24 md:p-2 sm:p-2 bg-black">
@@ -170,7 +160,7 @@ export default function TestPage() {
                 onChange={handlePageSizeChange}
                 className="px-4 py-2 bg-gray-700 rounded"
               >
-                {availablePageSizes.map((size) => (
+                {availablePageSizes.map(size => (
                   <option key={size} value={size}>
                     {size}
                   </option>

@@ -15,14 +15,7 @@ export const ShowMenuContext = createContext<MenuContextType>({
 export const MenuProvider = ({ children }: { children: React.ReactNode }) => {
   const [showMenu, setShowMenu] = useState<boolean>(false);
 
-  const contextValue = useMemo(
-    () => ({ showMenu, setShowMenu }),
-    [showMenu, setShowMenu]
-  );
+  const contextValue = useMemo(() => ({ showMenu, setShowMenu }), [showMenu, setShowMenu]);
 
-  return (
-    <ShowMenuContext.Provider value={contextValue}>
-      {children}
-    </ShowMenuContext.Provider>
-  );
+  return <ShowMenuContext.Provider value={contextValue}>{children}</ShowMenuContext.Provider>;
 };

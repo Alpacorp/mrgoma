@@ -1,5 +1,5 @@
-import React, { FC } from 'react';
 import Image from 'next/image';
+import React, { FC } from 'react';
 
 interface ProductImageProps {
   product: {
@@ -10,10 +10,7 @@ interface ProductImageProps {
   isHovered?: boolean;
 }
 
-const ProductCarouselMiniature: FC<ProductImageProps> = ({
-  product,
-  isHovered,
-}) => {
+const ProductCarouselMiniature: FC<ProductImageProps> = ({ product, isHovered }) => {
   return (
     <div className="relative z-20 h-full w-full overflow-hidden rounded-lg">
       <Image

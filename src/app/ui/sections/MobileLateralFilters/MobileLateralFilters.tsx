@@ -1,5 +1,3 @@
-import React, { useContext } from 'react';
-
 import {
   Dialog,
   DialogBackdrop,
@@ -8,9 +6,9 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from '@headlessui/react';
-
 import { MinusIcon, PlusIcon } from '@heroicons/react/20/solid';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import React, { useContext } from 'react';
 
 import { ShowFilterContext } from '@/app/context/ShowFilterContext';
 import { SearchBar } from '@/app/ui/sections';
@@ -37,9 +35,7 @@ function MobileLateralFilters() {
           className="relative ml-auto flex h-full w-full max-w-xs transform flex-col overflow-y-auto bg-white py-4 pb-12 shadow-xl transition duration-300 ease-in-out data-[closed]:translate-x-full"
         >
           <div className="flex items-center justify-between px-4">
-            <h2 className="text-lg font-medium text-gray-900">
-              Additional Filters
-            </h2>
+            <h2 className="text-lg font-medium text-gray-900">Additional Filters</h2>
             <button
               type="button"
               onClick={() => setShowFilter(false)}
@@ -59,10 +55,7 @@ function MobileLateralFilters() {
                 <DisclosureButton className="group flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
                   <span className="font-medium text-gray-900">Price</span>
                   <span className="ml-6 flex items-center text-green-primary">
-                    <PlusIcon
-                      aria-hidden="true"
-                      className="h-5 w-5 group-data-[open]:hidden"
-                    />
+                    <PlusIcon aria-hidden="true" className="h-5 w-5 group-data-[open]:hidden" />
                     <MinusIcon
                       aria-hidden="true"
                       className="h-5 w-5 [.group:not([data-open])_&]:hidden"
@@ -98,10 +91,7 @@ function MobileLateralFilters() {
                 <DisclosureButton className="group flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
                   <span className="font-medium text-gray-900">Tread Depth</span>
                   <span className="ml-6 flex items-center text-green-primary">
-                    <PlusIcon
-                      aria-hidden="true"
-                      className="h-5 w-5 group-data-[open]:hidden"
-                    />
+                    <PlusIcon aria-hidden="true" className="h-5 w-5 group-data-[open]:hidden" />
                     <MinusIcon
                       aria-hidden="true"
                       className="h-5 w-5 [.group:not([data-open])_&]:hidden"
@@ -135,14 +125,9 @@ function MobileLateralFilters() {
             >
               <h3 className="-my-3 flow-root">
                 <DisclosureButton className="group flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
-                  <span className="font-medium text-gray-900">
-                    Remaining life
-                  </span>
+                  <span className="font-medium text-gray-900">Remaining life</span>
                   <span className="ml-6 flex items-center text-green-primary">
-                    <PlusIcon
-                      aria-hidden="true"
-                      className="h-5 w-5 group-data-[open]:hidden"
-                    />
+                    <PlusIcon aria-hidden="true" className="h-5 w-5 group-data-[open]:hidden" />
                     <MinusIcon
                       aria-hidden="true"
                       className="h-5 w-5 [.group:not([data-open])_&]:hidden"
@@ -152,10 +137,7 @@ function MobileLateralFilters() {
               </h3>
               <DisclosurePanel className="pt-6">
                 <div className="space-y-4">
-                  <label
-                    htmlFor="remainingLife"
-                    className="text-sm text-gray-600"
-                  >
+                  <label htmlFor="remainingLife" className="text-sm text-gray-600">
                     0% - {rangeInputs.remainingLife}%
                   </label>
                   <input
@@ -171,22 +153,13 @@ function MobileLateralFilters() {
                 </div>
               </DisclosurePanel>
             </Disclosure>
-            {lateralItems.map((section) => (
-              <Disclosure
-                key={section.id}
-                as="div"
-                className="border-t border-gray-200 px-4 py-6"
-              >
+            {lateralItems.map(section => (
+              <Disclosure key={section.id} as="div" className="border-t border-gray-200 px-4 py-6">
                 <h3 className="-mx-2 -my-3 flow-root">
                   <DisclosureButton className="group flex w-full items-center justify-between bg-white px-2 py-3 text-green-primary">
-                    <span className="font-medium text-gray-900 text-sm">
-                      {section.name}
-                    </span>
+                    <span className="font-medium text-gray-900 text-sm">{section.name}</span>
                     <span className="ml-6 flex items-center">
-                      <PlusIcon
-                        aria-hidden="true"
-                        className="h-5 w-5 group-data-[open]:hidden"
-                      />
+                      <PlusIcon aria-hidden="true" className="h-5 w-5 group-data-[open]:hidden" />
                       <MinusIcon
                         aria-hidden="true"
                         className="h-5 w-5 [.group:not([data-open])_&]:hidden"
@@ -228,14 +201,9 @@ function MobileLateralFilters() {
             >
               <h3 className="-my-3 flow-root">
                 <DisclosureButton className="group flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
-                  <span className="font-medium text-gray-900">
-                    Search by text
-                  </span>
+                  <span className="font-medium text-gray-900">Search by text</span>
                   <span className="ml-6 flex items-center text-green-primary">
-                    <PlusIcon
-                      aria-hidden="true"
-                      className="h-5 w-5 group-data-[open]:hidden"
-                    />
+                    <PlusIcon aria-hidden="true" className="h-5 w-5 group-data-[open]:hidden" />
                     <MinusIcon
                       aria-hidden="true"
                       className="h-5 w-5 [.group:not([data-open])_&]:hidden"

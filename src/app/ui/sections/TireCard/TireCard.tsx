@@ -1,14 +1,15 @@
-import React, { FC, useContext } from 'react';
-import Link from 'next/link';
-import { ShowDetailModalContext } from '@/app/context/ShowDetailModal';
-
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
+import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import {
   ArrowDownOnSquareIcon,
   ChevronRightIcon,
   ClockIcon,
   WrenchIcon,
 } from '@heroicons/react/24/outline';
+import Link from 'next/link';
+import React, { FC, useContext } from 'react';
 
+import { ShowDetailModalContext } from '@/app/context/ShowDetailModal';
 import {
   BrandImage,
   CtaButton,
@@ -20,21 +21,11 @@ import {
   ProductPrice,
 } from '@/app/ui/components';
 
-import {
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
-} from '@headlessui/react';
-import { ChevronDownIcon } from '@heroicons/react/20/solid';
-
 interface TireCardProps {
   products: any;
 }
 
-const TireCard: FC<TireCardProps> = ({
-  products,
-}: Readonly<{ products: any }>) => {
-
+const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) => {
   const { setShowDetailModal } = useContext(ShowDetailModalContext);
 
   return (
@@ -53,12 +44,7 @@ const TireCard: FC<TireCardProps> = ({
             </div>
 
             <div className="col-span-12 md:col-span-8">
-              <ProductName
-                type={1}
-                size="lg"
-                weight="bold"
-                name={product.name}
-              />
+              <ProductName type={1} size="lg" weight="bold" name={product.name} />
               <div className="flex  flex-wrap xs:flex-nowrap mb-4 mt-4 items-center justify-between">
                 <div className="flex">
                   <ProductPrice price={product.price} />
@@ -98,20 +84,14 @@ const TireCard: FC<TireCardProps> = ({
                   More details
                   <ChevronDownIcon className="w-5 h-5 ui-open:rotate-180 ui-open:transform" />
                 </DisclosureButton>
-                <DisclosurePanel
-                  transition
-                  className="origin-top xs:flex  justify-between gap-6"
-                >
+                <DisclosurePanel transition className="origin-top xs:flex  justify-between gap-6">
                   <ul className="text-sm mt-2 w-full">
                     {product.features.map((feature: any, index: number) => {
                       return (
                         <>
                           {index > 2 && index <= 5 && (
                             <li className="flex justify-between text-xs sm:text-sm">
-                              <span className="font-semibold">
-                                {feature.name}:
-                              </span>{' '}
-                              {feature.value}
+                              <span className="font-semibold">{feature.name}:</span> {feature.value}
                             </li>
                           )}
                         </>
@@ -124,10 +104,7 @@ const TireCard: FC<TireCardProps> = ({
                         <>
                           {index > 5 && index <= 8 && (
                             <li className="flex justify-between text-xs sm:text-sm">
-                              <span className="font-semibold">
-                                {feature.name}:
-                              </span>{' '}
-                              {feature.value}
+                              <span className="font-semibold">{feature.name}:</span> {feature.value}
                             </li>
                           )}
                         </>

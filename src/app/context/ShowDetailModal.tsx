@@ -8,15 +8,15 @@ interface DetailModalContextType {
 }
 
 export const ShowDetailModalContext = createContext<DetailModalContextType>({
- showDetailModal: false,
- setShowDetailModal: (value: boolean) => {},
+  showDetailModal: false,
+  setShowDetailModal: (value: boolean) => {},
 });
 
 export const DetailModalProvider = ({ children }: { children: React.ReactNode }) => {
-
   const [showDetailModal, setShowDetailModal] = useState<boolean>(false);
 
-  const contextValue = useMemo(() => ({ showDetailModal, setShowDetailModal }),
+  const contextValue = useMemo(
+    () => ({ showDetailModal, setShowDetailModal }),
     [showDetailModal, setShowDetailModal]
   );
 

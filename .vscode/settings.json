@@ -10,13 +10,7 @@
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "eslint.validate": [
-    "html",
-    "javascript",
-    "typescript",
-    "javascriptreact",
-    "typescriptreact"
-  ],
+  "eslint.validate": ["html", "javascript", "typescript", "javascriptreact", "typescriptreact"],
   "[ignore]": {
     "editor.defaultFormatter": "foxundermoon.shell-format"
   },
