@@ -1,5 +1,6 @@
 import { config as dotenvConfig } from 'dotenv';
 import { ConnectionPool, config as SqlConfig } from 'mssql';
+
 import { DB_NAME, DB_PASSWORD, DB_USER, SERVER_URL } from '@config/constants';
 
 dotenvConfig();
@@ -17,11 +18,11 @@ const config: SqlConfig = {
 
 const poolPromise: Promise<ConnectionPool> = new ConnectionPool(config)
   .connect()
-  .then((pool) => {
+  .then(pool => {
     console.log('Conectado a SQL Server');
     return pool;
   })
-  .catch((err) => {
+  .catch(err => {
     console.error('Conexión a la Base de Datos Fallida: ', err);
     throw err;
   });

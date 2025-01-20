@@ -1,17 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
-import Image from 'next/image';
-
-import {
-  Label,
-  Listbox,
-  ListboxButton,
-  ListboxOption,
-  ListboxOptions,
-} from '@headlessui/react';
-
+import { Label, Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import Image from 'next/image';
+import React, { useState } from 'react';
 
 const section = [
   { id: 1, name: 250 },
@@ -48,10 +40,7 @@ function TopFilter() {
     name: 'Select an option',
   });
 
-
-  console.log("===============> ",sectionSelected )
-
-
+  console.log('===============> ', sectionSelected);
 
   return (
     <div className="grid grid-cols-12 gap-2 sm:gap-2 justify-between items-start w-full">
@@ -59,17 +48,12 @@ function TopFilter() {
         <form className="grid grid-cols-12 gap-2 sm:gap-2 justify-between items-end w-full">
           <Listbox value={sectionSelected} onChange={setSectionSelected}>
             <div className="relative col-span-12 sm:col-span-4">
-              <Label className="block text-xs font-medium leading-6 text-gray-900">
-                Width
-              </Label>
+              <Label className="block text-xs font-medium leading-6 text-gray-900">Width</Label>
               <div className="flex items-start">
                 <ListboxButton className="text-sm hover:ring-2 hover:ring-green-primary relative w-full cursor-default rounded-md bg-white py-2.5 pl-3 pr-10 text-left text-gray-900  ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-primary sm:text-sm sm:leading-6">
                   <span className="block truncate">{sectionSelected.name}</span>
                   <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                    <ChevronUpDownIcon
-                      aria-hidden="true"
-                      className="h-5 w-5 text-green-primary"
-                    />
+                    <ChevronUpDownIcon aria-hidden="true" className="h-5 w-5 text-green-primary" />
                   </span>
                 </ListboxButton>
               </div>
@@ -78,7 +62,7 @@ function TopFilter() {
                 transition
                 className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none data-[closed]:data-[leave]:opacity-0 data-[leave]:transition data-[leave]:duration-100 data-[leave]:ease-in sm:text-sm"
               >
-                {section.map((section) => (
+                {section.map(section => (
                   <ListboxOption
                     key={section.id}
                     value={section}
@@ -95,23 +79,13 @@ function TopFilter() {
               </ListboxOptions>
             </div>
           </Listbox>
-          <Listbox
-            value={aspectRatioSelected}
-            onChange={setAspectRatioSelected}
-          >
+          <Listbox value={aspectRatioSelected} onChange={setAspectRatioSelected}>
             <div className="relative col-span-12 sm:col-span-4">
-              <Label className="block text-xs font-medium leading-6 text-gray-900">
-                Sidewall
-              </Label>
+              <Label className="block text-xs font-medium leading-6 text-gray-900">Sidewall</Label>
               <ListboxButton className="text-sm hover:ring-2 hover:ring-green-primary relative w-full cursor-default rounded-md bg-white py-2.5 pl-3 pr-10 text-left text-gray-900 ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-primary sm:text-sm sm:leading-6">
-                <span className="block truncate">
-                  {aspectRatioSelected.name}
-                </span>
+                <span className="block truncate">{aspectRatioSelected.name}</span>
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                  <ChevronUpDownIcon
-                    aria-hidden="true"
-                    className="h-5 w-5 text-green-primary"
-                  />
+                  <ChevronUpDownIcon aria-hidden="true" className="h-5 w-5 text-green-primary" />
                 </span>
               </ListboxButton>
 
@@ -119,7 +93,7 @@ function TopFilter() {
                 transition
                 className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none data-[closed]:data-[leave]:opacity-0 data-[leave]:transition data-[leave]:duration-100 data-[leave]:ease-in sm:text-sm"
               >
-                {aspectRatio.map((aspectRatio) => (
+                {aspectRatio.map(aspectRatio => (
                   <ListboxOption
                     key={aspectRatio.id}
                     value={aspectRatio}
@@ -137,23 +111,13 @@ function TopFilter() {
               </ListboxOptions>
             </div>
           </Listbox>
-          <Listbox
-            value={diameterRatioSelected}
-            onChange={setDiameterRatioSelected}
-          >
+          <Listbox value={diameterRatioSelected} onChange={setDiameterRatioSelected}>
             <div className="relative col-span-12 sm:col-span-4">
-              <Label className="block text-xs font-medium leading-6 text-gray-900">
-                Diameter
-              </Label>
+              <Label className="block text-xs font-medium leading-6 text-gray-900">Diameter</Label>
               <ListboxButton className="text-sm hover:ring-2 hover:ring-green-primary relative w-full cursor-default rounded-md bg-white py-2.5 pl-3 pr-10 text-left text-gray-900 ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-primary sm:text-sm sm:leading-6">
-                <span className="block truncate">
-                  {diameterRatioSelected.name}
-                </span>
+                <span className="block truncate">{diameterRatioSelected.name}</span>
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                  <ChevronUpDownIcon
-                    aria-hidden="true"
-                    className="h-5 w-5 text-green-primary"
-                  />
+                  <ChevronUpDownIcon aria-hidden="true" className="h-5 w-5 text-green-primary" />
                 </span>
               </ListboxButton>
 
@@ -161,7 +125,7 @@ function TopFilter() {
                 transition
                 className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none data-[closed]:data-[leave]:opacity-0 data-[leave]:transition data-[leave]:duration-100 data-[leave]:ease-in sm:text-sm"
               >
-                {diameter.map((diameter) => (
+                {diameter.map(diameter => (
                   <ListboxOption
                     key={diameter.id}
                     value={diameter}
@@ -172,10 +136,7 @@ function TopFilter() {
                     </span>
 
                     <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-green-primary group-data-[focus]:text-white [.group:not([data-selected])_&]:hidden">
-                      <CheckIcon
-                        aria-hidden="true"
-                        className="h-5 w-5 text-green-primary"
-                      />
+                      <CheckIcon aria-hidden="true" className="h-5 w-5 text-green-primary" />
                     </span>
                   </ListboxOption>
                 ))}
@@ -185,7 +146,7 @@ function TopFilter() {
         </form>
         <div>
           <div className="-m-1 flex items-center mt-2">
-            {activeFilters.map((activeFilter) => (
+            {activeFilters.map(activeFilter => (
               <span
                 key={activeFilter.value}
                 className="m-1 inline-flex items-center rounded-full border border-gray-200 bg-gray-50 py-1.5 pl-3 pr-2 text-sm font-medium text-gray-900"
@@ -195,20 +156,9 @@ function TopFilter() {
                   type="button"
                   className="ml-1 inline-flex h-4 w-4 flex-shrink-0 rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-500"
                 >
-                  <span className="sr-only">
-                    Remove filter for {activeFilter.label}
-                  </span>
-                  <svg
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 8 8"
-                    className="h-2 w-2"
-                  >
-                    <path
-                      d="M1 1l6 6m0-6L1 7"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
+                  <span className="sr-only">Remove filter for {activeFilter.label}</span>
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 8 8" className="h-2 w-2">
+                    <path d="M1 1l6 6m0-6L1 7" strokeWidth="1.5" strokeLinecap="round" />
                   </svg>
                 </button>
               </span>
@@ -217,11 +167,17 @@ function TopFilter() {
         </div>
       </div>
       <div className="col-span-12 sm:col-span-2 flex justify-end relative">
-        <div className='text-white absolute text-xs  left-1/2 transform -translate-x-1/2 flex'>
-          <span className='pr-1.5 inline-block -rotate-[30deg] mt-1.5'>{typeof sectionSelected.name !== "number" ? "??.?" : sectionSelected.name}</span>
-          <span className='inline-block rotate-12 pr-2'>/</span>
-          <span className='pr-1 inline-block rotate-12 mt-0.5'>{typeof aspectRatioSelected.name !== "number" ? "?.?": aspectRatioSelected.name }</span>
-          <span className='inline-block rotate-[40deg] pl-1 mt-2'>{typeof diameterRatioSelected.name !== "number" ? "??": diameterRatioSelected.name }</span>
+        <div className="text-white absolute text-xs  left-1/2 transform -translate-x-1/2 flex">
+          <span className="pr-1.5 inline-block -rotate-[30deg] mt-1.5">
+            {typeof sectionSelected.name !== 'number' ? '??.?' : sectionSelected.name}
+          </span>
+          <span className="inline-block rotate-12 pr-2">/</span>
+          <span className="pr-1 inline-block rotate-12 mt-0.5">
+            {typeof aspectRatioSelected.name !== 'number' ? '?.?' : aspectRatioSelected.name}
+          </span>
+          <span className="inline-block rotate-[40deg] pl-1 mt-2">
+            {typeof diameterRatioSelected.name !== 'number' ? '??' : diameterRatioSelected.name}
+          </span>
         </div>
         <div className="w-36 mx-auto">
           <Image

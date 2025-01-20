@@ -59,36 +59,34 @@ export interface TiresData {
   OfferUpId?: number;
 }
 
-
 export interface singleTireImages {
-  id: number,
-  name: string,
-  src: string,
-  alt: string
+  id: number;
+  name: string;
+  src: string;
+  alt: string;
 }
 
 export interface SingleTireDetails {
-  name: string,
-  items: string[]
-} 
+  name: string;
+  items: string[];
+}
 
 export interface SingleTire {
-  id: number,
-  name: string,
-  color: string,
-  price: string,
-  brand: string,
-  brandId: number
-  condition: string,
-  patched: string,
-  remainingLife: string,
-  treadDepth: string,
-  images: singleProductImages[]
-  description: string,
-  details: SingleProductDetails 
+  id: number;
+  name: string;
+  color: string;
+  price: string;
+  brand: string;
+  brandId: number;
+  condition: string;
+  patched: string;
+  remainingLife: string;
+  treadDepth: string;
+  images: singleProductImages[];
+  description: string;
+  details: SingleProductDetails;
 }
 
 interface TireInformationProps {
   singleTire: SingleTire;
 }
-

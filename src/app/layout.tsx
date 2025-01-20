@@ -1,10 +1,9 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 
-import { MenuProvider } from '@/app/context/ShowMenuContext';
-import { FiltersProvider } from '@/app/context/ShowFilterContext';
 import { DetailModalProvider } from '@/app/context/ShowDetailModal';
-
+import { FiltersProvider } from '@/app/context/ShowFilterContext';
+import { MenuProvider } from '@/app/context/ShowMenuContext';
 import { Footer, Header } from '@/app/ui/sections';
 
 import './globals.css';

@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { SearchButton } from '@/app/ui/components';
 
 function SearchBar() {

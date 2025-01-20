@@ -1,12 +1,10 @@
-"use client"
-import React, { useState } from 'react';
+'use client';
 
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
+import React, { useState } from 'react';
 
-function MobileTopFilters({
-  children,
-}: Readonly<{ children: React.ReactElement }>) {
+function MobileTopFilters({ children }: Readonly<{ children: React.ReactElement }>) {
   const [openDrop, setOpenDrop] = useState<boolean>(false);
 
   const handleDropDown = (state: boolean) => {

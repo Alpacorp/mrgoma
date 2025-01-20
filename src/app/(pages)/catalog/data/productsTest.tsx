@@ -1,8 +1,4 @@
-import {
-  ArrowDownOnSquareIcon,
-  ClockIcon,
-  WrenchIcon,
-} from '@heroicons/react/24/outline';
+import { ArrowDownOnSquareIcon, ClockIcon, WrenchIcon } from '@heroicons/react/24/outline';
 
 export const productsTest = [
   {
@@ -10,8 +6,7 @@ export const productsTest = [
     name: 'Michelin PRIMACY A/S XL 255/55/20',
     color: 'White and black',
     href: '#',
-    imageSrc:
-      'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
+    imageSrc: 'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
     price: '$140',
@@ -76,8 +71,7 @@ export const productsTest = [
     name: 'Mastercraft Courser Quest Plus XL 255/55/20',
     color: 'White and black',
     href: '#',
-    imageSrc:
-      'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
+    imageSrc: 'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
     price: '$220',
@@ -142,8 +136,7 @@ export const productsTest = [
     name: 'Goodyear Assurance weather 255/55/20',
     color: 'White and black',
     href: '#',
-    imageSrc:
-      'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
+    imageSrc: 'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
     price: '$220',
@@ -208,8 +201,7 @@ export const productsTest = [
     name: 'Handkook Dynnapro HPXXL 255/55/20',
     color: 'White and black',
     href: '#',
-    imageSrc:
-      'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
+    imageSrc: 'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
     price: '$140',
@@ -274,8 +266,7 @@ export const productsTest = [
     name: '220/55R390 Michelin TRX 93H - 12/32',
     color: 'White and black',
     href: '#',
-    imageSrc:
-      'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
+    imageSrc: 'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
     price: '$140',
@@ -340,8 +331,7 @@ export const productsTest = [
     name: '220/55R390 Michelin TRX 93H - 12/32',
     color: 'White and black',
     href: '#',
-    imageSrc:
-      'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
+    imageSrc: 'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
     price: '$220',
@@ -406,8 +396,7 @@ export const productsTest = [
     name: '220/55R390 Michelin TRX 93H - 12/32',
     color: 'White and black',
     href: '#',
-    imageSrc:
-      'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
+    imageSrc: 'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
     price: '$220',
@@ -472,8 +461,7 @@ export const productsTest = [
     name: '220/55R390 Michelin TRX 93H - 12/32',
     color: 'White and black',
     href: '#',
-    imageSrc:
-      'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
+    imageSrc: 'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
     price: '$140',

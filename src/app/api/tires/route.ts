@@ -1,5 +1,6 @@
-import { poolPromise } from '@/connection/db';
 import { NextRequest, NextResponse } from 'next/server';
+
+import { poolPromise } from '@/connection/db';
 
 export type DocumentRecord = {
   id: number;

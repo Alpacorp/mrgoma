@@ -1,19 +1,10 @@
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
+import { MinusIcon, PlusIcon } from '@heroicons/react/20/solid';
 import { FC } from 'react';
-import {
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
-} from '@headlessui/react';
 
-import {
-  MinusIcon,
-  PlusIcon,
-} from '@heroicons/react/20/solid';
-
-
-import {SearchBar} from '@/app/ui/sections';
-import { lateralItems } from '@/app/ui/sections/LateralFilters/LateralItems';
+import { SearchBar } from '@/app/ui/sections';
 import { useLateralFilters } from '@/app/ui/sections/LateralFilters/hooks/useLateralFilters';
+import { lateralItems } from '@/app/ui/sections/LateralFilters/LateralItems';
 
 const LateralFilters: FC = () => {
   const { handleChange, rangeInputs } = useLateralFilters();
@@ -21,20 +12,12 @@ const LateralFilters: FC = () => {
   return (
     <form>
       <h2 className="font-semibold mb-4 text-gray-900">Additional Filters</h2>
-      <Disclosure
-        defaultOpen={true}
-        key={1}
-        as="div"
-        className="border-b border-gray-200 py-6"
-      >
+      <Disclosure defaultOpen={true} key={1} as="div" className="border-b border-gray-200 py-6">
         <h3 className="-my-3 flow-root">
           <DisclosureButton className="group flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
             <span className="font-medium text-gray-900">Price</span>
             <span className="ml-6 flex items-center text-green-primary">
-              <PlusIcon
-                aria-hidden="true"
-                className="h-5 w-5 group-data-[open]:hidden"
-              />
+              <PlusIcon aria-hidden="true" className="h-5 w-5 group-data-[open]:hidden" />
               <MinusIcon
                 aria-hidden="true"
                 className="h-5 w-5 [.group:not([data-open])_&]:hidden"
@@ -60,20 +43,12 @@ const LateralFilters: FC = () => {
           </div>
         </DisclosurePanel>
       </Disclosure>
-      <Disclosure
-        defaultOpen={true}
-        key={2}
-        as="div"
-        className="border-b border-gray-200 py-6"
-      >
+      <Disclosure defaultOpen={true} key={2} as="div" className="border-b border-gray-200 py-6">
         <h3 className="-my-3 flow-root">
           <DisclosureButton className="group flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
             <span className="font-medium text-gray-900">Tread Depth</span>
             <span className="ml-6 flex items-center text-green-primary">
-              <PlusIcon
-                aria-hidden="true"
-                className="h-5 w-5 group-data-[open]:hidden"
-              />
+              <PlusIcon aria-hidden="true" className="h-5 w-5 group-data-[open]:hidden" />
               <MinusIcon
                 aria-hidden="true"
                 className="h-5 w-5 [.group:not([data-open])_&]:hidden"
@@ -99,20 +74,12 @@ const LateralFilters: FC = () => {
           </div>
         </DisclosurePanel>
       </Disclosure>
-      <Disclosure
-        defaultOpen={true}
-        key={3}
-        as="div"
-        className="border-b border-gray-200 py-6"
-      >
+      <Disclosure defaultOpen={true} key={3} as="div" className="border-b border-gray-200 py-6">
         <h3 className="-my-3 flow-root">
           <DisclosureButton className="group flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
             <span className="font-medium text-gray-900">Remaining life</span>
             <span className="ml-6 flex items-center text-green-primary">
-              <PlusIcon
-                aria-hidden="true"
-                className="h-5 w-5 group-data-[open]:hidden"
-              />
+              <PlusIcon aria-hidden="true" className="h-5 w-5 group-data-[open]:hidden" />
               <MinusIcon
                 aria-hidden="true"
                 className="h-5 w-5 [.group:not([data-open])_&]:hidden"
@@ -138,20 +105,13 @@ const LateralFilters: FC = () => {
           </div>
         </DisclosurePanel>
       </Disclosure>
-      {lateralItems.map((section) => (
-        <Disclosure
-          key={section.id}
-          as="div"
-          className="border-b border-gray-200 py-6"
-        >
+      {lateralItems.map(section => (
+        <Disclosure key={section.id} as="div" className="border-b border-gray-200 py-6">
           <h3 className="-my-3 flow-root">
             <DisclosureButton className="group flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
               <span className="font-medium text-gray-900">{section.name}</span>
               <span className="ml-6 flex items-center text-green-primary">
-                <PlusIcon
-                  aria-hidden="true"
-                  className="h-5 w-5 group-data-[open]:hidden"
-                />
+                <PlusIcon aria-hidden="true" className="h-5 w-5 group-data-[open]:hidden" />
                 <MinusIcon
                   aria-hidden="true"
                   className="h-5 w-5 [.group:not([data-open])_&]:hidden"
@@ -185,20 +145,12 @@ const LateralFilters: FC = () => {
           </DisclosurePanel>
         </Disclosure>
       ))}
-      <Disclosure
-        defaultOpen={true}
-        key={3}
-        as="div"
-        className="py-6"
-      >
+      <Disclosure defaultOpen={true} key={3} as="div" className="py-6">
         <h3 className="-my-3 flow-root">
           <DisclosureButton className="group flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
             <span className="font-medium text-gray-900">Search by text</span>
             <span className="ml-6 flex items-center text-green-primary">
-              <PlusIcon
-                aria-hidden="true"
-                className="h-5 w-5 group-data-[open]:hidden"
-              />
+              <PlusIcon aria-hidden="true" className="h-5 w-5 group-data-[open]:hidden" />
               <MinusIcon
                 aria-hidden="true"
                 className="h-5 w-5 [.group:not([data-open])_&]:hidden"
@@ -207,7 +159,7 @@ const LateralFilters: FC = () => {
           </DisclosureButton>
         </h3>
         <DisclosurePanel className="pt-6">
-          <SearchBar/>
+          <SearchBar />
         </DisclosurePanel>
       </Disclosure>
     </form>

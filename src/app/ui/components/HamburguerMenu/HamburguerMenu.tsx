@@ -1,6 +1,5 @@
-import { FC, useContext } from 'react';
-
 import { Bars3Icon } from '@heroicons/react/24/outline';
+import { FC, useContext } from 'react';
 
 import { ShowMenuContext } from '@/app/context/ShowMenuContext';
 

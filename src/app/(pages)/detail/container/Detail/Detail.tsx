@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { singleproductTest } from '@/app/(pages)/catalog/data/singleProductTest';
 import {
   ProductCarousel,
   TireInformation,
@@ -7,8 +8,6 @@ import {
   Terminology,
   Benefits,
 } from '@/app/ui/sections';
-
-import { singleproductTest } from '@/app/(pages)/catalog/data/singleProductTest';
 
 function Detail() {
   return (
@@ -18,10 +17,7 @@ function Detail() {
           <ProductCarousel singleTire={singleproductTest} />
           <div className="mt-10 sm:mt-16 lg:mt-0">
             <TireInformation singleTire={singleproductTest} />
-            <section
-              aria-labelledby="details-heading"
-              className="mt-12 lg:px-8"
-            >
+            <section aria-labelledby="details-heading" className="mt-12 lg:px-8">
               <TireFeatures singleTire={singleproductTest} />
             </section>
           </div>

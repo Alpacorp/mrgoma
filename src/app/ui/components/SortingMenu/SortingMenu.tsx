@@ -1,8 +1,7 @@
-import { FC } from 'react';
-import Link from 'next/link';
-
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
+import Link from 'next/link';
+import { FC } from 'react';
 
 import { sortItems } from '@/app/ui/components/SortingMenu/SortItems';
 
@@ -27,14 +26,12 @@ const SortingMenu: FC = () => {
         className="absolute right-0 z-30 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
       >
         <div className="py-1">
-          {sortItems.map((option) => (
+          {sortItems.map(option => (
             <MenuItem key={option.name}>
               <Link
                 href={option.href}
                 className={classNames(
-                  option.current
-                    ? 'font-medium text-gray-900'
-                    : 'text-gray-500',
+                  option.current ? 'font-medium text-gray-900' : 'text-gray-500',
                   'block px-4 py-2 text-sm data-[focus]:bg-gray-100'
                 )}
               >

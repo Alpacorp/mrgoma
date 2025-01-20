@@ -1,21 +1,16 @@
-import React, { FC } from 'react';
-import Image from 'next/image';
-
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
-
-import {
-  ProductCondition,
-  ProductCarouselMiniature,
-} from '@/app/ui/components';
+import Image from 'next/image';
+import React, { FC } from 'react';
 
 import { TireInformationProps } from '@/app/interfaces/tires';
+import { ProductCondition, ProductCarouselMiniature } from '@/app/ui/components';
 
 const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
   return (
     <TabGroup className="flex flex-col-reverse">
       <div className="mx-auto mt-6 w-full max-w-2xl sm:block lg:max-w-none">
         <TabList className="grid grid-cols-4 gap-3 max-[400px]:gap-3">
-          {singleTire.images.map((image) => (
+          {singleTire.images.map(image => (
             <Tab
               aria-selected={true}
               key={image.id}
@@ -40,7 +35,7 @@ const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
         </TabList>
       </div>
       <TabPanels className="w-full overflow-hidden rounded-lg">
-        {singleTire.images.map((image) => (
+        {singleTire.images.map(image => (
           <TabPanel
             key={image.id}
             className="max-h-60 h-full w-full object-fill object-center max-w-[320px]:rounded-lg

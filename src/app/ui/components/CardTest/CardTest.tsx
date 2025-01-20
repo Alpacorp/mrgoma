@@ -1,6 +1,7 @@
-import React from 'react';
-import { TiresData } from '@/app/interfaces/tires';
 import Image from 'next/image';
+import React from 'react';
+
+import { TiresData } from '@/app/interfaces/tires';
 
 const CardTest: React.FC<TiresData> = ({
   TireId,

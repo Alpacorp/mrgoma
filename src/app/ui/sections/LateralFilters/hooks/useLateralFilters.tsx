@@ -1,4 +1,4 @@
- "use client"
+'use client';
 import { useState } from 'react';
 
 export const useLateralFilters = () => {
@@ -8,9 +8,7 @@ export const useLateralFilters = () => {
     remainingLife: '0',
   });
 
-  const handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void = (
-    event
-  ) => {
+  const handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void = event => {
     const name = event.target.name;
     const value = event.target.value;
     setRangeInputs({
