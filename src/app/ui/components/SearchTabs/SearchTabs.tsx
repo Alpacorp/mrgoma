@@ -2,13 +2,14 @@
 
 import { useState } from 'react';
 
+import { TireSearchInput } from '@/app/ui/components/TireSearchInput/TireSearchInput';
 import { TopFilter } from '@/app/ui/sections';
 
 const SearchTabs = () => {
   const [activeTab, setActiveTab] = useState<'size' | 'text'>('size');
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4">
+    <div className="w-full max-w-4xl mx-auto p-2">
       <div className="mb-8">
         <div className="grid grid-cols-2 gap-1 bg-gray-100 p-1 rounded">
           <button
@@ -29,7 +30,13 @@ const SearchTabs = () => {
           </button>
         </div>
       </div>
-      {activeTab === 'size' ? <TopFilter /> : <div className="flex gap-2">test</div>}
+      {activeTab === 'size' ? (
+        <TopFilter />
+      ) : (
+        <div className="flex gap-2">
+          <TireSearchInput />
+        </div>
+      )}
     </div>
   );
 };
