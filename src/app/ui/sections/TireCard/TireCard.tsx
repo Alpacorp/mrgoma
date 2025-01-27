@@ -1,19 +1,11 @@
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import {
-  ArrowDownOnSquareIcon,
-  ChevronRightIcon,
-  ClockIcon,
-  WrenchIcon,
-} from '@heroicons/react/24/outline';
-import Link from 'next/link';
 import React, { FC, useContext } from 'react';
 
 import { ShowDetailModalContext } from '@/app/context/ShowDetailModal';
 import {
   BrandImage,
   CtaButton,
-  DetailsButton,
   ProductCondition,
   ProductImage,
   ProductItem,
@@ -29,10 +21,10 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
   const { setShowDetailModal } = useContext(ShowDetailModalContext);
 
   return (
-    <>
+    <ul className="mt-3">
       {products.map((product: any) => (
         <li
-          key={product.fetures}
+          key={product.id}
           className="bg-white rounded-lg overflow-hidden p-5 shadow-[0px_1px_10px_rgba(0,0,0,0.1)] w-full mb-8 items-center"
         >
           <div className="grid grid-cols-12 gap-4 ">
@@ -182,7 +174,7 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
           </div> */}
         </li>
       ))}
-    </>
+    </ul>
   );
 };
 
