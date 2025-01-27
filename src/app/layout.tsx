@@ -7,6 +7,7 @@ import { MenuProvider } from '@/app/context/ShowMenuContext';
 import { Footer, Header } from '@/app/ui/sections';
 
 import './globals.css';
+import { SelectedFiltersProvider } from '@/app/context/SelectedFilters';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -27,13 +28,15 @@ export default function RootLayout({
       </head>
       <DetailModalProvider>
         <FiltersProvider>
-          <MenuProvider>
-            <body className={inter.className}>
-              <Header />
-              {children}
-              <Footer />
-            </body>
-          </MenuProvider>
+          <SelectedFiltersProvider>
+            <MenuProvider>
+              <body className={inter.className}>
+                <Header />
+                {children}
+                <Footer />
+              </body>
+            </MenuProvider>
+          </SelectedFiltersProvider>
         </FiltersProvider>
       </DetailModalProvider>
     </html>
