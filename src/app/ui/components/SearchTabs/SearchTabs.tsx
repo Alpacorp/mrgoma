@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 
 import { TireSearchInput } from '@/app/ui/components/TireSearchInput/TireSearchInput';
-import TireDisplay from '@/app/ui/components/TireDisplay/TireDisplay';
+import TireDisplay from '@/app/ui/components/TireShowSelected/TireDisplay';
 import { TopFilter } from '@/app/ui/sections';
 
 const SearchTabs = () => {
