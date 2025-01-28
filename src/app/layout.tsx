@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 
+import { SelectedFiltersProvider } from '@/app/context/SelectedFilters';
 import { DetailModalProvider } from '@/app/context/ShowDetailModal';
 import { FiltersProvider } from '@/app/context/ShowFilterContext';
 import { MenuProvider } from '@/app/context/ShowMenuContext';
@@ -27,13 +28,15 @@ export default function RootLayout({
       </head>
       <DetailModalProvider>
         <FiltersProvider>
-          <MenuProvider>
-            <body className={inter.className}>
-              <Header />
-              {children}
-              <Footer />
-            </body>
-          </MenuProvider>
+          <SelectedFiltersProvider>
+            <MenuProvider>
+              <body className={inter.className}>
+                <Header />
+                {children}
+                <Footer />
+              </body>
+            </MenuProvider>
+          </SelectedFiltersProvider>
         </FiltersProvider>
       </DetailModalProvider>
     </html>

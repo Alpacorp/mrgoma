@@ -2,8 +2,9 @@
 
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
-import Image from 'next/image';
-import React, { useRef, useState } from 'react';
+import React, { useContext } from 'react';
+
+import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
 
 interface FilterOption {
   id: number;
@@ -29,45 +30,31 @@ const diameter: FilterOption[] = [
 ];
 
 function TopFilter() {
-  const [selectedFilters, setSelectedFilters] = useState({
-    width: '',
-    sidewall: '',
-    diameter: '',
-  });
+  // const [selectedFilters, setSelectedFilters] = useState({
+  //   width: '',
+  //   sidewall: '',
+  //   diameter: '',
+  // });
 
-  const imageRef = useRef<HTMLDivElement>(null);
+  const { selectedFilters, setSelectedFilters } = useContext(SelectedFiltersContext);
 
   const handleFilterChange = (value: string, type: 'width' | 'sidewall' | 'diameter') => {
-    setSelectedFilters(prev => ({
+    setSelectedFilters((prev: any) => ({
       ...prev,
       [type]: value,
     }));
-
-    // Trigger rotation animation for the background image
-    if (imageRef.current) {
-      imageRef.current.style.transition = 'transform 0.5s ease-in-out';
-      imageRef.current.style.transform = 'rotate(360deg)';
-      setTimeout(() => {
-        if (imageRef.current) {
-          imageRef.current.style.transition = 'none';
-          imageRef.current.style.transform = 'rotate(0deg)';
-        }
-      }, 500);
-    }
   };
 
   const removeFilter = (type: 'width' | 'sidewall' | 'diameter') => {
-    setSelectedFilters(prev => ({
+    setSelectedFilters((prev: any) => ({
       ...prev,
       [type]: '',
     }));
   };
 
-  const allSelected = selectedFilters.width && selectedFilters.sidewall && selectedFilters.diameter;
-
   return (
     <div className="flex flex-col md:flex-row justify-evenly items-start w-full">
-      <div className="w-full md:w-auto mb-4 md:mb-0">
+      <div className="flex flex-col gap-10 w-full md:w-auto mb-4 md:mb-0">
         <form className="flex flex-col md:flex-row gap-2 md:gap-4 items-end">
           <Listbox
             value={selectedFilters.width}
@@ -204,33 +191,6 @@ function TopFilter() {
                 </span>
               );
             })}
-          </div>
-        </div>
-      </div>
-      <div className="relative w-48 h-48 mx-auto bg-black rounded-full p-4 overflow-hidden">
-        <div ref={imageRef} className="relative w-full h-full">
-          <Image
-            className="w-full h-full object-cover"
-            src="/assets/images/tireSize.png"
-            width={200}
-            height={200}
-            alt="Tire size diagram"
-            priority
-          />
-        </div>
-        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-          <div className="text-white text-center">
-            <div
-              className={`text-2xl font-bold transition-all duration-500 ${
-                allSelected ? 'scale-110 text-green-400' : 'opacity-75'
-              }`}
-            >
-              {selectedFilters.width || '???'}/{selectedFilters.sidewall || '??'}/
-              {selectedFilters.diameter || '??'}
-            </div>
-            <div className="text-xs mt-2 opacity-75">
-              {allSelected ? 'Size Complete!' : 'Select all measurements'}
-            </div>
           </div>
         </div>
       </div>

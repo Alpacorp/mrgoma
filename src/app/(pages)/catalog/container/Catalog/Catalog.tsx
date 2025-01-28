@@ -4,14 +4,14 @@ import { FC } from 'react';
 
 import { productsTest } from '@/app/(pages)/catalog/data/productsTest';
 import { singleproductTest } from '@/app/(pages)/catalog/data/singleProductTest';
-import { OpenFilters, Title, SortingMenu, ModalDetail, SearchTabs } from '@/app/ui/components';
+import { ModalDetail, OpenFilters, SearchTabs, SortingMenu, Title } from '@/app/ui/components';
 import {
   LateralFilters,
   MobileLateralFilters,
   MobileTopFilters,
+  Pagination,
   TireCard,
   TopFilter,
-  Pagination,
 } from '@/app/ui/sections';
 
 const Catalog: FC = () => {
@@ -56,9 +56,7 @@ const Catalog: FC = () => {
                 <div className="mt-8 relative z-10">
                   <div className="bg-white">
                     <div className="mx-auto">
-                      <ul className="mt-3">
-                        <TireCard products={productsTest} />
-                      </ul>
+                      <TireCard products={productsTest} />
                     </div>
                   </div>
                   <div className="flex justify-center mt-16">

@@ -50,14 +50,14 @@ export const TireSearchInput = () => {
   };
 
   return (
-    <div className="flex justify-center items-center gap-2 mx-auto">
+    <div className="flex flex-col justify-center items-center gap-10 w-full">
       <input
         type="text"
         value={value}
         onChange={handleChange}
         onKeyDown={handleKeyPress}
         placeholder="Enter tire size (e.g. 255/55 R18)"
-        className="flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#00B207]"
+        className="flex-1 px-4 py-2 border w-full border-gray-300 rounded focus:outline-none focus:border-[#00B207]"
       />
       <button
         onClick={handleSearch}
@@ -68,4 +68,3 @@ export const TireSearchInput = () => {
     </div>
   );
 };
-

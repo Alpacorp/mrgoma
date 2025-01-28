@@ -1,7 +1,7 @@
-import CatalogPage from '@/app/(pages)/catalog/page';
+import HomeContent from '@/app/(pages)/home/container/Home/HomeContent';
 
 const Home = () => {
-  return <CatalogPage />;
+  return <HomeContent />;
 };
 
 export default Home;
