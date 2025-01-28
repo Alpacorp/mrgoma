@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 
+import { SelectedFiltersProvider } from '@/app/context/SelectedFilters';
 import { DetailModalProvider } from '@/app/context/ShowDetailModal';
 import { FiltersProvider } from '@/app/context/ShowFilterContext';
 import { MenuProvider } from '@/app/context/ShowMenuContext';
 import { Footer, Header } from '@/app/ui/sections';
 
 import './globals.css';
-import { SelectedFiltersProvider } from '@/app/context/SelectedFilters';
 
 const inter = Inter({ subsets: ['latin'] });
 
