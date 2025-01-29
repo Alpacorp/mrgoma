@@ -3,18 +3,12 @@ import React, { FC, useContext, useEffect, useRef } from 'react';
 
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
 
-interface TireDisplayProps {
-  width: string;
-  sidewall: string;
-  diameter: string;
-}
-
-const TireDisplay: FC<TireDisplayProps> = ({ width, sidewall, diameter }) => {
+const TireDisplay: FC = () => {
   const imageRef = useRef<HTMLDivElement>(null);
 
   const { selectedFilters } = useContext(SelectedFiltersContext);
 
-  const allSelected = width && sidewall && diameter;
+  const allSelected = Object.values(selectedFilters).every(value => value);
 
   useEffect(() => {
     if (imageRef.current) {
@@ -27,7 +21,7 @@ const TireDisplay: FC<TireDisplayProps> = ({ width, sidewall, diameter }) => {
         }
       }, 500);
     }
-  }, [width, sidewall, diameter]);
+  }, [selectedFilters]);
 
   return (
     <div className="relative w-48 h-48 mx-auto bg-black rounded-full p-4 overflow-hidden">
