@@ -1,6 +1,8 @@
 'use client';
 
-import { type ChangeEvent, useState } from 'react';
+import { type ChangeEvent, useContext, useState } from 'react';
+
+import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
 
 // Función que limpia el input y devuelve solo números
 const cleanInput = (input: string): string => input.replace(/\D/g, '');
@@ -13,7 +15,7 @@ const formatTireSize = (numbers: string): string => {
   if (numbers.length <= 5) {
     return `${numbers.slice(0, 3)}/${numbers.slice(3, 5)}`;
   }
-  return `${numbers.slice(0, 3)}/${numbers.slice(3, 5)} R${numbers.slice(5, 7)}`;
+  return `${numbers.slice(0, 3)}/${numbers.slice(3, 5)}/${numbers.slice(5, 7)}`;
 };
 
 // Función de validación de formato
@@ -24,17 +26,25 @@ const isValidTireSize = (value: string): boolean => {
 export const TireSearchInput = () => {
   const [value, setValue] = useState('');
 
+  const { setSelectedFilters } = useContext(SelectedFiltersContext);
+
   // Lógica para manejar el cambio del input
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const rawInput = e.target.value;
     const cleanedInput = cleanInput(rawInput);
     const formattedInput = formatTireSize(cleanedInput);
     setValue(formattedInput);
+    setSelectedFilters((prev: any) => ({
+      ...prev,
+      width: Number(formattedInput.slice(0, 3)),
+      sidewall: Number(formattedInput.slice(4, 6)),
+      diameter: Number(formattedInput.slice(7, 9)),
+    }));
   };
 
   // Lógica para permitir solo ciertos caracteres
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const allowedKeys = /^[0-9/ R]$/;
+    const allowedKeys = /^[0-9/]$/;
     if (!allowedKeys.test(e.key) && e.key !== 'Backspace') {
       e.preventDefault();
     }
@@ -46,7 +56,6 @@ export const TireSearchInput = () => {
       alert('Please enter a valid tire size (e.g. 255/55 R18)');
       return;
     }
-    console.log('Searching for:', value);
   };
 
   return (

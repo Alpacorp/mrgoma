@@ -54,7 +54,7 @@ function TopFilter() {
 
   return (
     <div className="flex flex-col md:flex-row justify-evenly items-start w-full">
-      <div className="flex flex-col gap-10 w-full md:w-auto mb-4 md:mb-0">
+      <div className="flex flex-col gap-2 w-full md:w-auto mb-4 md:mb-0">
         <form className="flex flex-col md:flex-row gap-2 md:gap-4 items-end">
           <Listbox
             value={selectedFilters.width}

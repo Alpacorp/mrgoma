@@ -1,5 +1,7 @@
 import Image from 'next/image';
-import React, { FC, useEffect, useRef } from 'react';
+import React, { FC, useContext, useEffect, useRef } from 'react';
+
+import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
 
 interface TireDisplayProps {
   width: string;
@@ -9,6 +11,8 @@ interface TireDisplayProps {
 
 const TireDisplay: FC<TireDisplayProps> = ({ width, sidewall, diameter }) => {
   const imageRef = useRef<HTMLDivElement>(null);
+
+  const { selectedFilters } = useContext(SelectedFiltersContext);
 
   const allSelected = width && sidewall && diameter;
 
@@ -44,7 +48,8 @@ const TireDisplay: FC<TireDisplayProps> = ({ width, sidewall, diameter }) => {
               allSelected ? 'scale-110 text-green-400' : 'opacity-75'
             }`}
           >
-            {width || '???'}/{sidewall || '??'}/{diameter || '??'}
+            {selectedFilters.width || '???'}/{selectedFilters.sidewall || '??'}/
+            {selectedFilters.diameter || '??'}
           </div>
           <div className="text-xs mt-2 opacity-75">
             {allSelected ? 'Size Complete!' : 'Select all measurements'}
@@ -56,4 +61,3 @@ const TireDisplay: FC<TireDisplayProps> = ({ width, sidewall, diameter }) => {
 };
 
 export default TireDisplay;
-
