@@ -17,7 +17,7 @@ export const SelectedFiltersContext = createContext<SelectedFiltersContextType>(
     sidewall: '',
     diameter: '',
   },
-  setSelectedFilters: (value: string) => {},
+  setSelectedFilters: () => {},
 });
 
 export const SelectedFiltersProvider = ({ children }: { children: React.ReactNode }) => {
@@ -26,8 +26,6 @@ export const SelectedFiltersProvider = ({ children }: { children: React.ReactNod
     sidewall: '',
     diameter: '',
   });
-
-  console.log('selectedFilters into context', selectedFilters);
 
   const contextValue = useMemo(
     () => ({ selectedFilters, setSelectedFilters }),
@@ -40,4 +38,3 @@ export const SelectedFiltersProvider = ({ children }: { children: React.ReactNod
     </SelectedFiltersContext.Provider>
   );
 };
-
