@@ -60,7 +60,7 @@ const SearchTabs = () => {
         )}
       </div>
       <div>
-        <TireDisplay width={'test'} sidewall={'test'} diameter={'test'} />
+        <TireDisplay />
       </div>
     </section>
   );
