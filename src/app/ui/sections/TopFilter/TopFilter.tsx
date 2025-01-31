@@ -1,10 +1,9 @@
 'use client';
 
-import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
+import TireDisplay from '@/app/ui/components/TireDisplay/TireDisplay';
 
 interface FilterOption {
   id: number;
@@ -29,13 +28,7 @@ const diameter: FilterOption[] = [
   { id: 3, name: 12 },
 ];
 
-function TopFilter() {
-  // const [selectedFilters, setSelectedFilters] = useState({
-  //   width: '',
-  //   sidewall: '',
-  //   diameter: '',
-  // });
-
+export default function TopFilter() {
   const { selectedFilters, setSelectedFilters } = useContext(SelectedFiltersContext);
 
   const handleFilterChange = (value: string, type: 'width' | 'sidewall' | 'diameter') => {
@@ -52,150 +45,97 @@ function TopFilter() {
     }));
   };
 
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (selectedFilters.width) params.append('width', selectedFilters.width);
+    if (selectedFilters.sidewall) params.append('sidewall', selectedFilters.sidewall);
+    if (selectedFilters.diameter) params.append('diameter', selectedFilters.diameter);
+    window.location.href = `/catalog?${params.toString()}`;
+  };
+
+  const allSelected = selectedFilters.width && selectedFilters.sidewall && selectedFilters.diameter;
+
   return (
-    <div className="flex flex-col md:flex-row justify-evenly items-start w-full">
-      <div className="flex flex-col gap-2 w-full md:w-auto mb-4 md:mb-0">
-        <form className="flex flex-col md:flex-row gap-2 md:gap-4 items-end">
-          <Listbox
-            value={selectedFilters.width}
-            onChange={value => handleFilterChange(value, 'width')}
-          >
-            <div className="relative w-full md:w-32">
-              <div className="flex items-start">
-                <ListboxButton className="text-sm hover:ring-2 hover:ring-green-primary relative w-full cursor-default rounded-md bg-white py-2.5 pl-3 pr-10 text-left text-gray-900  ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-primary sm:text-sm sm:leading-6">
-                  <span className="block truncate">
-                    {selectedFilters.width ? selectedFilters.width : 'Width'}
-                  </span>
-                  <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                    <ChevronUpDownIcon aria-hidden="true" className="h-5 w-5 text-green-primary" />
-                  </span>
-                </ListboxButton>
+    <>
+      <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="w-full md:w-3/5 space-y-6 bg-gray-50 p-6 rounded-lg border border-green-200">
+          <h3 className="text-xl font-semibold mb-6 text-gray-900">Find by Measurements</h3>
+          <div className="grid grid-cols-3 gap-4">
+            {[
+              { label: 'Width', options: section, type: 'width' },
+              { label: 'Sidewall', options: aspectRatio, type: 'sidewall' },
+              { label: 'Diameter', options: diameter, type: 'diameter' },
+            ].map(field => (
+              <div key={field.type} className="w-full">
+                <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  {field.label}
+                </label>
+                <select
+                  value={selectedFilters[field.type as keyof typeof selectedFilters]}
+                  onChange={e =>
+                    handleFilterChange(
+                      e.target.value,
+                      field.type as 'width' | 'sidewall' | 'diameter'
+                    )
+                  }
+                  className="w-full bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                >
+                  <option value="">Select</option>
+                  {field.options.map(option => (
+                    <option key={option.id} value={String(option.name)}>
+                      {option.name}
+                    </option>
+                  ))}
+                </select>
               </div>
+            ))}
+          </div>
 
-              <ListboxOptions
-                transition
-                className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none data-[closed]:data-[leave]:opacity-0 data-[leave]:transition data-[leave]:duration-100 data-[leave]:ease-in sm:text-sm"
-              >
-                {section.map(section => (
-                  <ListboxOption
-                    key={section.id}
-                    value={section.name}
-                    className="text-sm group relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 data-[focus]:bg-green-primary data-[focus]:text-white"
-                  >
-                    <span className="block truncate font-normal group-data-[selected]:font-semibold">
-                      {section.name}
-                    </span>
-                    <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-green-primary group-data-[focus]:text-white [.group:not([data-selected])_&]:hidden">
-                      <CheckIcon aria-hidden="true" className="h-5 w-5" />
-                    </span>
-                  </ListboxOption>
-                ))}
-              </ListboxOptions>
-            </div>
-          </Listbox>
-          <Listbox
-            value={selectedFilters.sidewall}
-            onChange={value => handleFilterChange(value, 'sidewall')}
-          >
-            <div className="relative w-full md:w-32">
-              <ListboxButton className="text-sm hover:ring-2 hover:ring-green-primary relative w-full cursor-default rounded-md bg-white py-2.5 pl-3 pr-10 text-left text-gray-900 ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-primary sm:text-sm sm:leading-6">
-                <span className="block truncate">
-                  {selectedFilters.sidewall ? selectedFilters.sidewall : 'Sidewall'}
-                </span>
-                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                  <ChevronUpDownIcon aria-hidden="true" className="h-5 w-5 text-green-primary" />
-                </span>
-              </ListboxButton>
-
-              <ListboxOptions
-                transition
-                className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none data-[closed]:data-[leave]:opacity-0 data-[leave]:transition data-[leave]:duration-100 data-[leave]:ease-in sm:text-sm"
-              >
-                {aspectRatio.map(aspectRatio => (
-                  <ListboxOption
-                    key={aspectRatio.id}
-                    value={aspectRatio.name}
-                    className="text-sm group relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 data-[focus]:bg-green-primary data-[focus]:text-white"
-                  >
-                    <span className="block truncate font-normal group-data-[selected]:font-semibold">
-                      {aspectRatio.name}
-                    </span>
-
-                    <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-green-primary group-data-[focus]:text-white [.group:not([data-selected])_&]:hidden">
-                      <CheckIcon aria-hidden="true" className="h-5 w-5" />
-                    </span>
-                  </ListboxOption>
-                ))}
-              </ListboxOptions>
-            </div>
-          </Listbox>
-          <Listbox
-            value={selectedFilters.diameter}
-            onChange={value => handleFilterChange(value, 'diameter')}
-          >
-            <div className="relative w-full md:w-32">
-              <ListboxButton className="text-sm hover:ring-2 hover:ring-green-primary relative w-full cursor-default rounded-md bg-white py-2.5 pl-3 pr-10 text-left text-gray-900 ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-green-primary sm:text-sm sm:leading-6">
-                <span className="block truncate">
-                  {selectedFilters.diameter ? selectedFilters.diameter : 'Diameter'}
-                </span>
-                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                  <ChevronUpDownIcon aria-hidden="true" className="h-5 w-5 text-green-primary" />
-                </span>
-              </ListboxButton>
-
-              <ListboxOptions
-                transition
-                className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none data-[closed]:data-[leave]:opacity-0 data-[leave]:transition data-[leave]:duration-100 data-[leave]:ease-in sm:text-sm"
-              >
-                {diameter.map(diameter => (
-                  <ListboxOption
-                    key={diameter.id}
-                    value={diameter.name}
-                    className="text-sm group relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 data-[focus]:bg-green-primary data-[focus]:text-white"
-                  >
-                    <span className="block truncate font-normal group-data-[selected]:font-semibold">
-                      {diameter.name}
-                    </span>
-
-                    <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-green-primary group-data-[focus]:text-white [.group:not([data-selected])_&]:hidden">
-                      <CheckIcon aria-hidden="true" className="h-5 w-5 text-green-primary" />
-                    </span>
-                  </ListboxOption>
-                ))}
-              </ListboxOptions>
-            </div>
-          </Listbox>
-        </form>
-        <div>
-          <div className="-m-1 flex items-center justify-center mt-2">
+          <div className="flex flex-wrap gap-2">
             {Object.entries(selectedFilters).map(([key, value]) => {
               if (!value) return null;
               return (
                 <span
                   key={key}
-                  className="m-1 inline-flex items-center rounded-full border border-gray-200 bg-gray-50 py-1.5 pl-3 pr-2 text-sm font-medium text-gray-900"
+                  className="inline-flex items-center rounded-full bg-green-50 border border-green-300 px-3 py-1 text-sm font-medium text-green-700"
                 >
-                  <span className="block text-xs">
-                    {key.charAt(0).toUpperCase() + key.slice(1)}: {value}
-                  </span>
+                  {key.charAt(0).toUpperCase() + key.slice(1)}: {value}
                   <button
                     type="button"
-                    className="ml-1 inline-flex h-4 w-4 flex-shrink-0 rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-500"
                     onClick={() => removeFilter(key as keyof typeof selectedFilters)}
+                    className="ml-1 inline-flex items-center rounded-full bg-green-50 p-1 text-green-700 hover:bg-green-100"
                   >
-                    <span className="sr-only">Remove {key} filter </span>
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 8 8" className="h-2 w-2">
-                      <path d="M1 1l6 6m0-6L1 7" strokeWidth="1.5" strokeLinecap="round" />
+                    <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
                     </svg>
+                    <span className="sr-only">Remove {key} filter</span>
                   </button>
                 </span>
               );
             })}
           </div>
+
+          <button
+            onClick={handleSearch}
+            className={`w-full py-3 text-lg font-medium rounded-lg transition-colors ${
+              allSelected
+                ? 'bg-green-600 hover:bg-green-700 text-white'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+            disabled={!allSelected}
+          >
+            {allSelected ? 'Search Tires' : 'Select all measurements'}
+          </button>
+        </div>
+
+        <div className="hidden md:flex items-center justify-center flex-1">
+          <TireDisplay />
         </div>
       </div>
-    </div>
+    </>
   );
 }
-
-export default TopFilter;

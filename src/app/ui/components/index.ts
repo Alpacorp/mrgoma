@@ -17,4 +17,7 @@ export { default as TerminologyItem } from './TerminologyItem/TerminologyItem';
 export { default as DetailsButton } from './DetailsButton/DetailsButton';
 export { default as ModalDetail } from './ModalDetail/ModalDetail';
 export { default as SearchButton } from './SearchButton/SearchButton';
-export { default as SearchTabs } from './SearchTabs/SearchTabs';
+export { default as SearchContainer } from '@/app/ui/components/SearchContainer/SearchContainer';
+export { default as SearchBySize } from '@/app/ui/components/SearchBySize/SearchBySize';
+export { default as TireDisplay } from '@/app/ui/components/TireDisplay/TireDisplay';
+export { default as SearchByText } from '@/app/ui/components/SearchByText/SearchByText';

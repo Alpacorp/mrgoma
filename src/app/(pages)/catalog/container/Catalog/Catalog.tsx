@@ -4,7 +4,7 @@ import { FC } from 'react';
 
 import { productsTest } from '@/app/(pages)/catalog/data/productsTest';
 import { singleproductTest } from '@/app/(pages)/catalog/data/singleProductTest';
-import { ModalDetail, OpenFilters, SearchTabs, SortingMenu, Title } from '@/app/ui/components';
+import { ModalDetail, OpenFilters, SearchContainer, SortingMenu, Title } from '@/app/ui/components';
 import {
   LateralFilters,
   MobileLateralFilters,
@@ -32,7 +32,7 @@ const Catalog: FC = () => {
               </div>
               <div className="lg:col-span-3">
                 <div className="hidden sm:block sticky top-0 z-40 bg-gray-100 p-2 rounded-lg shadow-lg">
-                  <SearchTabs />
+                  <SearchContainer />
                 </div>
                 <div className="sticky block sm:hidden top-0 z-40 bg-white rounded-b-lg shadow-md my-4">
                   <MobileTopFilters>
