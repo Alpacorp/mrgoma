@@ -2,7 +2,7 @@
 
 import { FC } from 'react';
 
-import { SearchTabs, Title } from '@/app/ui/components';
+import { SearchContainer, Title } from '@/app/ui/components';
 import { MobileTopFilters, TopFilter } from '@/app/ui/sections';
 
 const HomeContent: FC = () => {
@@ -10,14 +10,11 @@ const HomeContent: FC = () => {
     <main className="bg-white">
       <div>
         <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="sm:mb-16 mt-16">
-            <Title />
-          </div>
           <section aria-labelledby="products-heading" className="pb-24">
-            <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-3 mt-20">
               <div className="lg:col-span-3">
                 <div className="hidden sm:block sticky top-0 z-40 bg-gray-100 p-2 rounded-lg shadow-lg">
-                  <SearchTabs />
+                  <SearchContainer />
                 </div>
                 <div className="sticky block sm:hidden top-0 z-40 bg-white rounded-b-lg shadow-md my-4">
                   <MobileTopFilters>
@@ -36,4 +33,3 @@ const HomeContent: FC = () => {
 };
 
 export default HomeContent;
-
