@@ -18,7 +18,7 @@ const Header: FC = () => {
       >
         <HamburguerMenu />
         <MenuMobile />
-        <Link href="#" className="-m-1.5 p-1.5">
+        <Link href="/" className="-m-1.5 p-1.5">
           <Image
             alt="Mr. Goma Tires logo"
             title="Go to the home page"

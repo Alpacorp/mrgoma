@@ -1,17 +1,22 @@
 'use client';
 
-import { FC } from 'react';
+import { FC, Suspense } from 'react';
 
 import { productsTest } from '@/app/(pages)/catalog/data/productsTest';
 import { singleproductTest } from '@/app/(pages)/catalog/data/singleProductTest';
-import { ModalDetail, OpenFilters, SearchContainer, SortingMenu, Title } from '@/app/ui/components';
+import {
+  CollapsibleSearchBar,
+  ModalDetail,
+  OpenFilters,
+  SortingMenu,
+  Title,
+} from '@/app/ui/components';
 import {
   LateralFilters,
   MobileLateralFilters,
   MobileTopFilters,
   Pagination,
   TireCard,
-  TopFilter,
 } from '@/app/ui/sections';
 
 const Catalog: FC = () => {
@@ -31,19 +36,18 @@ const Catalog: FC = () => {
                 </div>
               </div>
               <div className="lg:col-span-3">
-                <div className="hidden sm:block sticky top-0 z-40 bg-gray-100 p-2 rounded-lg shadow-lg">
-                  <SearchContainer />
+                <div className="hidden sm:block sticky top-0 z-40 bg-gray-100 rounded-b-md shadow-md">
+                  <Suspense fallback={<div>Loading...</div>}>
+                    <CollapsibleSearchBar />
+                  </Suspense>
                 </div>
-                <div className="sticky block sm:hidden top-0 z-40 bg-white rounded-b-lg shadow-md my-4">
+                <div className="sticky block sm:hidden top-0 z-40 bg-white rounded my-4">
                   <MobileTopFilters>
-                    <div className="p-4">
-                      <TopFilter />
-                    </div>
+                    <Suspense fallback={<div>Loading...</div>}>
+                      <CollapsibleSearchBar />
+                    </Suspense>
                   </MobileTopFilters>
                 </div>
-                <h2 className="font-semibold text-base sm:mt-8 text-gray-400">
-                  Results for Tires: 255/55 R18
-                </h2>
                 <div className="flex items-center justify-between mt-5">
                   <h3 className="text-gray-400 text-base">91 Results</h3>
                   <div className="flex items-baseline justify-end">

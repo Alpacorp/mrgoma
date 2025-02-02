@@ -1,35 +1,38 @@
 'use client';
 
-import { createContext, useMemo, useState } from 'react';
+import React, { createContext, useState, useMemo, Dispatch, SetStateAction } from 'react';
 
-interface SelectedFiltersContextType {
-  selectedFilters: {
-    width: string;
-    sidewall: string;
-    diameter: string;
-  };
-  setSelectedFilters: any;
+type SelectedFilters = {
+  width: string;
+  sidewall: string;
+  diameter: string;
+};
+
+interface SelectedFiltersContextProps {
+  selectedFilters: SelectedFilters;
+  setSelectedFilters: Dispatch<SetStateAction<SelectedFilters>>;
 }
 
-export const SelectedFiltersContext = createContext<SelectedFiltersContextType>({
-  selectedFilters: {
-    width: '',
-    sidewall: '',
-    diameter: '',
-  },
+const defaultSelectedFilters: SelectedFilters = {
+  width: '',
+  sidewall: '',
+  diameter: '',
+};
+
+export const SelectedFiltersContext = createContext<SelectedFiltersContextProps>({
+  selectedFilters: defaultSelectedFilters,
   setSelectedFilters: () => {},
 });
 
 export const SelectedFiltersProvider = ({ children }: { children: React.ReactNode }) => {
-  const [selectedFilters, setSelectedFilters] = useState({
-    width: '',
-    sidewall: '',
-    diameter: '',
-  });
+  const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>(defaultSelectedFilters);
 
   const contextValue = useMemo(
-    () => ({ selectedFilters, setSelectedFilters }),
-    [selectedFilters, setSelectedFilters]
+    () => ({
+      selectedFilters,
+      setSelectedFilters,
+    }),
+    [selectedFilters]
   );
 
   return (
