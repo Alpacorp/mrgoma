@@ -23,3 +23,4 @@ export { default as TireDisplay } from '@/app/ui/components/TireDisplay/TireDisp
 export { default as SearchByText } from '@/app/ui/components/SearchByText/SearchByText';
 export { default as CollapsibleSearchBar } from '@/app/ui/components/CollapsibleSearchBar/CollapsibleSearchBar';
 export { default as SelectDropdown } from '@/app/ui/components/SelectDropdown/SelectDropdown';
+export { default as RangeSlider } from '@/app/ui/components/RangeSlider/RangeSlider';
