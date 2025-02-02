@@ -13,7 +13,7 @@ function MobileTopFilters({ children }: Readonly<{ children: React.ReactElement 
 
   return (
     <Menu as="div" className="relative inline-block text-left w-full">
-      <div className="flex items-center justify-between rounded-xl ring-1 ring-gray-300 p-2 px-2">
+      <div className="flex items-center justify-between rounded ring-1 ring-gray-300 p-2 px-2">
         <p className="font-medium text-sm text-gray-900">Select Tire</p>
         <MenuButton
           onClick={() => handleDropDown(openDrop)}
@@ -29,18 +29,15 @@ function MobileTopFilters({ children }: Readonly<{ children: React.ReactElement 
       </div>
       <MenuItems
         transition
-        className="absolute left-0 right-0 z-10 mt-2 origin-top-right rounded-md  bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+        className="absolute left-0 right-0 z-10 mt-1 origin-top-right rounded-md py-4 bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
       >
-        <div className="py-1">{children}</div>
-        <div className="flex">
+        <div>{children}</div>
+        <div className="">
           <MenuItem>
-            <button className="block  bg-black w-6/12  px-4 py-2.5 text-center text-sm text-white">
+            <button className="block bg-cyan-600 w-full max-w-72 mx-auto rounded px-4 py-2.5 text-center text-sm text-white">
               Close
             </button>
           </MenuItem>
-          <button className="block bg-indigo-600 w-6/12 px-4 py-2.5 text-center text-sm text-white">
-            ResetFilters
-          </button>
         </div>
       </MenuItems>
     </Menu>

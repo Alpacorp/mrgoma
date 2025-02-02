@@ -1,14 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { FC, useContext, useState } from 'react';
 
-import { SearchBySize, SearchByText } from '@/app/ui/components';
+import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
+import { SearchBySizeContainer, SearchByTextContainer } from '@/app/ui/sections';
 
-const SearchContainer = () => {
+const SearchContainer: FC = () => {
   const [activeTab, setActiveTab] = useState<'size' | 'text'>('size');
 
+  const { setSelectedFilters } = useContext(SelectedFiltersContext);
+
+  const handleChangeTab = (tab: 'size' | 'text') => {
+    setActiveTab(tab);
+    setSelectedFilters({
+      width: '',
+      sidewall: '',
+      diameter: '',
+    });
+  };
+
   return (
-    <div className="container mx-auto px-4 py-12 max-w-7xl">
+    <div className="container mx-auto py-12 max-w-7xl">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold mb-4 text-gray-900">Search Your Perfect Tire</h1>
         <p className="text-lg text-gray-600">
@@ -20,7 +32,7 @@ const SearchContainer = () => {
         <div className="flex justify-center mb-8">
           <div className="grid w-full max-w-md grid-cols-2 bg-gray-100 p-1 rounded-lg">
             <button
-              onClick={() => setActiveTab('size')}
+              onClick={() => handleChangeTab('size')}
               className={`py-2 px-4 rounded-md transition-all ${
                 activeTab === 'size' ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-200'
               }`}
@@ -28,7 +40,7 @@ const SearchContainer = () => {
               Search by Size
             </button>
             <button
-              onClick={() => setActiveTab('text')}
+              onClick={() => handleChangeTab('text')}
               className={`py-2 px-4 rounded-md transition-all ${
                 activeTab === 'text' ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-200'
               }`}
@@ -38,8 +50,8 @@ const SearchContainer = () => {
           </div>
         </div>
 
-        {activeTab === 'size' && <SearchBySize />}
-        {activeTab === 'text' && <SearchByText />}
+        {activeTab === 'size' && <SearchBySizeContainer />}
+        {activeTab === 'text' && <SearchByTextContainer />}
       </div>
     </div>
   );

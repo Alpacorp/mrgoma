@@ -35,8 +35,8 @@ const LateralFilters: FC = () => {
               type="range"
               id="price"
               name="price"
-              min="0"
-              max="10"
+              min="20"
+              max="50"
               value={rangeInputs.price}
               onChange={handleChange}
             />
