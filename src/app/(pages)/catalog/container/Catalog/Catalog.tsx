@@ -1,6 +1,6 @@
 'use client';
 
-import { FC } from 'react';
+import { FC, Suspense } from 'react';
 
 import { productsTest } from '@/app/(pages)/catalog/data/productsTest';
 import { singleproductTest } from '@/app/(pages)/catalog/data/singleProductTest';
@@ -37,11 +37,15 @@ const Catalog: FC = () => {
               </div>
               <div className="lg:col-span-3">
                 <div className="hidden sm:block sticky top-0 z-40 bg-gray-100 rounded-b-md shadow-md">
-                  <CollapsibleSearchBar />
+                  <Suspense fallback={<div>Loading...</div>}>
+                    <CollapsibleSearchBar />
+                  </Suspense>
                 </div>
                 <div className="sticky block sm:hidden top-0 z-40 bg-white rounded my-4">
                   <MobileTopFilters>
-                    <CollapsibleSearchBar />
+                    <Suspense fallback={<div>Loading...</div>}>
+                      <CollapsibleSearchBar />
+                    </Suspense>
                   </MobileTopFilters>
                 </div>
                 <div className="flex items-center justify-between mt-5">

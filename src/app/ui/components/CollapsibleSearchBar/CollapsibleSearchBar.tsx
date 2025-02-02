@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect, useRef, useCallback, FC } from 'react';
+import { useState, useEffect, useRef, useCallback, FC, Suspense } from 'react';
 
 import { SelectDropdown } from '@/app/ui/components';
 
