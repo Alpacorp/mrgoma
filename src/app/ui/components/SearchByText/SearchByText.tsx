@@ -20,9 +20,9 @@ const SearchByText: FC = () => {
       const [width, aspectRatio, diameter] = value.split('/').map(part => part.trim());
       const params = new URLSearchParams();
 
-      if (width) params.append('width', width);
-      if (aspectRatio) params.append('sidewall', aspectRatio);
-      if (diameter) params.append('diameter', diameter.replace(/[^0-9]/g, '')); // Remove 'R' if present
+      if (width) params.append('frontWidth', width);
+      if (aspectRatio) params.append('frontSidewall', aspectRatio);
+      if (diameter) params.append('frontDiameter', diameter.replace(/[^0-9]/g, '')); // Remove 'R' if present
 
       router.push(`/catalog?${params.toString()}`);
     }
