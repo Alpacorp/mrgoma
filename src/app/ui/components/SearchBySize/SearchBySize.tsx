@@ -70,8 +70,8 @@ const SearchBySize: FC = () => {
 
   const router = useRouter();
 
-  const handleFilterChange = (value: string, type: keyof TireSize, position: 'front' | 'rear') => {
-    if (position === 'front') {
+  const handleFilterChange = (value: string, type: keyof TireSize, position: 'all' | 'rear') => {
+    if (position === 'all') {
       setFrontTireSize(prev => ({ ...prev, [type]: value }));
     } else {
       setRearTireSize(prev => ({ ...prev, [type]: value }));
@@ -82,8 +82,8 @@ const SearchBySize: FC = () => {
     }));
   };
 
-  const removeFilter = (type: keyof TireSize, position: 'front' | 'rear') => {
-    if (position === 'front') {
+  const removeFilter = (type: keyof TireSize, position: 'all' | 'rear') => {
+    if (position === 'all') {
       setFrontTireSize(prev => ({ ...prev, [type]: '' }));
       if (!hasDifferentSizes) {
         setRearTireSize(prev => ({ ...prev, [type]: '' }));
@@ -99,19 +99,19 @@ const SearchBySize: FC = () => {
 
   const handleSearch = () => {
     const params = new URLSearchParams();
-    // Add front tire parameters
-    if (frontTireSize.width) params.append('frontWidth', frontTireSize.width);
-    if (frontTireSize.sidewall) params.append('frontSidewall', frontTireSize.sidewall);
-    if (frontTireSize.diameter) params.append('frontDiameter', frontTireSize.diameter);
+    // Add all tire parameters
+    if (frontTireSize.width) params.append('w', frontTireSize.width);
+    if (frontTireSize.sidewall) params.append('s', frontTireSize.sidewall);
+    if (frontTireSize.diameter) params.append('d', frontTireSize.diameter);
 
     // Add rear tire parameters if different sizes are selected
     if (hasDifferentSizes) {
-      if (rearTireSize.width) params.append('rearWidth', rearTireSize.width);
-      if (rearTireSize.sidewall) params.append('rearSidewall', rearTireSize.sidewall);
-      if (rearTireSize.diameter) params.append('rearDiameter', rearTireSize.diameter);
+      if (rearTireSize.width) params.append('rw', rearTireSize.width);
+      if (rearTireSize.sidewall) params.append('rs', rearTireSize.sidewall);
+      if (rearTireSize.diameter) params.append('rd', rearTireSize.diameter);
     }
 
-    router.push(`/catalog?${params.toString()}`);
+    router.push(`/search-results?${params.toString()}`);
   };
 
   const allFieldsSelected = (size: TireSize) => {
@@ -121,13 +121,13 @@ const SearchBySize: FC = () => {
   const canSearch =
     allFieldsSelected(frontTireSize) && (!hasDifferentSizes || allFieldsSelected(rearTireSize));
 
-  const renderSizeSelectors = (position: 'front' | 'rear') => {
-    const currentSize = position === 'front' ? frontTireSize : rearTireSize;
+  const renderSizeSelectors = (position: 'all' | 'rear') => {
+    const currentSize = position === 'all' ? frontTireSize : rearTireSize;
 
     return (
       <div className="space-y-4">
         <div className="flex items-center gap-2 mb-4">
-          {position === 'front' ? (
+          {position === 'all' ? (
             <CarFront className="w-5 h-5 text-gray-600" />
           ) : (
             <CarRear className="w-5 h-5 text-gray-600" />
@@ -186,7 +186,7 @@ const SearchBySize: FC = () => {
     <div className="flex w-full max-w-6xl mx-auto">
       <div className="bg-white p-8 w-full md:w-3/5 rounded-xl shadow-sm border border-gray-100">
         <div className="space-y-6">
-          {renderSizeSelectors('front')}
+          {renderSizeSelectors('all')}
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
