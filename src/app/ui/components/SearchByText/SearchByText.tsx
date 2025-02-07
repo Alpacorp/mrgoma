@@ -20,11 +20,11 @@ const SearchByText: FC = () => {
       const [width, aspectRatio, diameter] = value.split('/').map(part => part.trim());
       const params = new URLSearchParams();
 
-      if (width) params.append('frontWidth', width);
-      if (aspectRatio) params.append('frontSidewall', aspectRatio);
-      if (diameter) params.append('frontDiameter', diameter.replace(/[^0-9]/g, '')); // Remove 'R' if present
+      if (width) params.append('w', width);
+      if (aspectRatio) params.append('s', aspectRatio);
+      if (diameter) params.append('d', diameter.replace(/[^0-9]/g, '')); // Remove 'R' if present
 
-      router.push(`/catalog?${params.toString()}`);
+      router.push(`/search-results?${params.toString()}`);
     }
   };
 
@@ -43,8 +43,8 @@ const SearchByText: FC = () => {
                 type="text"
                 placeholder="e.g. 255/55R18"
                 value={value}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleChange({ e, setValue, setSelectedFilters })
+                onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                  handleChange({ event, setValue, setSelectedFilters })
                 }
                 onKeyDown={handleKeyPress}
                 className="w-full bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"

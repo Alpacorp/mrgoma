@@ -4,13 +4,13 @@ import { cleanInput } from '@/app/utils/cleanInput';
 import { formatTireSize } from '@/app/utils/formatTireSize';
 
 interface HandleChangeProps {
-  e: ChangeEvent<HTMLInputElement>;
+  event: ChangeEvent<HTMLInputElement>;
   setValue: (value: string) => void;
   setSelectedFilters: (value: any) => void;
 }
 
-export const handleChange = ({ e, setValue, setSelectedFilters }: HandleChangeProps) => {
-  const rawInput = e.target.value;
+export const handleChange = ({ event, setValue, setSelectedFilters }: HandleChangeProps) => {
+  const rawInput = event.target.value;
   const cleanedInput = cleanInput(rawInput);
   const formattedInput = formatTireSize(cleanedInput);
   setValue(formattedInput);
