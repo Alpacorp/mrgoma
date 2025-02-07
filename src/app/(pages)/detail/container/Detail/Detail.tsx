@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { singleproductTest } from '@/app/(pages)/catalog/data/singleProductTest';
+import { singleproductTest } from '@/app/(pages)/search-results/data/singleProductTest';
 import {
   ProductCarousel,
   TireInformation,
