@@ -1,6 +1,8 @@
+import { NextPage } from 'next';
+
 import HomeContent from '@/app/(pages)/home/container/Home/HomeContent';
 
-const Home = () => {
+const Home: NextPage = () => {
   return <HomeContent />;
 };
 
