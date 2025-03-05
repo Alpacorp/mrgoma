@@ -183,9 +183,9 @@ function MobileLateralFilters() {
                         />
                         <label
                           htmlFor={`filter-mobile-${section.id}-${optionIdx}`}
-                          className="ml-3 min-w-0 flex-1 text-gray-500 text-sm"
+                          className="ml-3 flex-1 text-gray-500 text-sm"
                         >
-                          {option.label}
+                          {option.label} test
                         </label>
                       </div>
                     ))}

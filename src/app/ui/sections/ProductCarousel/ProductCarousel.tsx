@@ -9,10 +9,9 @@ const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
   return (
     <TabGroup className="flex flex-col-reverse">
       <div className="mx-auto mt-6 w-full max-w-2xl sm:block lg:max-w-none">
-        <TabList className="grid grid-cols-4 gap-3 max-[400px]:gap-3">
+        <TabList className="grid grid-cols-4 gap-3 max-[25rem]:gap-3">
           {singleTire.images.map(image => (
             <Tab
-              aria-selected={true}
               key={image.id}
               className="group relative flex h-24 cursor-pointer items-center justify-center rounded-md bg-white text-sm font-medium uppercase text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring ring-green-primary focus:ring-opacity-60 focus:ring-offset-4"
             >
@@ -38,17 +37,13 @@ const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
         {singleTire.images.map(image => (
           <TabPanel
             key={image.id}
-            className="max-h-60 h-full w-full object-fill object-center max-w-[320px]:rounded-lg
-              sm:h-96 sm:min-h-[450px] sm:max-h-[500px] sm:object-fill sm:object-center
-            "
+            className="max-h-60 h-full w-full object-fill object-center sm:h-96 sm:min-h-[28.125rem] sm:max-h-[31.25rem]"
           >
             <div className="relative">
               <Image
                 alt={image.alt}
                 src={image.src}
-                className="max-h-60 h-full w-full object-fill max-w-[320px]:rounded-lg object-center max-w-[320px]:rounded-lg
-                  sm:h-96 sm:min-h-[450px] sm:max-h-[500px] sm:object-fill sm:object-center
-                "
+                className="max-h-60 h-full w-full object-fill object-center sm:h-96 sm:min-h-[28.125rem] sm:max-h-[31.25rem]"
                 width={500}
                 height={500}
               />

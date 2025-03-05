@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import React from 'react';
 
 import { SelectedFiltersProvider } from '@/app/context/SelectedFilters';
 import { DetailModalProvider } from '@/app/context/ShowDetailModal';
@@ -25,6 +26,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" href="/favicon.png" sizes="any" type="image/x-icon" />
+        <title>Mr Goma Tires</title>
       </head>
       <DetailModalProvider>
         <FiltersProvider>
