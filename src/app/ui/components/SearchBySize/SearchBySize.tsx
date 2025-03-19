@@ -1,12 +1,12 @@
 'use client';
 
-import { CarFront, CarIcon as CarRear } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { FC, useContext, useState } from 'react';
 
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
-import { SelectDropdown } from '@/app/ui/components';
 import TireDisplay from '@/app/ui/components/TireDisplay/TireDisplay';
+import { TireSize } from '@/app/ui/interfaces/tireSize';
+import { SizeSelectors } from '@/app/ui/sections/SizeSelectors/SizeSelectors';
 
 interface FilterOption {
   id: number;
@@ -47,35 +47,28 @@ const diameter: FilterOption[] = [
   { id: 5, name: 16 },
 ];
 
-interface TireSize {
-  width: string;
-  sidewall: string;
-  diameter: string;
-}
-
 const SearchBySize: FC = () => {
   const { setSelectedFilters } = useContext(SelectedFiltersContext);
 
   const [hasDifferentSizes, setHasDifferentSizes] = useState(false);
-  const [frontTireSize, setFrontTireSize] = useState<TireSize>({
-    width: '',
-    sidewall: '',
-    diameter: '',
-  });
-  const [rearTireSize, setRearTireSize] = useState<TireSize>({
-    width: '',
-    sidewall: '',
-    diameter: '',
+  const [tireSizes, setTireSizes] = useState<{
+    front: TireSize;
+    rear: TireSize;
+  }>({
+    front: { width: '', sidewall: '', diameter: '' },
+    rear: { width: '', sidewall: '', diameter: '' },
   });
 
   const router = useRouter();
 
   const handleFilterChange = (value: string, type: keyof TireSize, position: 'all' | 'rear') => {
-    if (position === 'all') {
-      setFrontTireSize(prev => ({ ...prev, [type]: value }));
-    } else {
-      setRearTireSize(prev => ({ ...prev, [type]: value }));
-    }
+    setTireSizes(prev => ({
+      ...prev,
+      [position === 'all' ? 'front' : 'rear']: {
+        ...prev[position === 'all' ? 'front' : 'rear'],
+        [type]: value,
+      },
+    }));
     setSelectedFilters(prev => ({
       ...prev,
       [type]: value,
@@ -83,14 +76,13 @@ const SearchBySize: FC = () => {
   };
 
   const removeFilter = (type: keyof TireSize, position: 'all' | 'rear') => {
-    if (position === 'all') {
-      setFrontTireSize(prev => ({ ...prev, [type]: '' }));
-      if (!hasDifferentSizes) {
-        setRearTireSize(prev => ({ ...prev, [type]: '' }));
-      }
-    } else {
-      setRearTireSize(prev => ({ ...prev, [type]: '' }));
-    }
+    setTireSizes(prev => ({
+      ...prev,
+      [position === 'all' ? 'front' : 'rear']: {
+        ...prev[position === 'all' ? 'front' : 'rear'],
+        [type]: '',
+      },
+    }));
     setSelectedFilters(prev => ({
       ...prev,
       [type]: '',
@@ -99,16 +91,17 @@ const SearchBySize: FC = () => {
 
   const handleSearch = () => {
     const params = new URLSearchParams();
+    const { front, rear } = tireSizes;
     // Add all tire parameters
-    if (frontTireSize.width) params.append('w', frontTireSize.width);
-    if (frontTireSize.sidewall) params.append('s', frontTireSize.sidewall);
-    if (frontTireSize.diameter) params.append('d', frontTireSize.diameter);
+    if (front.width) params.append('w', front.width);
+    if (front.sidewall) params.append('s', front.sidewall);
+    if (front.diameter) params.append('d', front.diameter);
 
     // Add rear tire parameters if different sizes are selected
     if (hasDifferentSizes) {
-      if (rearTireSize.width) params.append('rw', rearTireSize.width);
-      if (rearTireSize.sidewall) params.append('rs', rearTireSize.sidewall);
-      if (rearTireSize.diameter) params.append('rd', rearTireSize.diameter);
+      if (rear.width) params.append('rw', rear.width);
+      if (rear.sidewall) params.append('rs', rear.sidewall);
+      if (rear.diameter) params.append('rd', rear.diameter);
     }
 
     router.push(`/search-results?${params.toString()}`);
@@ -119,66 +112,21 @@ const SearchBySize: FC = () => {
   };
 
   const canSearch =
-    allFieldsSelected(frontTireSize) && (!hasDifferentSizes || allFieldsSelected(rearTireSize));
+    allFieldsSelected(tireSizes.front) && (!hasDifferentSizes || allFieldsSelected(tireSizes.rear));
 
   const renderSizeSelectors = (position: 'all' | 'rear') => {
-    const currentSize = position === 'all' ? frontTireSize : rearTireSize;
+    const currentSize = position === 'all' ? tireSizes.front : tireSizes.rear;
 
     return (
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 mb-4">
-          {position === 'all' ? (
-            <CarFront className="w-5 h-5 text-gray-600" />
-          ) : (
-            <CarRear className="w-5 h-5 text-gray-600" />
-          )}
-          <span className="text-sm font-medium text-gray-600 capitalize">{position} Tires</span>
-        </div>
-        <div className="grid grid-cols-3 gap-4">
-          {[
-            { label: 'Width', options: section, type: 'width' as const },
-            { label: 'Sidewall', options: aspectRatio, type: 'sidewall' as const },
-            { label: 'Diameter', options: diameter, type: 'diameter' as const },
-          ].map(field => (
-            <div key={`${position}-${field.type}`} className="w-full">
-              <label className="text-sm font-medium text-gray-700 mb-2 block">{field.label}</label>
-              <SelectDropdown
-                selectedFilters={currentSize}
-                handleFilterChange={value => handleFilterChange(value, field.type, position)}
-                field={field}
-                showDefaultText={false}
-              />
-            </div>
-          ))}
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {Object.entries(currentSize).map(([key, value]) => {
-            if (!value) return null;
-            return (
-              <span
-                key={`${position}-${key}`}
-                className="inline-flex items-center rounded-full bg-green-50 border border-green-300 px-3 py-1 text-sm font-medium text-green-700"
-              >
-                {key.charAt(0).toUpperCase() + key.slice(1)}: {value}
-                <button
-                  type="button"
-                  onClick={() => removeFilter(key as keyof TireSize, position)}
-                  className="ml-1 inline-flex items-center rounded-full bg-green-50 p-1 text-green-700 hover:bg-green-100"
-                >
-                  <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="sr-only">Remove {key} filter</span>
-                </button>
-              </span>
-            );
-          })}
-        </div>
-      </div>
+      <SizeSelectors
+        currentSize={currentSize}
+        position={position}
+        section={section}
+        aspectRatio={aspectRatio}
+        diameter={diameter}
+        handleFilterChange={handleFilterChange}
+        removeFilter={removeFilter}
+      />
     );
   };
 
