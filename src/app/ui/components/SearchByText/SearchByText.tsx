@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { ChangeEvent, FC, FormEvent, useContext, useState } from 'react';
 
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
-import { TireDisplay } from '@/app/ui/components';
+import { ButtonSearch, TireDisplay } from '@/app/ui/components';
 import { handleChange } from '@/app/utils/handleChangeInput';
 import { handleKeyPress } from '@/app/utils/handleKeyPress';
 
@@ -53,17 +53,7 @@ const SearchByText: FC = () => {
                 Enter the tire size in the format: Width/AspectRatio R Diameter
               </p>
             </div>
-            <button
-              type="submit"
-              className={`w-full py-3 text-lg font-medium rounded-lg transition-colors ${
-                value.trim()
-                  ? 'bg-green-600 hover:bg-green-700 text-white'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
-              disabled={!value.trim()}
-            >
-              Search Tires
-            </button>
+            <ButtonSearch type={'submit'} disabled={value.trim()} />
           </form>
         </div>
       </div>
