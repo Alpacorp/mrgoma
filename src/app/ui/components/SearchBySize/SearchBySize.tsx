@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { FC, useContext, useState } from 'react';
 
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
+import { ButtonSearch } from '@/app/ui/components';
 import TireDisplay from '@/app/ui/components/TireDisplay/TireDisplay';
 import { TireSize } from '@/app/ui/interfaces/tireSize';
 import { SizeSelectors } from '@/app/ui/sections/SizeSelectors/SizeSelectors';
@@ -147,22 +148,10 @@ const SearchBySize: FC = () => {
               Different sizes on front and rear?
             </label>
           </div>
-
           {hasDifferentSizes && (
             <div className="pt-4 border-t border-gray-100">{renderSizeSelectors('rear')}</div>
           )}
-
-          <button
-            onClick={handleSearch}
-            disabled={!canSearch}
-            className={`w-full py-3 text-lg font-medium rounded-lg transition-colors ${
-              canSearch
-                ? 'bg-green-600 hover:bg-green-700 text-white'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
-          >
-            {canSearch ? 'Search Tires' : 'Select all measurements'}
-          </button>
+          <ButtonSearch onClick={handleSearch} disabled={canSearch} />
         </div>
       </div>
       <div className="hidden md:flex items-center justify-center flex-1 mt-8">

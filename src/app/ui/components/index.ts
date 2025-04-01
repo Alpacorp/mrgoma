@@ -24,3 +24,4 @@ export { default as SearchByText } from '@/app/ui/components/SearchByText/Search
 export { default as CollapsibleSearchBar } from '@/app/ui/components/CollapsibleSearchBar/CollapsibleSearchBar';
 export { default as SelectDropdown } from '@/app/ui/components/SelectDropdown/SelectDropdown';
 export { default as RangeSlider } from '@/app/ui/components/RangeSlider/RangeSlider';
+export { default as ButtonSearch } from '@/app/ui/components/ButtonSearch/ButtonSearch';
