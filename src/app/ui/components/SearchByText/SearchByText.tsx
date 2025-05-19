@@ -29,10 +29,9 @@ const SearchByText: FC = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-      <div className="w-full md:w-3/5 space-y-6">
-        <div className="bg-green-50 p-6 rounded-lg border border-green-200">
-          <h3 className="text-lg font-semibold mb-4 text-gray-900">Quick Search</h3>
+    <div className="flex gap-5 h-full">
+      <div className="w-full md:w-3/5">
+        <div>
           <form onSubmit={handleSearch} className="space-y-6">
             <div className="space-y-2">
               <label htmlFor="tireSize" className="text-sm font-medium text-gray-700 block">

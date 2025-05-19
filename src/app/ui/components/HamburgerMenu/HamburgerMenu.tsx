@@ -3,7 +3,7 @@ import { FC, useContext } from 'react';
 
 import { ShowMenuContext } from '@/app/context/ShowMenuContext';
 
-const HamburguerMenu: FC = () => {
+const HamburgerMenu: FC = () => {
   const { setShowMenu } = useContext(ShowMenuContext);
 
   return (
@@ -19,4 +19,4 @@ const HamburguerMenu: FC = () => {
   );
 };
 
-export default HamburguerMenu;
+export default HamburgerMenu;

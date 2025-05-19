@@ -6,8 +6,8 @@ import { SearchByText } from '@/app/ui/components';
 
 const SearchByTextContainer: FC = () => {
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <div className="bg-white rounded-xl md:p-4 shadow-sm border border-gray-100">
+    <div className="w-full max-w-xl mx-auto">
+      <div className="flex items-center justify-center rounded-xl md:p-4 shadow-xl bg-white h-64 overflow-auto">
         <SearchByText />
       </div>
     </div>

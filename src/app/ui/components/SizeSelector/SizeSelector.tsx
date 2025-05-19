@@ -18,13 +18,13 @@ export const SizeSelector: FC<SizeSelectorProps> = ({
   return (
     <span
       key={`${position}-${filterKey}`}
-      className="inline-flex items-center rounded-full bg-green-50 border border-green-300 px-3 py-1 text-sm font-medium text-green-700"
+      className="inline-flex items-center rounded-full bg-green-50 border border-green-300 px-1 text-xs font-medium text-green-700"
     >
       {filterKey ? filterKey.charAt(0).toUpperCase() + filterKey.slice(1) : ''}: {value}
       <button
         type="button"
         onClick={() => removeFilter(filterKey as keyof TireSize, position)}
-        className="ml-1 inline-flex items-center rounded-full bg-green-50 p-1 text-green-700 hover:bg-green-100"
+        className="inline-flex items-center rounded-full bg-green-50 p-1 text-green-700 hover:bg-green-100"
       >
         <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
           <path

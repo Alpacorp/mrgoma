@@ -25,14 +25,14 @@ export const SizeSelectors: FC<SizeSelectorsProps> = ({
   removeFilter,
 }) => {
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2 mb-4">
+    <div className="space-y-3">
+      <div className="flex items-center">
         {position === 'all' ? (
           <CarFront className="w-5 h-5 text-gray-600" />
         ) : (
           <Car className="w-5 h-5 text-gray-600" />
         )}
-        <span className="text-sm font-medium text-gray-600 capitalize">{position} Tires</span>
+        <span className="text-sm font-medium text-gray-600 capitalize ml-1">{position} Tires</span>
       </div>
       <div className="grid grid-cols-3 gap-4">
         {[
