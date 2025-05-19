@@ -1,6 +1,6 @@
 export { default as BrandImage } from './BrandImage/BrandImage';
 export { default as CtaButton } from './CtaButton/CtaButton';
-export { default as HamburguerMenu } from './HamburguerMenu/HamburguerMenu';
+export { default as HamburguerMenu } from '@/app/ui/components/HamburgerMenu/HamburgerMenu';
 export { default as OpenFilters } from './OpenFilters/OpenFilters';
 export { default as ProductCondition } from './ProductCondition/ProductCondition';
 export { default as ProductImage } from './ProductImage/ProductImage';

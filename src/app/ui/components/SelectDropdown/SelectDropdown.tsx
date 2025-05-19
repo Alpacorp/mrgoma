@@ -16,7 +16,6 @@ const SelectDropdown: FC<SelectDropdownProps> = ({
   field,
   selectedFilters,
   handleFilterChange,
-  isCollapsed,
   showDefaultText = true,
 }) => {
   return (
@@ -25,9 +24,7 @@ const SelectDropdown: FC<SelectDropdownProps> = ({
       onChange={e =>
         handleFilterChange(e.target.value, field.type as 'width' | 'sidewall' | 'diameter')
       }
-      className={`w-full bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 appearance-none focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 ${
-        isCollapsed ? 'text-sm' : 'text-base'
-      }`}
+      className={`w-full bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 appearance-none focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 text-xs`}
     >
       <option value="">Select {showDefaultText && field.label}</option>
       {field.options.map(option => (

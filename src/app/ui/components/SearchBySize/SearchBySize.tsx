@@ -132,9 +132,9 @@ const SearchBySize: FC = () => {
   };
 
   return (
-    <div className="flex w-full max-w-6xl mx-auto">
-      <div className="bg-white p-8 w-full md:w-3/5 rounded-xl shadow-sm border border-gray-100">
-        <div className="space-y-6">
+    <div className="flex gap-5 h-full w-full">
+      <div className="w-full md:w-3/5">
+        <div className="space-y-4">
           {renderSizeSelectors('all')}
           <div className="flex items-center gap-2">
             <input
@@ -154,7 +154,7 @@ const SearchBySize: FC = () => {
           <ButtonSearch onClick={handleSearch} disabled={canSearch} />
         </div>
       </div>
-      <div className="hidden md:flex items-center justify-center flex-1 mt-8">
+      <div className="hidden md:flex items-center justify-center flex-1">
         <TireDisplay />
       </div>
     </div>
