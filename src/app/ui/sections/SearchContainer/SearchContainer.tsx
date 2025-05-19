@@ -21,7 +21,7 @@ const SearchContainer: FC = () => {
   };
 
   return (
-    <div className="container py-14">
+    <div className="py-14">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold mb-4 text-white [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.45)]">
           Search Your Perfect Tire
