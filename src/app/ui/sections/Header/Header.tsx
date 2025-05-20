@@ -13,15 +13,9 @@ import MenuMobile from '@/app/ui/sections/MenuMobile/MenuMobile';
 const Header: FC = () => {
   return (
     <>
-      <header className="relative bg-black w-full">
-        <div className="absolute inset-0 overflow-hidden [background:linear-gradient(90deg,rgb(0,0,0)_50%,rgb(59,199,72)_82%)]">
-          <Image
-            src="/assets/images/bg-header.svg"
-            alt=""
-            fill
-            className="object-cover opacity-80"
-            priority
-          />
+      <header className="relative w-full">
+        <div className="absolute inset-0 overflow-hidden bg-[linear-gradient(90deg,_rgb(0,0,0)_50%,_rgb(59,199,72)_82%)]">
+          <Image src="/assets/images/bg-header.svg" alt="" fill className="object-cover" priority />
         </div>
         <nav
           aria-label="Global"

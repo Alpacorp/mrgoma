@@ -15,3 +15,4 @@ export { default as SearchBar } from './SearchBar/SearchBar';
 export { default as Pagination } from './Pagination/Pagination';
 export { default as SearchBySizeContainer } from './SearchBySizeContainer/SearchBySizeContainer';
 export { default as SearchByTextContainer } from './SearchByTextContainer/SearchByTextContainer';
+export { default as InfoSlider } from './InfoSlider/InfoSlider';
