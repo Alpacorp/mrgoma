@@ -2,6 +2,7 @@ import Image from 'next/image';
 import React, { FC } from 'react';
 
 import { SearchContainer } from '@/app/ui/components';
+import { InfoSlider } from '@/app/ui/sections';
 
 const HomeContent: FC = () => {
   return (
@@ -25,6 +26,9 @@ const HomeContent: FC = () => {
                 </div>
               </div>
             </div>
+          </section>
+          <section aria-labelledby="benefits-heading" className="px-4 sm:px-6 lg:px-8">
+            <InfoSlider />
           </section>
         </main>
       </div>

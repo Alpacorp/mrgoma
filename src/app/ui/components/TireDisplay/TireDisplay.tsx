@@ -3,7 +3,8 @@
 import Image from 'next/image';
 import React, { FC, useContext, useEffect, useRef } from 'react';
 
-import tireImage from '#public/assets/images/tireSize.png';
+import shadow from '#public/assets/images/shadow.webp';
+import tireImage from '#public/assets/images/tireSize.webp';
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
 import { ArrowsToRight } from '@/app/ui/icons';
 
@@ -38,6 +39,9 @@ const TireDisplay: FC = () => {
           alt="Tire size diagram"
           priority
         />
+      </div>
+      <div>
+        <Image src={shadow} alt={'shadow'} className="absolute -bottom-[.4rem]" />
       </div>
       <div className="absolute inset-0 flex items-center justify-center gap-2 px-4 py-1 bg-neutral-800 h-min w-min rounded-full shadow-xl m-auto">
         <ArrowsToRight className="w-10" />
