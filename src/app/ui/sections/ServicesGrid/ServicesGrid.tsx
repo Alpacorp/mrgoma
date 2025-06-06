@@ -4,7 +4,6 @@ import { useCallback } from 'react';
 
 import { ServiceCard } from '@/app/ui/components';
 import { ServiceCardData } from '@/app/ui/components/ServiceCard/service';
-import { TitleSection } from '@/app/ui/sections';
 
 import { servicesData } from './servicesData';
 
