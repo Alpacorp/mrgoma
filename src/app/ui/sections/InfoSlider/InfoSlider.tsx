@@ -59,7 +59,7 @@ const InfoSlider = () => {
   }, [currentSlide, goToSlide]);
 
   return (
-    <div className="relative w-full overflow-hidden h-80 max-w-3xl mx-auto rounded-xl my-5 shadow-lg bg-black">
+    <div className="relative w-full overflow-hidden h-80 max-w-3xl mx-auto rounded-xl shadow-lg bg-black">
       {/* Contenedor de slides con imágenes de fondo individuales */}
       <div className="relative w-full h-full">
         {slides.map((slide, index) => (

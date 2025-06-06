@@ -25,3 +25,4 @@ export { default as CollapsibleSearchBar } from '@/app/ui/components/Collapsible
 export { default as SelectDropdown } from '@/app/ui/components/SelectDropdown/SelectDropdown';
 export { default as RangeSlider } from '@/app/ui/components/RangeSlider/RangeSlider';
 export { default as ButtonSearch } from '@/app/ui/components/ButtonSearch/ButtonSearch';
+export { default as ServiceCard } from '@/app/ui/components/ServiceCard/ServiceCard';

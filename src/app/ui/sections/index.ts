@@ -16,3 +16,5 @@ export { default as Pagination } from './Pagination/Pagination';
 export { default as SearchBySizeContainer } from './SearchBySizeContainer/SearchBySizeContainer';
 export { default as SearchByTextContainer } from './SearchByTextContainer/SearchByTextContainer';
 export { default as InfoSlider } from './InfoSlider/InfoSlider';
+export { default as TitleSection } from './TitleSection/TitleSection';
+export { default as ServicesGrid } from './ServicesGrid/ServicesGrid';
