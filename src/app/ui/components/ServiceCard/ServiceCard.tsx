@@ -8,19 +8,13 @@ import { ServiceCardProps } from '@/app/ui/components/ServiceCard/service';
 import { ServiceIcon } from '@/app/ui/icons';
 
 export const ServiceCard = ({
-  id,
   title,
   description,
   backgroundImage,
   href,
   className = '',
-  onCardClick,
 }: ServiceCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
-
-  const handleClick = () => {
-    onCardClick?.(id);
-  };
 
   const cardContent = (
     <div
@@ -32,17 +26,10 @@ export const ServiceCard = ({
       `}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={handleClick}
       role="button"
       tabIndex={0}
-      onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          handleClick();
-        }
-      }}
       aria-label={`Service: ${title}`}
     >
-      {/* Imagen de fondo */}
       <div className="relative h-64 w-full">
         <Image
           src={backgroundImage || '/placeholder.svg'}
@@ -53,16 +40,11 @@ export const ServiceCard = ({
         />
         <div className="absolute inset-0 bg-black bg-opacity-40" />
       </div>
-
-      {/* Contenido de la tarjeta */}
       <div className="absolute inset-0 flex flex-col justify-between p-6">
-        {/* Icono y título */}
         <div className="flex items-center gap-4">
           <ServiceIcon />
           <h3 className="text-white text-xl font-bold">{title}</h3>
         </div>
-
-        {/* Descripción con efecto hover */}
         <div
           className={`
             transition-all duration-300 ease-in-out
@@ -78,7 +60,6 @@ export const ServiceCard = ({
     </div>
   );
 
-  // Si hay href, envolver en Link, sino devolver el contenido directamente
   return href ? (
     <Link href={href} className="block">
       {cardContent}

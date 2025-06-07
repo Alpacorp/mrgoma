@@ -34,7 +34,7 @@ const HomeContent: FC = () => {
             >
               <InfoSlider />
             </section>
-            <div>
+            <div id="services">
               <TitleSection title="OUR SERVICES" />
             </div>
           </div>
@@ -42,7 +42,7 @@ const HomeContent: FC = () => {
             <ServicesGrid className="px-4 sm:px-6 lg:px-8 py-8 pb-20" />
           </section>
           <section>
-            <div>
+            <div id="about">
               <TitleSection title="Why Mr. Goma" />
             </div>
             <InfoCardsSection className="bg-[url('/assets/images/bg-section.webp')] bg-cover bg-center bg-no-repeat bg-fixed bg-opacity-50 bg-black/50" />

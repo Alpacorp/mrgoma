@@ -9,5 +9,4 @@ export interface ServiceCardData {
 
 export interface ServiceCardProps extends ServiceCardData {
   className?: string;
-  onCardClick?: (id: string) => void;
 }
