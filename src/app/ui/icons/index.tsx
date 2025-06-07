@@ -5,3 +5,7 @@ export * from './SizeIcon';
 export * from './TextIcon';
 export * from './ArrowsToRight';
 export * from './ServiceIcon';
+export * from './CertifiedIcon';
+export * from './GuaranteeIcon';
+export * from './QualityIcon';
+export * from './ShippingIcon';
