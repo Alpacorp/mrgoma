@@ -1,9 +1,9 @@
 import { config as dotenvConfig } from 'dotenv';
 import { ConnectionPool, config as SqlConfig } from 'mssql';
 
-import { DB_NAME, DB_PASSWORD, DB_USER, SERVER_URL } from '@config/constants';
-import { logger } from '@/utils/logger';
 import { DatabaseConnectionError } from '@/errors/DatabaseConnectionError';
+import { logger } from '@/utils/logger';
+import { DB_NAME, DB_PASSWORD, DB_USER, SERVER_URL } from '@config/constants';
 
 dotenvConfig();
 
