@@ -26,3 +26,4 @@ export { default as SelectDropdown } from '@/app/ui/components/SelectDropdown/Se
 export { default as RangeSlider } from '@/app/ui/components/RangeSlider/RangeSlider';
 export { default as ButtonSearch } from '@/app/ui/components/ButtonSearch/ButtonSearch';
 export { default as ServiceCard } from '@/app/ui/components/ServiceCard/ServiceCard';
+export { default as InfoCard } from '@/app/ui/components/InfoCard/InfoCard';

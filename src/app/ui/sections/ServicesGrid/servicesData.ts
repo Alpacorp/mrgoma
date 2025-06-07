@@ -7,7 +7,6 @@ export const servicesData: ServiceCardData[] = [
     description: 'Perfectly done by experienced tire professionals',
     backgroundImage: '/assets/images/bg-service-card.jpg',
     icon: 'tire',
-    href: '/services/mounting-balancing',
   },
   {
     id: 'tire-repair',
@@ -15,7 +14,6 @@ export const servicesData: ServiceCardData[] = [
     description: 'Quick and reliable tire repair services',
     backgroundImage: '/assets/images/bg-service-card.jpg',
     icon: 'repair',
-    href: '/services/tire-repair',
   },
   {
     id: 'wheel-alignment',
@@ -23,7 +21,6 @@ export const servicesData: ServiceCardData[] = [
     description: 'Precision alignment for optimal performance',
     backgroundImage: '/assets/images/bg-service-card.jpg',
     icon: 'alignment',
-    href: '/services/wheel-alignment',
   },
   {
     id: 'tire-rotation',
@@ -31,7 +28,6 @@ export const servicesData: ServiceCardData[] = [
     description: 'Extend tire life with professional rotation',
     backgroundImage: '/assets/images/bg-service-card.jpg',
     icon: 'rotation',
-    href: '/services/tire-rotation',
   },
   {
     id: 'brake-service',
@@ -39,7 +35,6 @@ export const servicesData: ServiceCardData[] = [
     description: 'Complete brake system inspection and repair',
     backgroundImage: '/assets/images/bg-service-card.jpg',
     icon: 'brakes',
-    href: '/services/brake-service',
   },
   {
     id: 'oil-change',
@@ -47,6 +42,5 @@ export const servicesData: ServiceCardData[] = [
     description: 'Fast and professional oil change service',
     backgroundImage: '/assets/images/bg-service-card.jpg',
     icon: 'oil',
-    href: '/services/oil-change',
   },
 ];

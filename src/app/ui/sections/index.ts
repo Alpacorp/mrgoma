@@ -18,3 +18,4 @@ export { default as SearchByTextContainer } from './SearchByTextContainer/Search
 export { default as InfoSlider } from './InfoSlider/InfoSlider';
 export { default as TitleSection } from './TitleSection/TitleSection';
 export { default as ServicesGrid } from './ServicesGrid/ServicesGrid';
+export { default as InfoCardsSection } from './InfoCardsSection/InfoCardsSection';

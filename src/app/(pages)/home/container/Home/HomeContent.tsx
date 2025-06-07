@@ -2,7 +2,7 @@ import Image from 'next/image';
 import React, { FC } from 'react';
 
 import { SearchContainer } from '@/app/ui/components';
-import { InfoSlider, ServicesGrid, TitleSection } from '@/app/ui/sections';
+import { InfoCardsSection, InfoSlider, ServicesGrid, TitleSection } from '@/app/ui/sections';
 
 const HomeContent: FC = () => {
   return (
@@ -34,12 +34,18 @@ const HomeContent: FC = () => {
             >
               <InfoSlider />
             </section>
-            <section>
+            <div>
               <TitleSection title="OUR SERVICES" />
-            </section>
+            </div>
           </div>
           <section>
-            <ServicesGrid className="px-4 sm:px-6 lg:px-8 py-8" />
+            <ServicesGrid className="px-4 sm:px-6 lg:px-8 py-8 pb-20" />
+          </section>
+          <section>
+            <div>
+              <TitleSection title="Why Mr. Goma" />
+            </div>
+            <InfoCardsSection className="bg-[url('/assets/images/bg-section.webp')] bg-cover bg-center bg-no-repeat bg-fixed bg-opacity-50 bg-black/50" />
           </section>
         </main>
       </div>
