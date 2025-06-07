@@ -21,9 +21,7 @@ export const InfoIcon = ({ type, className = '' }: IconProps) => {
     <div
       className={`w-20 h-20 rounded-full bg-[#272727] border-4 border-[#9dfb40] flex items-center justify-center ${className}`}
     >
-      <svg width="32" height="32" viewBox="0 0 24 24" className="text-[#9dfb40]" aria-hidden="true">
-        {getIconPath()}
-      </svg>
+      {getIconPath()}
     </div>
   );
 };
