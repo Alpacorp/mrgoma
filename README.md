@@ -35,6 +35,10 @@ private. If in the future you need a variable to be readable on the client you
 can declare it again with the `NEXT_PUBLIC_` prefix, but sensitive values should
 remain server-only.
 
+This project uses the [winston](https://github.com/winstonjs/winston) library fo
+r logging. You can adjust the log verbosity by setting `LOG_LEVEL` (defaults to
+`info`).
+
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
 ## Learn More

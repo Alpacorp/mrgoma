@@ -1,6 +1,8 @@
 import { config as dotenvConfig } from 'dotenv';
 import { ConnectionPool, config as SqlConfig } from 'mssql';
 
+import { DatabaseConnectionError } from '@/errors/DatabaseConnectionError';
+import { logger } from '@/utils/logger';
 import { DB_NAME, DB_PASSWORD, DB_USER, SERVER_URL } from '@config/constants';
 
 dotenvConfig();
@@ -19,12 +21,23 @@ const config: SqlConfig = {
 const poolPromise: Promise<ConnectionPool> = new ConnectionPool(config)
   .connect()
   .then(pool => {
-    console.log('Conectado a SQL Server');
+    logger.info('Connected to SQL Server');
     return pool;
   })
   .catch(err => {
-    console.error('Conexión a la Base de Datos Fallida: ', err);
-    throw err;
+    logger.error('Database connection failed', err);
+    throw new DatabaseConnectionError(err.message);
   });
 
+export const getPool = async (): Promise<ConnectionPool> => poolPromise;
+
+export const closePool = async (): Promise<void> => {
+  try {
+    const pool = await poolPromise;
+    await pool.close();
+    logger.info('Database connection closed');
+  } catch (err) {
+    logger.error('Error closing database connection', err);
+  }
+};
 export { poolPromise };
