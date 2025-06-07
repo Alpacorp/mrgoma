@@ -8,7 +8,7 @@ export interface SectionHeaderProps {
 export const TitleSection = ({ title, textColor = '#272727' }: SectionHeaderProps) => {
   return (
     <div
-      className={`flex items-center justify-center gap-6 py-8 bg-white max-w-3xl m-auto rounded-tl-3xl rounded-tr-3xl`}
+      className={`flex items-center justify-center gap-6 py-8 bg-white max-w-3xl m-auto rounded-tl-3xl rounded-tr-3xl border border-b-0 border-lime-400 shadow-sm`}
       role="banner"
       aria-label={`Section: ${title}`}
     >

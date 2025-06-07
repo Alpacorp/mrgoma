@@ -32,7 +32,9 @@ export const SizeSelectors: FC<SizeSelectorsProps> = ({
         ) : (
           <Car className="w-5 h-5 text-gray-600" />
         )}
-        <span className="text-sm font-medium text-gray-600 capitalize ml-1">{position} Tires</span>
+        <span className="text-base font-medium text-gray-600 capitalize ml-1">
+          {position} Tires
+        </span>
       </div>
       <div className="grid grid-cols-3 gap-4">
         {[

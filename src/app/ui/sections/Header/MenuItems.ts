@@ -1,6 +1,6 @@
 export const menuItems = [
-  { name: 'Services', href: '#' },
-  { name: 'About us', href: '#' },
+  { name: 'Services', href: '#services' },
+  { name: 'About us', href: '#about' },
   { name: 'Locations', href: '#' },
   { name: 'Contact us', href: '#' },
 ];
