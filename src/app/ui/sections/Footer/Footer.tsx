@@ -52,7 +52,7 @@ export const Footer = ({
 }: FooterProps) => {
   return (
     <footer className={`bg-black relative overflow-hidden ${className}`}>
-      <div className="absolute inset-0 opacity-1">
+      <div className="absolute inset-0 opacity-1" aria-hidden="true">
         <div
           className="absolute inset-0"
           style={{
