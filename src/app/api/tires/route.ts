@@ -1,38 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { poolPromise } from '@/connection/db';
-
-export type DocumentRecord = {
-  id: number;
-  TireId: string;
-  Code: string;
-};
+import { logger } from '@/utils/logger';
+import { fetchTires } from '@/repositories/tiresRepository';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const page = searchParams.get('page') ?? '1';
-  const pageSize = searchParams.get('pageSize') ?? '10';
-
-  const pageInt = parseInt(page, 10);
-  const pageSizeInt = parseInt(pageSize, 10);
-
-  const offset = (pageInt - 1) * pageSizeInt;
+  const page = parseInt(searchParams.get('page') ?? '1', 10);
+  const pageSize = parseInt(searchParams.get('pageSize') ?? '10', 10);
+  const offset = (page - 1) * pageSize;
 
   try {
-    const pool = await poolPromise;
-    const result = await pool
-      .request()
-      // .query(
-      //   `SELECT * FROM dbo.View_Tires ORDER BY TireId DESC OFFSET ${offset} ROWS FETCH NEXT ${pageSizeInt} ROWS ONLY`
-      // );
-      // .query(`SELECT * FROM dbo.View_Tires WHERE Code = '569927'`);
-      .query(
-        `SELECT * FROM dbo.View_Tires WHERE Local = '0' AND Trash = 'false' AND RemainingLife > '70%' ORDER BY ModificationDate DESC OFFSET ${offset} ROWS FETCH NEXT ${pageSizeInt} ROWS ONLY`
-      );
-
-    const records: DocumentRecord[] = result.recordset;
+    const records = await fetchTires(offset, pageSize);
     return NextResponse.json(records);
   } catch (err: any) {
+    logger.error('Failed to fetch tires', err);
     return NextResponse.json({ message: err.message }, { status: 500 });
   }
 }
