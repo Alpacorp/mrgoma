@@ -3,10 +3,10 @@
 @tailwind utilities;
 
 :root {
+  scroll-behavior: smooth;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
 }
 
 @layer utilities {
@@ -20,7 +20,6 @@ input[type='range'] {
   appearance: none;
   background: transparent;
   cursor: pointer;
-  width: 15rem;
   width: 100%;
 }
 
