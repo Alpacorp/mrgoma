@@ -9,3 +9,5 @@ export * from './CertifiedIcon';
 export * from './GuaranteeIcon';
 export * from './QualityIcon';
 export * from './ShippingIcon';
+export * from './LocationIcon';
+export * from './PhoneIcon';
