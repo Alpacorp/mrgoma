@@ -12,7 +12,7 @@ export const FooterSection = ({ section }: FooterSectionProps) => {
       <h3 className="text-white text-lg font-semibold mb-4">{section.title}</h3>
       <ul className="space-y-3">
         {section.links.map(link => (
-          <li key={link.label}>
+          <li key={link.href}>
             {link.external ? (
               <a
                 href={link.href}
