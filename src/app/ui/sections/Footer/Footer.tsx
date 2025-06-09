@@ -98,7 +98,7 @@ export const Footer = ({
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#9dfb40] hover:text-[#7bc42d] transition-colors duration-200 p-2 rounded-lg hover:bg-white hover:bg-opacity-10"
+                    className="text-[#9dfb40] hover:text-[#7bc42d] transition-colors duration-200 p-2 rounded-lg hover:bg-white hover:opacity-40"
                     aria-label={`Follow us on ${social.platform}`}
                   >
                     <SocialIcon platform={social.icon} />

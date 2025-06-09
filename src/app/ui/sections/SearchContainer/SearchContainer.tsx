@@ -31,10 +31,12 @@ const SearchContainer: FC = () => {
 
       <div className="w-full">
         <div className="flex justify-center">
-          <div className="grid w-full max-w-md grid-cols-2 rounded-lg">
+          <div className="grid w-full max-w-md grid-cols-2 rounded-lg" role="tablist">
             <button
               onClick={() => handleChangeTab('size')}
-              className={`py-2 px-4 transition-all text-neutral-800 rounded-tl-3xl rounded-tr-3xl text-md ${
+              role="tab"
+              aria-selected={activeTab === 'size'}
+              className={`py-2 px-4 transition-all text-neutral-800 rounded-tl-3xl rounded-tr-3xl text-md cursor-pointer ${
                 activeTab === 'size' ? 'bg-lime-400' : 'bg-gray-100 hover:bg-gray-200'
               }`}
             >
@@ -45,7 +47,9 @@ const SearchContainer: FC = () => {
             </button>
             <button
               onClick={() => handleChangeTab('text')}
-              className={`py-2 px-4 transition-all text-neutral-800 rounded-tl-3xl rounded-tr-3xl text-md ${
+              role="tab"
+              aria-selected={activeTab === 'text'}
+              className={`py-2 px-4 transition-all text-neutral-800 rounded-tl-3xl rounded-tr-3xl text-md cursor-pointer ${
                 activeTab === 'text' ? 'bg-lime-400' : 'bg-gray-100 hover:bg-gray-200'
               }`}
             >
