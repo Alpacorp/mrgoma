@@ -12,9 +12,9 @@ const ButtonSearch: FC<ButtonSearchProps> = ({ onClick, disabled, type }) => {
       type={type}
       onClick={onClick}
       disabled={!disabled}
-      className={`w-full py-2 text-lg font-medium rounded-lg transition-colors cursor-pointer ${
+      className={`w-full py-2 text-lg font-medium rounded-lg transition-colors ${
         disabled
-          ? 'bg-green-600 hover:bg-green-700 text-white'
+          ? 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'
           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
       }`}
     >
