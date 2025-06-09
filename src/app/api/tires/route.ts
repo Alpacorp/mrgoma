@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { logger } from '@/utils/logger';
 import { fetchTires } from '@/repositories/tiresRepository';
+import { logger } from '@/utils/logger';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);

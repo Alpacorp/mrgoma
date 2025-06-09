@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useMemo, useState } from 'react';
+import { createContext, ReactNode, useMemo, useState } from 'react';
 
 interface MenuContextType {
   showMenu: boolean;
@@ -9,10 +9,10 @@ interface MenuContextType {
 
 export const ShowMenuContext = createContext<MenuContextType>({
   showMenu: false,
-  setShowMenu: (value: boolean) => {},
+  setShowMenu: () => {},
 });
 
-export const MenuProvider = ({ children }: { children: React.ReactNode }) => {
+export const MenuProvider = ({ children }: { children: ReactNode }) => {
   const [showMenu, setShowMenu] = useState<boolean>(false);
 
   const contextValue = useMemo(() => ({ showMenu, setShowMenu }), [showMenu, setShowMenu]);

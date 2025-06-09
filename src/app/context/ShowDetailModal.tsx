@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useMemo, useState } from 'react';
+import { createContext, ReactNode, useMemo, useState } from 'react';
 
 interface DetailModalContextType {
   showDetailModal: boolean;
@@ -9,10 +9,10 @@ interface DetailModalContextType {
 
 export const ShowDetailModalContext = createContext<DetailModalContextType>({
   showDetailModal: false,
-  setShowDetailModal: (value: boolean) => {},
+  setShowDetailModal: () => {},
 });
 
-export const DetailModalProvider = ({ children }: { children: React.ReactNode }) => {
+export const DetailModalProvider = ({ children }: { children: ReactNode }) => {
   const [showDetailModal, setShowDetailModal] = useState<boolean>(false);
 
   const contextValue = useMemo(

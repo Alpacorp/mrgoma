@@ -2,7 +2,7 @@
 
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import React, { useEffect, useState, useContext, useRef, useLayoutEffect } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 
 import { ShowDetailModalContext } from '@/app/context/ShowDetailModal';
 import { TireInformationProps } from '@/app/interfaces/tires';
@@ -19,11 +19,10 @@ function ModalDetail({ singleTire }: TireInformationProps) {
         setShowDetailModal(false);
       }
     };
-  }, [showDetailModal]);
+  }, [setShowDetailModal, showDetailModal]);
 
   const backdropRef = useRef(null);
   const backdrop = backdropRef.current;
-  //cuando sse hace click en el backdropp
   if (backdrop) {
     setShowDetailModal(false);
   }
@@ -50,7 +49,7 @@ function ModalDetail({ singleTire }: TireInformationProps) {
                 </DialogTitle>
                 <div className="mt-2 pl-2">
                   <ul className="text-left text-sm text-gray-500 list-disc">
-                    {singleTire?.details[0]?.items.map((item: any) => {
+                    {singleTire?.details[0]?.items.map((item: never) => {
                       return (
                         <li key={item} className="mb-1.5 flex">
                           <CheckCircleIcon
