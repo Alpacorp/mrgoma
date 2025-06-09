@@ -1,30 +1,6 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid';
 import React from 'react';
 
-const items = [
-  {
-    id: 1,
-    title: 'Back End Developer',
-    department: 'Engineering',
-    type: 'Full-time',
-    location: 'Remote',
-  },
-  {
-    id: 2,
-    title: 'Front End Developer',
-    department: 'Engineering',
-    type: 'Full-time',
-    location: 'Remote',
-  },
-  {
-    id: 3,
-    title: 'User Interface Designer',
-    department: 'Design',
-    type: 'Full-time',
-    location: 'Remote',
-  },
-];
-
 function Pagination() {
   return (
     <div className="flex items-center  bg-white px-4 py-3 sm:px-6">
@@ -55,7 +31,6 @@ function Pagination() {
               <span className="sr-only">Previous</span>
               <ChevronLeftIcon aria-hidden="true" className="h-5 w-5" />
             </a>
-            {/* Current: "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
             <a
               href="#"
               aria-current="page"

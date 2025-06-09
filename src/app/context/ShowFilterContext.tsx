@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useMemo, useState } from 'react';
+import { createContext, ReactNode, useMemo, useState } from 'react';
 
 interface FilterContextType {
   showFilter: boolean;
@@ -9,10 +9,10 @@ interface FilterContextType {
 
 export const ShowFilterContext = createContext<FilterContextType>({
   showFilter: false,
-  setShowFilter: (value: boolean) => {},
+  setShowFilter: () => {},
 });
 
-export const FiltersProvider = ({ children }: { children: React.ReactNode }) => {
+export const FiltersProvider = ({ children }: { children: ReactNode }) => {
   const [showFilter, setShowFilter] = useState<boolean>(false);
 
   const contextValue = useMemo(() => ({ showFilter, setShowFilter }), [showFilter, setShowFilter]);
