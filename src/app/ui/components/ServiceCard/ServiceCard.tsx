@@ -38,7 +38,7 @@ export const ServiceCard = ({
           className="object-cover transition-transform duration-300"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-40" />
+        <div className="absolute inset-0 bg-black opacity-40" />
       </div>
       <div className="absolute inset-0 flex flex-col justify-between p-6">
         <div className="flex items-center gap-4">

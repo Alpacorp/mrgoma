@@ -33,7 +33,7 @@ const HomeContent: FC = () => {
               </div>
             </div>
           </section>
-          <section className="bg-[url('/assets/images/bg-section.webp')] bg-cover bg-center bg-no-repeat bg-fixed bg-opacity-50 bg-black/50 pb-28">
+          <section className="bg-[url('/assets/images/bg-section.webp')] bg-cover bg-center bg-no-repeat bg-fixed bg-black/50 pb-28">
             <div
               aria-labelledby="benefits-heading"
               className="px-4 sm:px-6 lg:px-8 py-16 rounded-lg"

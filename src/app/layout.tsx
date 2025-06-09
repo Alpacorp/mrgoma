@@ -32,7 +32,7 @@ export default function RootLayout({
         <FiltersProvider>
           <SelectedFiltersProvider>
             <MenuProvider>
-              <body className={inter.className}>
+              <body className={inter.className} suppressHydrationWarning>
                 <Header />
                 {children}
                 <Footer />

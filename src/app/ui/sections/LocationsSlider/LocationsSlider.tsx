@@ -76,7 +76,7 @@ export const LocationsSlider = ({
           </div>
           <button
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-3 rounded-full transition-all duration-200"
+            className="absolute cursor-pointer left-4 top-1/2 -translate-y-1/2 bg-black opacity-50 hover:opacity-70 text-white p-3 rounded-full transition-all duration-200"
             aria-label="Previous location"
           >
             <svg
@@ -97,7 +97,7 @@ export const LocationsSlider = ({
           </button>
           <button
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-3 rounded-full transition-all duration-200"
+            className="absolute cursor-pointer right-4 top-1/2 -translate-y-1/2 bg-black opacity-50 hover:opacity-70 text-white p-3 rounded-full transition-all duration-200"
             aria-label="Next location"
           >
             <svg
@@ -121,7 +121,7 @@ export const LocationsSlider = ({
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                className={`w-3 h-3 rounded-full transition-all duration-300 cursor-pointer ${
                   index === currentSlide
                     ? 'bg-[#9dfb40] scale-125'
                     : 'bg-gray-300 hover:bg-gray-400'
