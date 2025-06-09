@@ -2,13 +2,12 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import type { DocumentRecord } from '@/app/api/tires/route';
 import { useGenerateFixedPagination } from '@/app/hooks/useGeneratePagination';
 import { TiresData } from '@/app/interfaces/tires';
 import CardTest from '@/app/ui/components/CardTest/CardTest';
 
 export default function TestPage() {
-  const [records, setRecords] = useState<DocumentRecord[]>([]);
+  const [records, setRecords] = useState([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
