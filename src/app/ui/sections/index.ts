@@ -19,3 +19,4 @@ export { default as InfoSlider } from './InfoSlider/InfoSlider';
 export { default as TitleSection } from './TitleSection/TitleSection';
 export { default as ServicesGrid } from './ServicesGrid/ServicesGrid';
 export { default as InfoCardsSection } from './InfoCardsSection/InfoCardsSection';
+export { default as SearchContainer } from '@/app/ui/sections/SearchContainer/SearchContainer';

@@ -38,7 +38,7 @@ const SearchContainer: FC = () => {
                 activeTab === 'size' ? 'bg-lime-400' : 'bg-gray-100 hover:bg-gray-200'
               }`}
             >
-              <div className="flex items-center gap-2 justify-center">
+              <div className="flex items-center gap-2 justify-center leading-none">
                 <SizeIcon className="w-6 h-6" fill={activeTab === 'size' ? '#262626' : '#4B5563'} />{' '}
                 Search by Size
               </div>

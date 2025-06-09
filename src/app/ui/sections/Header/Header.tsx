@@ -44,10 +44,13 @@ const Header: FC = () => {
               </Link>
             ))}
           </div>
-          <button className="hidden lg:flex items-center justify-center rounded-full bg-zinc-800 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 transition-colors">
+          <Link
+            href="/search-results"
+            className="hidden lg:flex items-center justify-center rounded-full bg-zinc-800 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 transition-colors"
+          >
             <ShoppingCart className="mr-2 h-5 w-5" />
             Store
-          </button>
+          </Link>
         </nav>
       </header>
     </>

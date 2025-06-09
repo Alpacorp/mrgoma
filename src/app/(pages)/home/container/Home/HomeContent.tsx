@@ -1,8 +1,14 @@
 import Image from 'next/image';
 import React, { FC } from 'react';
 
-import { SearchContainer } from '@/app/ui/components';
-import { InfoCardsSection, InfoSlider, ServicesGrid, TitleSection } from '@/app/ui/sections';
+import {
+  InfoCardsSection,
+  InfoSlider,
+  SearchContainer,
+  ServicesGrid,
+  TitleSection,
+} from '@/app/ui/sections';
+import { LocationsSlider } from '@/app/ui/sections/LocationsSlider/LocationsSlider';
 
 const HomeContent: FC = () => {
   return (
@@ -27,25 +33,37 @@ const HomeContent: FC = () => {
               </div>
             </div>
           </section>
-          <div className="bg-[url('/assets/images/bg-section.webp')] bg-cover bg-center bg-no-repeat bg-fixed bg-opacity-50 bg-black/50">
-            <section
+          <section className="bg-[url('/assets/images/bg-section.webp')] bg-cover bg-center bg-no-repeat bg-fixed bg-opacity-50 bg-black/50 pb-28">
+            <div
               aria-labelledby="benefits-heading"
-              className="px-4 sm:px-6 lg:px-8 py-16 lg:py-24 rounded-lg"
+              className="px-4 sm:px-6 lg:px-8 py-16 rounded-lg"
             >
               <InfoSlider />
-            </section>
-            <div id="services">
+            </div>
+          </section>
+          <section className="relative">
+            <div id="services" className="absolute -top-[6.563rem] left-0 w-full">
               <TitleSection title="OUR SERVICES" />
             </div>
-          </div>
-          <section>
-            <ServicesGrid className="px-4 sm:px-6 lg:px-8 py-8 pb-20" />
+            <div>
+              <ServicesGrid />
+            </div>
           </section>
           <section>
             <div id="about">
               <TitleSection title="Why Mr. Goma" />
             </div>
-            <InfoCardsSection className="bg-[url('/assets/images/bg-section.webp')] bg-cover bg-center bg-no-repeat bg-fixed bg-opacity-50 bg-black/50" />
+            <div>
+              <InfoCardsSection className="bg-[url('/assets/images/bg-section.webp')] bg-cover bg-center bg-no-repeat bg-fixed bg-opacity-50 bg-black/50 pb-48" />
+            </div>
+          </section>
+          <section className="relative">
+            <div id="locations" className="absolute -top-[6.563rem] left-0 w-full">
+              <TitleSection title="OUR LOCATIONS" />
+            </div>
+            <div>
+              <LocationsSlider />
+            </div>
           </section>
         </main>
       </div>
