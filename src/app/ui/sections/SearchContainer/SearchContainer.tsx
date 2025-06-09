@@ -31,7 +31,11 @@ const SearchContainer: FC = () => {
 
       <div className="w-full">
         <div className="flex justify-center">
-          <div className="grid w-full max-w-md grid-cols-2 rounded-lg">
+          <div
+            className="grid w-full max-w-md grid-cols-2 rounded-lg"
+            role="tab"
+            aria-selected={activeTab === 'size' ? 'true' : 'false'}
+          >
             <button
               onClick={() => handleChangeTab('size')}
               className={`py-2 px-4 transition-all text-neutral-800 rounded-tl-3xl rounded-tr-3xl text-md cursor-pointer ${
