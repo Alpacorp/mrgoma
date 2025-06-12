@@ -7,8 +7,8 @@ import React, { FC } from 'react';
 import { mrGomaLogo } from '#public/assets/images/Logo';
 import HamburgerMenu from '@/app/ui/components/HamburgerMenu/HamburgerMenu';
 import { ShoppingCart } from '@/app/ui/icons';
+import { MenuMobile } from '@/app/ui/sections';
 import { menuItems } from '@/app/ui/sections/Header/MenuItems';
-import MenuMobile from '@/app/ui/sections/MenuMobile/MenuMobile';
 
 const Header: FC = () => {
   return (

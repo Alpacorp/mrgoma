@@ -4,7 +4,7 @@ import { FC, useContext, useState } from 'react';
 
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
 import { SizeIcon, TextIcon } from '@/app/ui/icons';
-import { SearchBySizeContainer, SearchByTextContainer } from '@/app/ui/sections';
+import SearchSection from '@/app/ui/sections/SearchSection/SearchSection';
 
 const SearchContainer: FC = () => {
   const [activeTab, setActiveTab] = useState<'size' | 'text'>('size');
@@ -31,7 +31,7 @@ const SearchContainer: FC = () => {
 
       <div className="w-full">
         <div className="flex justify-center">
-          <div className="grid w-full max-w-md grid-cols-2 rounded-lg" role="tablist">
+          <div className="grid w-full max-w-2xl grid-cols-2 rounded-lg" role="tablist">
             <button
               onClick={() => handleChangeTab('size')}
               role="tab"
@@ -60,9 +60,7 @@ const SearchContainer: FC = () => {
             </button>
           </div>
         </div>
-
-        {activeTab === 'size' && <SearchBySizeContainer />}
-        {activeTab === 'text' && <SearchByTextContainer />}
+        <SearchSection type={activeTab} />
       </div>
     </div>
   );

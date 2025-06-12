@@ -29,7 +29,7 @@ const SearchByText: FC = () => {
   };
 
   return (
-    <div className="flex gap-5 h-full">
+    <div className="flex gap-5 h-full w-full">
       <div className="w-full md:w-3/5">
         <div>
           <form onSubmit={handleSearch} className="space-y-6">
