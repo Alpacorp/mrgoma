@@ -5,17 +5,14 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 import { ServiceCardProps } from '@/app/ui/components/ServiceCard/service';
-import { ServiceIcon } from '@/app/ui/icons';
+import { ServiceIcon } from '@/app/ui/components/ServiceCard/ServiceIcon';
 
-/**
- * Componente de tarjeta de servicio con efectos hover mejorados
- * Principio Abierto/Cerrado: Extensible mediante props, cerrado para modificación
- */
-export const ServiceCard = ({
+const ServiceCard = ({
   title,
   description,
   backgroundImage,
   href,
+  iconType,
   className = '',
 }: ServiceCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -34,7 +31,6 @@ export const ServiceCard = ({
       tabIndex={0}
       aria-label={`Service: ${title}`}
     >
-      {/* Imagen de fondo */}
       <div className="relative h-64 w-full overflow-hidden">
         <Image
           src={backgroundImage || '/placeholder.svg'}
@@ -47,10 +43,7 @@ export const ServiceCard = ({
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
       </div>
-
-      {/* Contenido de la tarjeta */}
       <div className="absolute inset-0 flex flex-col justify-between p-6">
-        {/* Icono y título - siempre visibles */}
         <div
           className={`
             flex items-center gap-4 transition-all duration-500 ease-out
@@ -63,7 +56,7 @@ export const ServiceCard = ({
               ${isHovered ? 'scale-110 shadow-2xl' : ''}
             `}
           >
-            <ServiceIcon />
+            <ServiceIcon type={iconType} />
           </div>
           <h3
             className={`
@@ -74,8 +67,6 @@ export const ServiceCard = ({
             {title}
           </h3>
         </div>
-
-        {/* Descripción con animación de entrada desde abajo */}
         <div
           className={`
             transition-all duration-500 ease-out transform
@@ -84,7 +75,6 @@ export const ServiceCard = ({
         >
           <div className="bg-white bg-opacity-95 rounded-xl p-4 backdrop-blur-sm shadow-lg">
             <p className="text-[#272727] text-sm font-medium leading-relaxed">{description}</p>
-            {/* Línea verde animada */}
             <div
               className={`
                 h-1 bg-[#9dfb40] rounded-full mt-3 transition-all duration-700 ease-out
@@ -94,8 +84,6 @@ export const ServiceCard = ({
           </div>
         </div>
       </div>
-
-      {/* Efecto de brillo que se mueve en hover */}
       <div
         className={`
           absolute inset-0 opacity-0 transition-opacity duration-500
@@ -115,7 +103,6 @@ export const ServiceCard = ({
     </div>
   );
 
-  // Si hay href, envolver en Link, sino devolver el contenido directamente
   return href ? (
     <Link href={href} className="block">
       {cardContent}
