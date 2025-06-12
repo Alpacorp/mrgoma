@@ -7,6 +7,10 @@ import { useState } from 'react';
 import { ServiceCardProps } from '@/app/ui/components/ServiceCard/service';
 import { ServiceIcon } from '@/app/ui/icons';
 
+/**
+ * Componente de tarjeta de servicio con efectos hover mejorados
+ * Principio Abierto/Cerrado: Extensible mediante props, cerrado para modificación
+ */
 export const ServiceCard = ({
   title,
   description,
@@ -19,9 +23,9 @@ export const ServiceCard = ({
   const cardContent = (
     <div
       className={`
-        relative overflow-hidden rounded-2xl cursor-pointer
-        transition-all duration-300 ease-in-out
-        ${isHovered ? 'transform scale-105 shadow-2xl' : 'shadow-lg'}
+        relative overflow-hidden rounded-2xl cursor-pointer group
+        transition-all duration-500 ease-out
+        ${isHovered ? 'transform scale-105' : ''}
         ${className}
       `}
       onMouseEnter={() => setIsHovered(true)}
@@ -30,36 +34,88 @@ export const ServiceCard = ({
       tabIndex={0}
       aria-label={`Service: ${title}`}
     >
-      <div className="relative h-64 w-full">
+      {/* Imagen de fondo */}
+      <div className="relative h-64 w-full overflow-hidden">
         <Image
           src={backgroundImage || '/placeholder.svg'}
           alt={title}
           fill
-          className="object-cover transition-transform duration-300"
+          className={`
+            object-cover transition-all duration-700 ease-out
+            ${isHovered ? 'scale-110 brightness-50' : 'brightness-75'}
+          `}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
-        <div className="absolute inset-0 bg-black opacity-40" />
       </div>
+
+      {/* Contenido de la tarjeta */}
       <div className="absolute inset-0 flex flex-col justify-between p-6">
-        <div className="flex items-center gap-4">
-          <ServiceIcon />
-          <h3 className="text-white text-xl font-bold">{title}</h3>
-        </div>
+        {/* Icono y título - siempre visibles */}
         <div
           className={`
-            transition-all duration-300 ease-in-out
-            ${isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
+            flex items-center gap-4 transition-all duration-500 ease-out
+            ${isHovered ? 'transform -translate-y-2' : ''}
           `}
         >
-          <div className="bg-white bg-opacity-95 rounded-lg p-4 backdrop-blur-sm">
-            <p className="text-[#272727] text-sm font-medium">{description}</p>
-            <div className="w-full h-1 bg-[#9dfb40] rounded-full mt-3" />
+          <div
+            className={`
+              transition-all duration-500 ease-out
+              ${isHovered ? 'scale-110 shadow-2xl' : ''}
+            `}
+          >
+            <ServiceIcon />
+          </div>
+          <h3
+            className={`
+              text-white font-bold transition-all duration-500 ease-out
+              ${isHovered ? 'text-xl scale-105' : 'text-lg'}
+            `}
+          >
+            {title}
+          </h3>
+        </div>
+
+        {/* Descripción con animación de entrada desde abajo */}
+        <div
+          className={`
+            transition-all duration-500 ease-out transform
+            ${isHovered ? 'opacity-100 translate-y-0 visible' : 'opacity-0 translate-y-8 invisible'}
+          `}
+        >
+          <div className="bg-white bg-opacity-95 rounded-xl p-4 backdrop-blur-sm shadow-lg">
+            <p className="text-[#272727] text-sm font-medium leading-relaxed">{description}</p>
+            {/* Línea verde animada */}
+            <div
+              className={`
+                h-1 bg-[#9dfb40] rounded-full mt-3 transition-all duration-700 ease-out
+                ${isHovered ? 'w-full' : 'w-0'}
+              `}
+            />
           </div>
         </div>
+      </div>
+
+      {/* Efecto de brillo que se mueve en hover */}
+      <div
+        className={`
+          absolute inset-0 opacity-0 transition-opacity duration-500
+          ${isHovered ? 'opacity-100' : ''}
+        `}
+      >
+        <div
+          className={`
+            absolute top-0 left-0 w-full h-full
+            bg-gradient-to-r from-transparent via-white to-transparent
+            opacity-20 transform -skew-x-12 transition-transform duration-1000
+            ${isHovered ? 'translate-x-full' : '-translate-x-full'}
+          `}
+          style={{ width: '50%' }}
+        />
       </div>
     </div>
   );
 
+  // Si hay href, envolver en Link, sino devolver el contenido directamente
   return href ? (
     <Link href={href} className="block">
       {cardContent}
