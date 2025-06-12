@@ -3,10 +3,15 @@ export interface ServiceCardData {
   title: string;
   description: string;
   backgroundImage: string;
-  icon: string;
+  iconType: string;
   href?: string;
 }
 
 export interface ServiceCardProps extends ServiceCardData {
+  className?: string;
+}
+
+export interface IconProps {
+  type: ServiceCardData['iconType'];
   className?: string;
 }
