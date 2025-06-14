@@ -51,8 +51,8 @@ const TireDisplay: FC = () => {
               allSelected ? 'text-green-400' : 'opacity-75'
             }`}
           >
-            {selectedFilters.width || '000'}/{selectedFilters.sidewall || '00'}/
-            {selectedFilters.diameter || '00'}
+            {selectedFilters.front.width || '000'}/{selectedFilters.front.sidewall || '00'}/
+            {selectedFilters.front.diameter || '00'}
           </div>
         </div>
       </div>
