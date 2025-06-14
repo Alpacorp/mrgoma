@@ -1,13 +1,12 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { FC, useContext, useState } from 'react';
+import { ChangeEvent, FC, useContext, useState } from 'react';
 
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
-import { ButtonSearch } from '@/app/ui/components';
-import TireDisplay from '@/app/ui/components/TireDisplay/TireDisplay';
+import { ButtonSearch, DifferentSizesModal, TireDisplay } from '@/app/ui/components';
 import { TireSize } from '@/app/ui/interfaces/tireSize';
-import { SizeSelectors } from '@/app/ui/sections/SizeSelectors/SizeSelectors';
+import { SizeSelectors } from '@/app/ui/sections';
 
 interface FilterOption {
   id: number;
@@ -52,6 +51,7 @@ const SearchBySize: FC = () => {
   const { setSelectedFilters } = useContext(SelectedFiltersContext);
 
   const [hasDifferentSizes, setHasDifferentSizes] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [tireSizes, setTireSizes] = useState<{
     front: TireSize;
     rear: TireSize;
@@ -108,6 +108,23 @@ const SearchBySize: FC = () => {
     router.push(`/search-results?${params.toString()}`);
   };
 
+  const handleDifferentSizesChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setHasDifferentSizes(e.target.checked);
+    if (!e.target.checked) {
+      setIsModalOpen(false);
+      // Reset rear tire sizes if different sizes are not selected
+      setTireSizes(prev => ({
+        ...prev,
+        rear: { width: '', sidewall: '', diameter: '' },
+      }));
+    } else {
+      // Open modal to select different sizes
+      setIsModalOpen(true);
+      // Optionally, you can reset the rear tire sizes here or keep them as is
+      setTireSizes(prev => ({ ...prev, rear: { width: '', sidewall: '', diameter: '' } }));
+    }
+  };
+
   const allFieldsSelected = (size: TireSize) => {
     return size.width && size.sidewall && size.diameter;
   };
@@ -132,32 +149,42 @@ const SearchBySize: FC = () => {
   };
 
   return (
-    <div className="flex gap-5 h-full w-full">
-      <div className="w-full md:w-3/5">
-        <div className="space-y-4">
-          {renderSizeSelectors('all')}
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="differentSizes"
-              checked={hasDifferentSizes}
-              onChange={e => setHasDifferentSizes(e.target.checked)}
-              className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-            />
-            <label htmlFor="differentSizes" className="text-sm text-gray-600">
-              Different sizes on front and rear?
-            </label>
+    <>
+      <div className="flex gap-5 h-full w-full">
+        <div className="w-full md:w-3/5">
+          <div className="space-y-4">
+            {renderSizeSelectors('all')}
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="differentSizes"
+                checked={hasDifferentSizes}
+                onChange={handleDifferentSizesChange}
+                className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+              />
+              <label htmlFor="differentSizes" className="text-sm text-gray-600">
+                Different sizes on front and rear?
+              </label>
+            </div>
+            {hasDifferentSizes && (
+              <div className="pt-4 border-t border-gray-100">{renderSizeSelectors('rear')}</div>
+            )}
+            <ButtonSearch onClick={handleSearch} disabled={canSearch} />
           </div>
-          {hasDifferentSizes && (
-            <div className="pt-4 border-t border-gray-100">{renderSizeSelectors('rear')}</div>
-          )}
-          <ButtonSearch onClick={handleSearch} disabled={canSearch} />
+        </div>
+        <div className="hidden md:flex items-center justify-center flex-1">
+          <TireDisplay />
         </div>
       </div>
-      <div className="hidden md:flex items-center justify-center flex-1">
-        <TireDisplay />
-      </div>
-    </div>
+      <DifferentSizesModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        // tireSizes={tireSizes}
+        // setTireSizes={setTireSizes}
+        // hasDifferentSizes={hasDifferentSizes}
+        // setHasDifferentSizes={setHasDifferentSizes}
+      />
+    </>
   );
 };
 

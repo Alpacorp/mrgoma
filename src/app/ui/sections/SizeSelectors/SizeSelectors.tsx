@@ -1,7 +1,6 @@
 import { FC } from 'react';
 
-import { SelectDropdown } from '@/app/ui/components';
-import { SizeSelector } from '@/app/ui/components/SizeSelector/SizeSelector';
+import { SelectDropdown, SizeSelector } from '@/app/ui/components';
 import { Car, CarFront } from '@/app/ui/icons';
 import { TireSize } from '@/app/ui/interfaces/tireSize';
 
@@ -15,7 +14,7 @@ interface SizeSelectorsProps {
   removeFilter: (type: keyof TireSize, position: 'rear' | 'all') => void;
 }
 
-export const SizeSelectors: FC<SizeSelectorsProps> = ({
+const SizeSelectors: FC<SizeSelectorsProps> = ({
   position,
   section,
   aspectRatio,
@@ -70,3 +69,5 @@ export const SizeSelectors: FC<SizeSelectorsProps> = ({
     </div>
   );
 };
+
+export default SizeSelectors;

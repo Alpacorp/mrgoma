@@ -19,3 +19,4 @@ export { default as ServicesGrid } from './ServicesGrid/ServicesGrid';
 export { default as InfoCardsSection } from './InfoCardsSection/InfoCardsSection';
 export { default as SearchContainer } from './SearchContainer/SearchContainer';
 export { default as SearchSection } from './SearchSection/SearchSection';
+export { default as SizeSelectors } from './SizeSelectors/SizeSelectors';

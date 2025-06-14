@@ -27,3 +27,5 @@ export { default as ButtonSearch } from './ButtonSearch/ButtonSearch';
 export { default as ServiceCard } from './ServiceCard/ServiceCard';
 export { default as InfoCard } from './InfoCard/InfoCard';
 export { default as LocationCard } from './LocationCard/LocationCard';
+export { default as SizeSelector } from './SizeSelector/SizeSelector';
+export { default as DifferentSizesModal } from './DifferentSizesModal/DifferentSizesModal';
