@@ -7,7 +7,8 @@ interface SelectDropdownProps {
     options: { id: number; name: number }[];
   };
   selectedFilters: { width: string; sidewall: string; diameter: string };
-  handleFilterChange: (value: string, type: 'width' | 'sidewall' | 'diameter') => void;
+  handleFilterChange: (value: string, type: 'width' | 'sidewall' | 'diameter', position?: 'all' | 'rear') => void;
+  position?: 'all' | 'rear';
   isCollapsed?: boolean;
   showDefaultText?: boolean;
 }
@@ -16,6 +17,7 @@ const SelectDropdown: FC<SelectDropdownProps> = ({
   field,
   selectedFilters,
   handleFilterChange,
+  position = 'all',
   showDefaultText = true,
 }) => {
   return (
@@ -23,7 +25,7 @@ const SelectDropdown: FC<SelectDropdownProps> = ({
       <select
         value={selectedFilters[field.type as keyof typeof selectedFilters]}
         onChange={e =>
-          handleFilterChange(e.target.value, field.type as 'width' | 'sidewall' | 'diameter')
+          handleFilterChange(e.target.value, field.type as 'width' | 'sidewall' | 'diameter', position)
         }
         className={`w-full bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 text-xs appearance-none`}
       >

@@ -3,9 +3,16 @@
 import React, { createContext, useState, useMemo, Dispatch, SetStateAction } from 'react';
 
 type SelectedFilters = {
-  width: string;
-  sidewall: string;
-  diameter: string;
+  rear: {
+    width: string;
+    sidewall: string;
+    diameter: string;
+  };
+  front: {
+    width: string;
+    sidewall: string;
+    diameter: string;
+  };
 };
 
 interface SelectedFiltersContextProps {
@@ -14,9 +21,16 @@ interface SelectedFiltersContextProps {
 }
 
 const defaultSelectedFilters: SelectedFilters = {
-  width: '',
-  sidewall: '',
-  diameter: '',
+  rear: {
+    width: '',
+    sidewall: '',
+    diameter: '',
+  },
+  front: {
+    width: '',
+    sidewall: '',
+    diameter: '',
+  },
 };
 
 export const SelectedFiltersContext = createContext<SelectedFiltersContextProps>({

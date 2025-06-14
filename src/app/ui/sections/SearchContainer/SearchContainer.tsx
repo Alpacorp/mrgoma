@@ -14,9 +14,8 @@ const SearchContainer: FC = () => {
   const handleChangeTab = (tab: 'size' | 'text') => {
     setActiveTab(tab);
     setSelectedFilters({
-      width: '',
-      sidewall: '',
-      diameter: '',
+      front: { width: '', sidewall: '', diameter: '' },
+      rear: { width: '', sidewall: '', diameter: '' },
     });
   };
 
