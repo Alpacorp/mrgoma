@@ -15,7 +15,7 @@ export const InfoCard = ({ id, title, description, iconType, className = '' }: I
       aria-labelledby={`info-card-title-${id}`}
     >
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#9dfb40]/20 to-transparent" />
-      <div className="relative z-10 flex flex-col items-center text-center">
+      <div className="relative flex flex-col items-center text-center">
         <div className="mb-6">
           <InfoIcon type={iconType} />
         </div>

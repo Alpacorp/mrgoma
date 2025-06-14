@@ -38,3 +38,5 @@ export const SizeSelector: FC<SizeSelectorProps> = ({
     </span>
   );
 };
+
+export default SizeSelector;
