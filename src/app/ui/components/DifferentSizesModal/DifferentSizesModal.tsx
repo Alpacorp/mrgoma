@@ -16,12 +16,18 @@ interface DifferentSizesModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSearch: () => void;
+  frontTires: { width: string; sidewall: string; diameter: string };
 }
 
-const DifferentSizesModal = ({ isOpen, onClose, onSearch }: DifferentSizesModalProps) => {
-  const frontTiresDefault = { width: '', sidewall: '', diameter: '' };
-  const rearTiresDefault = { width: '', sidewall: '', diameter: '' };
+const frontTiresDefault = { width: '', sidewall: '', diameter: '' };
+const rearTiresDefault = { width: '', sidewall: '', diameter: '' };
 
+const DifferentSizesModal = ({
+  isOpen,
+  onClose,
+  onSearch,
+  frontTires,
+}: DifferentSizesModalProps) => {
   const {
     tireSize: frontTireSize,
     updateTireSize: updateFrontTireSize,
@@ -39,7 +45,7 @@ const DifferentSizesModal = ({ isOpen, onClose, onSearch }: DifferentSizesModalP
 
   useEffect(() => {
     if (isOpen) {
-      updateFrontTireSize(frontTiresDefault);
+      updateFrontTireSize(frontTires);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);

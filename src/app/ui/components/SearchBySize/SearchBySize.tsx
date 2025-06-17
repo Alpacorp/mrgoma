@@ -4,7 +4,11 @@ import { useRouter } from 'next/navigation';
 import { ChangeEvent, FC, useContext, useState } from 'react';
 
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
-import { handleFilterAllChange as handleFilterAllChangeUtil, removeFilterAll, useTireSizeWithContext } from '@/app/hooks/useTireSizeWithContext';
+import {
+  handleFilterAllChange as handleFilterAllChangeUtil,
+  removeFilterAll,
+  useTireSizeWithContext,
+} from '@/app/hooks/useTireSizeWithContext';
 import { ButtonSearch, DifferentSizesModal, TireDisplay } from '@/app/ui/components';
 import { CarFront } from '@/app/ui/icons';
 import { TireSize } from '@/app/ui/interfaces/tireSize';
@@ -137,6 +141,7 @@ const SearchBySize: FC = () => {
       </div>
       <DifferentSizesModal
         isOpen={isModalOpen}
+        frontTires={frontTireSize}
         onClose={() => {
           setIsModalOpen(false);
           setHasDifferentSizes(false);
