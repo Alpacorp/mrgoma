@@ -49,7 +49,7 @@ export const LocationCard = ({
       role="article"
       aria-label={`Location: ${name}`}
     >
-      <div className="relative h-64 w-full">
+      <div className="relative h-96 w-full">
         <Image
           src={backgroundImage || '/placeholder.svg'}
           alt={`${name} location`}
@@ -57,25 +57,29 @@ export const LocationCard = ({
           className="object-cover transition-transform duration-300"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
-        <div className="absolute inset-0 bg-black opacity-40" />
+        <div className="absolute inset-0 bg-black opacity-20" />
       </div>
       <div className="absolute bottom-0 left-0 right-0 p-4">
         <div className="flex justify-between items-end gap-4">
           <button
             onClick={handleLocationClick}
-            className="flex items-center gap-2 transition-colors group"
+            className="flex items-center gap-2 transition-colors cursor-pointer group"
             aria-label={`Open ${address} in Google Maps`}
           >
             <LocationIcon className="group-hover:scale-110 transition-transform" />
-            <span className="text-sm text-white font-medium hover:text-[#7bc42d]">{address}</span>
+            <span className="text-sm text-white font-medium hover:underline hover:underline-offset-8">
+              {address}
+            </span>
           </button>
           <button
             onClick={handlePhoneClick}
-            className="flex items-center gap-2 transition-colors group"
+            className="flex items-center gap-2 transition-colors cursor-pointer group"
             aria-label={`Call ${phone}`}
           >
             <PhoneIcon className="group-hover:scale-110 transition-transform" />
-            <span className="text-sm text-white hover:text-[#7bc42d] font-medium">{phone}</span>
+            <span className="text-sm text-white font-medium hover:underline hover:underline-offset-8">
+              {phone}
+            </span>
           </button>
         </div>
       </div>

@@ -25,7 +25,7 @@ const HomeContent: FC = () => {
                 priority
               />
             </div>
-            <div className="relative z-10 grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-3">
+            <div className="relative grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-3">
               <div className="lg:col-span-3">
                 <div>
                   <SearchContainer />
