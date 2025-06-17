@@ -22,16 +22,6 @@ const SizeSelectors: FC<SizeSelectorsProps> = ({
   handleFilterChange,
   removeFilter,
 }) => {
-  console.log('logs SizeSelectors', {
-    position,
-    width,
-    sidewall,
-    diameter,
-    currentSize,
-    handleFilterChange,
-    removeFilter,
-  });
-
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-3 gap-4">

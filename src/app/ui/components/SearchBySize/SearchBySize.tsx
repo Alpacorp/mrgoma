@@ -4,15 +4,28 @@ import { useRouter } from 'next/navigation';
 import { ChangeEvent, FC, useContext, useState } from 'react';
 
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
-import { useTireSize } from '@/app/hooks/useTireSize';
+import { handleFilterAllChange as handleFilterAllChangeUtil, removeFilterAll, useTireSizeWithContext } from '@/app/hooks/useTireSizeWithContext';
 import { ButtonSearch, DifferentSizesModal, TireDisplay } from '@/app/ui/components';
 import { CarFront } from '@/app/ui/icons';
 import { TireSize } from '@/app/ui/interfaces/tireSize';
 import { SizeSelectors } from '@/app/ui/sections';
 import { diameterDataMock, sidewallDataMock, widthDataMock } from '@/app/utils/tireSizeMockData';
 
+const URL_PARAMS = {
+  front: {
+    width: 'w',
+    sidewall: 's',
+    diameter: 'd',
+  },
+  rear: {
+    width: 'rw',
+    sidewall: 'rs',
+    diameter: 'rd',
+  },
+} as const;
+
 const SearchBySize: FC = () => {
-  const { setSelectedFilters, selectedFilters } = useContext(SelectedFiltersContext);
+  const { selectedFilters } = useContext(SelectedFiltersContext);
 
   const [hasDifferentSizes, setHasDifferentSizes] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,7 +35,7 @@ const SearchBySize: FC = () => {
     handleFilterChange: handleFrontTireChange,
     removeFilter: removeFrontTireFilter,
     isComplete: isFrontComplete,
-  } = useTireSize();
+  } = useTireSizeWithContext('front');
 
   const {
     tireSize: rearTireSize,
@@ -30,71 +43,36 @@ const SearchBySize: FC = () => {
     handleFilterChange: handleRearTireChange,
     removeFilter: removeRearTireFilter,
     isComplete: isRearComplete,
-  } = useTireSize();
+  } = useTireSizeWithContext('rear');
 
   const router = useRouter();
 
-  // Adapter functions to match the expected interface
-  const handleFilterChange = (value: string, type: keyof TireSize, position: 'all' | 'rear') => {
-    if (position === 'all') {
-      handleFrontTireChange(value, type);
-
-      // Update selected filters context for the front tire
-      setSelectedFilters(prev => ({
-        ...prev,
-        front: {
-          ...prev.front,
-          [type]: value,
-        },
-      }));
-    } else {
-      handleRearTireChange(value, type);
-      // Update selected filters context for the rear tire
-      setSelectedFilters(prev => ({
-        ...prev,
-        rear: {
-          ...prev.rear,
-          [type]: value,
-        },
-      }));
-    }
+  const handleFilterAllChange = (value: string, type: keyof TireSize, position: 'all' | 'rear') => {
+    handleFilterAllChangeUtil(handleFrontTireChange, handleRearTireChange, value, type, position);
   };
 
   const removeFilter = (type: keyof TireSize, position: 'all' | 'rear') => {
-    if (position === 'all') {
-      removeFrontTireFilter(type);
-      // Update selected filters context for the front tire
-      setSelectedFilters(prev => ({
-        ...prev,
-        front: {
-          ...prev.front,
-          [type]: '',
-        },
-      }));
-    } else {
-      removeRearTireFilter(type);
-      // Update selected filters context for the rear tire
-      setSelectedFilters(prev => ({
-        ...prev,
-        rear: {
-          ...prev.rear,
-          [type]: '',
-        },
-      }));
-    }
+    removeFilterAll(removeFrontTireFilter, removeRearTireFilter, type, position);
   };
 
   const handleSearch = () => {
     const params = new URLSearchParams();
 
-    if (selectedFilters.front.width) params.append('w', selectedFilters.front.width);
-    if (selectedFilters.front.sidewall) params.append('s', selectedFilters.front.sidewall);
-    if (selectedFilters.front.diameter) params.append('d', selectedFilters.front.diameter);
+    const addTireParams = (
+      tireData: TireSize,
+      paramNames: typeof URL_PARAMS.front | typeof URL_PARAMS.rear
+    ) => {
+      Object.entries(tireData).forEach(([key, value]) => {
+        if (value) {
+          params.append(paramNames[key as keyof TireSize], value);
+        }
+      });
+    };
+
+    addTireParams(selectedFilters.front, URL_PARAMS.front);
 
     if (hasDifferentSizes) {
-      if (selectedFilters.rear.width) params.append('rw', selectedFilters.rear.width);
-      if (selectedFilters.rear.sidewall) params.append('rs', selectedFilters.rear.sidewall);
-      if (selectedFilters.rear.diameter) params.append('rd', selectedFilters.rear.diameter);
+      addTireParams(selectedFilters.rear, URL_PARAMS.rear);
     }
 
     router.push(`/search-results?${params.toString()}`);
@@ -104,16 +82,12 @@ const SearchBySize: FC = () => {
     setHasDifferentSizes(e.target.checked);
     if (!e.target.checked) {
       setIsModalOpen(false);
-      // Reset rear tire sizes if different sizes are not selected
       updateRearTireSize({ width: '', sidewall: '', diameter: '' });
     } else {
-      // Open modal to select different sizes
       setIsModalOpen(true);
-      // Keep the front tire sizes as is
     }
   };
 
-  // Use the isComplete functions from the hooks
   const canSearch = isFrontComplete() && (!hasDifferentSizes || isRearComplete());
 
   const renderSizeSelectors = (position: 'all' | 'rear') => {
@@ -126,7 +100,7 @@ const SearchBySize: FC = () => {
         width={widthDataMock}
         sidewall={sidewallDataMock}
         diameter={diameterDataMock}
-        handleFilterChange={handleFilterChange}
+        handleFilterChange={handleFilterAllChange}
         removeFilter={removeFilter}
       />
     );
@@ -167,8 +141,6 @@ const SearchBySize: FC = () => {
           setIsModalOpen(false);
           setHasDifferentSizes(false);
         }}
-        frontTires={frontTireSize}
-        rearTires={rearTireSize}
         onSearch={handleSearch}
       />
     </>
