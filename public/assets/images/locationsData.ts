@@ -50,7 +50,7 @@ export const locationsData: LocationData[] = [
     name: 'Mr. Goma OUTLET',
     address: '4040 E 10th Ct, Hialeah, FL 33013',
     phone: '305-836-4200',
-    backgroundImage: '/assets/images/900.jpg',
+    backgroundImage: '/assets/images/4040.webp',
     coordinates: {
       lat: 25.859899563153597,
       lng: -80.26171361533953,
@@ -61,7 +61,7 @@ export const locationsData: LocationData[] = [
     name: 'Mr. Goma AUTOMOTIVE',
     address: '575 N Semoran Blvd, Orlando, FL 32807',
     phone: '407-282-3100',
-    backgroundImage: '/assets/images/900.jpg',
+    backgroundImage: '/assets/images/575.jpg',
     coordinates: {
       lat: 28.55213387245006,
       lng: -81.31031692883488,

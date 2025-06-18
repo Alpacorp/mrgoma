@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 import { ServiceCardProps } from '@/app/ui/components/ServiceCard/service';
 import { ServiceIcon } from '@/app/ui/components/ServiceCard/ServiceIcon';
+import { parseText } from '@/app/utils/parseText';
 
 const ServiceCard = ({
   title,
@@ -74,7 +75,9 @@ const ServiceCard = ({
           `}
         >
           <div className="bg-white bg-opacity-95 rounded-xl p-4 backdrop-blur-sm shadow-lg">
-            <p className="text-[#272727] text-sm font-medium leading-relaxed">{description}</p>
+            <p className="text-[#272727] text-sm font-medium leading-relaxed">
+              {parseText(description)}
+            </p>
             <div
               className={`
                 h-1 bg-[#9dfb40] rounded-full mt-3 transition-all duration-700 ease-out

@@ -14,8 +14,8 @@ const SearchByText: FC = () => {
 
   const { setSelectedFilters } = useContext(SelectedFiltersContext);
 
-  const handleSearch = (e: FormEvent) => {
-    e.preventDefault();
+  const handleSearch = (event: FormEvent) => {
+    event.preventDefault();
     if (value) {
       const [width, aspectRatio, diameter] = value.split('/').map(part => part.trim());
       const params = new URLSearchParams();
