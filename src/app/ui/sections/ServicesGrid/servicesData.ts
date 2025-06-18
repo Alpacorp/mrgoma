@@ -9,27 +9,12 @@ export const servicesData: ServiceCardData[] = [
     iconType: 'tire',
   },
   {
-    id: 'tire-repair',
-    title: 'Flat Tire Repair',
-    description:
-      'Fast and affordable repairs to get you back on the road — or help you find a replacement from our inventory if needed.',
-    backgroundImage: '/assets/images/service.jpg',
-    iconType: 'repair',
-  },
-  {
     id: 'wheel-alignment',
     title: 'Wheel Alignment',
     description:
-      'Protect your tires and improve handling with precise 2- or 4-wheel alignments using Hunter HawkEye Elite® technology.',
+      'Protect your tires and improve handling with precise 2- or 4-wheel alignments using <strong>Hunter HawkEye Elite® technology.</strong>',
     backgroundImage: '/assets/images/align.jpg',
     iconType: 'alignment',
-  },
-  {
-    id: 'tire-rotation',
-    title: 'Tire Rotation',
-    description: 'Routine tire rotations to extend tread life and improve driving performance.',
-    backgroundImage: '/assets/images/rotation.jpg',
-    iconType: 'rotation',
   },
   {
     id: 'brake-service',
@@ -43,7 +28,7 @@ export const servicesData: ServiceCardData[] = [
     id: 'oil-change',
     title: 'Oil Change',
     description:
-      'Quick and reliable oil changes using premium quality full synthetic oil for maximum engine protection and performance.',
+      'Quick and reliable oil changes using <strong>premium quality full synthetic oil</strong> for maximum engine protection and performance.',
     backgroundImage: '/assets/images/oil.jpg',
     iconType: 'oil',
   },
@@ -54,6 +39,21 @@ export const servicesData: ServiceCardData[] = [
       'We diagnose, replace, and program Tire Pressure Monitoring System (TPMS) sensors for all makes and models.',
     backgroundImage: '/assets/images/oil.jpg',
     iconType: 'oil',
+  },
+  {
+    id: 'tire-repair',
+    title: 'Flat Tire Repair',
+    description:
+      'Fast and affordable repairs to get you back on the road — or help you find a replacement from our inventory if needed.',
+    backgroundImage: '/assets/images/service.jpg',
+    iconType: 'repair',
+  },
+  {
+    id: 'tire-rotation',
+    title: 'Tire Rotation',
+    description: 'Routine tire rotations to extend tread life and improve driving performance.',
+    backgroundImage: '/assets/images/rotation.jpg',
+    iconType: 'rotation',
   },
   {
     id: 'nitrogen-inflation',
