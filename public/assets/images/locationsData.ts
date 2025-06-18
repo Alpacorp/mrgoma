@@ -50,7 +50,7 @@ export const locationsData: LocationData[] = [
     name: 'Mr. Goma OUTLET',
     address: '4040 E 10th Ct, Hialeah, FL 33013',
     phone: '305-836-4200',
-    backgroundImage: '/assets/images/4040.webp',
+    backgroundImage: '/assets/images/4040.jpg',
     coordinates: {
       lat: 25.859899563153597,
       lng: -80.26171361533953,

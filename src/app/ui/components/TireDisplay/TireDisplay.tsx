@@ -11,7 +11,7 @@ import { ArrowsToRight } from '@/app/ui/icons';
 const TireDisplay: FC = () => {
   const imageRef = useRef<HTMLDivElement>(null);
 
-  const { selectedFilters, setSelectedFilters } = useContext(SelectedFiltersContext);
+  const { selectedFilters } = useContext(SelectedFiltersContext);
 
   const allSelected = Object.values(selectedFilters).every(value => value);
 
@@ -27,14 +27,6 @@ const TireDisplay: FC = () => {
       }, 500);
     }
   }, [selectedFilters]);
-
-  useEffect(() => {
-    setSelectedFilters({
-      front: { width: '', sidewall: '', diameter: '' },
-      rear: { width: '', sidewall: '', diameter: '' },
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <div className="relative w-48 h-48 mx-auto overflow-hidden">
