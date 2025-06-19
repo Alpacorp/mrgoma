@@ -16,3 +16,5 @@ export * from './RepairIcon';
 export * from './RotationIcon';
 export * from './BrakesIcon';
 export * from './OilIcon';
+export * from './NitroIcon';
+export * from './TpmsIcon';

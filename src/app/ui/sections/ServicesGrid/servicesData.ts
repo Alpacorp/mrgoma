@@ -21,7 +21,7 @@ export const servicesData: ServiceCardData[] = [
     title: 'Brake Service',
     description:
       'Professional brake inspections, repairs, and replacements to keep you safe on the road.',
-    backgroundImage: '/assets/images/brake.jpg',
+    backgroundImage: '/assets/images/brake.webp',
     iconType: 'brakes',
   },
   {
@@ -37,8 +37,8 @@ export const servicesData: ServiceCardData[] = [
     title: 'TPMS Service',
     description:
       'We diagnose, replace, and program Tire Pressure Monitoring System (TPMS) sensors for all makes and models.',
-    backgroundImage: '/assets/images/oil.jpg',
-    iconType: 'oil',
+    backgroundImage: '/assets/images/tpms.webp',
+    iconType: 'tpms',
   },
   {
     id: 'tire-repair',
@@ -60,7 +60,7 @@ export const servicesData: ServiceCardData[] = [
     title: 'Nitrogen Tire Inflation',
     description:
       'Maintain more consistent tire pressure and enhance fuel efficiency with nitrogen fills.',
-    backgroundImage: '/assets/images/oil.jpg',
-    iconType: 'oil',
+    backgroundImage: '/assets/images/nitro.webp',
+    iconType: 'nitrogen',
   },
 ];
