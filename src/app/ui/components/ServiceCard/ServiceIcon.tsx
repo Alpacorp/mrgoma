@@ -3,9 +3,11 @@ import {
   AlignmentIcon,
   BalancingIcon,
   BrakesIcon,
+  NitroIcon,
   OilIcon,
   RepairIcon,
   RotationIcon,
+  TpmsIcon,
 } from '@/app/ui/icons';
 
 export const ServiceIcon = ({ type }: IconProps) => {
@@ -23,6 +25,10 @@ export const ServiceIcon = ({ type }: IconProps) => {
         return <BrakesIcon />;
       case 'oil':
         return <OilIcon />;
+      case 'tpms':
+        return <TpmsIcon />;
+      case 'nitrogen':
+        return <NitroIcon />;
       default:
         return null;
     }

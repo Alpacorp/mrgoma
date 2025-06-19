@@ -12,8 +12,9 @@ export async function GET(req: NextRequest) {
   try {
     const records = await fetchTires(offset, pageSize);
     return NextResponse.json(records);
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.error('Failed to fetch tires', err);
-    return NextResponse.json({ message: err.message }, { status: 500 });
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ message: errorMessage }, { status: 500 });
   }
 }

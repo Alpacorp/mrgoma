@@ -169,7 +169,7 @@ const SearchResults: FC = () => {
                               </nav>
                             </div>
 
-                            {/* Results header */}
+                            {/* Result header */}
                             <div className="flex justify-between items-center mt-6">
                               <h2 className="text-lg text-gray-600">
                                 Results for {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}{' '}
@@ -195,7 +195,7 @@ const SearchResults: FC = () => {
                             </div>
                           </div>
 
-                          {/* Results grid */}
+                          {/* Result grid */}
                           {renderTireResults(activeTab)}
                         </div>
                       </div>
