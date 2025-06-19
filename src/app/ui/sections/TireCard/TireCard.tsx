@@ -13,32 +13,16 @@ import {
   ProductPrice,
 } from '@/app/ui/components';
 
-interface Feature {
-  name: string;
-  value: string;
-  icon?: string;
-}
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  condition: string;
-  brandId?: string;
-  brand?: string;
-  features: Feature[];
-}
-
 interface TireCardProps {
-  products: Product[];
+  products: any;
 }
 
-const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: Product[] }>) => {
+const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) => {
   const { setShowDetailModal } = useContext(ShowDetailModalContext);
 
   return (
     <ul className="mt-3">
-      {products.map((product: Product) => (
+      {products.map((product: any) => (
         <li
           key={product.id}
           className="bg-white rounded-lg overflow-hidden p-5 shadow-[0px_1px_10px_rgba(0,0,0,0.1)] w-full mb-8 items-center"
@@ -70,7 +54,7 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: Product[
                 </div>
               </div>
               <div className="xs:flex justify-between bg-gray-100 py-2 px-2 xs:px-4  rounded-xl xs:rounded-2xl">
-                {product.features.map((feature: Feature, index: number) => {
+                {product.features.map((feature: any, index: number) => {
                   return (
                     <>
                       {index <= 3 && (
@@ -94,7 +78,7 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: Product[
                 </DisclosureButton>
                 <DisclosurePanel transition className="origin-top xs:flex  justify-between gap-6">
                   <ul className="text-sm mt-2 w-full">
-                    {product.features.map((feature: Feature, index: number) => {
+                    {product.features.map((feature: any, index: number) => {
                       return (
                         <>
                           {index > 2 && index <= 5 && (
@@ -107,7 +91,7 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: Product[
                     })}
                   </ul>
                   <ul className="text-sm xs:mt-2 w-full">
-                    {product.features.map((feature: Feature, index: number) => {
+                    {product.features.map((feature: any, index: number) => {
                       return (
                         <>
                           {index > 5 && index <= 8 && (

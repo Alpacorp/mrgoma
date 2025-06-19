@@ -1,7 +1,7 @@
 import { FC } from 'react';
 
 interface ProductPriceProps {
-  price: string;
+  price: number;
 }
 
 const ProductPrice: FC<ProductPriceProps> = ({ price }) => {
