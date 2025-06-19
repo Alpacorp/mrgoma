@@ -23,10 +23,10 @@ export default function TestPage() {
         const response = await fetch(`/api/tires?page=${page}&pageSize=${pageSize}`);
         const data = await response.json();
         setRecords(data);
-      } catch (error: any) {
-        setError(error.message);
+      } catch (error: unknown) {
+        setError(error instanceof Error ? error.message : String(error));
       } finally {
-        setLoading(false); // Desactivar el loading después de la solicitud
+        setLoading(false);
       }
     },
     [pageSize]
