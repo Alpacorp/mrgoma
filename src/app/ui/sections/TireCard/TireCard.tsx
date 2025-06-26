@@ -56,7 +56,7 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
               <div className="xs:flex justify-between bg-gray-100 py-2 px-2 xs:px-4  rounded-xl xs:rounded-2xl">
                 {product.features.map((feature: any, index: number) => {
                   return (
-                    <>
+                    <React.Fragment key={`feature-${index}`}>
                       {index <= 3 && (
                         <ProductItem
                           product={feature.value}
@@ -64,7 +64,7 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
                           icon={feature.icon}
                         />
                       )}
-                    </>
+                    </React.Fragment>
                   );
                 })}
               </div>
@@ -80,26 +80,26 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
                   <ul className="text-sm mt-2 w-full">
                     {product.features.map((feature: any, index: number) => {
                       return (
-                        <>
+                        <React.Fragment key={`feature-detail1-${index}`}>
                           {index > 2 && index <= 5 && (
                             <li className="flex justify-between text-xs sm:text-sm">
                               <span className="font-semibold">{feature.name}:</span> {feature.value}
                             </li>
                           )}
-                        </>
+                        </React.Fragment>
                       );
                     })}
                   </ul>
                   <ul className="text-sm xs:mt-2 w-full">
                     {product.features.map((feature: any, index: number) => {
                       return (
-                        <>
+                        <React.Fragment key={`feature-detail2-${index}`}>
                           {index > 5 && index <= 8 && (
                             <li className="flex justify-between text-xs sm:text-sm">
                               <span className="font-semibold">{feature.name}:</span> {feature.value}
                             </li>
                           )}
-                        </>
+                        </React.Fragment>
                       );
                     })}
                   </ul>
