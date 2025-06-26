@@ -7,10 +7,15 @@ interface SelectDropdownProps {
     options: { id: number; name: number }[];
   };
   selectedFilters: { width: string; sidewall: string; diameter: string };
-  handleFilterChange: (value: string, type: 'width' | 'sidewall' | 'diameter', position?: 'all' | 'rear') => void;
+  handleFilterChange: (
+    value: string,
+    type: 'width' | 'sidewall' | 'diameter',
+    position?: 'all' | 'rear'
+  ) => void;
   position?: 'all' | 'rear';
   isCollapsed?: boolean;
   showDefaultText?: boolean;
+  disabled?: boolean;
 }
 
 const SelectDropdown: FC<SelectDropdownProps> = ({
@@ -19,15 +24,23 @@ const SelectDropdown: FC<SelectDropdownProps> = ({
   handleFilterChange,
   position = 'all',
   showDefaultText = true,
+  disabled = false,
 }) => {
   return (
     <div className="relative">
       <select
         value={selectedFilters[field.type as keyof typeof selectedFilters]}
         onChange={e =>
-          handleFilterChange(e.target.value, field.type as 'width' | 'sidewall' | 'diameter', position)
+          handleFilterChange(
+            e.target.value,
+            field.type as 'width' | 'sidewall' | 'diameter',
+            position
+          )
         }
-        className={`w-full bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 text-xs appearance-none`}
+        className={`w-full bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 text-xs appearance-none
+          ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
+        `}
+        disabled={disabled}
       >
         <option value="">Select {showDefaultText && field.label}</option>
         {field.options.map(option => (

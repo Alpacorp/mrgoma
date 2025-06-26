@@ -12,7 +12,7 @@ import { menuItems } from '@/app/ui/sections/Header/MenuItems';
 
 const Header: FC = () => {
   return (
-    <header className="w-full sticky top-0 z-10 bg-black backdrop-blur-sm backdrop-filter backdrop-saturate-150">
+    <header className="w-full sticky top-0 z-40 bg-black backdrop-blur-sm backdrop-filter backdrop-saturate-150">
       <div className="absolute inset-0 bg-[#111]">
         <div className="absolute z-10 w-full h-full bg-gradient-to-r from-black via-[#1A1A1A] to-[#9DFB40] opacity-80"></div>
         <Image src="/assets/images/bg-header.svg" alt="" fill className="object-cover" priority />

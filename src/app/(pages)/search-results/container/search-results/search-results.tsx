@@ -2,23 +2,18 @@
 
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
-import { FC, Suspense, useState } from 'react';
+import React, { FC, Suspense, useState } from 'react';
 
 import { productsTest } from '@/app/(pages)/search-results/data/productsTest';
 import { singleproductTest } from '@/app/(pages)/search-results/data/singleProductTest';
-import {
-  CollapsibleSearchBar,
-  ModalDetail,
-  OpenFilters,
-  SortingMenu,
-  Title,
-} from '@/app/ui/components';
+import { CollapsibleSearchBar, ModalDetail, OpenFilters, SortingMenu } from '@/app/ui/components';
 import {
   LateralFilters,
   MobileLateralFilters,
   MobileTopFilters,
   Pagination,
   TireCard,
+  TitleSection,
 } from '@/app/ui/sections';
 
 type TirePosition = 'front' | 'rear';
@@ -88,13 +83,25 @@ const SearchResults: FC = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <main className="bg-white">
+        <section aria-labelledby="products-heading" className="relative">
+          <div className="h-64 sm:h-80 lg:h-40">
+            <Image
+              src="/assets/images/banner-tires-search.jpg"
+              alt=""
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+          <div id="services" className="absolute z-30 -mt-24 left-0 w-full">
+            <TitleSection title="STORE TIRES" />
+          </div>
+        </section>
         <div>
           <MobileLateralFilters />
           <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="sm:mb-16 mt-16">
-              <Title />
-            </div>
             <section aria-labelledby="products-heading" className="pb-24">
+              {/* Main search form removed as requested */}
               <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4 ">
                 <div className="hidden lg:block">
                   <aside>
@@ -102,18 +109,6 @@ const SearchResults: FC = () => {
                   </aside>
                 </div>
                 <div className="lg:col-span-3">
-                  <div className="hidden sm:block sticky top-0 z-40 bg-gray-100 rounded-b-md shadow-md">
-                    <Suspense fallback={<div>Loading...</div>}>
-                      <CollapsibleSearchBar />
-                    </Suspense>
-                  </div>
-                  <div className="sticky block sm:hidden top-0 z-40 bg-white rounded my-4">
-                    <MobileTopFilters>
-                      <Suspense fallback={<div>Loading...</div>}>
-                        <CollapsibleSearchBar />
-                      </Suspense>
-                    </MobileTopFilters>
-                  </div>
                   <div className="flex items-center justify-between mt-5">
                     <h3 className="text-gray-400 text-base">91 Results</h3>
                     <div className="flex items-baseline justify-end">
@@ -210,6 +205,7 @@ const SearchResults: FC = () => {
           </main>
         </div>
         <ModalDetail singleTire={singleproductTest} />
+        <CollapsibleSearchBar />
       </main>
     </Suspense>
   );
