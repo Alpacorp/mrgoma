@@ -1,5 +1,3 @@
-import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
-import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import React, { FC, useContext } from 'react';
 
 import { ShowDetailModalContext } from '@/app/context/ShowDetailModal';
@@ -35,9 +33,9 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
               </div>
             </div>
 
-            <div className="col-span-12 md:col-span-8">
+            <div className="col-span-12 md:col-span-8 content-center">
               <ProductName type={1} size="lg" weight="bold" name={product.name} />
-              <div className="flex  flex-wrap xs:flex-nowrap mb-4 mt-4 items-center justify-between">
+              <div className="flex flex-wrap mb-4 mt-4 gap-5 items-center justify-between">
                 <div className="flex">
                   <ProductPrice price={product.price} />
                   {product.brandId && (
@@ -49,62 +47,30 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
                     />
                   )}
                 </div>
-                <div className="w-full xs:w-auto mt-4 mb-1.5 xs:mt-0">
-                  <CtaButton product={product} text="View Tire" />
+                <div className="flex items-center gap-2 justify-center w-full md:w-auto">
+                  <CtaButton
+                    product={product}
+                    text="View Details"
+                    style="tertiary"
+                    urlParams={{ action: 'view', source: 'tirecard' }}
+                  />
+                  <CtaButton
+                    product={product}
+                    text="Add cart"
+                    style="primary"
+                    urlParams={{ action: 'add', source: 'tirecard' }}
+                  />
                 </div>
               </div>
-              <div className="xs:flex justify-between bg-gray-100 py-2 px-2 xs:px-4  rounded-xl xs:rounded-2xl">
-                {product.features.map((feature: any, index: number) => {
+              <div className="flex flex-wrap gap-3 justify-between bg-gray-100 py-2 px-2 xs:px-4 rounded-xl xs:rounded-2xl border border-gray-500">
+                {product?.features && Array.isArray(product.features) && product.features.map((feature: any, index: number) => {
                   return (
                     <React.Fragment key={`feature-${index}`}>
-                      {index <= 3 && (
-                        <ProductItem
-                          product={feature.value}
-                          title={feature.name}
-                          icon={feature.icon}
-                        />
-                      )}
+                      {index <= 3 && <ProductItem feature={feature.value} title={feature.name} />}
                     </React.Fragment>
                   );
                 })}
               </div>
-              <Disclosure>
-                <DisclosureButton
-                  data-open
-                  className="group flex items-center gap-2  w-full mt-4 text-sm justify-between font-bold "
-                >
-                  More details
-                  <ChevronDownIcon className="w-5 h-5 ui-open:rotate-180 ui-open:transform" />
-                </DisclosureButton>
-                <DisclosurePanel transition className="origin-top xs:flex  justify-between gap-6">
-                  <ul className="text-sm mt-2 w-full">
-                    {product.features.map((feature: any, index: number) => {
-                      return (
-                        <React.Fragment key={`feature-detail1-${index}`}>
-                          {index > 2 && index <= 5 && (
-                            <li className="flex justify-between text-xs sm:text-sm">
-                              <span className="font-semibold">{feature.name}:</span> {feature.value}
-                            </li>
-                          )}
-                        </React.Fragment>
-                      );
-                    })}
-                  </ul>
-                  <ul className="text-sm xs:mt-2 w-full">
-                    {product.features.map((feature: any, index: number) => {
-                      return (
-                        <React.Fragment key={`feature-detail2-${index}`}>
-                          {index > 5 && index <= 8 && (
-                            <li className="flex justify-between text-xs sm:text-sm">
-                              <span className="font-semibold">{feature.name}:</span> {feature.value}
-                            </li>
-                          )}
-                        </React.Fragment>
-                      );
-                    })}
-                  </ul>
-                </DisclosurePanel>
-              </Disclosure>
             </div>
           </div>
         </li>

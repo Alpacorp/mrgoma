@@ -1,20 +1,23 @@
 import React, { FC, ReactNode } from 'react';
 
+import { getIconForFeature } from '@/app/ui/utils/IconMapper';
+
 interface ProductItemProps {
-  product: string;
+  feature: string;
   title: string;
   children?: ReactNode;
-  icon: ReactNode;
 }
 
-const ProductItem: FC<ProductItemProps> = ({ product, title, children, icon }) => {
+const ProductItem: FC<ProductItemProps> = ({ feature, title, children }) => {
+  const displayIcon = getIconForFeature(title);
+
   return (
     <div className="flex gap-3 items-start">
-      {icon}
+      {displayIcon}
       {children}
-      <p className=" text-gray-900 text-xs md:text-sm ">
+      <p className="text-gray-900 text-xs md:text-sm flex flex-col">
         <span className="font-semibold">{title}: </span>
-        {product}
+        {feature}
       </p>
     </div>
   );
