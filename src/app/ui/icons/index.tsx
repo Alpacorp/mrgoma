@@ -18,3 +18,7 @@ export * from './BrakesIcon';
 export * from './OilIcon';
 export * from './NitroIcon';
 export * from './TpmsIcon';
+export * from './PatchedIcon';
+export * from './RemainingIcon';
+export * from './TreadIcon';
+export * from './RunFlatIcon';

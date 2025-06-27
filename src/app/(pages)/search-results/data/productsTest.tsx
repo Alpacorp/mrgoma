@@ -1,5 +1,7 @@
 import { ArrowDownOnSquareIcon, ClockIcon, WrenchIcon } from '@heroicons/react/24/outline';
 
+import { PatchedIcon } from '@/app/ui/icons';
+
 export const productsTest = [
   {
     id: 1,
@@ -17,7 +19,7 @@ export const productsTest = [
       {
         name: 'Patched',
         value: 'No',
-        icon: <WrenchIcon color="#8F8F8F" width={18} height={18} />,
+        icon: <PatchedIcon />,
       },
       {
         name: 'Remaining life',

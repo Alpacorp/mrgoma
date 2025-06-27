@@ -12,7 +12,6 @@ export { default as Benefits } from './Benefits/Benefits';
 export { default as Footer } from './Footer/Footer';
 export { default as SearchBar } from './SearchBar/SearchBar';
 export { default as Pagination } from './Pagination/Pagination';
-export { default as SearchBySizeContainer } from '@/app/ui/sections/SearchSection/SearchSection';
 export { default as InfoSlider } from './InfoSlider/InfoSlider';
 export { default as TitleSection } from './TitleSection/TitleSection';
 export { default as ServicesGrid } from './ServicesGrid/ServicesGrid';
