@@ -19,7 +19,6 @@ export { default as TireDisplay } from './TireDisplay/TireDisplay';
 export { default as SearchByText } from './SearchByText/SearchByText';
 export { default as CollapsibleSearchBar } from './CollapsibleSearchBar/CollapsibleSearchBar';
 export { default as SelectDropdown } from './SelectDropdown/SelectDropdown';
-export { default as RangeSlider } from './RangeSlider/RangeSlider';
 export { default as ButtonSearch } from './ButtonSearch/ButtonSearch';
 export { default as ServiceCard } from './ServiceCard/ServiceCard';
 export { default as InfoCard } from './InfoCard/InfoCard';
@@ -29,3 +28,7 @@ export { default as DifferentSizesModal } from './DifferentSizesModal/DifferentS
 export { default as TirePositionTabs } from './TirePositionTabs/TirePositionTabs';
 export { default as ResultsHeader } from './ResultsHeader/ResultsHeader';
 export { default as TireResults } from './TireResults/TireResults';
+export { default as RangeSlider } from './RangeSlider/RangeSlider';
+export { Disclosure, DisclosureButton, DisclosurePanel, DisclosureIcon } from './Disclosure/Disclosure';
+export { Dialog, DialogBackdrop, DialogPanel } from './Dialog/Dialog';
+export { PlusIcon, MinusIcon, XMarkIcon } from './Icons/Icons';
