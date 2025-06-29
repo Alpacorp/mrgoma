@@ -192,7 +192,7 @@ const LateralFilters: FC = () => {
       {/* Mobile view */}
       <Dialog
         open={showFilter}
-        onClose={() => setShowFilter(false)}
+        onCloseAction={() => setShowFilter(false)}
         className="relative z-40 lg:hidden"
       >
         <DialogBackdrop
