@@ -18,6 +18,21 @@ export const lateralItems = [
   {
     id: 'brands',
     name: 'Brands',
-    options: [{ value: 'selectAll', label: 'Select All', checked: false }],
+    options: [
+      { value: 'deselectAll', label: 'Deselect All', checked: false },
+      { value: 'armstrong', label: 'ARMSTRONG (1)', checked: false },
+      { value: 'bridgestone', label: 'BRIDGESTONE (2)', checked: false },
+      { value: 'cooper', label: 'COOPER (1)', checked: false },
+      { value: 'dean', label: 'DEAN TIRES (1)', checked: false },
+      { value: 'dextero', label: 'DEXTERO (1)', checked: false },
+      { value: 'forceland', label: 'FORCELAND (1)', checked: false },
+      { value: 'gladiator', label: 'GLADIATOR (2)', checked: false },
+      { value: 'ironman', label: 'IRONMAN (1)', checked: false },
+      { value: 'mastercraft', label: 'MASTERCRAFT (1)', checked: false },
+      { value: 'national', label: 'NATIONAL (1)', checked: false },
+      { value: 'nitto', label: 'NITTO (1)', checked: false },
+      { value: 'roadone', label: 'ROADONE (1)', checked: false },
+      { value: 'yokohama', label: 'YOKOHAMA (1)', checked: false },
+    ],
   },
 ];

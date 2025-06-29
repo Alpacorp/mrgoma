@@ -14,7 +14,7 @@ import {
   TireResults,
 } from '@/app/ui/components';
 import { TirePosition } from '@/app/ui/components/TirePositionTabs/TirePositionTabs';
-import { LateralFilters, MobileLateralFilters, Pagination, TitleSection } from '@/app/ui/sections';
+import { LateralFilters, Pagination, TitleSection } from '@/app/ui/sections';
 
 const SearchResults: FC = () => {
   const searchParams = useSearchParams();
@@ -55,12 +55,11 @@ const SearchResults: FC = () => {
           </div>
         </section>
         <div>
-          <MobileLateralFilters />
           <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <section aria-labelledby="products-heading" className="pb-24">
               {/* Main search form removed as requested */}
               <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4 md:mt-10">
-                <div className="hidden lg:block">
+                <div>
                   <aside>
                     <LateralFilters />
                   </aside>

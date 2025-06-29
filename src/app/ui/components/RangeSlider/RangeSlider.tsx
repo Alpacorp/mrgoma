@@ -1,20 +1,33 @@
-"use client";
+'use client';
 
-import type React from "react";
-import { useState, useEffect, useCallback } from "react";
+import type React from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-interface RangeSliderProps {
-  min: number
-  max: number
-  step?: number
-  value: [number, number]
-  onChange: (value: [number, number]) => void
-  className?: string
+// Define the AddEventListenerOptions interface if it's not available in the global scope
+interface AddEventListenerOptions extends EventListenerOptions {
+  passive?: boolean;
 }
 
-const RangeSlider: React.FC<RangeSliderProps> = ({ min, max, step = 1, value, onChange, className = "" }) => {
-  const [dragging, setDragging] = useState<"min" | "max" | null>(null);
+interface RangeSliderProps {
+  min: number;
+  max: number;
+  step?: number;
+  value: [number, number];
+  onChange: (value: [number, number]) => void;
+  className?: string;
+}
+
+const RangeSlider: React.FC<RangeSliderProps> = ({
+  min,
+  max,
+  step = 1,
+  value,
+  onChange,
+  className = '',
+}) => {
+  const [dragging, setDragging] = useState<'min' | 'max' | null>(null);
   const [localValue, setLocalValue] = useState(value);
+  const [sliderId] = useState(() => `range-slider-${Math.random().toString(36).substr(2, 9)}`);
 
   useEffect(() => {
     setLocalValue(value);
@@ -24,12 +37,41 @@ const RangeSlider: React.FC<RangeSliderProps> = ({ min, max, step = 1, value, on
     (value: number) => {
       return ((value - min) / (max - min)) * 100;
     },
-    [min, max],
+    [min, max]
   );
 
-  const handleMouseDown = (thumb: "min" | "max") => {
+  const handleMouseDown = (thumb: 'min' | 'max') => {
     setDragging(thumb);
   };
+
+  const handleTouchStart = (thumb: 'min' | 'max') => {
+    setDragging(thumb);
+  };
+
+  // Common function to handle both mouse and touch movement
+  const handlePointerMove = useCallback(
+    (clientX: number) => {
+      if (!dragging) return;
+
+      const slider = document.getElementById(sliderId);
+      if (!slider) return;
+
+      const rect = slider.getBoundingClientRect();
+      const percentage = Math.min(Math.max((clientX - rect.left) / rect.width, 0), 1);
+      const newValue = Math.round((percentage * (max - min) + min) / step) * step;
+
+      setLocalValue(prev => {
+        if (dragging === 'min') {
+          const clampedValue = Math.min(newValue, prev[1] - step);
+          return [Math.max(min, clampedValue), prev[1]];
+        } else {
+          const clampedValue = Math.max(newValue, prev[0] + step);
+          return [prev[0], Math.min(max, clampedValue)];
+        }
+      });
+    },
+    [dragging, max, min, step, sliderId]
+  );
 
   useEffect(() => {
     const handleMouseUp = () => {
@@ -39,38 +81,72 @@ const RangeSlider: React.FC<RangeSliderProps> = ({ min, max, step = 1, value, on
       }
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!dragging) return;
-
-      const slider = document.getElementById("range-slider");
-      if (!slider) return;
-
-      const rect = slider.getBoundingClientRect();
-      const percentage = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1);
-      const newValue = Math.round((percentage * (max - min) + min) / step) * step;
-
-      setLocalValue((prev) => {
-        if (dragging === "min") {
-          const clampedValue = Math.min(newValue, prev[1] - step);
-          return [Math.max(min, clampedValue), prev[1]];
-        } else {
-          const clampedValue = Math.max(newValue, prev[0] + step);
-          return [prev[0], Math.min(max, clampedValue)];
-        }
-      });
+    const handleTouchEnd = () => {
+      if (dragging) {
+        setDragging(null);
+        onChange(localValue);
+      }
     };
 
-    document.addEventListener("mouseup", handleMouseUp);
-    document.addEventListener("mousemove", handleMouseMove);
+    const handleMouseMove = (e: MouseEvent) => {
+      handlePointerMove(e.clientX);
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        // Only prevent default if we're actually dragging to avoid interfering with other touch events
+        if (dragging) {
+          e.preventDefault(); // Prevent scrolling during slider interaction
+        }
+        handlePointerMove(e.touches[0].clientX);
+      }
+    };
+
+    // Add mouse event listeners
+    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mousemove', handleMouseMove);
+
+    // Add touch event listeners
+    document.addEventListener('touchend', handleTouchEnd);
+    document.addEventListener('touchcancel', handleTouchEnd);
+
+    try {
+      // Try to add the event listener with passive: false
+      document.addEventListener(
+        'touchmove',
+        handleTouchMove as EventListener,
+        { passive: false } as AddEventListenerOptions
+      );
+    } catch (err) {
+      // Fallback for browsers that don't support options
+      document.addEventListener('touchmove', handleTouchMove as EventListener);
+    }
 
     return () => {
-      document.removeEventListener("mouseup", handleMouseUp);
-      document.removeEventListener("mousemove", handleMouseMove);
+      // Remove mouse event listeners
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mousemove', handleMouseMove);
+
+      // Remove touch event listeners
+      document.removeEventListener('touchend', handleTouchEnd);
+      document.removeEventListener('touchcancel', handleTouchEnd);
+
+      try {
+        // Try to remove with options
+        document.removeEventListener(
+          'touchmove',
+          handleTouchMove as EventListener,
+          { passive: false } as AddEventListenerOptions
+        );
+      } catch (err) {
+        // Fallback for browsers that don't support options
+        document.removeEventListener('touchmove', handleTouchMove as EventListener);
+      }
     };
-  }, [dragging, max, min, onChange, step, localValue]);
+  }, [dragging, handlePointerMove, onChange, localValue]);
 
   return (
-    <div id="range-slider" className={`relative h-7 ${className}`}>
+    <div id={sliderId} className={`relative h-12 ${className}`} style={{ touchAction: 'none' }}>
       {/* Track background */}
       <div className="absolute h-2 w-full bg-gray-200 rounded-full top-1/2 -translate-y-1/2" />
 
@@ -85,20 +161,22 @@ const RangeSlider: React.FC<RangeSliderProps> = ({ min, max, step = 1, value, on
 
       {/* Minimum thumb */}
       <div
-        className="absolute w-7 h-7 -ml-3.5 top-0 cursor-pointer flex items-center justify-center"
+        className="absolute w-12 h-12 -ml-6 top-0 -mt-3 cursor-pointer flex items-center justify-center touch-manipulation z-10"
         style={{ left: `${getPercentage(localValue[0])}%` }}
-        onMouseDown={() => handleMouseDown("min")}
+        onMouseDown={() => handleMouseDown('min')}
+        onTouchStart={() => handleTouchStart('min')}
       >
-        <div className="w-3 h-3 bg-white border-2 border-green-500 rounded-full" />
+        <div className="w-6 h-6 bg-white border-2 border-green-500 rounded-full shadow-md" />
       </div>
 
       {/* Maximum thumb */}
       <div
-        className="absolute w-7 h-7 -ml-3.5 top-0 cursor-pointer flex items-center justify-center"
+        className="absolute w-12 h-12 -ml-6 top-0 -mt-3 cursor-pointer flex items-center justify-center touch-manipulation z-10"
         style={{ left: `${getPercentage(localValue[1])}%` }}
-        onMouseDown={() => handleMouseDown("max")}
+        onMouseDown={() => handleMouseDown('max')}
+        onTouchStart={() => handleTouchStart('max')}
       >
-        <div className="w-3 h-3 bg-white border-2 border-green-500 rounded-full" />
+        <div className="w-6 h-6 bg-white border-2 border-green-500 rounded-full shadow-md" />
       </div>
 
       {/* Hidden inputs for form submission */}
