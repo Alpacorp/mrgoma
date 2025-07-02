@@ -4,8 +4,7 @@ import React, { FC, Suspense, useContext } from 'react';
 
 import { ShowFilterContext } from '@/app/context/ShowFilterContext';
 import { AdjustmentsHorizontalIcon } from '@/app/ui/components/Icons/Icons';
-
-import { TirePosition } from '../TirePositionTabs/TirePositionTabs';
+import { TirePosition } from '@/app/ui/components/TirePositionTabs/tire-position-tabs';
 
 interface ResultsHeaderProps {
   activeTab: TirePosition;

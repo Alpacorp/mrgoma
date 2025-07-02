@@ -5,6 +5,15 @@ export interface SectionHeaderProps {
   textColor?: string;
 }
 
+/**
+ * A title section component. It renders a title with an arrow icon next to it.
+ * The title is rendered as a heading element of level 2.
+ *
+ * @param {SectionHeaderProps} props - The component props.
+ * @param {string} props.title - The title text.
+ * @param {string} [props.textColor] - The color of the title text.
+ * @returns {JSX.Element} The rendered component.
+ */
 export const TitleSection = ({ title, textColor = '#272727' }: SectionHeaderProps) => {
   return (
     <div

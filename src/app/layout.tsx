@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import React from 'react';
 
+import { CartProvider } from '@/app/context/CartContext';
 import { SelectedFiltersProvider } from '@/app/context/SelectedFilters';
 import { DetailModalProvider } from '@/app/context/ShowDetailModal';
 import { FiltersProvider } from '@/app/context/ShowFilterContext';
@@ -32,11 +33,13 @@ export default function RootLayout({
         <FiltersProvider>
           <SelectedFiltersProvider>
             <MenuProvider>
-              <body className={inter.className} suppressHydrationWarning>
-                <Header />
-                {children}
-                <Footer />
-              </body>
+              <CartProvider>
+                <body className={inter.className} suppressHydrationWarning>
+                  <Header />
+                  {children}
+                  <Footer />
+                </body>
+              </CartProvider>
             </MenuProvider>
           </SelectedFiltersProvider>
         </FiltersProvider>

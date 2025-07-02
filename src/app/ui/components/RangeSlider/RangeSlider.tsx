@@ -15,6 +15,7 @@ interface RangeSliderProps {
   value: [number, number];
   onChange: (value: [number, number]) => void;
   className?: string;
+  id?: string;
 }
 
 const RangeSlider: React.FC<RangeSliderProps> = ({
@@ -24,10 +25,11 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
   value,
   onChange,
   className = '',
+  id,
 }) => {
   const [dragging, setDragging] = useState<'min' | 'max' | null>(null);
   const [localValue, setLocalValue] = useState(value);
-  const [sliderId] = useState(() => `range-slider-${Math.random().toString(36).substr(2, 9)}`);
+  const [sliderId] = useState(() => id || `range-slider-${min}-${max}-${step}`);
 
   useEffect(() => {
     setLocalValue(value);

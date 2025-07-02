@@ -2,9 +2,8 @@
 
 import React, { FC } from 'react';
 
+import { TirePosition } from '@/app/ui/components/TirePositionTabs/tire-position-tabs';
 import { TireCard } from '@/app/ui/sections';
-
-import { TirePosition } from '../TirePositionTabs/TirePositionTabs';
 
 interface TireResultsProps {
   activeTab: TirePosition;
@@ -18,7 +17,7 @@ const TireResults: FC<TireResultsProps> = ({ activeTab, products, getTireSize })
   const rearTiresPlaceholder = Array.from({ length: 15 }, (_, index) => ({
     id: `rear-${index + 1}`,
     name: `Michelin PRIMACY A/S XL ${getTireSize('rear')}`,
-    price: '$140',
+    price: '140',
     imageSrc: 'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',

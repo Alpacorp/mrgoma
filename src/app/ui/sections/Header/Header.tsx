@@ -2,15 +2,29 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 
 import { mrGomaLogo } from '#public/assets/images/Logo';
-import HamburgerMenu from '@/app/ui/components/HamburgerMenu/HamburgerMenu';
+import { useCart } from '@/app/context/CartContext';
+import { HamburgerMenu } from '@/app/ui/components';
 import { ShoppingCart } from '@/app/ui/icons';
-import { MenuMobile } from '@/app/ui/sections';
+import { CartModal, MenuMobile } from '@/app/ui/sections';
 import { menuItems } from '@/app/ui/sections/Header/MenuItems';
 
-const Header: FC = () => {
+/**
+ * Header component for the website
+ * Contains the logo, navigation links, and shopping cart icon
+ * The header is sticky and has a background with a gradient and an image
+ * @returns {ReactNode} The rendered header component
+ */
+const Header: FC = (): ReactNode => {
+  const { cartCount, setShowCartModal } = useCart();
+
+  const handleCartClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowCartModal(true);
+  };
+
   return (
     <>
       <header className="w-full sticky top-0 z-40 bg-black backdrop-blur-sm backdrop-filter backdrop-saturate-150">
@@ -39,22 +53,32 @@ const Header: FC = () => {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-sm font-semibo  ld leading-6 text-white hover:text-[#65D01E] transition-colors"
+                className="text-sm font-semibold leading-6 text-white hover:text-[#65D01E] transition-colors"
               >
                 {item.name}
               </Link>
             ))}
           </div>
-          <Link
-            href="/search-results"
-            className="hidden lg:flex items-center justify-center rounded-full bg-zinc-800 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 transition-colors"
+          <button
+            onClick={handleCartClick}
+            className="flex items-center justify-center rounded-full bg-zinc-800 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 transition-colors relative"
+            aria-label={`Shopping cart with ${cartCount} items`}
           >
             <ShoppingCart className="mr-2 h-5 w-5" />
-            Store
-          </Link>
+            Cart
+            {cartCount > 0 && (
+              <span
+                className="absolute -top-2 -right-2 bg-green-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center"
+                aria-hidden="true"
+              >
+                {cartCount}
+              </span>
+            )}
+          </button>
         </nav>
       </header>
       <MenuMobile />
+      <CartModal />
     </>
   );
 };

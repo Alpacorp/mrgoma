@@ -33,7 +33,7 @@ export const Dialog: React.FC<DialogProps> = ({
   onCloseAction,
   className = '',
 }) => {
-  // Handle ESC key to close dialog
+  // Handle an ESC key to close a dialog
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && open) {
@@ -86,7 +86,13 @@ export const DialogBackdrop: React.FC<DialogBackdropProps> = ({
 }) => {
   const { close } = useDialog();
 
-  return <div className={className} onClick={close} data-closed={!transition} />;
+  return (
+    <div
+      className={`${className} ${!transition ? 'opacity-0' : 'opacity-40'} transition-opacity duration-300`}
+      onClick={close}
+      data-closed={!transition}
+    />
+  );
 };
 
 // Panel component
@@ -109,7 +115,12 @@ export const DialogPanel: React.FC<DialogPanelProps> = ({
   };
 
   return (
-    <div ref={panelRef} className={className} onClick={handleClick} data-closed={!transition}>
+    <div
+      ref={panelRef}
+      className={`${className} ${!transition ? 'translate-x-full' : 'translate-x-0'} transition-transform duration-300 ease-in-out`}
+      onClick={handleClick}
+      data-closed={!transition}
+    >
       {children}
     </div>
   );
