@@ -11,7 +11,7 @@ export const productsTest = [
     imageSrc: 'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
-    price: '$140',
+    price: '140',
     brand: 'goodYear',
     brandId: 1,
     condition: 'new',
@@ -76,7 +76,7 @@ export const productsTest = [
     imageSrc: 'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
-    price: '$220',
+    price: '220',
     brand: 'michelin',
     brandId: 2,
     condition: 'used',
@@ -141,7 +141,7 @@ export const productsTest = [
     imageSrc: 'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
-    price: '$220',
+    price: '220',
     brand: 'hankook',
     brandId: 3,
     condition: 'new',
@@ -206,7 +206,7 @@ export const productsTest = [
     imageSrc: 'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
-    price: '$140',
+    price: '140',
     brand: 'goodYear',
     brandId: 1,
     condition: 'new',
@@ -271,7 +271,7 @@ export const productsTest = [
     imageSrc: 'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
-    price: '$140',
+    price: '140',
     brand: 'goodYear',
     brandId: 1,
     condition: 'new',
@@ -336,7 +336,7 @@ export const productsTest = [
     imageSrc: 'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
-    price: '$220',
+    price: '220',
     brand: 'michelin',
     brandId: 2,
     condition: 'used',
@@ -401,7 +401,7 @@ export const productsTest = [
     imageSrc: 'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
-    price: '$220',
+    price: '220',
     brand: 'hankook',
     brandId: 3,
     condition: 'new',
@@ -466,7 +466,7 @@ export const productsTest = [
     imageSrc: 'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC05548.JPG',
     imageAlt:
       'Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.',
-    price: '$140',
+    price: '140',
     brand: 'goodYear',
     brandId: 1,
     condition: 'new',

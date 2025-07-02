@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { FC } from 'react';
+import { FC, MouseEvent } from 'react';
 
 interface CtaButtonProps {
   product: {
@@ -9,9 +9,20 @@ interface CtaButtonProps {
   text: string;
   style?: 'primary' | 'secondary' | 'tertiary' | 'default';
   urlParams?: Record<string, string | number>;
+  onClick?: (e: MouseEvent<HTMLButtonElement | HTMLAnchorElement>, product: any) => void;
+  disabled?: boolean;
+  isLink?: boolean;
 }
 
-const CtaButton: FC<CtaButtonProps> = ({ product, text, style = 'default', urlParams = {} }) => {
+const CtaButton: FC<CtaButtonProps> = ({
+  product,
+  text,
+  style = 'default',
+  urlParams = {},
+  onClick,
+  disabled = false,
+  isLink = true
+}) => {
   // Construct URL with parameters
   let url = '/detail';
   const queryParams = new URLSearchParams();
@@ -51,8 +62,48 @@ const CtaButton: FC<CtaButtonProps> = ({ product, text, style = 'default', urlPa
       break;
   }
 
+  // Add disabled styles if button is disabled
+  if (disabled) {
+    buttonStyle += ' opacity-50 cursor-not-allowed !border-gray-400 !text-gray-500 hover:!bg-transparent hover:!text-gray-500';
+  }
+
+  // Handle click event
+  const handleClick = (e: MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
+    if (disabled) {
+      e.preventDefault();
+      return;
+    }
+
+    if (onClick) {
+      onClick(e, product);
+    }
+  };
+
+  // Render as button if onClick is provided or isLink is false
+  if (onClick || !isLink) {
+    return (
+      <button
+        className={buttonStyle}
+        title={text}
+        onClick={handleClick}
+        disabled={disabled}
+        type="button"
+      >
+        {text}
+        <span className="sr-only">, {product.name}</span>
+      </button>
+    );
+  }
+
+  // Otherwise render as link
   return (
-    <Link href={url} className={buttonStyle} title={text}>
+    <Link
+      href={url}
+      className={buttonStyle}
+      title={text}
+      onClick={handleClick as any}
+      aria-disabled={disabled}
+    >
       {text}
       <span className="sr-only">, {product.name}</span>
     </Link>
