@@ -1,6 +1,5 @@
 export { default as BrandImage } from './BrandImage/BrandImage';
 export { default as CtaButton } from './CtaButton/CtaButton';
-export { default as HamburguerMenu } from '@/app/ui/components/HamburgerMenu/HamburgerMenu';
 export { default as ProductCondition } from './ProductCondition/ProductCondition';
 export { default as ProductImage } from './ProductImage/ProductImage';
 export { default as ProductItem } from './ProductItem/ProductItem';
@@ -11,9 +10,7 @@ export { default as ProductCarouselMiniature } from './ProductCarouselMiniature/
 export { default as CartButton } from './CartButton/CartButton';
 export { default as BenefitsItem } from './BenefitsItem/BenefitsItem';
 export { default as TerminologyItem } from './TerminologyItem/TerminologyItem';
-export { default as DetailsButton } from './DetailsButton/DetailsButton';
 export { default as ModalDetail } from './ModalDetail/ModalDetail';
-export { default as SearchButton } from './SearchButton/SearchButton';
 export { default as SearchBySize } from './SearchBySize/SearchBySize';
 export { default as TireDisplay } from './TireDisplay/TireDisplay';
 export { default as SearchByText } from './SearchByText/SearchByText';
@@ -29,6 +26,12 @@ export { default as TirePositionTabs } from './TirePositionTabs/TirePositionTabs
 export { default as ResultsHeader } from './ResultsHeader/ResultsHeader';
 export { default as TireResults } from './TireResults/TireResults';
 export { default as RangeSlider } from './RangeSlider/RangeSlider';
-export { Disclosure, DisclosureButton, DisclosurePanel, DisclosureIcon } from './Disclosure/Disclosure';
+export {
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+  DisclosureIcon,
+} from './Disclosure/Disclosure';
+export { default as HamburgerMenu } from './HamburgerMenu/HamburgerMenu';
 export { Dialog, DialogBackdrop, DialogPanel } from './Dialog/Dialog';
 export { PlusIcon, MinusIcon, XMarkIcon } from './Icons/Icons';

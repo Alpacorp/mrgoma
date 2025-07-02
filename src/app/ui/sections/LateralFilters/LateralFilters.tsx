@@ -17,7 +17,12 @@ import {
 import { useLateralFilters } from '@/app/ui/sections/LateralFilters/hooks/useLateralFilters';
 import { lateralItems } from '@/app/ui/sections/LateralFilters/LateralItems';
 
-// Filter content component that's shared between desktop and mobile views
+/**
+ * FilterContent is a component that renders a form with various filters, such as price, tread depth, remaining life, and checkboxes.
+ * It takes an optional `isMobile` prop, which determines whether the component is rendered for mobile devices or not.
+ * @prop {boolean} isMobile - Whether the component is rendered for mobile devices or not (default is false).
+ * @returns {JSX.Element} A JSX element that renders a form with various filters.
+ */
 const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
   const { rangeInputs, handleRangeChange, handleCheckboxChange, isChecked, resetFilters } =
     useLateralFilters();
@@ -178,6 +183,25 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
   );
 };
 
+/**
+ * A component that renders a filter panel on the left side of the screen (for desktop) or a modal (for mobile).
+ *
+ * The component is a part of the search result page and is used to filter the search results.
+ *
+ * The component is a wrapper around the `FilterContent` component, which is the component that renders the actual filters.
+ *
+ * The component is responsive and renders differently depending on the screen size.
+ *
+ * For desktop, the component renders a panel on the left side of the screen with the filters.
+ *
+ * For mobile, the component renders a modal with the filters.
+ *
+ * The component also renders a button to reset all filters.
+ *
+ * The component uses the `useLateralFilters` hook to get the `resetFilters` function, which is called when the reset button is clicked.
+ *
+ * The component uses the `ShowFilterContext` to get the `showFilter` and `setShowFilter` functions, which are used to show and hide the modal.
+ */
 const LateralFilters: FC = () => {
   const { showFilter, setShowFilter } = useContext(ShowFilterContext);
   const { resetFilters } = useLateralFilters();

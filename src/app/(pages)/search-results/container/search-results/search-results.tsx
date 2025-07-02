@@ -13,9 +13,30 @@ import {
   TirePositionTabs,
   TireResults,
 } from '@/app/ui/components';
-import { TirePosition } from '@/app/ui/components/TirePositionTabs/TirePositionTabs';
+import { TirePosition } from '@/app/ui/components/TirePositionTabs/tire-position-tabs';
 import { LateralFilters, Pagination, TitleSection } from '@/app/ui/sections';
 
+/**
+ * `SearchResults` is a page component that renders a search results page.
+ *
+ * The page displays a list of tires matching the search query, along with
+ * filters and sorting options. The component is a `Suspense` boundary,
+ * which means that it will only be rendered once the search results data
+ * has been loaded.
+ *
+ * The component expects the following props:
+ *
+ * - `searchParams`: an object containing the search query parameters.
+ *   The object should have the following properties:
+ *   - `w`: the width of the front tires.
+ *   - `s`: the sidewall of the front tires.
+ *   - `d`: the diameter of the front tires.
+ *   - `rw`: the width of the rear tires.
+ *   - `rs`: the sidewall of the rear tires.
+ *   - `rd`: the diameter of the rear tires.
+ *
+ * @returns a JSX element representing the search results page.
+ */
 const SearchResults: FC = () => {
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<TirePosition>('front');
@@ -57,7 +78,6 @@ const SearchResults: FC = () => {
         <div>
           <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <section aria-labelledby="products-heading" className="pb-24">
-              {/* Main search form removed as requested */}
               <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4 md:mt-10">
                 <div>
                   <aside>
@@ -70,20 +90,17 @@ const SearchResults: FC = () => {
                       <div className="mx-auto">
                         <div className="flex-1">
                           <div className="mb-6">
-                            {/* Tabs for tire position */}
                             <TirePositionTabs
                               activeTab={activeTab}
                               setActiveTab={setActiveTab}
                               hasRearTires={hasRearTires}
                             />
-                            {/* Result header */}
                             <ResultsHeader
                               activeTab={activeTab}
                               getTireSize={getTireSize}
                               resultsCount={activeTab === 'front' ? productsTest.length : 15}
                             />
                           </div>
-                          {/* Result grid */}
                           <TireResults
                             activeTab={activeTab}
                             products={productsTest}

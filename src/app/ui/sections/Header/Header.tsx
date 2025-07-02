@@ -2,15 +2,21 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 
 import { mrGomaLogo } from '#public/assets/images/Logo';
-import HamburgerMenu from '@/app/ui/components/HamburgerMenu/HamburgerMenu';
+import { HamburgerMenu } from '@/app/ui/components';
 import { ShoppingCart } from '@/app/ui/icons';
 import { MenuMobile } from '@/app/ui/sections';
 import { menuItems } from '@/app/ui/sections/Header/MenuItems';
 
-const Header: FC = () => {
+/**
+ * Header component for the website
+ * Contains the logo, navigation links, and shopping cart icon
+ * The header is sticky and has a background with a gradient and an image
+ * @returns {ReactNode} The rendered header component
+ */
+const Header: FC = (): ReactNode => {
   return (
     <>
       <header className="w-full sticky top-0 z-40 bg-black backdrop-blur-sm backdrop-filter backdrop-saturate-150">

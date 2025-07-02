@@ -78,7 +78,7 @@ export const DisclosurePanel: React.FC<DisclosurePanelProps> = ({ children, clas
   return <div className={className}>{children}</div>;
 };
 
-// Icon component that shows either plus or minus based on disclosure state
+// Icon component that shows either plus or minus based on the disclosure state
 interface DisclosureIconProps {
   className?: string;
 }

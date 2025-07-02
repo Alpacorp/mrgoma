@@ -2,19 +2,18 @@
 
 import React, { FC, Suspense } from 'react';
 
-export type TirePosition = 'front' | 'rear';
+import { TirePositionTabsProps } from '@/app/ui/components/TirePositionTabs/tire-position-tabs';
 
-interface TirePositionTabsProps {
-  activeTab: TirePosition;
-  setActiveTab: (position: TirePosition) => void;
-  hasRearTires: boolean;
-}
-
-const TirePositionTabs: FC<TirePositionTabsProps> = ({
-  activeTab,
-  setActiveTab,
-  hasRearTires
-}) => {
+/**
+ * `TirePositionTabs` is a React functional component that renders tabs
+ * for selecting tire positions (front or rear). It allows users to switch
+ * between front and rear tire views, with the rear tab being conditionally
+ * rendered based on the presence of rear tires.
+ *
+ * @param {TirePositionTabsProps} props - The properties for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
+const TirePositionTabs: FC<TirePositionTabsProps> = ({ activeTab, setActiveTab, hasRearTires }) => {
   return (
     <div className="border-b border-gray-200">
       <nav className="-mb-px flex gap-6" aria-label="Tabs">
