@@ -8,6 +8,7 @@ import { TirePosition } from '@/app/ui/components/TirePositionTabs/tire-position
 
 interface ResultsHeaderProps {
   activeTab: TirePosition;
+
   getTireSize: (position: TirePosition) => string;
   resultsCount: number;
 }

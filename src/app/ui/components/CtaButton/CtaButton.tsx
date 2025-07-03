@@ -21,7 +21,7 @@ const CtaButton: FC<CtaButtonProps> = ({
   urlParams = {},
   onClick,
   disabled = false,
-  isLink = true
+  isLink = true,
 }) => {
   // Construct URL with parameters
   let url = '/detail';
@@ -45,7 +45,7 @@ const CtaButton: FC<CtaButtonProps> = ({
 
   // Define styles based on the style prop
   let buttonStyle =
-    'relative flex items-center justify-center rounded-md border px-8 py-2 text-sm font-medium duration-150 w-full sm:w-auto';
+    'relative cursor-pointer flex items-center justify-center rounded-md border px-8 py-2 text-sm font-medium duration-150 w-full sm:w-auto';
 
   switch (style) {
     case 'primary':
@@ -62,9 +62,10 @@ const CtaButton: FC<CtaButtonProps> = ({
       break;
   }
 
-  // Add disabled styles if button is disabled
+  // Add disabled styles if the button is disabled
   if (disabled) {
-    buttonStyle += ' opacity-50 cursor-not-allowed !border-gray-400 !text-gray-500 hover:!bg-transparent hover:!text-gray-500';
+    buttonStyle +=
+      ' opacity-50 !cursor-not-allowed !border-gray-400 !text-gray-500 hover:!bg-transparent hover:!text-gray-500';
   }
 
   // Handle click event
@@ -79,7 +80,7 @@ const CtaButton: FC<CtaButtonProps> = ({
     }
   };
 
-  // Render as button if onClick is provided or isLink is false
+  // Render as a button if onClick is provided or isLink is false
   if (onClick || !isLink) {
     return (
       <button
@@ -95,13 +96,13 @@ const CtaButton: FC<CtaButtonProps> = ({
     );
   }
 
-  // Otherwise render as link
+  // Otherwise render as a link
   return (
     <Link
       href={url}
       className={buttonStyle}
       title={text}
-      onClick={handleClick as any}
+      onClick={handleClick}
       aria-disabled={disabled}
     >
       {text}

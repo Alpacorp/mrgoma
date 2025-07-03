@@ -15,7 +15,7 @@ export const FloatingButton: React.FC<FloatingButtonProps> = ({ onClick }) => {
   return (
     <button
       onClick={onClick}
-      className="fixed bottom-4 left-4 bg-green-600 text-white px-3 py-2 rounded-full shadow-lg hover:bg-green-700 transition-colors flex items-center gap-2 z-50 sm:z-40 md:z-40 lg:z-40 xl:z-40"
+      className="fixed bottom-4 left-4 bg-green-600 text-white px-3 py-2 rounded-full shadow-lg hover:bg-green-700 transition-colors flex items-center gap-2 z-40 sm:z-40 md:z-40 lg:z-40 xl:z-40"
       aria-label="Edit tire sizes"
       title="Edit tire sizes"
       style={{ position: 'fixed', display: 'flex' }}
