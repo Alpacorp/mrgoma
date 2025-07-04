@@ -39,6 +39,7 @@ const SearchByText: FC = () => {
               </label>
               <input
                 id="tireSize"
+                inputMode="numeric"
                 type="text"
                 placeholder="e.g. 255/55R18"
                 value={value}
