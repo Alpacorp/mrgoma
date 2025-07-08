@@ -27,7 +27,7 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
 }) => {
   const [dragging, setDragging] = useState<'min' | 'max' | null>(null);
   const [localValue, setLocalValue] = useState(value);
-  const [sliderId] = useState(() => `range-slider-${Math.random().toString(36).substr(2, 9)}`);
+  const [sliderId] = useState(() => `range-slider-${Math.random().toString(36).slice(2, 11)}`);
 
   useEffect(() => {
     setLocalValue(value);
@@ -109,7 +109,7 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
     // Add touch event listeners
     document.addEventListener('touchend', handleTouchEnd);
     document.addEventListener('touchcancel', handleTouchEnd);
-    // Use type assertion to fix the TypeScript error with passive option
+    // Use type assertion to fix the TypeScript error with a passive option
     document.addEventListener(
       'touchmove',
       handleTouchMove as EventListener,
@@ -151,10 +151,7 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
         className="absolute w-10 h-10 -ml-5 top-0 -mt-1.5 cursor-pointer flex items-center justify-center touch-manipulation"
         style={{ left: `${getPercentage(localValue[0])}%` }}
         onMouseDown={() => handleMouseDown('min')}
-        onTouchStart={e => {
-          // Don't prevent default here to allow the event to be properly recognized
-          handleTouchStart('min');
-        }}
+        onTouchStart={() => handleTouchStart('min')}
       >
         <div className="w-4 h-4 bg-white border-2 border-green-500 rounded-full" />
       </div>
@@ -164,8 +161,7 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
         className="absolute w-10 h-10 -ml-5 top-0 -mt-1.5 cursor-pointer flex items-center justify-center touch-manipulation"
         style={{ left: `${getPercentage(localValue[1])}%` }}
         onMouseDown={() => handleMouseDown('max')}
-        onTouchStart={e => {
-          // Don't prevent default here to allow the event to be properly recognized
+        onTouchStart={() => {
           handleTouchStart('max');
         }}
       >
