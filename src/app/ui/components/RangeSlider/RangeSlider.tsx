@@ -15,7 +15,6 @@ interface RangeSliderProps {
   value: [number, number];
   onChange: (value: [number, number]) => void;
   className?: string;
-  id?: string;
 }
 
 const RangeSlider: React.FC<RangeSliderProps> = ({
@@ -25,11 +24,10 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
   value,
   onChange,
   className = '',
-  id,
 }) => {
   const [dragging, setDragging] = useState<'min' | 'max' | null>(null);
   const [localValue, setLocalValue] = useState(value);
-  const [sliderId] = useState(() => id || `range-slider-${min}-${max}-${step}`);
+  const [sliderId] = useState(() => `range-slider-${Math.random().toString(36).slice(2, 11)}`);
 
   useEffect(() => {
     setLocalValue(value);
@@ -111,18 +109,12 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
     // Add touch event listeners
     document.addEventListener('touchend', handleTouchEnd);
     document.addEventListener('touchcancel', handleTouchEnd);
-
-    try {
-      // Try to add the event listener with passive: false
-      document.addEventListener(
-        'touchmove',
-        handleTouchMove as EventListener,
-        { passive: false } as AddEventListenerOptions
-      );
-    } catch (err) {
-      // Fallback for browsers that don't support options
-      document.addEventListener('touchmove', handleTouchMove as EventListener);
-    }
+    // Use type assertion to fix the TypeScript error with a passive option
+    document.addEventListener(
+      'touchmove',
+      handleTouchMove as EventListener,
+      { passive: false } as AddEventListenerOptions
+    ); // passive: false allows preventDefault to work
 
     return () => {
       // Remove mouse event listeners
@@ -132,23 +124,16 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
       // Remove touch event listeners
       document.removeEventListener('touchend', handleTouchEnd);
       document.removeEventListener('touchcancel', handleTouchEnd);
-
-      try {
-        // Try to remove with options
-        document.removeEventListener(
-          'touchmove',
-          handleTouchMove as EventListener,
-          { passive: false } as AddEventListenerOptions
-        );
-      } catch (err) {
-        // Fallback for browsers that don't support options
-        document.removeEventListener('touchmove', handleTouchMove as EventListener);
-      }
+      document.removeEventListener(
+        'touchmove',
+        handleTouchMove as EventListener,
+        { passive: false } as AddEventListenerOptions
+      );
     };
   }, [dragging, handlePointerMove, onChange, localValue]);
 
   return (
-    <div id={sliderId} className={`relative h-12 ${className}`} style={{ touchAction: 'none' }}>
+    <div id={sliderId} className={`relative h-7 ${className}`} style={{ touchAction: 'none' }}>
       {/* Track background */}
       <div className="absolute h-2 w-full bg-gray-200 rounded-full top-1/2 -translate-y-1/2" />
 
@@ -163,22 +148,24 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
 
       {/* Minimum thumb */}
       <div
-        className="absolute w-12 h-12 -ml-6 top-0 -mt-3 cursor-pointer flex items-center justify-center touch-manipulation z-10"
+        className="absolute w-10 h-10 -ml-5 top-0 -mt-1.5 cursor-pointer flex items-center justify-center touch-manipulation"
         style={{ left: `${getPercentage(localValue[0])}%` }}
         onMouseDown={() => handleMouseDown('min')}
         onTouchStart={() => handleTouchStart('min')}
       >
-        <div className="w-6 h-6 bg-white border-2 border-green-500 rounded-full shadow-md" />
+        <div className="w-4 h-4 bg-white border-2 border-green-500 rounded-full" />
       </div>
 
       {/* Maximum thumb */}
       <div
-        className="absolute w-12 h-12 -ml-6 top-0 -mt-3 cursor-pointer flex items-center justify-center touch-manipulation z-10"
+        className="absolute w-10 h-10 -ml-5 top-0 -mt-1.5 cursor-pointer flex items-center justify-center touch-manipulation"
         style={{ left: `${getPercentage(localValue[1])}%` }}
         onMouseDown={() => handleMouseDown('max')}
-        onTouchStart={() => handleTouchStart('max')}
+        onTouchStart={() => {
+          handleTouchStart('max');
+        }}
       >
-        <div className="w-6 h-6 bg-white border-2 border-green-500 rounded-full shadow-md" />
+        <div className="w-4 h-4 bg-white border-2 border-green-500 rounded-full" />
       </div>
 
       {/* Hidden inputs for form submission */}
