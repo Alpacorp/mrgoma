@@ -1,4 +1,3 @@
-import { ArrowDownOnSquareIcon, ClockIcon, WrenchIcon } from '@heroicons/react/24/outline';
 import { ReactNode } from 'react';
 
 import { PatchedIcon, RemainingIcon, RunFlatIcon, TreadIcon } from '@/app/ui/icons';
