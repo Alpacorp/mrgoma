@@ -21,7 +21,7 @@ export const useLateralFilters = () => {
   // Initialize range inputs from URL parameters or defaults
   const [rangeInputs, setRangeInputs] = useState<RangeInputs>({
     price: [
-      parseInt(searchParams.get('minPrice') || '0', 10),
+      parseInt(searchParams.get('minPrice') || '10', 10),
       parseInt(searchParams.get('maxPrice') || '50', 10),
     ],
     treadDepth: [
@@ -45,7 +45,7 @@ export const useLateralFilters = () => {
   useEffect(() => {
     const newRangeInputs = {
       price: [
-        parseInt(searchParams.get('minPrice') || '0', 10),
+        parseInt(searchParams.get('minPrice') || '10', 10),
         parseInt(searchParams.get('maxPrice') || '50', 10),
       ],
       treadDepth: [
@@ -73,7 +73,7 @@ export const useLateralFilters = () => {
     const params = new URLSearchParams(searchParams.toString());
 
     // Update range inputs in URL
-    if (rangeInputs.price[0] > 0) params.set('minPrice', rangeInputs.price[0].toString());
+    if (rangeInputs.price[0] > 10) params.set('minPrice', rangeInputs.price[0].toString());
     else params.delete('minPrice');
 
     if (rangeInputs.price[1] < 50) params.set('maxPrice', rangeInputs.price[1].toString());
@@ -160,7 +160,7 @@ export const useLateralFilters = () => {
   const resetFilters = useCallback(() => {
     // Reset range inputs to defaults
     const defaultRangeInputs = {
-      price: [0, 50],
+      price: [10, 50],
       treadDepth: [1, 32],
       remainingLife: [0, 100],
     } as RangeInputs;

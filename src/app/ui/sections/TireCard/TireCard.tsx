@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, SyntheticEvent } from 'react';
 
 import { useCart } from '@/app/context/CartContext';
 import {
@@ -18,10 +18,8 @@ interface TireCardProps {
 const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) => {
   const { addToCart, isInCart } = useCart();
 
-  const handleAddToCart = (e: React.MouseEvent, product: any) => {
-    console.log('Adding product to cart:', product);
-
-    e.preventDefault();
+  const handleAddToCart = (event: SyntheticEvent, product: any) => {
+    event.preventDefault();
     addToCart(product);
   };
 
@@ -58,17 +56,11 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
                     )}
                   </div>
                   <div className="flex items-center gap-2 justify-center w-full md:w-auto">
-                    <CtaButton
-                      product={product}
-                      text="View Details"
-                      style="tertiary"
-                      urlParams={{ action: 'view', source: 'tirecard' }}
-                    />
+                    <CtaButton product={product} text="View Details" style="tertiary" />
                     <CtaButton
                       product={product}
                       text={productInCart ? 'In Cart' : 'Add cart'}
                       style="primary"
-                      urlParams={{ action: 'add', source: 'tirecard' }}
                       onClick={handleAddToCart}
                       disabled={productInCart}
                       isLink={false}

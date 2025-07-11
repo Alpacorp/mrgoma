@@ -2,7 +2,7 @@ export const singleproductTest = {
   id: 1,
   name: 'G012',
   color: 'White and black',
-  price: '$140',
+  price: '140',
   brand: 'goodYear',
   brandId: 1,
   condition: 'new',

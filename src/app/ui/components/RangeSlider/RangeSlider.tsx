@@ -3,7 +3,6 @@
 import type React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 
-// Define the AddEventListenerOptions interface if it's not available in the global scope
 interface AddEventListenerOptions extends EventListenerOptions {
   passive?: boolean;
 }
