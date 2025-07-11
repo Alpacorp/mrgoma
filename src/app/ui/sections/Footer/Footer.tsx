@@ -14,18 +14,16 @@ const defaultSections: FooterSectionType[] = [
     title: 'Quick Links',
     links: [
       { label: 'Home', href: '/' },
-      { label: 'About', href: '/about' },
-      { label: 'Shop', href: '/shop' },
-      { label: 'Contact', href: '/contact' },
+      { label: 'Services', href: '/#services' },
+      { label: 'About Us', href: '/#about' },
     ],
   },
   {
     title: 'Customer Service',
     links: [
-      { label: 'FAQ', href: '/faq' },
-      { label: 'Warranties', href: '/warranties' },
-      { label: 'Special Orders', href: '/special-orders' },
-      { label: 'Find a Store', href: '/locations' },
+      { label: 'Contact', href: '/#contact' },
+      { label: 'Locations', href: '/#locations' },
+      { label: 'Store', href: '/search-results' },
     ],
   },
 ];
