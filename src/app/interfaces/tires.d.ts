@@ -35,7 +35,7 @@ export interface TiresData {
   ProductTypeId?: number;
   Amount?: number;
   RealSize?: string;
-  Price?: null;
+  Price?: number;
   RemainingLife?: null;
   Image1?: null;
   Image2?: null;

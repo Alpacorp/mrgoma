@@ -33,5 +33,6 @@ export {
   DisclosureIcon,
 } from './Disclosure/Disclosure';
 export { default as HamburgerMenu } from './HamburgerMenu/HamburgerMenu';
+export { default as LoadingScreen } from './LoadingScreen/LoadingScreen';
 export { Dialog, DialogBackdrop, DialogPanel } from './Dialog/Dialog';
 export { PlusIcon, MinusIcon, XMarkIcon } from './Icons/Icons';
