@@ -1,13 +1,34 @@
 export const RemainingIcon = () => {
   return (
-    <svg width="22" height="23" viewBox="0 0 22 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M11 15.5V11.5M11 7.5H11.01M21 11.5C21 17.0228 16.5228 21.5 11 21.5C5.47715 21.5 1 17.0228 1 11.5C1 5.97715 5.47715 1.5 11 1.5C16.5228 1.5 21 5.97715 21 11.5Z"
+    <svg width="50" height="25" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+      <rect
+        x="10"
+        y="15"
+        width="80"
+        height="30"
+        rx="4"
+        ry="4"
+        fill="none"
         stroke="#1dbd5b"
         strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
       />
+      <rect
+        x="90"
+        y="22"
+        width="8"
+        height="16"
+        rx="2"
+        ry="2"
+        fill="none"
+        stroke="#1dbd5b"
+        strokeWidth="2"
+      />
+      <rect x="15" y="20" width="8" height="20" rx="1" ry="1" fill="#1dbd5b" />
+      <rect x="27" y="20" width="8" height="20" rx="1" ry="1" fill="#1dbd5b" />
+      <rect x="39" y="20" width="8" height="20" rx="1" ry="1" fill="#1dbd5b" />
+      <rect x="51" y="20" width="8" height="20" rx="1" ry="1" fill="#1dbd5b" />
+      <rect x="63" y="20" width="8" height="20" rx="1" ry="1" fill="#1dbd5b" />
+      <rect x="75" y="20" width="8" height="20" rx="1" ry="1" fill="#1dbd5b" />
     </svg>
   );
 };

@@ -5,7 +5,7 @@ export const singleproductTest = {
   price: '140',
   brand: 'goodYear',
   brandId: 1,
-  condition: 'new',
+  condition: 'New',
   patched: 'Yes',
   remainingLife: '90%',
   treadDepth: '10.0/32',

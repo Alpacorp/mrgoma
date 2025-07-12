@@ -18,6 +18,8 @@ interface TireCardProps {
 const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) => {
   const { addToCart, isInCart } = useCart();
 
+  console.log('logale, products:', products);
+
   const handleAddToCart = (event: SyntheticEvent, product: any) => {
     event.preventDefault();
     addToCart(product);
@@ -27,6 +29,8 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
     <ul className="mt-3">
       {products.map((product: any) => {
         const productInCart = isInCart(product.id);
+
+        console.log('logale, product:', product);
 
         return (
           <li

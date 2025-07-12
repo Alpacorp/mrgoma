@@ -35,7 +35,7 @@ export interface TiresData {
   ProductTypeId?: number;
   Amount?: number;
   RealSize?: string;
-  Price?: null;
+  Price?: number;
   RemainingLife?: null;
   Image1?: null;
   Image2?: null;
@@ -85,6 +85,26 @@ export interface SingleTire {
   images: singleProductImages[];
   description: string;
   details: SingleProductDetails;
+}
+
+export interface TireFeature {
+  name: string;
+  value: string;
+  icon: null | React.ReactNode;
+}
+
+export interface TransformedTire {
+  id: string;
+  name: string;
+  color: string;
+  href: string;
+  imageSrc: string;
+  imageAlt: string;
+  price: string;
+  brand: string;
+  brandId: number;
+  condition: string;
+  features: TireFeature[];
 }
 
 interface TireInformationProps {
