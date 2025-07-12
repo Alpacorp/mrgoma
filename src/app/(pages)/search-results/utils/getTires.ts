@@ -24,7 +24,7 @@ export async function getTires(
     // Fetch data from the API
     // Ensure we have an absolute URL for server-side requests
     const baseUrl =
-      process.env.NEXT_PUBLIC_API_URL ||
+      process.env.API_URL ||
       (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
 
     console.log('logale, baseUrl:', baseUrl);
