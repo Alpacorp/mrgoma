@@ -17,7 +17,6 @@ import {
 } from '@/app/ui/components';
 import { TirePosition } from '@/app/ui/components/TirePositionTabs/tire-position-tabs';
 import { LateralFilters, TitleSection } from '@/app/ui/sections';
-import { createPaginatedResponse } from '@/app/utils/transformTireData';
 
 interface PaginatedTiresResponse {
   tires: TransformedTire[];
@@ -53,7 +52,6 @@ interface SearchResultsProps {
  * @returns a JSX element representing the search results page.
  */
 const SearchResults: FC<SearchResultsProps> = ({ initialTiresData, searchParams }) => {
-
   const router = useRouter();
   const urlSearchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<TirePosition>('front');
@@ -88,9 +86,10 @@ const SearchResults: FC<SearchResultsProps> = ({ initialTiresData, searchParams 
     return `${rearWidth}/${rearSidewall}R${rearDiameter}`;
   };
 
-  // Function to fetch tires data from the API
-  const fetchTires = useCallback(
-    async (pageNum: number, pageSizeNum: number) => {
+  // Function to update pagination parameters in the URL
+  // This will trigger a re-render of the page component, which will fetch new data
+  const updatePagination = useCallback(
+    (pageNum: number, pageSizeNum: number) => {
       setLoading(true);
       try {
         // Create a new URL with the updated pagination parameters
@@ -99,43 +98,29 @@ const SearchResults: FC<SearchResultsProps> = ({ initialTiresData, searchParams 
         params.set('pageSize', pageSizeNum.toString());
 
         // Update the URL without refreshing the page
+        // This will cause the page component to re-render with new data
         router.push(`?${params.toString()}`, { scroll: false });
-
-        // Fetch the data from the API
-        const baseUrl = window.location.origin;
-        const response = await fetch(
-          `${baseUrl}/api/tires?page=${pageNum}&pageSize=${pageSizeNum}`
-        );
-        if (!response.ok) {
-          throw new Error(`Failed to fetch tires: ${response.status} ${response.statusText}`);
-        }
-
-        const data = await response.json();
-
-        // Use the shared utility function to create a paginated response
-        const transformedData = createPaginatedResponse(data, pageNum, pageSizeNum);
-
-        setTiresData(transformedData);
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Failed to fetch tires';
-        console.error('Error fetching tires:', errorMessage);
-        // Use the shared utility function for error handling
-        const errorResponse = createPaginatedResponse([], pageNum, pageSizeNum, errorMessage);
-        setTiresData(errorResponse);
-        setError(errorMessage);
-      } finally {
-        setLoading(false);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to update pagination';
+        console.error('Error updating pagination:', errorMessage);
       }
     },
     [router, urlSearchParams]
   );
 
-  // Fetch tires when page or pageSize changes
+  // Update URL parameters when page or pageSize changes
   useEffect(() => {
     if (page !== initialTiresData.page || pageSize !== initialTiresData.pageSize) {
-      fetchTires(page, pageSize);
+      updatePagination(page, pageSize);
     }
-  }, [fetchTires, page, pageSize, initialTiresData.page, initialTiresData.pageSize]);
+  }, [updatePagination, page, pageSize, initialTiresData.page, initialTiresData.pageSize]);
+
+  // Update the component state when initialTiresData changes
+  useEffect(() => {
+    setTiresData(initialTiresData);
+    setLoading(false);
+    setError('error' in initialTiresData ? (initialTiresData.error as string) : null);
+  }, [initialTiresData]);
 
   // Pagination handlers
   const handleNextPage = () => {
