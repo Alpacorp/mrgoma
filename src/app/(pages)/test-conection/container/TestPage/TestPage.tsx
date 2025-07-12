@@ -20,7 +20,9 @@ export default function TestPage() {
     async (page: number) => {
       setLoading(true);
       try {
-        const response = await fetch(`/api/tires?page=${page}&pageSize=${pageSize}`);
+        // Use window.location.origin to ensure the URL is resolved correctly
+        const baseUrl = window.location.origin;
+        const response = await fetch(`${baseUrl}/api/tires?page=${page}&pageSize=${pageSize}`);
         const data = await response.json();
         setRecords(data);
       } catch (error: unknown) {

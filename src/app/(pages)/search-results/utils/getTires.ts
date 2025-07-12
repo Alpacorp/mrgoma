@@ -22,14 +22,16 @@ export async function getTires(
 ): Promise<PaginatedTiresResponse> {
   try {
     // Fetch data from the API
-    // Ensure we have an absolute URL for server-side requests
-    const baseUrl =
-      process.env.API_URL ||
-      (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+    // For server-side requests, we need an absolute URL
+    // For client-side requests, we can use a relative URL
+    const isServer = typeof window === 'undefined';
 
-    console.log('logale, baseUrl:', baseUrl);
+    // Use a relative URL for client-side requests
+    const url = isServer
+      ? `${process.env.API_URL || 'http://localhost:3000'}/api/tires?page=${page}&pageSize=${pageSize}`
+      : `/api/tires?page=${page}&pageSize=${pageSize}`;
 
-    const response = await fetch(`${baseUrl}/api/tires?page=${page}&pageSize=${pageSize}`, {
+    const response = await fetch(url, {
       cache: 'no-store', // Disable caching to always get fresh data
     });
 
