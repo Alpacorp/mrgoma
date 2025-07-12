@@ -1,8 +1,8 @@
-import { TiresData } from '@/app/interfaces/tires';
+import { TiresData, TransformedTire } from '@/app/interfaces/tires';
 import { createPaginatedResponse } from '@/app/utils/transformTireData';
 
 interface PaginatedTiresResponse {
-  tires: any[];
+  tires: TransformedTire[];
   totalCount: number;
   page: number;
   pageSize: number;
@@ -37,14 +37,12 @@ export async function getTires(
     // Parse the response
     const tiresData: TiresData[] = await response.json();
 
-    console.log('logale, tiresData:', tiresData);
-
     // Use the shared utility function to create a paginated response
     return createPaginatedResponse(tiresData, page, pageSize);
   } catch (error) {
-    console.error('Error fetching tires:', error);
-    // Return a more user-friendly error response using the shared utility function
+    // Only log the error, don't throw it
     const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error('Error fetching tires:', errorMessage);
     return createPaginatedResponse([], page, pageSize, errorMessage);
   }
 }

@@ -8,7 +8,7 @@ import { LoadingScreen } from '@/app/ui/components';
 export const dynamic = 'force-dynamic'; // Disable static rendering
 
 interface SearchResultsPageProps {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     pageSize?: string;
     w?: string;
@@ -17,7 +17,7 @@ interface SearchResultsPageProps {
     rw?: string;
     rs?: string;
     rd?: string;
-  };
+  }>;
 }
 
 const SearchResultsPage: NextPage<SearchResultsPageProps> = async ({ searchParams }) => {
@@ -31,6 +31,7 @@ const SearchResultsPage: NextPage<SearchResultsPageProps> = async ({ searchParam
 
   // Check if there was an error fetching the data
   if ('error' in tiresData) {
+    // Log the error but continue rendering with available data
     console.error('Error fetching tires:', tiresData.error);
   }
 

@@ -6,6 +6,7 @@ import React, { FC, Suspense, useCallback, useEffect, useState } from 'react';
 
 import { singleproductTest } from '@/app/(pages)/search-results/data/singleProductTest';
 import { useGenerateFixedPagination } from '@/app/hooks/useGeneratePagination';
+import { TransformedTire } from '@/app/interfaces/tires';
 import {
   CollapsibleSearchBar,
   LoadingScreen,
@@ -19,7 +20,7 @@ import { LateralFilters, TitleSection } from '@/app/ui/sections';
 import { createPaginatedResponse } from '@/app/utils/transformTireData';
 
 interface PaginatedTiresResponse {
-  tires: any[];
+  tires: TransformedTire[];
   totalCount: number;
   page: number;
   pageSize: number;
@@ -52,7 +53,6 @@ interface SearchResultsProps {
  * @returns a JSX element representing the search results page.
  */
 const SearchResults: FC<SearchResultsProps> = ({ initialTiresData, searchParams }) => {
-  console.log('logale, initialTiresData:', initialTiresData);
 
   const router = useRouter();
   const urlSearchParams = useSearchParams();
@@ -116,9 +116,9 @@ const SearchResults: FC<SearchResultsProps> = ({ initialTiresData, searchParams 
         const transformedData = createPaginatedResponse(data, pageNum, pageSizeNum);
 
         setTiresData(transformedData);
-      } catch (error: any) {
-        const errorMessage = error.message || 'Failed to fetch tires';
-        console.error('Error fetching tires:', error);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to fetch tires';
+        console.error('Error fetching tires:', errorMessage);
         // Use the shared utility function for error handling
         const errorResponse = createPaginatedResponse([], pageNum, pageSizeNum, errorMessage);
         setTiresData(errorResponse);
