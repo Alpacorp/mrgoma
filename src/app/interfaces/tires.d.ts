@@ -78,7 +78,7 @@ export interface SingleTire {
   price: string;
   brand: string;
   brandId: number;
-  condition: 'New' | 'Used';
+  condition: string;
   patched: string;
   remainingLife: string;
   treadDepth: string;
@@ -103,7 +103,7 @@ export interface TransformedTire {
   price: string;
   brand: string;
   brandId: number;
-  condition: 'New' | 'Used';
+  condition: string;
   features: TireFeature[];
 }
 

@@ -1,7 +1,7 @@
 import { FC } from 'react';
 
 interface ProductConditionProps {
-  condition: 'New' | 'Used';
+  condition: string;
 }
 
 const ProductCondition: FC<ProductConditionProps> = ({ condition }) => {
