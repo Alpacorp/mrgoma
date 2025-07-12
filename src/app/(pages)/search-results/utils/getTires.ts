@@ -26,6 +26,9 @@ export async function getTires(
     const baseUrl =
       process.env.NEXT_PUBLIC_API_URL ||
       (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+
+    console.log('logale, baseUrl:', baseUrl);
+
     const response = await fetch(`${baseUrl}/api/tires?page=${page}&pageSize=${pageSize}`, {
       cache: 'no-store', // Disable caching to always get fresh data
     });
