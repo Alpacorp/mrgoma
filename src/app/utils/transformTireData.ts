@@ -1,4 +1,3 @@
-import genericTireImage from '#public/assets/images/generic-tire-image.webp';
 import { TiresData } from '@/app/interfaces/tires';
 
 /**
@@ -12,7 +11,7 @@ export function transformTireData(tire: TiresData) {
     name: `${tire.Brand || 'Unknown'} ${tire.Model2 || ''} ${tire.RealSize || ''}`,
     color: 'Black',
     href: '#',
-    imageSrc: tire.Image1 || genericTireImage,
+    imageSrc: tire.Image1 || '/assets/images/generic-tire-image.webp',
     imageAlt: `Tire ${tire.TireId}`,
     price: tire.Price?.toString() || '140',
     brand: tire.Brand || 'Unknown',
