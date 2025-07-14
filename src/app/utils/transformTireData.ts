@@ -8,12 +8,12 @@ import { TiresData } from '@/app/interfaces/tires';
 export function transformTireData(tire: TiresData) {
   return {
     id: tire.TireId,
-    name: `${tire.Brand || 'Unknown'} ${tire.Model2 || ''} ${tire.RealSize || ''}`,
+    name: `(${tire.Code || ''}) | ${tire.Brand || 'Unknown'} | ${tire.Model2 || ''} | ${tire.RealSize || ''}`.trim(),
     color: 'Black',
     href: '#',
     imageSrc: tire.Image1 || '/assets/images/generic-tire-image.webp',
-    imageAlt: `Tire ${tire.TireId}`,
-    price: tire.Price?.toString() || '140',
+    imageAlt: `Tire ${tire.Code}`,
+    price: tire.Price?.toString() || '-',
     brand: tire.Brand || 'Unknown',
     brandId: tire.BrandId || 1,
     condition: tire.ProductTypeId === 1 ? 'New' : 'Used',
@@ -25,17 +25,17 @@ export function transformTireData(tire: TiresData) {
       },
       {
         name: 'Remaining life',
-        value: tire.RemainingLife || '90%',
+        value: tire.RemainingLife || '-',
         icon: null,
       },
       {
         name: 'Tread depth',
-        value: tire.Tread || '10.0/32',
+        value: tire.Tread || '-',
         icon: null,
       },
       {
         name: 'Run Flat',
-        value: 'No',
+        value: tire.KindSaleId === 1 ? 'Yes' : 'No',
         icon: null,
       },
     ],

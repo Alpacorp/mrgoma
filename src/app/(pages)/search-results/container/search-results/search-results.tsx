@@ -80,10 +80,13 @@ const SearchResults: FC<SearchResultsProps> = ({ initialTiresData, searchParams 
   const hasRearTires = !!(rearWidth && rearSidewall && rearDiameter);
 
   const getTireSize = (position: TirePosition) => {
-    if (position === 'front') {
-      return `${frontWidth}/${frontSidewall}R${frontDiameter}`;
+    if (position === 'front' && frontWidth && frontSidewall && frontDiameter) {
+      return `${frontWidth}/${frontSidewall}/${frontDiameter}`;
+    } else if (position === 'rear' && rearWidth && rearSidewall && rearDiameter) {
+      return `${rearWidth}/${rearSidewall}/${rearDiameter}`;
+    } else {
+      return '';
     }
-    return `${rearWidth}/${rearSidewall}R${rearDiameter}`;
   };
 
   // Function to update pagination parameters in the URL
@@ -110,10 +113,13 @@ const SearchResults: FC<SearchResultsProps> = ({ initialTiresData, searchParams 
 
   // Update URL parameters when page or pageSize changes
   useEffect(() => {
-    if (page !== initialTiresData.page || pageSize !== initialTiresData.pageSize) {
+    const currentUrlPage = parseInt(urlSearchParams.get('page') || '1', 10);
+    const currentUrlPageSize = parseInt(urlSearchParams.get('pageSize') || '10', 10);
+
+    if (page !== currentUrlPage || pageSize !== currentUrlPageSize) {
       updatePagination(page, pageSize);
     }
-  }, [updatePagination, page, pageSize, initialTiresData.page, initialTiresData.pageSize]);
+  }, [updatePagination, page, pageSize, urlSearchParams]);
 
   // Update the component state when initialTiresData changes
   useEffect(() => {
@@ -212,7 +218,7 @@ const SearchResults: FC<SearchResultsProps> = ({ initialTiresData, searchParams 
                             <ResultsHeader
                               activeTab={activeTab}
                               getTireSize={getTireSize}
-                              resultsCount={activeTab === 'front' ? tiresData.tires.length : 15}
+                              resultsCount={activeTab === 'front' ? tiresData?.tires?.length : 15}
                             />
                           </div>
                           {error ? (

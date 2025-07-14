@@ -8,7 +8,6 @@ import { TirePosition } from '@/app/ui/components/TirePositionTabs/tire-position
 
 interface ResultsHeaderProps {
   activeTab: TirePosition;
-
   getTireSize: (position: TirePosition) => string;
   resultsCount: number;
 }
@@ -20,7 +19,11 @@ const ResultsHeader: FC<ResultsHeaderProps> = ({ activeTab, getTireSize, results
     <div className="flex flex-wrap gap-2 justify-center lg:justify-between items-center mt-6">
       <h2 className="text-lg text-gray-600">
         Results for {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Tires:{' '}
-        {<Suspense fallback={<div>Loading...</div>}>{getTireSize(activeTab)}</Suspense>}
+        {
+          <Suspense fallback={<div>Loading...</div>}>
+            <strong>{getTireSize(activeTab)}</strong>
+          </Suspense>
+        }
       </h2>
       <div className="flex items-center gap-2">
         {/* Filter button - only visible on mobile */}
