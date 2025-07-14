@@ -122,29 +122,39 @@ const SearchResults: FC<SearchResultsProps> = ({ initialTiresData, searchParams 
     setError('error' in initialTiresData ? (initialTiresData.error as string) : null);
   }, [initialTiresData]);
 
+  const handleUpScroll = () => {
+    // Scroll to the top of the page when the user clicks on a pagination button
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // Pagination handlers
   const handleNextPage = () => {
     if (page < totalPages) {
       setPage(prevPage => prevPage + 1);
+      handleUpScroll();
     }
   };
 
   const handlePreviousPage = () => {
     if (page > 1) {
       setPage(prevPage => prevPage - 1);
+      handleUpScroll();
     }
   };
 
   const handlePageClick = (pageNumber: number) => {
     setPage(pageNumber);
+    handleUpScroll();
   };
 
   const handleFirstPage = () => {
     setPage(1);
+    handleUpScroll();
   };
 
   const handleLastPage = () => {
     setPage(totalPages);
+    handleUpScroll();
   };
 
   const handlePageSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -166,9 +176,9 @@ const SearchResults: FC<SearchResultsProps> = ({ initialTiresData, searchParams 
     <Suspense fallback={<LoadingScreen message="Preparing your tire selection..." />}>
       <main className="bg-white">
         <section aria-labelledby="products-heading" className="relative">
-          <div className="h-64 sm:h-80 lg:h-40">
+          <div className="h-64 sm:h-80 lg:h-64">
             <Image
-              src="/assets/images/banner-tires-search.jpg"
+              src="/assets/images/banner-tires-search.webp"
               alt=""
               fill
               className="object-cover"
@@ -220,20 +230,20 @@ const SearchResults: FC<SearchResultsProps> = ({ initialTiresData, searchParams 
                         </div>
                       </div>
                     </div>
-                    <div className="flex justify-center mt-16">
-                      <div className="mt-4 flex justify-center gap-1">
+                    <div className="flex justify-center mt-16 items-baseline w-full overflow-auto h-min">
+                      <div className="mt-4 flex justify-center gap-1 h-min">
                         <div className="flex gap-1">
                           <button
                             onClick={handleFirstPage}
                             disabled={page === 1}
-                            className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
+                            className="px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
                           >
                             &lt;&lt;
                           </button>
                           <button
                             onClick={handlePreviousPage}
                             disabled={page === 1}
-                            className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
+                            className="px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
                           >
                             &lt;
                           </button>
@@ -243,7 +253,7 @@ const SearchResults: FC<SearchResultsProps> = ({ initialTiresData, searchParams 
                             <button
                               key={index}
                               onClick={() => handlePageClick(pageNumber)}
-                              className={`px-3 py-1 mx-1 rounded ${
+                              className={`px-3 py-1 h-min rounded ${
                                 pageNumber === page
                                   ? 'bg-blue-600 text-white'
                                   : 'bg-gray-700 text-white hover:bg-gray-600'
@@ -260,7 +270,7 @@ const SearchResults: FC<SearchResultsProps> = ({ initialTiresData, searchParams 
                         <div className="flex gap-1">
                           <button
                             onClick={handleNextPage}
-                            className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
+                            className="px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
                             disabled={page === totalPages}
                           >
                             &gt;
@@ -268,14 +278,14 @@ const SearchResults: FC<SearchResultsProps> = ({ initialTiresData, searchParams 
                           <button
                             onClick={handleLastPage}
                             disabled={page === totalPages}
-                            className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
+                            className="px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
                           >
                             &gt;&gt;
                           </button>
                         </div>
                       </div>
                       {tiresData.totalCount >= 10 && (
-                        <div className="mt-4 ml-4">
+                        <div className="ml-4 h-min">
                           <label htmlFor="pageSize" className="mr-2">
                             Page Size:
                           </label>

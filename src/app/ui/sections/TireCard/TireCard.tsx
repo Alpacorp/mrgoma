@@ -48,7 +48,7 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
               <div className="col-span-12 md:col-span-8 content-center">
                 <ProductName type={1} size="lg" weight="bold" name={product.name} />
                 <div className="flex flex-wrap mb-4 mt-4 gap-5 items-center justify-between">
-                  <div className="flex">
+                  <div className="flex gap-2 items-center justify-center">
                     <ProductPrice price={product.price} />
                     {product.brandId && (
                       <BrandImage

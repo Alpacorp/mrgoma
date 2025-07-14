@@ -11,7 +11,7 @@ export function transformTireData(tire: TiresData) {
     name: `${tire.Brand || 'Unknown'} ${tire.Model2 || ''} ${tire.RealSize || ''}`,
     color: 'Black',
     href: '#',
-    imageSrc: tire.Image1 || 'https://www.usedtires.online/LOTS/PEM/LOTP1346WH/images/DSC0554.JPG',
+    imageSrc: tire.Image1 || '/assets/images/generic-tire-image.webp',
     imageAlt: `Tire ${tire.TireId}`,
     price: tire.Price?.toString() || '140',
     brand: tire.Brand || 'Unknown',
