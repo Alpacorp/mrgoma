@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { FC, ReactNode } from 'react';
+import React, { FC, ReactNode, useEffect, useState } from 'react';
 
 import { mrGomaLogo } from '#public/assets/images/Logo';
 import { useCart } from '@/app/context/CartContext';
@@ -19,11 +19,16 @@ import { menuItems } from '@/app/ui/sections/Header/MenuItems';
  */
 const Header: FC = (): ReactNode => {
   const { cartCount, setShowCartModal } = useCart();
+  const [isMounted, setIsMounted] = useState(false);
 
   const handleCartClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setShowCartModal(true);
   };
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <>
@@ -62,11 +67,11 @@ const Header: FC = (): ReactNode => {
           <button
             onClick={handleCartClick}
             className="flex items-center justify-center rounded-full bg-zinc-800 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 transition-colors relative"
-            aria-label={`Shopping cart with ${cartCount} items`}
+            aria-label={isMounted ? `Shopping cart with ${cartCount} items` : 'Shopping cart'}
           >
             <ShoppingCart className="mr-2 h-5 w-5" />
             Cart
-            {cartCount > 0 && (
+            {isMounted && cartCount > 0 && (
               <span
                 className="absolute -top-2 -right-2 bg-green-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center"
                 aria-hidden="true"

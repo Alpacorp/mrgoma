@@ -1,7 +1,6 @@
 'use client';
 
-import type React from 'react';
-import { useState, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 
 interface AddEventListenerOptions extends EventListenerOptions {
   passive?: boolean;
@@ -26,7 +25,8 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
 }) => {
   const [dragging, setDragging] = useState<'min' | 'max' | null>(null);
   const [localValue, setLocalValue] = useState(value);
-  const [sliderId] = useState(() => `range-slider-${Math.random().toString(36).slice(2, 11)}`);
+
+  const sliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setLocalValue(value);
@@ -52,7 +52,7 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
     (clientX: number) => {
       if (!dragging) return;
 
-      const slider = document.getElementById(sliderId);
+      const slider = sliderRef.current;
       if (!slider) return;
 
       const rect = slider.getBoundingClientRect();
@@ -69,7 +69,7 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
         }
       });
     },
-    [dragging, max, min, step, sliderId]
+    [dragging, max, min, step]
   );
 
   useEffect(() => {
@@ -132,7 +132,7 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
   }, [dragging, handlePointerMove, onChange, localValue]);
 
   return (
-    <div id={sliderId} className={`relative h-7 ${className}`} style={{ touchAction: 'none' }}>
+    <div ref={sliderRef} className={`relative h-7 ${className}`} style={{ touchAction: 'none' }}>
       {/* Track background */}
       <div className="absolute h-2 w-full bg-gray-200 rounded-full top-1/2 -translate-y-1/2" />
 

@@ -34,7 +34,7 @@ export default function RootLayout({
           <SelectedFiltersProvider>
             <MenuProvider>
               <CartProvider>
-                <body className={inter.className} suppressHydrationWarning>
+                <body className={inter.className}>
                   <Header />
                   {children}
                   <Footer />
