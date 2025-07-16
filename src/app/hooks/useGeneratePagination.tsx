@@ -3,7 +3,7 @@ export const useGenerateFixedPagination = (
   totalPages: number,
   maxVisiblePages: number
 ) => {
-  let pages: (number | string)[] = [];
+  let pages: (number | string)[];
 
   if (totalPages <= maxVisiblePages) {
     // Mostrar todas las páginas si el total es menor o igual al máximo visible
