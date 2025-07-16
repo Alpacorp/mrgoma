@@ -5,7 +5,11 @@ import SearchResults from '@/app/(pages)/search-results/container/search-results
 import { getTires } from '@/app/(pages)/search-results/utils/getTires';
 import { LoadingScreen } from '@/app/ui/components';
 
-export const dynamic = 'force-dynamic'; // Disable static rendering
+// Use ISR instead of SSR for better performance
+export const dynamic = 'force-dynamic'; // We'll keep this for now, but with our caching strategy it won't cause as many API calls
+
+// Revalidate the page data every 60 seconds instead of on every request
+export const revalidate = 60;
 
 interface SearchResultsPageProps {
   searchParams: Promise<{

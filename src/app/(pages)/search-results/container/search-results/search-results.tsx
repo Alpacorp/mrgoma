@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { FC, Suspense, useCallback, useEffect, useState } from 'react';
+import React, { FC, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { singleproductTest } from '@/app/(pages)/search-results/data/singleProductTest';
 import { useGenerateFixedPagination } from '@/app/hooks/useGeneratePagination';
@@ -68,54 +68,72 @@ const SearchResults: FC<SearchResultsProps> = ({ initialTiresData, searchParams 
   const totalPages = initialTiresData.totalPages;
   const maxVisiblePages = 10;
 
-  // Tire size parameters
-  const frontWidth = searchParams.w || '';
-  const frontSidewall = searchParams.s || '';
-  const frontDiameter = searchParams.d || '';
+  // Tire size parameters - memo to prevent recalculation
+  const frontWidth = useMemo(() => searchParams.w || '', [searchParams.w]);
+  const frontSidewall = useMemo(() => searchParams.s || '', [searchParams.s]);
+  const frontDiameter = useMemo(() => searchParams.d || '', [searchParams.d]);
 
-  const rearWidth = searchParams.rw || '';
-  const rearSidewall = searchParams.rs || '';
-  const rearDiameter = searchParams.rd || '';
+  const rearWidth = useMemo(() => searchParams.rw || '', [searchParams.rw]);
+  const rearSidewall = useMemo(() => searchParams.rs || '', [searchParams.rs]);
+  const rearDiameter = useMemo(() => searchParams.rd || '', [searchParams.rd]);
 
-  const hasRearTires = !!(rearWidth && rearSidewall && rearDiameter);
+  const hasRearTires = useMemo(
+    () => !!(rearWidth && rearSidewall && rearDiameter),
+    [rearWidth, rearSidewall, rearDiameter]
+  );
 
-  const getTireSize = (position: TirePosition) => {
-    if (position === 'front' && frontWidth && frontSidewall && frontDiameter) {
-      return `${frontWidth}/${frontSidewall}/${frontDiameter}`;
-    } else if (position === 'rear' && rearWidth && rearSidewall && rearDiameter) {
-      return `${rearWidth}/${rearSidewall}/${rearDiameter}`;
-    } else {
-      return '';
-    }
-  };
+  const getTireSize = useCallback(
+    (position: TirePosition) => {
+      if (position === 'front' && frontWidth && frontSidewall && frontDiameter) {
+        return `${frontWidth}/${frontSidewall}/${frontDiameter}`;
+      } else if (position === 'rear' && rearWidth && rearSidewall && rearDiameter) {
+        return `${rearWidth}/${rearSidewall}/${rearDiameter}`;
+      } else {
+        return '';
+      }
+    },
+    [frontWidth, frontSidewall, frontDiameter, rearWidth, rearSidewall, rearDiameter]
+  );
 
-  // Function to update pagination parameters in the URL
-  // This will trigger a re-render of the page component, which will fetch new data
+  // Creamos una referencia para almacenar el timeout ID
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Function to update pagination parameters in the URL - ahora con implementación directa de debounce
   const updatePagination = useCallback(
     (pageNum: number, pageSizeNum: number) => {
       setLoading(true);
-      try {
-        // Create a new URL with the updated pagination parameters
-        const params = new URLSearchParams(urlSearchParams.toString());
-        params.set('page', pageNum.toString());
-        params.set('pageSize', pageSizeNum.toString());
-
-        // Update the URL without refreshing the page
-        // This will cause the page component to re-render with new data
-        router.push(`?${params.toString()}`, { scroll: false });
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Failed to update pagination';
-        console.error('Error updating pagination:', errorMessage);
+      
+      // Limpiar el timeout anterior si existe
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
+      
+      // Crear nuevo timeout
+      timeoutRef.current = setTimeout(() => {
+        try {
+          // Create a new URL with the updated pagination parameters
+          const params = new URLSearchParams(urlSearchParams.toString());
+          params.set('page', pageNum.toString());
+          params.set('pageSize', pageSizeNum.toString());
+
+          // Update the URL without refreshing the page
+          router.push(`?${params.toString()}`, { scroll: false });
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Failed to update pagination';
+          console.error('Error updating pagination:', errorMessage);
+          setLoading(false); // Make sure to reset loading on error
+        }
+      }, 300); // 300ms debounce
     },
-    [router, urlSearchParams]
+    [router, urlSearchParams, setLoading]
   );
 
-  // Update URL parameters when page or pageSize changes
+  // Update URL parameters when page or pageSize changes - consolidated effect
   useEffect(() => {
     const currentUrlPage = parseInt(urlSearchParams.get('page') || '1', 10);
     const currentUrlPageSize = parseInt(urlSearchParams.get('pageSize') || '10', 10);
 
+    // Only update if values actually changed to prevent unnecessary URL updates
     if (page !== currentUrlPage || pageSize !== currentUrlPageSize) {
       updatePagination(page, pageSize);
     }
@@ -128,55 +146,68 @@ const SearchResults: FC<SearchResultsProps> = ({ initialTiresData, searchParams 
     setError('error' in initialTiresData ? (initialTiresData.error as string) : null);
   }, [initialTiresData]);
 
-  const handleUpScroll = () => {
+  const handleUpScroll = useCallback(() => {
     // Scroll to the top of the page when the user clicks on a pagination button
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, []);
 
-  // Pagination handlers
-  const handleNextPage = () => {
+  // Pagination handlers - memoized to prevent recreating functions on each render
+  const handleNextPage = useCallback(() => {
     if (page < totalPages) {
       setPage(prevPage => prevPage + 1);
       handleUpScroll();
     }
-  };
+  }, [page, totalPages, handleUpScroll]);
 
-  const handlePreviousPage = () => {
+  const handlePreviousPage = useCallback(() => {
     if (page > 1) {
       setPage(prevPage => prevPage - 1);
       handleUpScroll();
     }
-  };
+  }, [page, handleUpScroll]);
 
-  const handlePageClick = (pageNumber: number) => {
-    setPage(pageNumber);
-    handleUpScroll();
-  };
+  const handlePageClick = useCallback(
+    (pageNumber: number) => {
+      setPage(pageNumber);
+      handleUpScroll();
+    },
+    [handleUpScroll]
+  );
 
-  const handleFirstPage = () => {
+  const handleFirstPage = useCallback(() => {
     setPage(1);
     handleUpScroll();
-  };
+  }, [handleUpScroll]);
 
-  const handleLastPage = () => {
+  const handleLastPage = useCallback(() => {
     setPage(totalPages);
     handleUpScroll();
-  };
+  }, [totalPages, handleUpScroll]);
 
-  const handlePageSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newPageSize = parseInt(event.target.value, 10);
+  const handlePageSizeChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const newPageSize = parseInt(event.target.value, 10);
 
-    // Calculate the new page based on the current position
-    const currentRecordIndex = (page - 1) * pageSize; // Index of the first record on the current page
-    const newPage = Math.floor(currentRecordIndex / newPageSize) + 1;
+      // Calculate the new page based on the current position
+      const currentRecordIndex = (page - 1) * pageSize; // Index of the first record on the current page
+      const newPage = Math.floor(currentRecordIndex / newPageSize) + 1;
 
-    setPageSize(newPageSize);
-    setPage(newPage);
-  };
+      setPageSize(newPageSize);
+      setPage(newPage);
+    },
+    [page, pageSize]
+  );
 
-  // Generate pagination UI
-  const pagination = useGenerateFixedPagination(page, totalPages, maxVisiblePages);
-  const availablePageSizes = [10, 20, 50].filter(size => size <= tiresData.totalCount);
+  // Generar la paginación fuera del useMemo
+  const paginationArray = useGenerateFixedPagination(page, totalPages, maxVisiblePages);
+
+  // Memorizamos el array resultante, pero no llamamos al hook dentro del useMemo
+  const pagination = useMemo(() => paginationArray, [paginationArray]);
+
+  const availablePageSizes = useMemo(
+    () => [10, 20, 50].filter(size => size <= tiresData.totalCount),
+    [tiresData.totalCount]
+  );
 
   return (
     <Suspense fallback={<LoadingScreen message="Preparing your tire selection..." />}>
