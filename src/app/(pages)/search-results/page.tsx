@@ -5,10 +5,8 @@ import SearchResults from '@/app/(pages)/search-results/container/search-results
 import { getTires } from '@/app/(pages)/search-results/utils/getTires';
 import { LoadingScreen } from '@/app/ui/components';
 
-// Use ISR instead of SSR for better performance
-export const dynamic = 'force-dynamic'; // We'll keep this for now, but with our caching strategy it won't cause as many API calls
+export const dynamic = 'force-dynamic';
 
-// Revalidate the page data every 60 seconds instead of on every request
 export const revalidate = 60;
 
 interface SearchResultsPageProps {
@@ -30,7 +28,7 @@ const SearchResultsPage: NextPage<SearchResultsPageProps> = async ({ searchParam
   const page = params.page ? parseInt(params.page, 10) : 1;
   const pageSize = params.pageSize ? parseInt(params.pageSize, 10) : 10;
 
-  // Fetch tires data server-side
+  // Fetch tires data server-side with improved caching
   const tiresData = await getTires(page, pageSize);
 
   // Check if there was an error fetching the data
