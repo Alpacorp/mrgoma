@@ -62,6 +62,10 @@ const SearchResults: FC<SearchResultsProps> = ({ initialTiresData, searchParams 
     'error' in initialTiresData ? (initialTiresData.error as string) : null
   );
 
+  const [isParamsCached] = useState<boolean>(() => {
+    return checkCachedSearchParams(urlSearchParams);
+  });
+
   // Pagination state
   const [page, setPage] = useState<number>(initialTiresData.page);
   const [pageSize, setPageSize] = useState<number>(initialTiresData.pageSize);
@@ -98,34 +102,58 @@ const SearchResults: FC<SearchResultsProps> = ({ initialTiresData, searchParams 
   // Creamos una referencia para almacenar el timeout ID
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Flag para evitar actualizaciones innecesarias
+  const isFirstRender = useRef<boolean>(true);
+
   // Function to update pagination parameters in the URL - ahora con implementación directa de debounce
   const updatePagination = useCallback(
     (pageNum: number, pageSizeNum: number) => {
+      // Evitar actualizaciones en el primer renderizado si los parámetros están en caché
+      if (isFirstRender.current && isParamsCached) {
+        isFirstRender.current = false;
+        return;
+      }
+
       setLoading(true);
-      
+
       // Limpiar el timeout anterior si existe
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
-      
+
       // Crear nuevo timeout
       timeoutRef.current = setTimeout(() => {
         try {
           // Create a new URL with the updated pagination parameters
           const params = new URLSearchParams(urlSearchParams.toString());
+          const currentPage = params.get('page');
+          const currentPageSize = params.get('pageSize');
+
+          // Evitar actualizaciones innecesarias si los valores no cambiaron
+          if (currentPage === pageNum.toString() && currentPageSize === pageSizeNum.toString()) {
+            setLoading(false);
+            return;
+          }
+
           params.set('page', pageNum.toString());
           params.set('pageSize', pageSizeNum.toString());
+
+          // Almacenar en caché los nuevos parámetros
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('last-search-params', params.toString());
+          }
 
           // Update the URL without refreshing the page
           router.push(`?${params.toString()}`, { scroll: false });
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Failed to update pagination';
+          const errorMessage =
+            error instanceof Error ? error.message : 'Failed to update pagination';
           console.error('Error updating pagination:', errorMessage);
           setLoading(false); // Make sure to reset loading on error
         }
       }, 300); // 300ms debounce
     },
-    [router, urlSearchParams, setLoading]
+    [router, urlSearchParams, setLoading, isParamsCached]
   );
 
   // Update URL parameters when page or pageSize changes - consolidated effect
@@ -208,6 +236,24 @@ const SearchResults: FC<SearchResultsProps> = ({ initialTiresData, searchParams 
     () => [10, 20, 50].filter(size => size <= tiresData.totalCount),
     [tiresData.totalCount]
   );
+
+  // Función para verificar si hay parámetros de búsqueda en caché
+  function checkCachedSearchParams(params: URLSearchParams): boolean {
+    try {
+      if (typeof window !== 'undefined') {
+        const cachedParams = localStorage.getItem('last-search-params');
+        if (cachedParams && cachedParams === params.toString()) {
+          return true;
+        }
+        // Actualizar caché de parámetros
+        localStorage.setItem('last-search-params', params.toString());
+      }
+      return false;
+    } catch (e) {
+      console.error('Error checking cached search params:', e);
+      return false;
+    }
+  }
 
   return (
     <Suspense fallback={<LoadingScreen message="Preparing your tire selection..." />}>
