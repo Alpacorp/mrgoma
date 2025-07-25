@@ -19,6 +19,7 @@ export type DocumentRecord = {
 };
 
 export async function fetchTires(offset: number, pageSize: number): Promise<DocumentRecord[]> {
+  console.log('logale, entre acá');
   const pool = await getPool();
   const result = await pool
     .request()
@@ -27,5 +28,8 @@ export async function fetchTires(offset: number, pageSize: number): Promise<Docu
     .query(
       "SELECT * FROM dbo.View_Tires WHERE Local = '0' AND Trash = 'false' AND Condition != 'sold' AND RemainingLife > '70%' AND Price != 0 ORDER BY ModificationDate DESC OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY"
     );
+
+  console.log('logale, result:', result);
+
   return result.recordset as DocumentRecord[];
 }

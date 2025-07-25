@@ -2,11 +2,11 @@
 
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { FC, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, Suspense, useCallback, useEffect, useState } from 'react';
 
 import { singleproductTest } from '@/app/(pages)/search-results/data/singleProductTest';
 import { useGenerateFixedPagination } from '@/app/hooks/useGeneratePagination';
-import { TransformedTire } from '@/app/interfaces/tires';
+import { TiresData, TransformedTire } from '@/app/interfaces/tires';
 import {
   CollapsibleSearchBar,
   LoadingScreen,
@@ -17,6 +17,7 @@ import {
 } from '@/app/ui/components';
 import { TirePosition } from '@/app/ui/components/TirePositionTabs/tire-position-tabs';
 import { LateralFilters, TitleSection } from '@/app/ui/sections';
+import { createPaginatedResponse } from '@/app/utils/transformTireData';
 
 interface PaginatedTiresResponse {
   tires: TransformedTire[];
@@ -28,8 +29,8 @@ interface PaginatedTiresResponse {
 }
 
 interface SearchResultsProps {
-  initialTiresData: PaginatedTiresResponse;
-  searchParams: {
+  initialTiresData?: PaginatedTiresResponse;
+  searchParams?: {
     page?: string;
     pageSize?: string;
     w?: string;
@@ -51,209 +52,169 @@ interface SearchResultsProps {
  *
  * @returns a JSX element representing the search results page.
  */
-const SearchResults: FC<SearchResultsProps> = ({ initialTiresData, searchParams }) => {
+const SearchResults: FC<SearchResultsProps> = () => {
   const router = useRouter();
-  const urlSearchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState<TirePosition>('front');
-  const [tiresData, setTiresData] = useState<PaginatedTiresResponse>(initialTiresData);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(
-    // Check if initialTiresData has an error property
-    'error' in initialTiresData ? (initialTiresData.error as string) : null
-  );
 
-  const [isParamsCached] = useState<boolean>(() => {
-    return checkCachedSearchParams(urlSearchParams);
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState<TirePosition>('front');
+  const [tiresData, setTiresData] = useState<PaginatedTiresResponse>({
+    tires: [],
+    totalCount: 0,
+    page: 1,
+    pageSize: 10,
+    totalPages: 1,
+    error: '',
   });
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Pagination state
-  const [page, setPage] = useState<number>(initialTiresData.page);
-  const [pageSize, setPageSize] = useState<number>(initialTiresData.pageSize);
-  const totalPages = initialTiresData.totalPages;
+  const [page, setPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const totalPages = Math.ceil(tiresData.totalCount / pageSize);
   const maxVisiblePages = 10;
 
-  // Tire size parameters - memo to prevent recalculation
-  const frontWidth = useMemo(() => searchParams.w || '', [searchParams.w]);
-  const frontSidewall = useMemo(() => searchParams.s || '', [searchParams.s]);
-  const frontDiameter = useMemo(() => searchParams.d || '', [searchParams.d]);
+  // Tire size parameters
+  const frontWidth = searchParams.get('w') || '';
+  const frontSidewall = searchParams.get('s') || '';
+  const frontDiameter = searchParams.get('d') || '';
 
-  const rearWidth = useMemo(() => searchParams.rw || '', [searchParams.rw]);
-  const rearSidewall = useMemo(() => searchParams.rs || '', [searchParams.rs]);
-  const rearDiameter = useMemo(() => searchParams.rd || '', [searchParams.rd]);
+  const rearWidth = searchParams.get('rw') || '';
+  const rearSidewall = searchParams.get('rs') || '';
+  const rearDiameter = searchParams.get('rd') || '';
 
-  const hasRearTires = useMemo(
-    () => !!(rearWidth && rearSidewall && rearDiameter),
-    [rearWidth, rearSidewall, rearDiameter]
-  );
+  const hasRearTires = !!(rearWidth && rearSidewall && rearDiameter);
 
-  const getTireSize = useCallback(
-    (position: TirePosition) => {
-      if (position === 'front' && frontWidth && frontSidewall && frontDiameter) {
-        return `${frontWidth}/${frontSidewall}/${frontDiameter}`;
-      } else if (position === 'rear' && rearWidth && rearSidewall && rearDiameter) {
-        return `${rearWidth}/${rearSidewall}/${rearDiameter}`;
-      } else {
-        return '';
-      }
-    },
-    [frontWidth, frontSidewall, frontDiameter, rearWidth, rearSidewall, rearDiameter]
-  );
+  const getTireSize = (position: TirePosition) => {
+    if (position === 'front' && frontWidth && frontSidewall && frontDiameter) {
+      return `${frontWidth}/${frontSidewall}/${frontDiameter}`;
+    } else if (position === 'rear' && rearWidth && rearSidewall && rearDiameter) {
+      return `${rearWidth}/${rearSidewall}/${rearDiameter}`;
+    } else {
+      return '';
+    }
+  };
 
-  // Creamos una referencia para almacenar el timeout ID
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Flag para evitar actualizaciones innecesarias
-  const isFirstRender = useRef<boolean>(true);
-
-  // Function to update pagination parameters in the URL - ahora con implementación directa de debounce
+  // Function to update pagination parameters in the URL
+  // This will trigger a re-render of the page component, which will fetch new data
   const updatePagination = useCallback(
     (pageNum: number, pageSizeNum: number) => {
-      // Evitar actualizaciones en el primer renderizado si los parámetros están en caché
-      if (isFirstRender.current && isParamsCached) {
-        isFirstRender.current = false;
-        return;
-      }
-
       setLoading(true);
+      try {
+        // Create a new URL with the updated pagination parameters
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('page', pageNum.toString());
+        params.set('pageSize', pageSizeNum.toString());
 
-      // Limpiar el timeout anterior si existe
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+        // Update the URL without refreshing the page
+        // This will cause the page component to re-render with new data
+        router.push(`?${params.toString()}`, { scroll: false });
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to update pagination';
+        console.error('Error updating pagination:', errorMessage);
       }
-
-      // Crear nuevo timeout
-      timeoutRef.current = setTimeout(() => {
-        try {
-          // Create a new URL with the updated pagination parameters
-          const params = new URLSearchParams(urlSearchParams.toString());
-          const currentPage = params.get('page');
-          const currentPageSize = params.get('pageSize');
-
-          // Evitar actualizaciones innecesarias si los valores no cambiaron
-          if (currentPage === pageNum.toString() && currentPageSize === pageSizeNum.toString()) {
-            setLoading(false);
-            return;
-          }
-
-          params.set('page', pageNum.toString());
-          params.set('pageSize', pageSizeNum.toString());
-
-          // Almacenar en caché los nuevos parámetros
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('last-search-params', params.toString());
-          }
-
-          // Update the URL without refreshing the page
-          router.push(`?${params.toString()}`, { scroll: false });
-        } catch (error) {
-          const errorMessage =
-            error instanceof Error ? error.message : 'Failed to update pagination';
-          console.error('Error updating pagination:', errorMessage);
-          setLoading(false); // Make sure to reset loading on error
-        }
-      }, 300); // 300ms debounce
     },
-    [router, urlSearchParams, setLoading, isParamsCached]
+    [router, searchParams]
   );
 
-  // Update URL parameters when page or pageSize changes - consolidated effect
-  useEffect(() => {
-    const currentUrlPage = parseInt(urlSearchParams.get('page') || '1', 10);
-    const currentUrlPageSize = parseInt(urlSearchParams.get('pageSize') || '10', 10);
+  const getDataTires = useCallback(
+    async (page: number) => {
+      setLoading(true);
+      try {
+        // Use window.location.origin to ensure the URL is resolved correctly
+        const baseUrl = window.location.origin;
+        const response = await fetch(`${baseUrl}/api/tires?page=${page}&pageSize=${pageSize}`);
+        // const data = await response.json();
+        // setRecords(data);
+        const tiresData: TiresData[] = await response.json();
 
-    // Only update if values actually changed to prevent unnecessary URL updates
+        console.log('logale, response getDataTires:', response);
+
+        const dataTransformed = createPaginatedResponse(tiresData, page, pageSize);
+
+        setTiresData(dataTransformed);
+
+        console.log('logale, dataTransformed:', dataTransformed);
+      } catch (error: unknown) {
+        setError(error instanceof Error ? error.message : String(error));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [pageSize]
+  );
+
+  useEffect(() => {
+    void getDataTires(page);
+  }, [getDataTires, page]);
+
+  // Update URL parameters when page or pageSize changes
+  useEffect(() => {
+    const currentUrlPage = parseInt(searchParams.get('page') || '1', 10);
+    const currentUrlPageSize = parseInt(searchParams.get('pageSize') || '10', 10);
+
     if (page !== currentUrlPage || pageSize !== currentUrlPageSize) {
       updatePagination(page, pageSize);
     }
-  }, [updatePagination, page, pageSize, urlSearchParams]);
+  }, [updatePagination, page, pageSize, searchParams]);
 
   // Update the component state when initialTiresData changes
-  useEffect(() => {
-    setTiresData(initialTiresData);
-    setLoading(false);
-    setError('error' in initialTiresData ? (initialTiresData.error as string) : null);
-  }, [initialTiresData]);
+  // useEffect(() => {
+  //   // setTiresData(initialTiresData);
+  //   // void getDataTires(page);
+  //   setLoading(false);
+  //   setError('error' in initialTiresData ? (initialTiresData.error as string) : null);
+  // }, [getDataTires, initialTiresData, page]);
 
-  const handleUpScroll = useCallback(() => {
+  const handleUpScroll = () => {
     // Scroll to the top of the page when the user clicks on a pagination button
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
+  };
 
-  // Pagination handlers - memoized to prevent recreating functions on each render
-  const handleNextPage = useCallback(() => {
+  // Pagination handlers
+  const handleNextPage = () => {
     if (page < totalPages) {
       setPage(prevPage => prevPage + 1);
       handleUpScroll();
     }
-  }, [page, totalPages, handleUpScroll]);
+  };
 
-  const handlePreviousPage = useCallback(() => {
+  const handlePreviousPage = () => {
     if (page > 1) {
       setPage(prevPage => prevPage - 1);
       handleUpScroll();
     }
-  }, [page, handleUpScroll]);
+  };
 
-  const handlePageClick = useCallback(
-    (pageNumber: number) => {
-      setPage(pageNumber);
-      handleUpScroll();
-    },
-    [handleUpScroll]
-  );
+  const handlePageClick = (pageNumber: number) => {
+    setPage(pageNumber);
+    handleUpScroll();
+  };
 
-  const handleFirstPage = useCallback(() => {
+  const handleFirstPage = () => {
     setPage(1);
     handleUpScroll();
-  }, [handleUpScroll]);
+  };
 
-  const handleLastPage = useCallback(() => {
+  const handleLastPage = () => {
     setPage(totalPages);
     handleUpScroll();
-  }, [totalPages, handleUpScroll]);
+  };
 
-  const handlePageSizeChange = useCallback(
-    (event: React.ChangeEvent<HTMLSelectElement>) => {
-      const newPageSize = parseInt(event.target.value, 10);
+  const handlePageSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newPageSize = parseInt(event.target.value, 10);
 
-      // Calculate the new page based on the current position
-      const currentRecordIndex = (page - 1) * pageSize; // Index of the first record on the current page
-      const newPage = Math.floor(currentRecordIndex / newPageSize) + 1;
+    // Calculate the new page based on the current position
+    const currentRecordIndex = (page - 1) * pageSize; // Index of the first record on the current page
+    const newPage = Math.floor(currentRecordIndex / newPageSize) + 1;
 
-      setPageSize(newPageSize);
-      setPage(newPage);
-    },
-    [page, pageSize]
-  );
+    setPageSize(newPageSize);
+    setPage(newPage);
+  };
 
-  // Generar la paginación fuera del useMemo
-  const paginationArray = useGenerateFixedPagination(page, totalPages, maxVisiblePages);
-
-  // Memorizamos el array resultante, pero no llamamos al hook dentro del useMemo
-  const pagination = useMemo(() => paginationArray, [paginationArray]);
-
-  const availablePageSizes = useMemo(
-    () => [10, 20, 50].filter(size => size <= tiresData.totalCount),
-    [tiresData.totalCount]
-  );
-
-  // Función para verificar si hay parámetros de búsqueda en caché
-  function checkCachedSearchParams(params: URLSearchParams): boolean {
-    try {
-      if (typeof window !== 'undefined') {
-        const cachedParams = localStorage.getItem('last-search-params');
-        if (cachedParams && cachedParams === params.toString()) {
-          return true;
-        }
-        // Actualizar caché de parámetros
-        localStorage.setItem('last-search-params', params.toString());
-      }
-      return false;
-    } catch (e) {
-      console.error('Error checking cached search params:', e);
-      return false;
-    }
-  }
+  // Generate pagination UI
+  const pagination = useGenerateFixedPagination(page, totalPages, maxVisiblePages);
+  const availablePageSizes = [10, 20, 50].filter(size => size <= tiresData.totalCount);
 
   return (
     <Suspense fallback={<LoadingScreen message="Preparing your tire selection..." />}>
