@@ -23,8 +23,16 @@ import { lateralItems } from '@/app/ui/sections/LateralFilters/LateralItems';
  * @prop {boolean} isMobile - Whether the component is rendered for mobile devices or not (default is false).
  */
 const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
-  const { rangeInputs, handleRangeChange, handleCheckboxChange, isChecked, resetFilters } =
-    useLateralFilters();
+  const {
+    rangeInputs,
+    rangeBounds,
+    availableBrands,
+    handleRangeChange,
+    handleCheckboxChange,
+    isLoadingRanges,
+    isChecked,
+    resetFilters,
+  } = useLateralFilters();
 
   const borderClass = isMobile ? 'border-t' : 'border-b';
   const paddingClass = isMobile ? 'px-4' : '';
@@ -58,18 +66,26 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
           </DisclosureButton>
         </h3>
         <DisclosurePanel className="pt-6">
-          <div className="space-y-4 ">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">${rangeInputs.price[0]}</span>
-              <span className="text-sm text-gray-600">${rangeInputs.price[1]}</span>
-            </div>
-            <RangeSlider
-              min={10}
-              max={50}
-              step={1}
-              value={rangeInputs.price}
-              onChange={value => handleRangeChange('price', value)}
-            />
+          <div className="space-y-4">
+            {isLoadingRanges ? (
+              <div className="h-6 flex items-center justify-center">
+                <span className="text-sm text-gray-500">Loading price range...</span>
+              </div>
+            ) : (
+              <>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">${rangeInputs.price[0]}</span>
+                  <span className="text-sm text-gray-600">${rangeInputs.price[1]}</span>
+                </div>
+                <RangeSlider
+                  min={rangeBounds.price[0]}
+                  max={rangeBounds.price[1]}
+                  step={1}
+                  value={rangeInputs.price}
+                  onChange={value => handleRangeChange('price', value)}
+                />
+              </>
+            )}
           </div>
         </DisclosurePanel>
       </Disclosure>
@@ -90,17 +106,25 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
         </h3>
         <DisclosurePanel className="pt-6">
           <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">{rangeInputs.treadDepth[0]}/32</span>
-              <span className="text-sm text-gray-600">{rangeInputs.treadDepth[1]}/32</span>
-            </div>
-            <RangeSlider
-              min={1}
-              max={32}
-              step={1}
-              value={rangeInputs.treadDepth}
-              onChange={value => handleRangeChange('treadDepth', value)}
-            />
+            {isLoadingRanges ? (
+              <div className="h-6 flex items-center justify-center">
+                <span className="text-sm text-gray-500">Loading tread depth range...</span>
+              </div>
+            ) : (
+              <>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">{rangeInputs.treadDepth[0]}</span>
+                  <span className="text-sm text-gray-600">{rangeInputs.treadDepth[1]}</span>
+                </div>
+                <RangeSlider
+                  min={rangeBounds.treadDepth[0]}
+                  max={rangeBounds.treadDepth[1]}
+                  step={1}
+                  value={rangeInputs.treadDepth}
+                  onChange={value => handleRangeChange('treadDepth', value)}
+                />
+              </>
+            )}
           </div>
         </DisclosurePanel>
       </Disclosure>
@@ -121,17 +145,25 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
         </h3>
         <DisclosurePanel className="pt-6">
           <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">{rangeInputs.remainingLife[0]}%</span>
-              <span className="text-sm text-gray-600">{rangeInputs.remainingLife[1]}%</span>
-            </div>
-            <RangeSlider
-              min={0}
-              max={100}
-              step={1}
-              value={rangeInputs.remainingLife}
-              onChange={value => handleRangeChange('remainingLife', value)}
-            />
+            {isLoadingRanges ? (
+              <div className="h-6 flex items-center justify-center">
+                <span className="text-sm text-gray-500">Loading remaining life range...</span>
+              </div>
+            ) : (
+              <>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">{rangeInputs.remainingLife[0]}%</span>
+                  <span className="text-sm text-gray-600">{rangeInputs.remainingLife[1]}%</span>
+                </div>
+                <RangeSlider
+                  min={rangeBounds.remainingLife[0]}
+                  max={rangeBounds.remainingLife[1]}
+                  step={1}
+                  value={rangeInputs.remainingLife}
+                  onChange={value => handleRangeChange('remainingLife', value)}
+                />
+              </>
+            )}
           </div>
         </DisclosurePanel>
       </Disclosure>
@@ -139,6 +171,7 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
       {/* Checkbox Filters */}
       {lateralItems.map(section => (
         <Disclosure
+          defaultOpen={true}
           key={section.id}
           as="div"
           className={`${borderClass} border-gray-200 py-6 ${paddingClass}`}
@@ -178,6 +211,48 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
           </DisclosurePanel>
         </Disclosure>
       ))}
+
+      {availableBrands.length > 0 && (
+        <Disclosure
+          as="div"
+          className={`${borderClass} border-gray-200 py-6 ${paddingClass}`}
+          defaultOpen={true}
+        >
+          <h3 className={`${isMobile ? '-mx-2' : ''} -my-3 flow-root`}>
+            <DisclosureButton
+              className={`flex w-full items-center justify-between bg-white ${isMobile ? 'px-2' : ''} py-3 text-sm text-gray-400 hover:text-gray-500`}
+            >
+              <span className="font-medium text-gray-900">Brands</span>
+              <span className="ml-6 flex items-center text-green-primary">
+                <DisclosureIcon />
+              </span>
+            </DisclosureButton>
+          </h3>
+          <DisclosurePanel className="pt-6">
+            <div className={`space-y-${isMobile ? '6' : '4'} h-full max-h-96 overflow-y-auto`}>
+              {availableBrands.map((brand, idx) => (
+                <div key={brand} className="flex items-center">
+                  <input
+                    id={`filter-${isMobile ? 'mobile-' : ''}brands-${idx}`}
+                    name="brands[]"
+                    value={brand}
+                    type="checkbox"
+                    checked={isChecked('brands', brand)}
+                    onChange={handleCheckboxChange}
+                    className="h-4 w-4 rounded border-gray-300 text-green-primary focus:ring-green-primary"
+                  />
+                  <label
+                    htmlFor={`filter-${isMobile ? 'mobile-' : ''}brands-${idx}`}
+                    className={`ml-3 ${isMobile ? 'flex-1 text-gray-500' : 'text-gray-600'} text-sm`}
+                  >
+                    {brand.toUpperCase()}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </DisclosurePanel>
+        </Disclosure>
+      )}
     </form>
   );
 };

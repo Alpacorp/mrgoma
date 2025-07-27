@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { fetchTires } from '@/repositories/tiresRepository';
+import { fetchTires, TireFilters } from '@/repositories/tiresRepository';
 import { logger } from '@/utils/logger';
 
 export async function GET(req: NextRequest) {
@@ -9,9 +9,37 @@ export async function GET(req: NextRequest) {
   const pageSize = parseInt(searchParams.get('pageSize') ?? '10', 10);
   const offset = (page - 1) * pageSize;
 
+  const conditionParam = searchParams.get('condition');
+  const patchedParam = searchParams.get('patched');
+  const brandParam = searchParams.get('brand') ?? searchParams.get('brands');
+  const minPrice = searchParams.get('minPrice');
+  const maxPrice = searchParams.get('maxPrice');
+  const minTreadDepth = searchParams.get('minTreadDepth');
+  const maxTreadDepth = searchParams.get('maxTreadDepth');
+  const minRemainingLife = searchParams.get('minRemainingLife');
+  const maxRemainingLife = searchParams.get('maxRemainingLife');
+
+  const filters: TireFilters = {};
+  if (conditionParam) {
+    filters.condition = conditionParam.split(',').filter(Boolean);
+  }
+  if (patchedParam) {
+    filters.patched = patchedParam.split(',').filter(Boolean);
+  }
+  if (brandParam) {
+    filters.brands = brandParam.split(',').filter(Boolean);
+  }
+  if (minPrice) filters.minPrice = parseInt(minPrice, 10);
+  if (maxPrice) filters.maxPrice = parseInt(maxPrice, 10);
+  if (minTreadDepth) filters.minTreadDepth = parseInt(minTreadDepth, 10);
+  if (maxTreadDepth) filters.maxTreadDepth = parseInt(maxTreadDepth, 10);
+  if (minRemainingLife) filters.minRemainingLife = parseInt(minRemainingLife, 10);
+  if (maxRemainingLife) filters.maxRemainingLife = parseInt(maxRemainingLife, 10);
+
   try {
-    const records = await fetchTires(offset, pageSize);
-    return NextResponse.json(records);
+    const result = await fetchTires(offset, pageSize, filters);
+
+    return NextResponse.json(result);
   } catch (err: unknown) {
     logger.error('Failed to fetch tires', err);
     const errorMessage = err instanceof Error ? err.message : String(err);

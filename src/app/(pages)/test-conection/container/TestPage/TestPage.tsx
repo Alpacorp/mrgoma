@@ -16,6 +16,8 @@ export default function TestPage() {
   const totalPages = Math.ceil(totalRecords / pageSize);
   const maxVisiblePages = 10;
 
+  console.log('logale, records:', records);
+
   const getTires = useCallback(
     async (page: number) => {
       setLoading(true);
@@ -35,7 +37,7 @@ export default function TestPage() {
   );
 
   useEffect(() => {
-    getTires(page);
+    void getTires(page);
   }, [getTires, page]);
 
   const handleNextPage = () => {
@@ -85,8 +87,8 @@ export default function TestPage() {
           <h3 className="text-2xl mb-3">Tires Register:</h3>
           <div className="relative">
             <ul className="text-white flex flex-wrap">
-              {records.map((record: TiresData) => (
-                <li key={record.TireId} className="list-none">
+              {records?.map((record: TiresData) => (
+                <li key={record?.TireId} className="list-none">
                   <CardTest {...record} />
                 </li>
               ))}

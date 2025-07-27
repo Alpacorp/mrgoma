@@ -47,6 +47,7 @@ export function transformTireData(tire: TiresData) {
  * @param tiresData Raw tire data from the API
  * @param page Current page number
  * @param pageSize Number of items per page
+ * @param totalCount Total number of items across all pages
  * @param error Optional error message
  * @returns Paginated response with transformed tire data
  */
@@ -54,11 +55,9 @@ export function createPaginatedResponse(
   tiresData: TiresData[],
   page: number,
   pageSize: number,
+  totalCount: number,
   error?: string
 ) {
-  // For now, we'll assume a fixed total count
-  // In a real implementation, this would come from the API
-  const totalCount = 500;
   const totalPages = Math.ceil(totalCount / pageSize);
 
   // Transform the data to match the expected UI structure
