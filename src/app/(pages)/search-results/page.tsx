@@ -1,20 +1,15 @@
-import { NextPage } from 'next';
+'use client';
 
-import SearchResults from '@/app/(pages)/search-results/container/search-results/search-results';
+import { Suspense } from 'react';
 
-const SearchResultsPage: NextPage = async () => {
-  // Fetch tires data server-side
-  // const tiresData = await getTires(page, pageSize);
+import { LoadingScreen } from '@/app/ui/components';
 
-  // console.log('logale, tiresData in SearchResultsPage:', tiresData);
+import SearchResults from './container/search-results/search-results';
 
-  // Check if there was an error fetching the data
-  // if ('error' in tiresData) {
-  //   // Log the error but continue rendering with available data
-  //   console.error('Error fetching tires:', tiresData.error);
-  // }
-
-  return <SearchResults />;
-};
-
-export default SearchResultsPage;
+export default function Page() {
+  return (
+    <Suspense fallback={<LoadingScreen message="Cargando resultados..." />}>
+      <SearchResults />
+    </Suspense>
+  );
+}

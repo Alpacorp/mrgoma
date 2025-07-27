@@ -139,8 +139,6 @@ const SearchResults: FC<SearchResultsProps> = () => {
     [pageSize, searchParams]
   );
 
-  console.log('logale, tiresData:', tiresData);
-
   useEffect(() => {
     void getDataTires(page);
   }, [getDataTires, page]);
