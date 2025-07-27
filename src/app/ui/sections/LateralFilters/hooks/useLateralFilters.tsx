@@ -8,6 +8,12 @@ interface RangeInputs {
   remainingLife: [number, number];
 }
 
+interface RangeBounds {
+  price: [number, number];
+  treadDepth: [number, number];
+  remainingLife: [number, number];
+}
+
 interface CheckboxInputs {
   condition: string[];
   patched: string[];
@@ -18,6 +24,15 @@ export const useLateralFilters = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  const [rangeBounds, setRangeBounds] = useState<RangeBounds>({
+    price: [10, 50],
+    treadDepth: [1, 32],
+    remainingLife: [0, 100],
+  });
+
+  const [availableBrands, setAvailableBrands] = useState<string[]>([]);
+  const [isLoadingRanges, setIsLoadingRanges] = useState(true);
+
   // Initialize range inputs from URL parameters or defaults
   const [rangeInputs, setRangeInputs] = useState<RangeInputs>({
     price: [
@@ -25,8 +40,8 @@ export const useLateralFilters = () => {
       parseInt(searchParams.get('maxPrice') || '50', 10),
     ],
     treadDepth: [
-      parseInt(searchParams.get('minTreadDepth') || '1', 10),
-      parseInt(searchParams.get('maxTreadDepth') || '32', 10),
+      parseFloat(searchParams.get('minTreadDepth') || '1'),
+      parseFloat(searchParams.get('maxTreadDepth') || '32'),
     ],
     remainingLife: [
       parseInt(searchParams.get('minRemainingLife') || '0', 10),
@@ -41,20 +56,62 @@ export const useLateralFilters = () => {
     brands: searchParams.get('brands')?.split(',').filter(Boolean) || [],
   });
 
+  useEffect(() => {
+    const fetchBounds = async () => {
+      try {
+        setIsLoadingRanges(true);
+        const res = await fetch('/api/ranges');
+        if (!res.ok) return;
+        const data = await res.json();
+        const bounds: RangeBounds = {
+          price: [data.minPrice, data.maxPrice],
+          treadDepth: [data.minTreadDepth, data.maxTreadDepth],
+          remainingLife: [data.minRemainingLife, data.maxRemainingLife],
+        };
+        setRangeBounds(bounds);
+      } catch (err) {
+        console.error('Failed to fetch range bounds', err);
+      } finally {
+        setIsLoadingRanges(false);
+      }
+    };
+
+    void fetchBounds();
+
+    const fetchBrands = async () => {
+      try {
+        const res = await fetch('/api/brands');
+        if (!res.ok) return;
+        const data = await res.json();
+        setAvailableBrands(data as string[]);
+      } catch (err) {
+        console.error('Failed to fetch brands', err);
+      }
+    };
+
+    void fetchBrands();
+  }, []);
+
   // Update filter values when URL changes
   useEffect(() => {
     const newRangeInputs = {
       price: [
-        parseInt(searchParams.get('minPrice') || '10', 10),
-        parseInt(searchParams.get('maxPrice') || '50', 10),
+        parseInt(searchParams.get('minPrice') || rangeBounds.price[0].toString(), 10),
+        parseInt(searchParams.get('maxPrice') || rangeBounds.price[1].toString(), 10),
       ],
       treadDepth: [
-        parseInt(searchParams.get('minTreadDepth') || '1', 10),
-        parseInt(searchParams.get('maxTreadDepth') || '32', 10),
+        parseFloat(searchParams.get('minTreadDepth') || rangeBounds.treadDepth[0].toString()),
+        parseFloat(searchParams.get('maxTreadDepth') || rangeBounds.treadDepth[1].toString()),
       ],
       remainingLife: [
-        parseInt(searchParams.get('minRemainingLife') || '0', 10),
-        parseInt(searchParams.get('maxRemainingLife') || '100', 10),
+        parseInt(
+          searchParams.get('minRemainingLife') || rangeBounds.remainingLife[0].toString(),
+          10
+        ),
+        parseInt(
+          searchParams.get('maxRemainingLife') || rangeBounds.remainingLife[1].toString(),
+          10
+        ),
       ],
     } as RangeInputs;
 
@@ -66,32 +123,34 @@ export const useLateralFilters = () => {
 
     setRangeInputs(newRangeInputs);
     setCheckboxInputs(newCheckboxInputs);
-  }, [searchParams]);
+  }, [searchParams, rangeBounds]);
 
   // Update URL parameters when filters change
   const updateUrlParams = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());
 
     // Update range inputs in URL
-    if (rangeInputs.price[0] > 10) params.set('minPrice', rangeInputs.price[0].toString());
+    if (rangeInputs.price[0] > rangeBounds.price[0])
+      params.set('minPrice', rangeInputs.price[0].toString());
     else params.delete('minPrice');
 
-    if (rangeInputs.price[1] < 50) params.set('maxPrice', rangeInputs.price[1].toString());
+    if (rangeInputs.price[1] < rangeBounds.price[1])
+      params.set('maxPrice', rangeInputs.price[1].toString());
     else params.delete('maxPrice');
 
-    if (rangeInputs.treadDepth[0] > 1)
+    if (rangeInputs.treadDepth[0] > rangeBounds.treadDepth[0])
       params.set('minTreadDepth', rangeInputs.treadDepth[0].toString());
     else params.delete('minTreadDepth');
 
-    if (rangeInputs.treadDepth[1] < 32)
+    if (rangeInputs.treadDepth[1] < rangeBounds.treadDepth[1])
       params.set('maxTreadDepth', rangeInputs.treadDepth[1].toString());
     else params.delete('maxTreadDepth');
 
-    if (rangeInputs.remainingLife[0] > 0)
+    if (rangeInputs.remainingLife[0] > rangeBounds.remainingLife[0])
       params.set('minRemainingLife', rangeInputs.remainingLife[0].toString());
     else params.delete('minRemainingLife');
 
-    if (rangeInputs.remainingLife[1] < 100)
+    if (rangeInputs.remainingLife[1] < rangeBounds.remainingLife[1])
       params.set('maxRemainingLife', rangeInputs.remainingLife[1].toString());
     else params.delete('maxRemainingLife');
 
@@ -110,7 +169,19 @@ export const useLateralFilters = () => {
     const newUrl = `/search-results?${params.toString()}`;
 
     router.push(newUrl, { scroll: false });
-  }, [rangeInputs, checkboxInputs, searchParams, router]);
+  }, [
+    searchParams,
+    rangeInputs.price,
+    rangeInputs.treadDepth,
+    rangeInputs.remainingLife,
+    rangeBounds.price,
+    rangeBounds.treadDepth,
+    rangeBounds.remainingLife,
+    checkboxInputs.condition,
+    checkboxInputs.patched,
+    checkboxInputs.brands,
+    router,
+  ]);
 
   // Update URL when filters change
   useEffect(() => {
@@ -160,9 +231,9 @@ export const useLateralFilters = () => {
   const resetFilters = useCallback(() => {
     // Reset range inputs to defaults
     const defaultRangeInputs = {
-      price: [10, 50],
-      treadDepth: [1, 32],
-      remainingLife: [0, 100],
+      price: [...rangeBounds.price] as [number, number],
+      treadDepth: [...rangeBounds.treadDepth] as [number, number],
+      remainingLife: [...rangeBounds.remainingLife] as [number, number],
     } as RangeInputs;
     setRangeInputs(defaultRangeInputs);
 
@@ -193,13 +264,16 @@ export const useLateralFilters = () => {
     // Update URL
     const newUrl = `/search-results?${params.toString()}`;
     router.push(newUrl, { scroll: false });
-  }, [searchParams, router]);
+  }, [searchParams, router, rangeBounds]);
 
   return {
+    availableBrands,
     rangeInputs,
+    rangeBounds,
     checkboxInputs,
     handleRangeChange,
     handleCheckboxChange,
+    isLoadingRanges,
     resetFilters,
     isChecked: (category: keyof CheckboxInputs, value: string) =>
       checkboxInputs[category].includes(value),

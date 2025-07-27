@@ -10,9 +10,15 @@ interface ResultsHeaderProps {
   activeTab: TirePosition;
   getTireSize: (position: TirePosition) => string;
   resultsCount: number;
+  totalCount: number;
 }
 
-const ResultsHeader: FC<ResultsHeaderProps> = ({ activeTab, getTireSize, resultsCount }) => {
+const ResultsHeader: FC<ResultsHeaderProps> = ({
+  activeTab,
+  getTireSize,
+  resultsCount,
+  totalCount,
+}) => {
   const { setShowFilter } = useContext(ShowFilterContext);
 
   return (
@@ -36,7 +42,9 @@ const ResultsHeader: FC<ResultsHeaderProps> = ({ activeTab, getTireSize, results
           <AdjustmentsHorizontalIcon className="h-5 w-5" />
           <span className="ml-1">Filters</span>
         </button>
-        <span className="text-sm text-gray-600">Showing {resultsCount} results</span>
+        <span className="text-sm text-gray-600">
+          Showing {resultsCount} results / Total: {totalCount}
+        </span>
         <select
           className="bg-white border border-gray-300 rounded-md py-1 px-3 text-sm text-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500"
           defaultValue="featured"

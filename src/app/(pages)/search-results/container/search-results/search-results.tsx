@@ -4,13 +4,11 @@ import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { FC, Suspense, useCallback, useEffect, useState } from 'react';
 
-import { singleproductTest } from '@/app/(pages)/search-results/data/singleProductTest';
 import { useGenerateFixedPagination } from '@/app/hooks/useGeneratePagination';
 import { TiresData, TransformedTire } from '@/app/interfaces/tires';
 import {
   CollapsibleSearchBar,
   LoadingScreen,
-  ModalDetail,
   ResultsHeader,
   TirePositionTabs,
   TireResults,
@@ -25,7 +23,7 @@ interface PaginatedTiresResponse {
   page: number;
   pageSize: number;
   totalPages: number;
-  error?: string; // Optional error message
+  error?: string;
 }
 
 interface SearchResultsProps {
@@ -121,28 +119,27 @@ const SearchResults: FC<SearchResultsProps> = () => {
     async (page: number) => {
       setLoading(true);
       try {
-        // Use window.location.origin to ensure the URL is resolved correctly
         const baseUrl = window.location.origin;
-        const response = await fetch(`${baseUrl}/api/tires?page=${page}&pageSize=${pageSize}`);
-        // const data = await response.json();
-        // setRecords(data);
-        const tiresData: TiresData[] = await response.json();
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('page', page.toString());
+        params.set('pageSize', pageSize.toString());
+        const response = await fetch(`${baseUrl}/api/tires?${params.toString()}`);
+        const result: { records: TiresData[]; totalCount: number } = await response.json();
+        const tiresData = result.records;
+        const totalCount = result.totalCount;
 
-        console.log('logale, response getDataTires:', response);
-
-        const dataTransformed = createPaginatedResponse(tiresData, page, pageSize);
-
+        const dataTransformed = createPaginatedResponse(tiresData, page, pageSize, totalCount);
         setTiresData(dataTransformed);
-
-        console.log('logale, dataTransformed:', dataTransformed);
       } catch (error: unknown) {
         setError(error instanceof Error ? error.message : String(error));
       } finally {
         setLoading(false);
       }
     },
-    [pageSize]
+    [pageSize, searchParams]
   );
+
+  console.log('logale, tiresData:', tiresData);
 
   useEffect(() => {
     void getDataTires(page);
@@ -157,14 +154,6 @@ const SearchResults: FC<SearchResultsProps> = () => {
       updatePagination(page, pageSize);
     }
   }, [updatePagination, page, pageSize, searchParams]);
-
-  // Update the component state when initialTiresData changes
-  // useEffect(() => {
-  //   // setTiresData(initialTiresData);
-  //   // void getDataTires(page);
-  //   setLoading(false);
-  //   setError('error' in initialTiresData ? (initialTiresData.error as string) : null);
-  // }, [getDataTires, initialTiresData, page]);
 
   const handleUpScroll = () => {
     // Scroll to the top of the page when the user clicks on a pagination button
@@ -257,6 +246,7 @@ const SearchResults: FC<SearchResultsProps> = () => {
                               activeTab={activeTab}
                               getTireSize={getTireSize}
                               resultsCount={activeTab === 'front' ? tiresData?.tires?.length : 15}
+                              totalCount={tiresData.totalCount}
                             />
                           </div>
                           {error ? (
@@ -280,14 +270,14 @@ const SearchResults: FC<SearchResultsProps> = () => {
                           <button
                             onClick={handleFirstPage}
                             disabled={page === 1}
-                            className="px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
+                            className={`${page === 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400`}
                           >
                             &lt;&lt;
                           </button>
                           <button
                             onClick={handlePreviousPage}
                             disabled={page === 1}
-                            className="px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
+                            className={`${page === 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400`}
                           >
                             &lt;
                           </button>
@@ -297,10 +287,10 @@ const SearchResults: FC<SearchResultsProps> = () => {
                             <button
                               key={index}
                               onClick={() => handlePageClick(pageNumber)}
-                              className={`px-3 py-1 h-min rounded ${
+                              className={`px-3 py-1 h-min border border-gray-300 rounded cursor-pointer ${
                                 pageNumber === page
-                                  ? 'bg-blue-600 text-white'
-                                  : 'bg-gray-700 text-white hover:bg-gray-600'
+                                  ? 'bg-green-500 text-white'
+                                  : 'text-gray-700 hover:bg-green-800 hover:text-white'
                               }`}
                             >
                               {pageNumber}
@@ -314,15 +304,15 @@ const SearchResults: FC<SearchResultsProps> = () => {
                         <div className="flex gap-1">
                           <button
                             onClick={handleNextPage}
-                            className="px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
                             disabled={page === totalPages}
+                            className={`${page === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400`}
                           >
                             &gt;
                           </button>
                           <button
                             onClick={handleLastPage}
                             disabled={page === totalPages}
-                            className="px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400"
+                            className={`${page === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400`}
                           >
                             &gt;&gt;
                           </button>
@@ -354,7 +344,7 @@ const SearchResults: FC<SearchResultsProps> = () => {
             </section>
           </main>
         </div>
-        <ModalDetail singleTire={singleproductTest} />
+        {/*<ModalDetail singleTire={singleproductTest} />*/}
         <CollapsibleSearchBar />
       </main>
     </Suspense>
