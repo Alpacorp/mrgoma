@@ -138,47 +138,102 @@ export const useLateralFilters = () => {
   // Update URL parameters when filters change
   const updateUrlParams = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());
+    let filtersChanged = false;
+
+    // Update range inputs in URL
+    if (rangeInputs.price[0] > rangeBounds.price[0]) {
+      if (params.get('minPrice') !== rangeInputs.price[0].toString())
+        filtersChanged = true;
+      params.set('minPrice', rangeInputs.price[0].toString());
+    } else if (params.has('minPrice')) {
+      filtersChanged = true;
+      params.delete('minPrice');
+    }
+
+    if (rangeInputs.price[1] < rangeBounds.price[1]) {
+      if (params.get('maxPrice') !== rangeInputs.price[1].toString())
+        filtersChanged = true;
+      params.set('maxPrice', rangeInputs.price[1].toString());
+    } else if (params.has('maxPrice')) {
+      filtersChanged = true;
+      params.delete('maxPrice');
+    }
+
+    if (rangeInputs.treadDepth[0] > rangeBounds.treadDepth[0]) {
+      if (params.get('minTreadDepth') !== rangeInputs.treadDepth[0].toString())
+        filtersChanged = true;
+      params.set('minTreadDepth', rangeInputs.treadDepth[0].toString());
+    } else if (params.has('minTreadDepth')) {
+      filtersChanged = true;
+      params.delete('minTreadDepth');
+    }
+
+    if (rangeInputs.treadDepth[1] < rangeBounds.treadDepth[1]) {
+      if (params.get('maxTreadDepth') !== rangeInputs.treadDepth[1].toString())
+        filtersChanged = true;
+      params.set('maxTreadDepth', rangeInputs.treadDepth[1].toString());
+    } else if (params.has('maxTreadDepth')) {
+      filtersChanged = true;
+      params.delete('maxTreadDepth');
+    }
+
+    if (rangeInputs.remainingLife[0] > rangeBounds.remainingLife[0]) {
+      if (
+        params.get('minRemainingLife') !==
+        rangeInputs.remainingLife[0].toString()
+      )
+        filtersChanged = true;
+      params.set('minRemainingLife', rangeInputs.remainingLife[0].toString());
+    } else if (params.has('minRemainingLife')) {
+      filtersChanged = true;
+      params.delete('minRemainingLife');
+    }
+
+    if (rangeInputs.remainingLife[1] < rangeBounds.remainingLife[1]) {
+      if (
+        params.get('maxRemainingLife') !==
+        rangeInputs.remainingLife[1].toString()
+      )
+        filtersChanged = true;
+      params.set('maxRemainingLife', rangeInputs.remainingLife[1].toString());
+    } else if (params.has('maxRemainingLife')) {
+      filtersChanged = true;
+      params.delete('maxRemainingLife');
+    }
+
+    // Update checkbox inputs in URL
+    if (checkboxInputs.condition.length > 0) {
+      if (params.get('condition') !== checkboxInputs.condition.join(','))
+        filtersChanged = true;
+      params.set('condition', checkboxInputs.condition.join(','));
+    } else if (params.has('condition')) {
+      filtersChanged = true;
+      params.delete('condition');
+    }
+
+    if (checkboxInputs.patched.length > 0) {
+      if (params.get('patched') !== checkboxInputs.patched.join(','))
+        filtersChanged = true;
+      params.set('patched', checkboxInputs.patched.join(','));
+    } else if (params.has('patched')) {
+      filtersChanged = true;
+      params.delete('patched');
+    }
+
+    if (checkboxInputs.brands.length > 0) {
+      if (params.get('brands') !== checkboxInputs.brands.join(','))
+        filtersChanged = true;
+      params.set('brands', checkboxInputs.brands.join(','));
+    } else if (params.has('brands')) {
+      filtersChanged = true;
+      params.delete('brands');
+    }
+
+    if (!filtersChanged) return;
 
     // Whenever any filter changes ensure we go back to the first page
     params.set('page', '1');
 
-    // Update range inputs in URL
-    if (rangeInputs.price[0] > rangeBounds.price[0])
-      params.set('minPrice', rangeInputs.price[0].toString());
-    else params.delete('minPrice');
-
-    if (rangeInputs.price[1] < rangeBounds.price[1])
-      params.set('maxPrice', rangeInputs.price[1].toString());
-    else params.delete('maxPrice');
-
-    if (rangeInputs.treadDepth[0] > rangeBounds.treadDepth[0])
-      params.set('minTreadDepth', rangeInputs.treadDepth[0].toString());
-    else params.delete('minTreadDepth');
-
-    if (rangeInputs.treadDepth[1] < rangeBounds.treadDepth[1])
-      params.set('maxTreadDepth', rangeInputs.treadDepth[1].toString());
-    else params.delete('maxTreadDepth');
-
-    if (rangeInputs.remainingLife[0] > rangeBounds.remainingLife[0])
-      params.set('minRemainingLife', rangeInputs.remainingLife[0].toString());
-    else params.delete('minRemainingLife');
-
-    if (rangeInputs.remainingLife[1] < rangeBounds.remainingLife[1])
-      params.set('maxRemainingLife', rangeInputs.remainingLife[1].toString());
-    else params.delete('maxRemainingLife');
-
-    // Update checkbox inputs in URL
-    if (checkboxInputs.condition.length > 0)
-      params.set('condition', checkboxInputs.condition.join(','));
-    else params.delete('condition');
-
-    if (checkboxInputs.patched.length > 0) params.set('patched', checkboxInputs.patched.join(','));
-    else params.delete('patched');
-
-    if (checkboxInputs.brands.length > 0) params.set('brands', checkboxInputs.brands.join(','));
-    else params.delete('brands');
-
-    // Preserve existing search parameters that aren't related to filters
     const newUrl = `/search-results?${params.toString()}`;
 
     router.push(newUrl, { scroll: false });
