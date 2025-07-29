@@ -118,19 +118,27 @@ const SearchResults: FC<SearchResultsProps> = () => {
   );
 
   const getDataTires = useCallback(
-    async (page: number) => {
+    async (pageNum: number, pageSizeNum: number) => {
       setLoading(true);
       try {
         // Use window.location.origin to ensure the URL is resolved correctly
         const baseUrl = window.location.origin;
-        const response = await fetch(`${baseUrl}/api/tires?page=${page}&pageSize=${pageSize}`);
-        // const data = await response.json();
-        // setRecords(data);
-        const tiresData: TiresData[] = await response.json();
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('page', pageNum.toString());
+        params.set('pageSize', pageSizeNum.toString());
+        const response = await fetch(`${baseUrl}/api/tires?${params.toString()}`);
+        const result: { records: TiresData[]; totalCount: number } = await response.json();
+        const tiresData = result.records;
+        const totalCount = result.totalCount;
 
         console.log('logale, response getDataTires:', response);
 
-        const dataTransformed = createPaginatedResponse(tiresData, page, pageSize);
+        const dataTransformed = createPaginatedResponse(
+          tiresData,
+          pageNum,
+          pageSizeNum,
+          totalCount,
+        );
 
         setTiresData(dataTransformed);
 
@@ -141,12 +149,18 @@ const SearchResults: FC<SearchResultsProps> = () => {
         setLoading(false);
       }
     },
-    [pageSize]
+    [searchParams]
   );
 
   useEffect(() => {
-    void getDataTires(page);
-  }, [getDataTires, page]);
+    const urlPage = parseInt(searchParams.get('page') || '1', 10);
+    const urlPageSize = parseInt(searchParams.get('pageSize') || '10', 10);
+
+    if (urlPage !== page) setPage(urlPage);
+    if (urlPageSize !== pageSize) setPageSize(urlPageSize);
+
+    void getDataTires(urlPage, urlPageSize);
+  }, [searchParams, getDataTires]);
 
   // Update URL parameters when page or pageSize changes
   useEffect(() => {
@@ -156,7 +170,7 @@ const SearchResults: FC<SearchResultsProps> = () => {
     if (page !== currentUrlPage || pageSize !== currentUrlPageSize) {
       updatePagination(page, pageSize);
     }
-  }, [updatePagination, page, pageSize, searchParams]);
+  }, [updatePagination, page, pageSize]);
 
   // Update the component state when initialTiresData changes
   // useEffect(() => {

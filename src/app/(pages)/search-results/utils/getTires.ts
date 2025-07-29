@@ -38,16 +38,18 @@ export async function getTires(
     }
 
     // Parse the response
-    const tiresData: TiresData[] = await response.json();
+    const result: { records: TiresData[]; totalCount: number } = await response.json();
+    const tiresData = result.records;
+    const totalCount = result.totalCount;
 
     console.log('logale, tiresData:', tiresData);
 
     // Use the shared utility function to create a paginated response
-    return createPaginatedResponse(tiresData, page, pageSize);
+    return createPaginatedResponse(tiresData, page, pageSize, totalCount);
   } catch (error) {
     // Only log the error, don't throw it
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('Error fetching tires:', errorMessage);
-    return createPaginatedResponse([], page, pageSize, errorMessage);
+    return createPaginatedResponse([], page, pageSize, 0, errorMessage);
   }
 }

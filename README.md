@@ -39,6 +39,31 @@ This project uses the [winston](https://github.com/winstonjs/winston) library fo
 r logging. You can adjust the log verbosity by setting `LOG_LEVEL` (defaults to
 `info`).
 
+### Search filters
+
+The `/api/tires` endpoint accepts optional query parameters to filter results:
+
+- `condition` – comma separated list of `new` or `used`. Internally the query
+  maps `new` to `ProductTypeId = 1` and `used` to any other value.
+- `patched` – comma separated `yes` or `no` values. `yes` maps to `Patched <> '0'`
+  while `no` maps to `Patched = '0'`.
+- `brand` or `brands` – comma separated brand names to include in the results.
+- `minPrice` and `maxPrice` – filter by the numeric `Price` column.
+- `minTreadDepth` and `maxTreadDepth` – filter by the `Tread` column. The
+  database stores this value as a string like `"10.0"`, so the backend converts it
+  to a number when applying the filter.
+- `minRemainingLife` and `maxRemainingLife` – filter by the `RemainingLife`
+  column. Values in the database are strings like `"95%"`, so the backend
+  strips the percent sign and casts them to numbers when filtering.
+
+To help render the sliders, the `/api/tires/ranges` endpoint returns the
+minimum and maximum values for `Price`, `Tread` and `RemainingLife`.
+The `/api/tires/brands` endpoint lists all available brands for the filter
+panel.
+
+Any parameters present in the page URL are forwarded to the API, so adjusting
+filters in the UI automatically updates the list.
+
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
 ## Learn More

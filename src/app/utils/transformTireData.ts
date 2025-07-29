@@ -54,11 +54,9 @@ export function createPaginatedResponse(
   tiresData: TiresData[],
   page: number,
   pageSize: number,
+  totalCount: number,
   error?: string
 ) {
-  // For now, we'll assume a fixed total count
-  // In a real implementation, this would come from the API
-  const totalCount = 500;
   const totalPages = Math.ceil(totalCount / pageSize);
 
   // Transform the data to match the expected UI structure
