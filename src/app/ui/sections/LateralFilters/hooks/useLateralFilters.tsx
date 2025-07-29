@@ -1,6 +1,6 @@
 'use client';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 
 interface RangeInputs {
   price: [number, number];
@@ -129,6 +129,8 @@ export const useLateralFilters = () => {
   const updateUrlParams = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());
 
+    params.set('page', '1');
+
     // Update range inputs in URL
     if (rangeInputs.price[0] > rangeBounds.price[0])
       params.set('minPrice', rangeInputs.price[0].toString());
@@ -165,6 +167,8 @@ export const useLateralFilters = () => {
     if (checkboxInputs.brands.length > 0) params.set('brands', checkboxInputs.brands.join(','));
     else params.delete('brands');
 
+    params.set('page', '1');
+
     // Preserve existing search parameters that aren't related to filters
     const newUrl = `/search-results?${params.toString()}`;
 
@@ -183,16 +187,27 @@ export const useLateralFilters = () => {
     router,
   ]);
 
-  // Update URL when filters change
+  // Update URL when filters change but ignore the initial mount
+  const isFirstRender = useRef(true);
+  const previousFilters = useRef({ rangeInputs, checkboxInputs });
+
   useEffect(() => {
     // Skip the initial render to avoid double updates
-    const timeoutId = setTimeout(() => {
-      updateUrlParams();
-    }, 0);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      previousFilters.current = { rangeInputs, checkboxInputs };
+      return;
+    }
 
-    return () => {
-      clearTimeout(timeoutId);
-    };
+    const rangeChanged =
+      JSON.stringify(previousFilters.current.rangeInputs) !== JSON.stringify(rangeInputs);
+    const checkboxChanged =
+      JSON.stringify(previousFilters.current.checkboxInputs) !== JSON.stringify(checkboxInputs);
+
+    if (rangeChanged || checkboxChanged) {
+      previousFilters.current = { rangeInputs, checkboxInputs };
+      updateUrlParams();
+    }
   }, [rangeInputs, checkboxInputs, updateUrlParams]);
 
   // Handle range slider changes
@@ -260,6 +275,8 @@ export const useLateralFilters = () => {
     params.delete('condition');
     params.delete('patched');
     params.delete('brands');
+
+    params.set('page', '1');
 
     // Update URL
     const newUrl = `/search-results?${params.toString()}`;

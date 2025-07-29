@@ -72,6 +72,15 @@ const SearchResults: FC<SearchResultsProps> = () => {
   const totalPages = Math.ceil(tiresData.totalCount / pageSize);
   const maxVisiblePages = 10;
 
+  // Keep pagination state in sync with the URL parameters
+  useEffect(() => {
+    const urlPage = parseInt(searchParams.get('page') || '1', 10);
+    const urlSize = parseInt(searchParams.get('pageSize') || '10', 10);
+
+    if (page !== urlPage) setPage(urlPage);
+    if (pageSize !== urlSize) setPageSize(urlSize);
+  }, [searchParams]);
+
   // Tire size parameters
   const frontWidth = searchParams.get('w') || '';
   const frontSidewall = searchParams.get('s') || '';
@@ -143,15 +152,10 @@ const SearchResults: FC<SearchResultsProps> = () => {
     void getDataTires(page);
   }, [getDataTires, page]);
 
-  // Update URL parameters when page or pageSize changes
+  // Update URL parameters when pagination changes
   useEffect(() => {
-    const currentUrlPage = parseInt(searchParams.get('page') || '1', 10);
-    const currentUrlPageSize = parseInt(searchParams.get('pageSize') || '10', 10);
-
-    if (page !== currentUrlPage || pageSize !== currentUrlPageSize) {
-      updatePagination(page, pageSize);
-    }
-  }, [updatePagination, page, pageSize, searchParams]);
+    updatePagination(page, pageSize);
+  }, [updatePagination, page, pageSize]);
 
   const handleUpScroll = () => {
     // Scroll to the top of the page when the user clicks on a pagination button
