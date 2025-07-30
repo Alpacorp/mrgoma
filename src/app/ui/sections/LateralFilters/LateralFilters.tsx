@@ -65,7 +65,7 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
             </span>
           </DisclosureButton>
         </h3>
-        <DisclosurePanel className="pt-6">
+        <DisclosurePanel className="pt-6 h-20">
           <div className="space-y-4">
             {isLoadingRanges ? (
               <div className="h-6 flex items-center justify-center">
@@ -104,7 +104,7 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
             </span>
           </DisclosureButton>
         </h3>
-        <DisclosurePanel className="pt-6">
+        <DisclosurePanel className="pt-6 h-20">
           <div className="space-y-4">
             {isLoadingRanges ? (
               <div className="h-6 flex items-center justify-center">
@@ -143,7 +143,7 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
             </span>
           </DisclosureButton>
         </h3>
-        <DisclosurePanel className="pt-6">
+        <DisclosurePanel className="pt-6 h-20">
           <div className="space-y-4">
             {isLoadingRanges ? (
               <div className="h-6 flex items-center justify-center">
@@ -155,6 +155,13 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
                   <span className="text-sm text-gray-600">{rangeInputs.remainingLife[0]}%</span>
                   <span className="text-sm text-gray-600">{rangeInputs.remainingLife[1]}%</span>
                 </div>
+                <RangeSlider
+                  min={rangeBounds.remainingLife[0]}
+                  max={rangeBounds.remainingLife[1]}
+                  step={1}
+                  value={rangeInputs.remainingLife}
+                  onChange={value => handleRangeChange('remainingLife', value)}
+                />
                 <RangeSlider
                   min={rangeBounds.remainingLife[0]}
                   max={rangeBounds.remainingLife[1]}

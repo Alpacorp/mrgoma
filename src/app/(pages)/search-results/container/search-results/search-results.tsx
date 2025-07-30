@@ -12,6 +12,9 @@ import {
   ResultsHeader,
   TirePositionTabs,
   TireResults,
+  NoResultsFound,
+  ResultsSkeleton,
+  ErrorDisplay,
 } from '@/app/ui/components';
 import { TirePosition } from '@/app/ui/components/TirePositionTabs/tire-position-tabs';
 import { LateralFilters, TitleSection } from '@/app/ui/sections';
@@ -65,21 +68,13 @@ const SearchResults: FC<SearchResultsProps> = () => {
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [count, setCount] = useState(0);
 
   // Pagination state
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
   const totalPages = Math.ceil(tiresData.totalCount / pageSize);
   const maxVisiblePages = 10;
-
-  // Keep pagination state in sync with the URL parameters
-  useEffect(() => {
-    const urlPage = parseInt(searchParams.get('page') || '1', 10);
-    const urlSize = parseInt(searchParams.get('pageSize') || '10', 10);
-
-    if (page !== urlPage) setPage(urlPage);
-    if (pageSize !== urlSize) setPageSize(urlSize);
-  }, [searchParams]);
 
   // Tire size parameters
   const frontWidth = searchParams.get('w') || '';
@@ -108,10 +103,13 @@ const SearchResults: FC<SearchResultsProps> = () => {
     (pageNum: number, pageSizeNum: number) => {
       setLoading(true);
       try {
+        const validPageSizes = [10, 20, 50];
+        const validatedPageSize = validPageSizes.includes(pageSizeNum) ? pageSizeNum : 10;
+
         // Create a new URL with the updated pagination parameters
         const params = new URLSearchParams(searchParams.toString());
         params.set('page', pageNum.toString());
-        params.set('pageSize', pageSizeNum.toString());
+        params.set('pageSize', validatedPageSize.toString());
 
         // Update the URL without refreshing the page
         // This will cause the page component to re-render with new data
@@ -126,27 +124,99 @@ const SearchResults: FC<SearchResultsProps> = () => {
 
   const getDataTires = useCallback(
     async (page: number) => {
-      setLoading(true);
-      try {
-        const baseUrl = window.location.origin;
-        const params = new URLSearchParams(searchParams.toString());
-        params.set('page', page.toString());
-        params.set('pageSize', pageSize.toString());
-        const response = await fetch(`${baseUrl}/api/tires?${params.toString()}`);
-        const result: { records: TiresData[]; totalCount: number } = await response.json();
-        const tiresData = result.records;
-        const totalCount = result.totalCount;
+      if (count === 1) {
+        setLoading(true);
+        try {
+          const baseUrl = window.location.origin;
+          const params = new URLSearchParams(searchParams.toString());
 
-        const dataTransformed = createPaginatedResponse(tiresData, page, pageSize, totalCount);
-        setTiresData(dataTransformed);
-      } catch (error: unknown) {
-        setError(error instanceof Error ? error.message : String(error));
-      } finally {
-        setLoading(false);
+          params.set('page', page.toString());
+          params.set('pageSize', pageSize.toString());
+
+          const response = await fetch(`${baseUrl}/api/tires?${params.toString()}`);
+          const result: { records: TiresData[]; totalCount: number } = await response.json();
+
+          const tiresData = result.records;
+          const totalCount = result.totalCount;
+
+          const dataTransformed = createPaginatedResponse(tiresData, page, pageSize, totalCount);
+          setTiresData(dataTransformed);
+
+          setCount(0);
+        } catch (error: unknown) {
+          setError(error instanceof Error ? error.message : String(error));
+        } finally {
+          setLoading(false);
+        }
       }
     },
-    [pageSize, searchParams]
+    [searchParams, pageSize, count]
   );
+
+  const handleUpScroll = useCallback(() => {
+    // Scroll to the top of the page when the user clicks on a pagination button
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  // Pagination handlers
+  const handleNextPage = useCallback(() => {
+    if (page < totalPages) {
+      setPage(prevPage => prevPage + 1);
+      handleUpScroll();
+    }
+  }, [page, totalPages, handleUpScroll]);
+
+  const handlePreviousPage = useCallback(() => {
+    if (page > 1) {
+      setPage(prevPage => prevPage - 1);
+      handleUpScroll();
+    }
+  }, [page, handleUpScroll]);
+
+  const handlePageClick = useCallback(
+    (pageNumber: number) => {
+      setPage(pageNumber);
+      handleUpScroll();
+    },
+    [handleUpScroll]
+  );
+
+  const handleFirstPage = useCallback(() => {
+    setPage(1);
+    handleUpScroll();
+  }, [handleUpScroll]);
+
+  const handleLastPage = useCallback(() => {
+    setPage(totalPages);
+    handleUpScroll();
+  }, [totalPages, handleUpScroll]);
+
+  const handlePageSizeChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const newPageSize = parseInt(event.target.value, 10);
+
+      // Calculate the new page based on the current position
+      const currentRecordIndex = (page - 1) * pageSize; // Index of the first record on the current page
+      const newPage = Math.floor(currentRecordIndex / newPageSize) + 1;
+
+      setPageSize(newPageSize);
+      setPage(newPage);
+    },
+    [page, pageSize]
+  );
+
+  // Generate pagination UI
+  const pagination = useGenerateFixedPagination(page, totalPages, maxVisiblePages);
+  const availablePageSizes = [10, 20, 50].filter(size => size <= tiresData.totalCount);
+
+  // Keep the pagination state in sync with the URL parameters
+  useEffect(() => {
+    const urlPage = parseInt(searchParams.get('page') || '1', 10);
+    const urlSize = parseInt(searchParams.get('pageSize') || '10', 10);
+
+    if (page !== urlPage) setPage(urlPage);
+    if (pageSize !== urlSize) setPageSize(urlSize);
+  }, [searchParams]);
 
   useEffect(() => {
     void getDataTires(page);
@@ -157,55 +227,9 @@ const SearchResults: FC<SearchResultsProps> = () => {
     updatePagination(page, pageSize);
   }, [updatePagination, page, pageSize]);
 
-  const handleUpScroll = () => {
-    // Scroll to the top of the page when the user clicks on a pagination button
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  // Pagination handlers
-  const handleNextPage = () => {
-    if (page < totalPages) {
-      setPage(prevPage => prevPage + 1);
-      handleUpScroll();
-    }
-  };
-
-  const handlePreviousPage = () => {
-    if (page > 1) {
-      setPage(prevPage => prevPage - 1);
-      handleUpScroll();
-    }
-  };
-
-  const handlePageClick = (pageNumber: number) => {
-    setPage(pageNumber);
-    handleUpScroll();
-  };
-
-  const handleFirstPage = () => {
-    setPage(1);
-    handleUpScroll();
-  };
-
-  const handleLastPage = () => {
-    setPage(totalPages);
-    handleUpScroll();
-  };
-
-  const handlePageSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newPageSize = parseInt(event.target.value, 10);
-
-    // Calculate the new page based on the current position
-    const currentRecordIndex = (page - 1) * pageSize; // Index of the first record on the current page
-    const newPage = Math.floor(currentRecordIndex / newPageSize) + 1;
-
-    setPageSize(newPageSize);
-    setPage(newPage);
-  };
-
-  // Generate pagination UI
-  const pagination = useGenerateFixedPagination(page, totalPages, maxVisiblePages);
-  const availablePageSizes = [10, 20, 50].filter(size => size <= tiresData.totalCount);
+  useEffect(() => {
+    setCount(1);
+  }, [searchParams]);
 
   return (
     <Suspense fallback={<LoadingScreen message="Preparing your tire selection..." />}>
@@ -252,15 +276,28 @@ const SearchResults: FC<SearchResultsProps> = () => {
                             />
                           </div>
                           {error ? (
-                            <div className="text-red-500">Error: {error}</div>
+                            <ErrorDisplay
+                              title="Error Loading Tires"
+                              message="We couldn't load the tire data at this moment."
+                              error={error}
+                              onRetry={() => window.location.reload()}
+                            />
                           ) : (
                             <div className="relative">
-                              <TireResults
-                                activeTab={activeTab}
-                                products={tiresData.tires}
-                                getTireSize={getTireSize}
-                              />
-                              {loading && <LoadingScreen message="Loading your tires..." />}
+                              {loading ? (
+                                <ResultsSkeleton count={pageSize} />
+                              ) : tiresData.tires.length === 0 ? (
+                                <NoResultsFound
+                                  title="No Tires Found"
+                                  message="We couldn't find any tires matching your search criteria. Please try different specifications."
+                                />
+                              ) : (
+                                <TireResults
+                                  activeTab={activeTab}
+                                  products={tiresData.tires}
+                                  getTireSize={getTireSize}
+                                />
+                              )}
                             </div>
                           )}
                         </div>

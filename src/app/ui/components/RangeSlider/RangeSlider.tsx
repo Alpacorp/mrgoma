@@ -34,6 +34,7 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
 
   const getPercentage = useCallback(
     (value: number) => {
+      if (!value && value !== 0) return 0;
       return ((value - min) / (max - min)) * 100;
     },
     [min, max]
@@ -140,8 +141,12 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
       <div
         className="absolute h-2 bg-green-500 rounded-full top-1/2 -translate-y-1/2"
         style={{
-          left: `${getPercentage(localValue[0])}%`,
-          width: `${getPercentage(localValue[1]) - getPercentage(localValue[0])}%`,
+          left: `${Array.isArray(localValue) ? getPercentage(localValue[0]) : 0}%`,
+          width: Array.isArray(localValue)
+            ? `${getPercentage(localValue[1]) - getPercentage(localValue[0])}%`
+            : '0%',
+          opacity: Array.isArray(localValue) ? 1 : 0,
+          transition: 'opacity 0.3s ease-in-out',
         }}
       />
 
