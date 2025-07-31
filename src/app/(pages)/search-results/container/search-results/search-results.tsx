@@ -284,7 +284,7 @@ const SearchResults: FC<SearchResultsProps> = () => {
                             />
                           ) : (
                             <div className="relative">
-                              {loading ? (
+                              {!loading ? (
                                 <ResultsSkeleton count={pageSize} />
                               ) : tiresData.tires.length === 0 ? (
                                 <NoResultsFound
