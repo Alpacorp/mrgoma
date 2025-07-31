@@ -37,8 +37,8 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
             key={product.id}
             className="bg-white rounded-lg overflow-hidden p-5 shadow-[0px_1px_10px_rgba(0,0,0,0.1)] w-full mb-8 items-center"
           >
-            <div className="grid grid-cols-12 gap-4 ">
-              <div className=" relative col-span-12  md:col-span-4">
+            <div className="grid grid-cols-12 gap-4">
+              <div className="relative col-span-12 md:col-span-4">
                 <ProductImage product={product} />
                 <div className="absolute top-0 left-0 z-30">
                   <ProductCondition condition={product.condition} />
