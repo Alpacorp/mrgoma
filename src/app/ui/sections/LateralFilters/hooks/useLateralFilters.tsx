@@ -32,6 +32,7 @@ export const useLateralFilters = () => {
 
   const [availableBrands, setAvailableBrands] = useState<string[]>([]);
   const [isLoadingRanges, setIsLoadingRanges] = useState(true);
+  const [isLoadingBrands, setIsLoadingBrands] = useState(true);
 
   // Initialize range inputs from URL parameters or defaults
   const [rangeInputs, setRangeInputs] = useState<RangeInputs>({
@@ -56,6 +57,65 @@ export const useLateralFilters = () => {
     brands: searchParams.get('brands')?.split(',').filter(Boolean) || [],
   });
 
+  // Función para cargar las marcas basada en los filtros actuales
+  const fetchFilteredBrands = useCallback(async () => {
+    try {
+      setIsLoadingBrands(true);
+
+      // Construir la URL con los parámetros de filtro actuales excepto brands
+      const params = new URLSearchParams();
+
+      // Añadir parámetros de rangos si están fuera de los límites por defecto
+      if (rangeInputs.price[0] > rangeBounds.price[0]) {
+        params.set('minPrice', rangeInputs.price[0].toString());
+      }
+      if (rangeInputs.price[1] < rangeBounds.price[1]) {
+        params.set('maxPrice', rangeInputs.price[1].toString());
+      }
+      if (rangeInputs.treadDepth[0] > rangeBounds.treadDepth[0]) {
+        params.set('minTreadDepth', rangeInputs.treadDepth[0].toString());
+      }
+      if (rangeInputs.treadDepth[1] < rangeBounds.treadDepth[1]) {
+        params.set('maxTreadDepth', rangeInputs.treadDepth[1].toString());
+      }
+      if (rangeInputs.remainingLife[0] > rangeBounds.remainingLife[0]) {
+        params.set('minRemainingLife', rangeInputs.remainingLife[0].toString());
+      }
+      if (rangeInputs.remainingLife[1] < rangeBounds.remainingLife[1]) {
+        params.set('maxRemainingLife', rangeInputs.remainingLife[1].toString());
+      }
+
+      // Añadir parámetros de checkbox
+      if (checkboxInputs.condition.length > 0) {
+        params.set('condition', checkboxInputs.condition.join(','));
+      }
+      if (checkboxInputs.patched.length > 0) {
+        params.set('patched', checkboxInputs.patched.join(','));
+      }
+      // No incluimos brands aquí porque queremos todas las marcas disponibles
+
+      const res = await fetch(`/api/brands?${params.toString()}`);
+      if (!res.ok) throw new Error('Failed to fetch brands');
+
+      const data = await res.json();
+      setAvailableBrands(data as string[]);
+    } catch (err) {
+      console.error('Failed to fetch brands with filters', err);
+      // En caso de error, mantener las marcas actuales
+    } finally {
+      setIsLoadingBrands(false);
+    }
+  }, [
+    rangeInputs.price,
+    rangeInputs.treadDepth,
+    rangeInputs.remainingLife,
+    rangeBounds.price,
+    rangeBounds.treadDepth,
+    rangeBounds.remainingLife,
+    checkboxInputs.condition,
+    checkboxInputs.patched,
+  ]);
+
   useEffect(() => {
     const fetchBounds = async () => {
       try {
@@ -77,20 +137,13 @@ export const useLateralFilters = () => {
     };
 
     void fetchBounds();
-
-    const fetchBrands = async () => {
-      try {
-        const res = await fetch('/api/brands');
-        if (!res.ok) return;
-        const data = await res.json();
-        setAvailableBrands(data as string[]);
-      } catch (err) {
-        console.error('Failed to fetch brands', err);
-      }
-    };
-
-    void fetchBrands();
+    // Ahora la carga inicial de marcas se maneja a través de fetchFilteredBrands
   }, []);
+
+  // Cargar las marcas iniciales y cuando cambien los filtros
+  useEffect(() => {
+    void fetchFilteredBrands();
+  }, [fetchFilteredBrands]);
 
   // Update filter values when URL changes
   useEffect(() => {
@@ -291,6 +344,7 @@ export const useLateralFilters = () => {
     handleRangeChange,
     handleCheckboxChange,
     isLoadingRanges,
+    isLoadingBrands,
     resetFilters,
     isChecked: (category: keyof CheckboxInputs, value: string) =>
       checkboxInputs[category].includes(value),
