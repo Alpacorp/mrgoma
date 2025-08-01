@@ -9,8 +9,8 @@ import {
   DialogPanel,
   Disclosure,
   DisclosureButton,
-  DisclosurePanel,
   DisclosureIcon,
+  DisclosurePanel,
   RangeSlider,
   XMarkIcon,
 } from '@/app/ui/components';
@@ -32,6 +32,7 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
     isLoadingRanges,
     isChecked,
     resetFilters,
+    isLoadingBrands,
   } = useLateralFilters();
 
   const borderClass = isMobile ? 'border-t' : 'border-b';
@@ -68,8 +69,9 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
         <DisclosurePanel className="pt-6 h-20">
           <div className="space-y-4">
             {isLoadingRanges ? (
-              <div className="h-6 flex items-center justify-center">
-                <span className="text-sm text-gray-500">Loading price range...</span>
+              <div className="flex justify-center items-center h-20">
+                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-green-primary"></div>
+                <span className="ml-2 text-sm text-gray-500">Loading price range...</span>
               </div>
             ) : (
               <>
@@ -107,8 +109,9 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
         <DisclosurePanel className="pt-6 h-20">
           <div className="space-y-4">
             {isLoadingRanges ? (
-              <div className="h-6 flex items-center justify-center">
-                <span className="text-sm text-gray-500">Loading tread depth range...</span>
+              <div className="flex justify-center items-center h-20">
+                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-green-primary"></div>
+                <span className="ml-2 text-sm text-gray-500">Loading tread depth range...</span>
               </div>
             ) : (
               <>
@@ -146,8 +149,9 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
         <DisclosurePanel className="pt-6 h-20">
           <div className="space-y-4">
             {isLoadingRanges ? (
-              <div className="h-6 flex items-center justify-center">
-                <span className="text-sm text-gray-500">Loading remaining life range...</span>
+              <div className="flex justify-center items-center h-20">
+                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-green-primary"></div>
+                <span className="ml-2 text-sm text-gray-500">Loading remaining life range...</span>
               </div>
             ) : (
               <>
@@ -155,13 +159,6 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
                   <span className="text-sm text-gray-600">{rangeInputs.remainingLife[0]}%</span>
                   <span className="text-sm text-gray-600">{rangeInputs.remainingLife[1]}%</span>
                 </div>
-                <RangeSlider
-                  min={rangeBounds.remainingLife[0]}
-                  max={rangeBounds.remainingLife[1]}
-                  step={1}
-                  value={rangeInputs.remainingLife}
-                  onChange={value => handleRangeChange('remainingLife', value)}
-                />
                 <RangeSlider
                   min={rangeBounds.remainingLife[0]}
                   max={rangeBounds.remainingLife[1]}
@@ -219,7 +216,7 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
         </Disclosure>
       ))}
 
-      {availableBrands.length > 0 && (
+      {(availableBrands.length > 0 || isLoadingBrands) && (
         <Disclosure
           as="div"
           className={`${borderClass} border-gray-200 py-6 ${paddingClass}`}
@@ -236,27 +233,40 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
             </DisclosureButton>
           </h3>
           <DisclosurePanel className="pt-6">
-            <div className={`space-y-${isMobile ? '6' : '4'} h-full max-h-96 overflow-y-auto`}>
-              {availableBrands.map((brand, idx) => (
-                <div key={brand} className="flex items-center">
-                  <input
-                    id={`filter-${isMobile ? 'mobile-' : ''}brands-${idx}`}
-                    name="brands[]"
-                    value={brand}
-                    type="checkbox"
-                    checked={isChecked('brands', brand)}
-                    onChange={handleCheckboxChange}
-                    className="h-4 w-4 rounded border-gray-300 text-green-primary focus:ring-green-primary"
-                  />
-                  <label
-                    htmlFor={`filter-${isMobile ? 'mobile-' : ''}brands-${idx}`}
-                    className={`ml-3 ${isMobile ? 'flex-1 text-gray-500' : 'text-gray-600'} text-sm`}
-                  >
-                    {brand.toUpperCase()}
-                  </label>
-                </div>
-              ))}
-            </div>
+            {isLoadingBrands ? (
+              <div className="flex justify-center items-center h-20">
+                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-green-primary"></div>
+                <span className="ml-2 text-sm text-gray-500">Updating brands...</span>
+              </div>
+            ) : (
+              <div className={`space-y-${isMobile ? '6' : '4'} h-full max-h-96 overflow-y-auto`}>
+                {availableBrands.length === 0 ? (
+                  <p className="text-sm text-gray-500">
+                    No brands available for the current filters. Please try a different combination.
+                  </p>
+                ) : (
+                  availableBrands.map((brand, idx) => (
+                    <div key={brand} className="flex items-center">
+                      <input
+                        id={`filter-${isMobile ? 'mobile-' : ''}brands-${idx}`}
+                        name="brands[]"
+                        value={brand}
+                        type="checkbox"
+                        checked={isChecked('brands', brand)}
+                        onChange={handleCheckboxChange}
+                        className="h-4 w-4 rounded border-gray-300 text-green-primary focus:ring-green-primary"
+                      />
+                      <label
+                        htmlFor={`filter-${isMobile ? 'mobile-' : ''}brands-${idx}`}
+                        className={`ml-3 ${isMobile ? 'flex-1 text-gray-500' : 'text-gray-600'} text-sm`}
+                      >
+                        {brand.toUpperCase()}
+                      </label>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
           </DisclosurePanel>
         </Disclosure>
       )}
@@ -277,7 +287,7 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
  */
 const LateralFilters: FC = () => {
   const { showFilter, setShowFilter } = useContext(ShowFilterContext);
-  const { resetFilters } = useLateralFilters();
+  const { resetFilters, isLoadingBrands } = useLateralFilters();
 
   return (
     <>
@@ -294,9 +304,16 @@ const LateralFilters: FC = () => {
       >
         <DialogBackdrop
           transition
-          className="fixed inset-0 bg-black opacity-40 transition-opacity duration-300 ease-linear"
+          className="fixed inset-0 bg-black opacity-40 transition-opacity duration-300 ease-linear cursor-pointer"
         />
-        <div className="fixed inset-0 z-40 flex">
+        <div
+          className="fixed inset-0 z-40 flex"
+          onClick={e => {
+            if (e.target === e.currentTarget) {
+              setShowFilter(false);
+            }
+          }}
+        >
           <DialogPanel
             transition
             className="relative mr-auto flex h-full w-full max-w-xs transform flex-col overflow-y-auto bg-white py-4 pb-12 shadow-xl transition duration-300 ease-in-out"
