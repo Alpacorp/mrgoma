@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
   const maxTreadDepth = searchParams.get('maxTreadDepth');
   const minRemainingLife = searchParams.get('minRemainingLife');
   const maxRemainingLife = searchParams.get('maxRemainingLife');
+  const sort = searchParams.get('sort');
 
   const filters: TireFilters = {};
   if (conditionParam) {
@@ -35,6 +36,7 @@ export async function GET(req: NextRequest) {
   if (maxTreadDepth) filters.maxTreadDepth = parseInt(maxTreadDepth, 10);
   if (minRemainingLife) filters.minRemainingLife = parseInt(minRemainingLife, 10);
   if (maxRemainingLife) filters.maxRemainingLife = parseInt(maxRemainingLife, 10);
+  if (sort) filters.sort = sort;
 
   try {
     const result = await fetchTires(offset, pageSize, filters);

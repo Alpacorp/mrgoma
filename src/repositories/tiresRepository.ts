@@ -1,4 +1,4 @@
-import { Int, VarChar, Float } from 'mssql';
+import { Float, Int, VarChar } from 'mssql';
 
 import { getPool } from '@/connection/db';
 
@@ -28,6 +28,7 @@ export type TireFilters = {
   maxTreadDepth?: number;
   minRemainingLife?: number;
   maxRemainingLife?: number;
+  sort?: string;
 };
 
 export type TireRangeResult = {
@@ -124,7 +125,21 @@ export async function fetchTires(
   }
 
   const baseQuery = `FROM dbo.View_Tires WHERE ${whereClause}`;
-  const dataQuery = `SELECT * ${baseQuery} ORDER BY ModificationDate DESC OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY`;
+
+  let orderBy = 'ModificationDate DESC';
+
+  if (filters.sort) {
+    switch (filters.sort) {
+      case 'price-asc':
+        orderBy = 'Price ASC';
+        break;
+      case 'price-desc':
+        orderBy = 'Price DESC';
+        break;
+    }
+  }
+
+  const dataQuery = `SELECT * ${baseQuery} ORDER BY ${orderBy} OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY`;
   const countQuery = `SELECT COUNT(*) AS totalCount ${baseQuery}`;
 
   const [dataResult, countResult] = await Promise.all([
@@ -156,16 +171,72 @@ export async function fetchTireRanges(): Promise<TireRangeResult> {
   return result.recordset[0] as TireRangeResult;
 }
 
-export async function fetchBrands(): Promise<string[]> {
+export async function fetchBrands(filters: TireFilters = {}): Promise<string[]> {
   const pool = await getPool();
+  const request = pool.request();
+
+  let whereClause =
+    "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND RemainingLife > '70%' AND Price != 0";
+
+  if (filters.condition && filters.condition.length > 0) {
+    const normalized = filters.condition.map(c => c.toLowerCase());
+    const includeNew = normalized.includes('new');
+    const includeUsed = normalized.includes('used');
+
+    if (includeNew && !includeUsed) {
+      whereClause += ' AND ProductTypeId = 1';
+    } else if (!includeNew && includeUsed) {
+      whereClause += ' AND ProductTypeId <> 1';
+    }
+  }
+
+  if (filters.patched && filters.patched.length > 0) {
+    const normalized = filters.patched.map(p => p.toLowerCase());
+    const isPatched = normalized.includes('yes');
+    const isNotPatched = normalized.includes('no');
+
+    if (isPatched && !isNotPatched) {
+      whereClause += " AND Patched <> '0'";
+    } else if (!isPatched && isNotPatched) {
+      whereClause += " AND Patched = '0'";
+    }
+  }
+
+  if (typeof filters.minPrice === 'number') {
+    whereClause += ' AND Price >= @minPrice';
+    request.input('minPrice', Int, filters.minPrice);
+  }
+
+  if (typeof filters.maxPrice === 'number') {
+    whereClause += ' AND Price <= @maxPrice';
+    request.input('maxPrice', Int, filters.maxPrice);
+  }
+
+  if (typeof filters.minTreadDepth === 'number') {
+    whereClause += ' AND Tread >= @minTreadDepth';
+    request.input('minTreadDepth', Float, filters.minTreadDepth);
+  }
+
+  if (typeof filters.maxTreadDepth === 'number') {
+    whereClause += ' AND Tread <= @maxTreadDepth';
+    request.input('maxTreadDepth', Float, filters.maxTreadDepth);
+  }
+
+  if (typeof filters.minRemainingLife === 'number') {
+    whereClause += " AND TRY_CAST(REPLACE(RemainingLife, '%', '') AS int) >= @minRemainingLife";
+    request.input('minRemainingLife', Int, filters.minRemainingLife);
+  }
+
+  if (typeof filters.maxRemainingLife === 'number') {
+    whereClause += " AND TRY_CAST(REPLACE(RemainingLife, '%', '') AS int) <= @maxRemainingLife";
+    request.input('maxRemainingLife', Int, filters.maxRemainingLife);
+  }
 
   const query = `SELECT DISTINCT Brand
     FROM dbo.View_Tires
-    WHERE Local = '0' AND Trash = 'false' AND Condition != 'sold'
-      AND TRY_CAST(REPLACE(RemainingLife, '%', '') AS int) > 70
-      AND Price != 0 AND Brand IS NOT NULL AND Brand <> ''
+    WHERE ${whereClause} AND Brand IS NOT NULL AND Brand <> ''
     ORDER BY Brand`;
 
-  const result = await pool.request().query(query);
+  const result = await request.query(query);
   return result.recordset.map(row => row.Brand as string);
 }
