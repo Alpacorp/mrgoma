@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useRef, ReactNode } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useRef } from 'react';
 
 // Create a context for the dialog state
 interface DialogContextType {
@@ -78,18 +78,30 @@ export const Dialog: React.FC<DialogProps> = ({
 interface DialogBackdropProps {
   className?: string;
   transition?: boolean;
+  onClick?: () => void;
 }
 
 export const DialogBackdrop: React.FC<DialogBackdropProps> = ({
   className = '',
   transition = false,
+  onClick,
 }) => {
   const { close } = useDialog();
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (onClick) {
+      onClick();
+    }
+    
+    close();
+  };
 
   return (
     <div
       className={`${className} ${!transition ? 'opacity-0' : 'opacity-40'} transition-opacity duration-300`}
-      onClick={close}
+      onClick={handleClick}
       data-closed={!transition}
     />
   );
