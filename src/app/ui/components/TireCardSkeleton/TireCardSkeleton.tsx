@@ -8,7 +8,7 @@ interface SkeletonProps {
 const TireCardSkeleton: FC = () => (
   <div className="bg-white rounded-lg shadow-sm p-4 w-full animate-pulse flex gap-6">
     {/* Image skeleton - left side */}
-    <div className="relative w-64 h-52 flex-shrink-0">
+    <div className="relative w-[17.313rem] h-52 flex-shrink-0">
       <div className="w-full h-full bg-gray-200 rounded-lg" />
     </div>
 
