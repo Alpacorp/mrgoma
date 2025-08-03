@@ -4,11 +4,11 @@ import { useRouter } from 'next/navigation';
 import { FC, useContext } from 'react';
 
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
+import { useTireDimensions } from '@/app/hooks/useTireDimensions';
 import { useTireSizeWithContext } from '@/app/hooks/useTireSizeWithContext';
 import { ButtonSearch, TireDisplay } from '@/app/ui/components';
 import { CarFront } from '@/app/ui/icons';
 import { SizeSelectors } from '@/app/ui/sections';
-import { diameterDataMock, sidewallDataMock, widthDataMock } from '@/app/utils/tireSizeMockData';
 
 const URL_PARAMS = {
   width: 'w',
@@ -18,8 +18,20 @@ const URL_PARAMS = {
 
 const SearchBySize: FC = () => {
   const { selectedFilters } = useContext(SelectedFiltersContext);
-
   const { tireSize, handleFilterChange, removeFilter, isComplete } = useTireSizeWithContext();
+
+  // Usar el nuevo hook para cargar las dimensiones de neumáticos desde la BD
+  const {
+    widthOptions,
+    sidewallOptions,
+    diameterOptions,
+    isLoadingWidth,
+    isLoadingSidewall,
+    isLoadingDiameter,
+    handleWidthChange,
+    handleSidewallChange,
+    handleDiameterChange,
+  } = useTireDimensions();
 
   const router = useRouter();
 
@@ -36,6 +48,25 @@ const SearchBySize: FC = () => {
     router.push(`/search-results?${params.toString()}`);
   };
 
+  // Manejador integrado para el cambio de dimensiones
+  const handleDimensionChange = (value: string, type: 'width' | 'sidewall' | 'diameter') => {
+    // Actualizar el estado del contexto
+    handleFilterChange(value, type);
+
+    // Actualizar las opciones dependientes según el tipo de dimensión
+    switch (type) {
+      case 'width':
+        handleWidthChange(value);
+        break;
+      case 'sidewall':
+        handleSidewallChange(value);
+        break;
+      case 'diameter':
+        handleDiameterChange(value);
+        break;
+    }
+  };
+
   const canSearch = isComplete();
 
   return (
@@ -49,11 +80,14 @@ const SearchBySize: FC = () => {
             </div>
             <SizeSelectors
               currentSize={tireSize}
-              width={widthDataMock}
-              sidewall={sidewallDataMock}
-              diameter={diameterDataMock}
-              handleFilterChange={handleFilterChange}
+              width={widthOptions}
+              sidewall={sidewallOptions}
+              diameter={diameterOptions}
+              handleFilterChange={handleDimensionChange}
               removeFilter={removeFilter}
+              isLoadingWidth={isLoadingWidth}
+              isLoadingSidewall={isLoadingSidewall}
+              isLoadingDiameter={isLoadingDiameter}
             />
             <ButtonSearch onClick={handleSearch} disabled={canSearch} />
           </div>
