@@ -17,9 +17,14 @@ export async function GET(req: NextRequest) {
     const minRemainingLife = searchParams.get('minRemainingLife');
     const maxRemainingLife = searchParams.get('maxRemainingLife');
 
+    // Dimensiones del neumático
+    const width = searchParams.get('w');
+    const sidewall = searchParams.get('s');
+    const diameter = searchParams.get('d');
+
     const filters: TireFilters = {};
 
-    // Apply filters (same logic as in the tires route)
+    // Apply filters (same logic as in the tire route)
     if (conditionParam) {
       filters.condition = conditionParam.split(',').filter(Boolean);
     }
@@ -33,7 +38,12 @@ export async function GET(req: NextRequest) {
     if (minRemainingLife) filters.minRemainingLife = parseInt(minRemainingLife, 10);
     if (maxRemainingLife) filters.maxRemainingLife = parseInt(maxRemainingLife, 10);
 
-    // We don't include brands filter here because we want to get all available brands
+    // Agregar parámetros de dimensiones
+    if (width) filters.width = width;
+    if (sidewall) filters.sidewall = sidewall;
+    if (diameter) filters.diameter = diameter;
+
+    // We don't include brand filter here because we want to get all available brands
     // for the current filter combination
 
     const brands = await fetchBrands(filters);
