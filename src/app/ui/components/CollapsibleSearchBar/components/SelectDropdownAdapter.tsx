@@ -36,24 +36,20 @@ export const SelectDropdownAdapter: React.FC<SelectDropdownAdapterProps> = ({
   const mapTypeToSelectDropdownType = (
     type: keyof TireFilters
   ): 'width' | 'sidewall' | 'diameter' => {
-    if (type === 'w' || type === 'rw') return 'width';
-    if (type === 's' || type === 'rs') return 'sidewall';
+    if (type === 'w') return 'width';
+    if (type === 's') return 'sidewall';
     return 'diameter';
   };
 
   // Create an adapter for the selectedFilters object
   const adaptedSelectedFilters = {
-    width: type === 'w' ? selectedFilters.w : type === 'rw' ? selectedFilters.rw : '',
-    sidewall: type === 's' ? selectedFilters.s : type === 'rs' ? selectedFilters.rs : '',
-    diameter: type === 'd' ? selectedFilters.d : type === 'rd' ? selectedFilters.rd : '',
+    width: type === 'w' ? selectedFilters.w : '',
+    sidewall: type === 's' ? selectedFilters.s : '',
+    diameter: type === 'd' ? selectedFilters.d : '',
   };
 
   // Create an adapter for the handleFilterChange function
-  const adaptedHandleFilterChange = (
-    value: string,
-    dropdownType: 'width' | 'sidewall' | 'diameter',
-    position?: 'all' | 'rear'
-  ) => {
+  const adaptedHandleFilterChange = (value: string) => {
     onFilterChangeAction(value, type);
   };
 
@@ -69,7 +65,6 @@ export const SelectDropdownAdapter: React.FC<SelectDropdownAdapterProps> = ({
       field={field}
       selectedFilters={adaptedSelectedFilters}
       handleFilterChange={adaptedHandleFilterChange}
-      position={type.startsWith('r') ? 'rear' : 'all'}
       isCollapsed={isCollapsed}
       showDefaultText={showDefaultText}
       disabled={disabled}
