@@ -276,7 +276,7 @@ const SearchResults: FC<SearchResultsProps> = () => {
                               )}
                               {tiresData.tires.length > 0 && (
                                 <div className="mt-16">
-                                  <div className="flex justify-center mt-16 items-baseline w-full overflow-auto h-min">
+                                  <div className="flex mt-16 items-baseline w-full overflow-auto h-min sm:justify-start md:justify-center">
                                     <div className="mt-4 flex justify-center gap-1 h-min">
                                       <div className="flex gap-1">
                                         <button

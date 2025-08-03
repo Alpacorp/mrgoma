@@ -3,7 +3,7 @@
 import { CarFront } from 'lucide-react';
 import React from 'react';
 
-import { tireDiameterOptions, tireSidewallOptions, tireWidthOptions } from '../data/tireOptions';
+import { useTireDynamicOptions } from '../hooks/useTireDynamicOptions';
 import { TireFilters } from '../hooks/useTireSearch';
 
 import { SelectDropdownAdapter } from './SelectDropdownAdapter';
@@ -22,27 +22,19 @@ export const TireSelector: React.FC<TireSelectorProps> = ({
   onFilterChangeAction,
   isCompact = false,
 }) => {
-  // Field configurations for the dropdowns
-  const fields = [
-    {
-      label: isCompact ? 'W' : 'Width',
-      options: tireWidthOptions,
-      type: 'w' as keyof TireFilters,
-      disabled: false,
-    },
-    {
-      label: isCompact ? 'S' : 'Sidewall',
-      options: tireSidewallOptions,
-      type: 's' as keyof TireFilters,
-      disabled: false,
-    },
-    {
-      label: isCompact ? 'D' : 'Diameter',
-      options: tireDiameterOptions,
-      type: 'd' as keyof TireFilters,
-      disabled: false,
-    },
-  ];
+  // Obtener las opciones dinámicas y estados de carga del hook
+  const {
+    widthOptions,
+    sidewallOptions,
+    diameterOptions,
+    isLoadingWidth,
+    isLoadingSidewall,
+    isLoadingDiameter,
+  } = useTireDynamicOptions(selectedFilters);
+
+  // Determinar cuando los selectores deben estar deshabilitados
+  const isSidewallDisabled = !selectedFilters.w || isLoadingSidewall;
+  const isDiameterDisabled = !selectedFilters.w || !selectedFilters.s || isLoadingDiameter;
 
   return (
     <div
@@ -56,21 +48,65 @@ export const TireSelector: React.FC<TireSelectorProps> = ({
       </div>
 
       <div className="grid grid-cols-3 gap-1">
-        {fields.map(field => (
-          <div key={field.type} className="my-1">
-            <label className="block my-1 text-xs font-medium text-gray-700">{field.label}</label>
-            <SelectDropdownAdapter
-              label={field.label}
-              options={field.options}
-              type={field.type}
-              selectedFilters={selectedFilters}
-              onFilterChangeAction={onFilterChangeAction}
-              isCollapsed={isCompact}
-              showDefaultText={!isCompact}
-              disabled={field.disabled}
-            />
-          </div>
-        ))}
+        {/* Width Selector */}
+        <div className="my-1">
+          <label className="block my-1 text-xs font-medium text-gray-700 flex items-center">
+            {isCompact ? 'W' : 'Width'}
+            {isLoadingWidth && (
+              <span className="ml-1 inline-block h-3 w-3 animate-spin rounded-full border-2 border-solid border-current border-r-transparent align-[-0.125em] text-green-600 motion-reduce:animate-[spin_1.5s_linear_infinite]"></span>
+            )}
+          </label>
+          <SelectDropdownAdapter
+            label={isCompact ? 'W' : 'Width'}
+            options={widthOptions}
+            type={'w'}
+            selectedFilters={selectedFilters}
+            onFilterChangeAction={onFilterChangeAction}
+            isCollapsed={isCompact}
+            showDefaultText={!isCompact}
+            disabled={isLoadingWidth}
+          />
+        </div>
+
+        {/* Sidewall Selector */}
+        <div className="my-1">
+          <label className="block my-1 text-xs font-medium text-gray-700 flex items-center">
+            {isCompact ? 'S' : 'Sidewall'}
+            {isLoadingSidewall && (
+              <span className="ml-1 inline-block h-3 w-3 animate-spin rounded-full border-2 border-solid border-current border-r-transparent align-[-0.125em] text-green-600 motion-reduce:animate-[spin_1.5s_linear_infinite]"></span>
+            )}
+          </label>
+          <SelectDropdownAdapter
+            label={isCompact ? 'S' : 'Sidewall'}
+            options={sidewallOptions}
+            type={'s'}
+            selectedFilters={selectedFilters}
+            onFilterChangeAction={onFilterChangeAction}
+            isCollapsed={isCompact}
+            showDefaultText={!isCompact}
+            disabled={isSidewallDisabled}
+          />
+        </div>
+
+        {/* Diameter Selector */}
+        <div className="my-1">
+          <label className="block my-1 text-xs font-medium text-gray-700 flex items-center">
+            {isCompact ? 'D' : 'Diameter'}
+            {isLoadingDiameter && (
+              <span className="ml-1 inline-block h-3 w-3 animate-spin rounded-full border-2 border-solid border-current border-r-transparent align-[-0.125em] text-green-600 motion-reduce:animate-[spin_1.5s_linear_infinite]"></span>
+            )}
+          </label>
+          <SelectDropdownAdapter
+            label={isCompact ? 'D' : 'Diameter'}
+            options={diameterOptions}
+            type={'d'}
+            selectedFilters={selectedFilters}
+            onFilterChangeAction={onFilterChangeAction}
+            isCollapsed={isCompact}
+            showDefaultText={!isCompact}
+            disabled={isDiameterDisabled}
+          />
+        </div>
       </div>
     </div>
   );

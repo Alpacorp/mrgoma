@@ -287,7 +287,7 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
  */
 const LateralFilters: FC = () => {
   const { showFilter, setShowFilter } = useContext(ShowFilterContext);
-  const { resetFilters, isLoadingBrands } = useLateralFilters();
+  const { resetFilters } = useLateralFilters();
 
   return (
     <>
