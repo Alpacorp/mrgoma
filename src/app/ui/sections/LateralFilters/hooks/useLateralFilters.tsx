@@ -92,7 +92,15 @@ export const useLateralFilters = () => {
       if (checkboxInputs.patched.length > 0) {
         params.set('patched', checkboxInputs.patched.join(','));
       }
-      // No incluimos brands aquí porque queremos todas las marcas disponibles
+
+      // Añadir parámetros de dimensiones de neumáticos (w, s, d) si existen en la URL
+      const width = searchParams.get('w');
+      const sidewall = searchParams.get('s');
+      const diameter = searchParams.get('d');
+
+      if (width) params.set('w', width);
+      if (sidewall) params.set('s', sidewall);
+      if (diameter) params.set('d', diameter);
 
       const res = await fetch(`/api/brands?${params.toString()}`);
       if (!res.ok) throw new Error('Failed to fetch brands');
@@ -114,6 +122,7 @@ export const useLateralFilters = () => {
     rangeBounds.remainingLife,
     checkboxInputs.condition,
     checkboxInputs.patched,
+    searchParams,
   ]);
 
   useEffect(() => {
