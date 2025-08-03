@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
   const maxRemainingLife = searchParams.get('maxRemainingLife');
   const sort = searchParams.get('sort');
 
-  // Dimensiones del neumático (ahora solo trabajamos con una dimensión principal)
+  // Dimensiones del neumático
   const width = searchParams.get('w');
   const sidewall = searchParams.get('s');
   const diameter = searchParams.get('d');
@@ -46,6 +46,11 @@ export async function GET(req: NextRequest) {
   if (minRemainingLife) filters.minRemainingLife = parseInt(minRemainingLife, 10);
   if (maxRemainingLife) filters.maxRemainingLife = parseInt(maxRemainingLife, 10);
   if (sort) filters.sort = sort;
+
+  // Agregar parámetros de dimensiones
+  if (width) filters.width = width;
+  if (sidewall) filters.sidewall = sidewall;
+  if (diameter) filters.diameter = diameter;
 
   try {
     const result = await fetchTires(offset, pageSize, filters);

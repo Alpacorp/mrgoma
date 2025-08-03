@@ -10,7 +10,6 @@ import { CarFront } from '@/app/ui/icons';
 import { SizeSelectors } from '@/app/ui/sections';
 import { diameterDataMock, sidewallDataMock, widthDataMock } from '@/app/utils/tireSizeMockData';
 
-// Simplificamos los parámetros de URL para usar solo una dimensión
 const URL_PARAMS = {
   width: 'w',
   sidewall: 's',
@@ -27,7 +26,6 @@ const SearchBySize: FC = () => {
   const handleSearch = () => {
     const params = new URLSearchParams();
 
-    // Agregamos los parámetros de dimensión si existen
     Object.entries(selectedFilters).forEach(([key, value]) => {
       if (value && key in URL_PARAMS) {
         const paramName = URL_PARAMS[key as keyof typeof URL_PARAMS];
@@ -38,12 +36,11 @@ const SearchBySize: FC = () => {
     router.push(`/search-results?${params.toString()}`);
   };
 
-  // Verificamos si todos los campos necesarios están completos para habilitar la búsqueda
   const canSearch = isComplete();
 
   return (
     <>
-      <div className="flex gap-5 h-full w-full">
+      <div className="flex gap-5 w-full">
         <div className="w-full md:w-3/5">
           <div className="space-y-4">
             <div className="flex items-center">

@@ -16,6 +16,7 @@ export type DocumentRecord = {
   Patched?: string;
   RemainingLife?: string;
   Tread?: string;
+  RealSize?: string; // Dimensión real del neumático (formato 225/70/16)
 };
 
 export type TireFilters = {
@@ -29,6 +30,9 @@ export type TireFilters = {
   minRemainingLife?: number;
   maxRemainingLife?: number;
   sort?: string;
+  width?: string; // Ancho del neumático (w)
+  sidewall?: string; // Relación de aspecto (s)
+  diameter?: string; // Diámetro (d)
 };
 
 export type TireRangeResult = {
@@ -54,6 +58,37 @@ export async function fetchTires(
 
   let whereClause =
     "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND RemainingLife > '70%' AND Price != 0";
+
+  // Filtro por dimensiones de neumático usando RealSize
+  if (filters.width || filters.sidewall || filters.diameter) {
+    // Si tenemos todas las dimensiones, buscamos una coincidencia exacta
+    if (filters.width && filters.sidewall && filters.diameter) {
+      const realSize = `${filters.width}/${filters.sidewall}/${filters.diameter}`;
+      whereClause += ' AND RealSize = @realSize';
+      request.input('realSize', VarChar, realSize);
+      countRequest.input('realSize', VarChar, realSize);
+    }
+    // Si solo tenemos algunas dimensiones, usamos LIKE para búsquedas parciales
+    else {
+      if (filters.width) {
+        whereClause += ' AND RealSize LIKE @widthPattern';
+        request.input('widthPattern', VarChar, `${filters.width}/%`);
+        countRequest.input('widthPattern', VarChar, `${filters.width}/%`);
+      }
+
+      if (filters.sidewall) {
+        whereClause += ' AND RealSize LIKE @sidewallPattern';
+        request.input('sidewallPattern', VarChar, `%/${filters.sidewall}/%`);
+        countRequest.input('sidewallPattern', VarChar, `%/${filters.sidewall}/%`);
+      }
+
+      if (filters.diameter) {
+        whereClause += ' AND RealSize LIKE @diameterPattern';
+        request.input('diameterPattern', VarChar, `%/${filters.diameter}`);
+        countRequest.input('diameterPattern', VarChar, `%/${filters.diameter}`);
+      }
+    }
+  }
 
   if (filters.condition && filters.condition.length > 0) {
     const normalized = filters.condition.map(c => c.toLowerCase());
@@ -177,6 +212,33 @@ export async function fetchBrands(filters: TireFilters = {}): Promise<string[]> 
 
   let whereClause =
     "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND RemainingLife > '70%' AND Price != 0";
+
+  // Filtro por dimensiones de neumático usando RealSize
+  if (filters.width || filters.sidewall || filters.diameter) {
+    // Si tenemos todas las dimensiones, buscamos una coincidencia exacta
+    if (filters.width && filters.sidewall && filters.diameter) {
+      const realSize = `${filters.width}/${filters.sidewall}/${filters.diameter}`;
+      whereClause += ' AND RealSize = @realSize';
+      request.input('realSize', VarChar, realSize);
+    }
+    // Si solo tenemos algunas dimensiones, usamos LIKE para búsquedas parciales
+    else {
+      if (filters.width) {
+        whereClause += ' AND RealSize LIKE @widthPattern';
+        request.input('widthPattern', VarChar, `${filters.width}/%`);
+      }
+
+      if (filters.sidewall) {
+        whereClause += ' AND RealSize LIKE @sidewallPattern';
+        request.input('sidewallPattern', VarChar, `%/${filters.sidewall}/%`);
+      }
+
+      if (filters.diameter) {
+        whereClause += ' AND RealSize LIKE @diameterPattern';
+        request.input('diameterPattern', VarChar, `%/${filters.diameter}`);
+      }
+    }
+  }
 
   if (filters.condition && filters.condition.length > 0) {
     const normalized = filters.condition.map(c => c.toLowerCase());
