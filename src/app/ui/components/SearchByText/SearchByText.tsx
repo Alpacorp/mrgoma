@@ -5,6 +5,7 @@ import { ChangeEvent, FC, FormEvent, useContext, useState } from 'react';
 
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
 import { ButtonSearch, TireDisplay } from '@/app/ui/components';
+import { CarFront } from '@/app/ui/icons';
 import { handleChange } from '@/app/utils/handleChangeInput';
 import { handleKeyPress } from '@/app/utils/handleKeyPress';
 
@@ -22,20 +23,26 @@ const SearchByText: FC = () => {
 
       if (width) params.append('w', width);
       if (aspectRatio) params.append('s', aspectRatio);
-      if (diameter) params.append('d', diameter.replace(/[^0-9]/g, '')); // Remove 'R' if present
+      if (diameter) params.append('d', diameter.replace(/[^0-9]/g, ''));
 
       router.push(`/search-results?${params.toString()}`);
     }
   };
 
   return (
-    <div className="flex gap-5 h-full w-full">
+    <div className="flex gap-5 w-full">
       <div className="w-full md:w-3/5">
         <div>
           <form onSubmit={handleSearch} className="space-y-6">
-            <div className="space-y-2">
-              <label htmlFor="tireSize" className="text-sm font-medium text-gray-700 block">
-                Tire Size
+            <div className="space-y-4">
+              <label
+                htmlFor="tireSize"
+                className="text-sm font-medium text-gray-700 flex items-center"
+              >
+                <CarFront className="w-5 h-5 text-gray-600" />
+                <span className="text-base font-medium text-gray-600 capitalize ml-1">
+                  Tire Size
+                </span>
               </label>
               <input
                 id="tireSize"
