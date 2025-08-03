@@ -11,7 +11,12 @@ export function transformTireData(tire: TiresData) {
     name: `(${tire.Code || ''}) | ${tire.Brand || 'Unknown'} | ${tire.Model2 || ''} | ${tire.RealSize || ''}`.trim(),
     color: 'Black',
     href: '#',
-    imageSrc: tire.Image1 || '/assets/images/generic-tire-image.webp',
+    imageSrc:
+      tire.Image1 ||
+      tire.Image2 ||
+      tire.Image3 ||
+      tire.Image4 ||
+      '/assets/images/generic-tire-image.webp',
     imageAlt: `Tire ${tire.Code}`,
     price: tire.Price?.toString() || '-',
     brand: tire.Brand || 'Unknown',
