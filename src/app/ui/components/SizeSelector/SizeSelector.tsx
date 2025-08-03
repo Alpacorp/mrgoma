@@ -3,27 +3,21 @@ import { FC } from 'react';
 import { TireSize } from '@/app/ui/interfaces/tireSize';
 
 export interface SizeSelectorProps {
-  position: 'rear' | 'all';
   filterKey: string;
   value: string;
-  removeFilter: (type: keyof TireSize, position: 'rear' | 'all') => void;
+  removeFilter: (type: keyof TireSize) => void;
 }
 
-export const SizeSelector: FC<SizeSelectorProps> = ({
-  position,
-  filterKey,
-  value,
-  removeFilter,
-}) => {
+export const SizeSelector: FC<SizeSelectorProps> = ({ filterKey, value, removeFilter }) => {
   return (
     <span
-      key={`${position}-${filterKey}`}
+      key={filterKey}
       className="inline-flex items-center rounded-full bg-green-50 border border-green-300 px-1 text-xs font-medium text-green-700"
     >
       {filterKey ? filterKey.charAt(0).toUpperCase() + filterKey.slice(1) : ''}: {value}
       <button
         type="button"
-        onClick={() => removeFilter(filterKey as keyof TireSize, position)}
+        onClick={() => removeFilter(filterKey as keyof TireSize)}
         className="inline-flex items-center rounded-full bg-green-50 p-1 text-green-700 hover:bg-green-100"
       >
         <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
