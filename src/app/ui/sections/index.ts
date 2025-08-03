@@ -8,7 +8,6 @@ export { default as ProductCarousel } from './ProductCarousel/ProductCarousel';
 export { default as Terminology } from './Terminology/Terminology';
 export { default as Benefits } from './Benefits/Benefits';
 export { default as Footer } from './Footer/Footer';
-export { default as Pagination } from './Pagination/Pagination';
 export { default as InfoSlider } from './InfoSlider/InfoSlider';
 export { default as TitleSection } from './TitleSection/TitleSection';
 export { default as ServicesGrid } from './ServicesGrid/ServicesGrid';

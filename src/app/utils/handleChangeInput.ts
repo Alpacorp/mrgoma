@@ -1,20 +1,12 @@
-import type { Dispatch, SetStateAction, ChangeEvent } from 'react';
+import type { ChangeEvent, Dispatch, SetStateAction } from 'react';
 
+import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
 import { cleanInput } from '@/app/utils/cleanInput';
 import { formatTireSize } from '@/app/utils/formatTireSize';
 
-type SelectedFilters = {
-  rear: {
-    width: string;
-    sidewall: string;
-    diameter: string;
-  };
-  front: {
-    width: string;
-    sidewall: string;
-    diameter: string;
-  };
-};
+type SelectedFilters = React.ComponentProps<
+  typeof SelectedFiltersContext.Provider
+>['value']['selectedFilters'];
 
 interface HandleChangeProps {
   event: ChangeEvent<HTMLInputElement>;
@@ -27,19 +19,10 @@ export const handleChange = ({ event, setValue, setSelectedFilters }: HandleChan
   const cleanedInput = cleanInput(rawInput);
   const formattedInput = formatTireSize(cleanedInput);
   setValue(formattedInput);
-  setSelectedFilters((prev: SelectedFilters) => ({
-    ...prev,
-    front: {
-      ...prev.front,
-      width: formattedInput.split('/')[0] || '',
-      sidewall: formattedInput.split('/')[1] || '',
-      diameter: formattedInput.split('/')[2]?.replace(/[^0-9]/g, '') || '',
-    },
-    rear: {
-      ...prev.rear,
-      width: formattedInput.split('/')[0] || '',
-      sidewall: formattedInput.split('/')[1] || '',
-      diameter: formattedInput.split('/')[2]?.replace(/[^0-9]/g, '') || '',
-    },
-  }));
+
+  setSelectedFilters({
+    width: formattedInput.split('/')[0] || '',
+    sidewall: formattedInput.split('/')[1] || '',
+    diameter: formattedInput.split('/')[2]?.replace(/[^0-9]/g, '') || '',
+  });
 };

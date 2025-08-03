@@ -8,15 +8,13 @@ import { useGenerateFixedPagination } from '@/app/hooks/useGeneratePagination';
 import { TiresData, TransformedTire } from '@/app/interfaces/tires';
 import {
   CollapsibleSearchBar,
-  LoadingScreen,
-  ResultsHeader,
-  TirePositionTabs,
-  TireResults,
-  NoResultsFound,
-  ResultsSkeleton,
   ErrorDisplay,
+  LoadingScreen,
+  NoResultsFound,
+  ResultsHeader,
+  ResultsSkeleton,
+  TireResults,
 } from '@/app/ui/components';
-import { TirePosition } from '@/app/ui/components/TirePositionTabs/tire-position-tabs';
 import { LateralFilters, TitleSection } from '@/app/ui/sections';
 import { createPaginatedResponse } from '@/app/utils/transformTireData';
 
@@ -30,7 +28,6 @@ interface PaginatedTiresResponse {
 }
 
 interface SearchResultsProps {
-  initialTiresData?: PaginatedTiresResponse;
   searchParams?: {
     page?: string;
     pageSize?: string;
@@ -44,20 +41,13 @@ interface SearchResultsProps {
 }
 
 /**
- * `SearchResults` is a page component that renders a search results page.
- *
- * The page displays a list of tires matching the search query, along with
- * filters and sorting options. The component is a `Suspense` boundary,
- * which means that it will only be rendered once the search results data
- * has been loaded.
- *
- * @returns a JSX element representing the search results page.
+ * `SearchResults` es un componente que renderiza una página de resultados de búsqueda.
+ * Muestra una lista de neumáticos que coinciden con la consulta de búsqueda,
+ * junto con opciones de filtros y ordenamiento.
  */
 const SearchResults: FC<SearchResultsProps> = () => {
   const router = useRouter();
-
   const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState<TirePosition>('front');
   const [tiresData, setTiresData] = useState<PaginatedTiresResponse>({
     tires: [],
     totalCount: 0,
@@ -77,33 +67,23 @@ const SearchResults: FC<SearchResultsProps> = () => {
   const maxVisiblePages = 10;
 
   // Tire size parameters
-  const frontWidth = searchParams.get('w') || '';
-  const frontSidewall = searchParams.get('s') || '';
-  const frontDiameter = searchParams.get('d') || '';
+  const width = searchParams.get('w') || '';
+  const sidewall = searchParams.get('s') || '';
+  const diameter = searchParams.get('d') || '';
 
-  const rearWidth = searchParams.get('rw') || '';
-  const rearSidewall = searchParams.get('rs') || '';
-  const rearDiameter = searchParams.get('rd') || '';
-
-  const hasRearTires = !!(rearWidth && rearSidewall && rearDiameter);
-
-  const getTireSize = (position: TirePosition) => {
-    if (position === 'front' && frontWidth && frontSidewall && frontDiameter) {
-      return `${frontWidth}/${frontSidewall}/${frontDiameter}`;
-    } else if (position === 'rear' && rearWidth && rearSidewall && rearDiameter) {
-      return `${rearWidth}/${rearSidewall}/${rearDiameter}`;
-    } else {
-      return '';
+  // Función para obtener el tamaño de neumático para mostrar
+  const getTireSize = () => {
+    if (width && sidewall && diameter) {
+      return `${width}/${sidewall}/${diameter}`;
     }
+    return '';
   };
 
   // Function to update pagination parameters in the URL
-  // This will trigger a re-render of the page component, which will fetch new data
-  const updatePagination = useCallback(
+  const updatePaginationParams = useCallback(
     (pageNum: number, pageSizeNum: number) => {
-      setLoading(true);
       try {
-        const validPageSizes = [10, 20, 50];
+        const validPageSizes = [5, 10, 15, 20, 25, 50, 100];
         const validatedPageSize = validPageSizes.includes(pageSizeNum) ? pageSizeNum : 10;
 
         // Create a new URL with the updated pagination parameters
@@ -111,11 +91,9 @@ const SearchResults: FC<SearchResultsProps> = () => {
         params.set('page', pageNum.toString());
         params.set('pageSize', validatedPageSize.toString());
 
-        // Update the URL without refreshing the page
-        // This will cause the page component to re-render with new data
         router.push(`?${params.toString()}`, { scroll: false });
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Failed to update pagination';
+      } catch (e) {
+        const errorMessage = e instanceof Error ? e.message : String(e);
         console.error('Error updating pagination:', errorMessage);
       }
     },
@@ -154,11 +132,9 @@ const SearchResults: FC<SearchResultsProps> = () => {
   );
 
   const handleUpScroll = useCallback(() => {
-    // Scroll to the top of the page when the user clicks on a pagination button
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  // Pagination handlers
   const handleNextPage = useCallback(() => {
     if (page < totalPages) {
       setPage(prevPage => prevPage + 1);
@@ -195,8 +171,7 @@ const SearchResults: FC<SearchResultsProps> = () => {
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       const newPageSize = parseInt(event.target.value, 10);
 
-      // Calculate the new page based on the current position
-      const currentRecordIndex = (page - 1) * pageSize; // Index of the first record on the current page
+      const currentRecordIndex = (page - 1) * pageSize;
       const newPage = Math.floor(currentRecordIndex / newPageSize) + 1;
 
       setPageSize(newPageSize);
@@ -205,11 +180,11 @@ const SearchResults: FC<SearchResultsProps> = () => {
     [page, pageSize]
   );
 
-  // Generate pagination UI
   const pagination = useGenerateFixedPagination(page, totalPages, maxVisiblePages);
-  const availablePageSizes = [10, 20, 50].filter(size => size <= tiresData.totalCount);
+  const availablePageSizes = [5, 10, 15, 20, 25, 50, 100].filter(
+    size => size <= tiresData.totalCount
+  );
 
-  // Keep the pagination state in sync with the URL parameters
   useEffect(() => {
     const urlPage = parseInt(searchParams.get('page') || '1', 10);
     const urlSize = parseInt(searchParams.get('pageSize') || '10', 10);
@@ -222,10 +197,9 @@ const SearchResults: FC<SearchResultsProps> = () => {
     void getDataTires(page);
   }, [getDataTires, page]);
 
-  // Update URL parameters when pagination changes
   useEffect(() => {
-    updatePagination(page, pageSize);
-  }, [updatePagination, page, pageSize]);
+    updatePaginationParams(page, pageSize);
+  }, [updatePaginationParams, page, pageSize]);
 
   useEffect(() => {
     setCount(1);
@@ -263,15 +237,9 @@ const SearchResults: FC<SearchResultsProps> = () => {
                       <div className="mx-auto">
                         <div className="flex-1">
                           <div className="mb-6">
-                            <TirePositionTabs
-                              activeTab={activeTab}
-                              setActiveTab={setActiveTab}
-                              hasRearTires={hasRearTires}
-                            />
                             <ResultsHeader
-                              activeTab={activeTab}
                               getTireSize={getTireSize}
-                              resultsCount={activeTab === 'front' ? tiresData?.tires?.length : 15}
+                              resultsCount={tiresData?.tires?.length || 0}
                               totalCount={tiresData.totalCount}
                             />
                           </div>
@@ -292,90 +260,93 @@ const SearchResults: FC<SearchResultsProps> = () => {
                                   message="We couldn't find any tires matching your search criteria. Please try different specifications."
                                 />
                               ) : (
-                                <TireResults
-                                  activeTab={activeTab}
-                                  products={tiresData.tires}
-                                  getTireSize={getTireSize}
-                                />
+                                <TireResults products={tiresData.tires} />
+                              )}
+                              {tiresData.tires.length > 0 && (
+                                <div className="mt-16">
+                                  <div className="flex justify-center mt-16 items-baseline w-full overflow-auto h-min">
+                                    <div className="mt-4 flex justify-center gap-1 h-min">
+                                      <div className="flex gap-1">
+                                        <button
+                                          onClick={handleFirstPage}
+                                          disabled={page === 1}
+                                          className={`${page === 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400`}
+                                        >
+                                          &lt;&lt;
+                                        </button>
+                                        <button
+                                          onClick={handlePreviousPage}
+                                          disabled={page === 1}
+                                          className={`${page === 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400`}
+                                        >
+                                          &lt;
+                                        </button>
+                                      </div>
+                                      {pagination.map((pageNumber, index) =>
+                                        typeof pageNumber === 'number' ? (
+                                          <button
+                                            key={index}
+                                            onClick={() => handlePageClick(pageNumber)}
+                                            className={`px-3 py-1 h-min border border-gray-300 rounded cursor-pointer ${
+                                              pageNumber === page
+                                                ? 'bg-green-500 text-white'
+                                                : 'text-gray-700 hover:bg-green-800 hover:text-white'
+                                            }`}
+                                          >
+                                            {pageNumber}
+                                          </button>
+                                        ) : (
+                                          <span
+                                            key={index}
+                                            className="px-3 py-1 mx-1 text-gray-500"
+                                          >
+                                            {pageNumber}
+                                          </span>
+                                        )
+                                      )}
+                                      <div className="flex gap-1">
+                                        <button
+                                          onClick={handleNextPage}
+                                          disabled={page === totalPages}
+                                          className={`${page === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400`}
+                                        >
+                                          &gt;
+                                        </button>
+                                        <button
+                                          onClick={handleLastPage}
+                                          disabled={page === totalPages}
+                                          className={`${page === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400`}
+                                        >
+                                          &gt;&gt;
+                                        </button>
+                                      </div>
+                                    </div>
+                                    {tiresData.totalCount >= 10 && (
+                                      <div className="ml-4 h-min">
+                                        <label htmlFor="pageSize" className="mr-2">
+                                          Page Size:
+                                        </label>
+                                        <select
+                                          id="pageSize"
+                                          value={pageSize}
+                                          onChange={handlePageSizeChange}
+                                          className="px-4 py-2 bg-gray-700 rounded text-white"
+                                        >
+                                          {availablePageSizes.map(size => (
+                                            <option key={size} value={size}>
+                                              {size}
+                                            </option>
+                                          ))}
+                                        </select>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
                               )}
                             </div>
                           )}
                         </div>
                       </div>
-                    </div>
-                    <div className="flex justify-center mt-16 items-baseline w-full overflow-auto h-min">
-                      <div className="mt-4 flex justify-center gap-1 h-min">
-                        <div className="flex gap-1">
-                          <button
-                            onClick={handleFirstPage}
-                            disabled={page === 1}
-                            className={`${page === 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400`}
-                          >
-                            &lt;&lt;
-                          </button>
-                          <button
-                            onClick={handlePreviousPage}
-                            disabled={page === 1}
-                            className={`${page === 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400`}
-                          >
-                            &lt;
-                          </button>
-                        </div>
-                        {pagination.map((pageNumber, index) =>
-                          typeof pageNumber === 'number' ? (
-                            <button
-                              key={index}
-                              onClick={() => handlePageClick(pageNumber)}
-                              className={`px-3 py-1 h-min border border-gray-300 rounded cursor-pointer ${
-                                pageNumber === page
-                                  ? 'bg-green-500 text-white'
-                                  : 'text-gray-700 hover:bg-green-800 hover:text-white'
-                              }`}
-                            >
-                              {pageNumber}
-                            </button>
-                          ) : (
-                            <span key={index} className="px-3 py-1 mx-1 text-gray-500">
-                              {pageNumber}
-                            </span>
-                          )
-                        )}
-                        <div className="flex gap-1">
-                          <button
-                            onClick={handleNextPage}
-                            disabled={page === totalPages}
-                            className={`${page === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400`}
-                          >
-                            &gt;
-                          </button>
-                          <button
-                            onClick={handleLastPage}
-                            disabled={page === totalPages}
-                            className={`${page === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400`}
-                          >
-                            &gt;&gt;
-                          </button>
-                        </div>
-                      </div>
-                      {tiresData.totalCount >= 10 && (
-                        <div className="ml-4 h-min">
-                          <label htmlFor="pageSize" className="mr-2">
-                            Page Size:
-                          </label>
-                          <select
-                            id="pageSize"
-                            value={pageSize}
-                            onChange={handlePageSizeChange}
-                            className="px-4 py-2 bg-gray-700 rounded text-white"
-                          >
-                            {availablePageSizes.map(size => (
-                              <option key={size} value={size}>
-                                {size}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -383,7 +354,6 @@ const SearchResults: FC<SearchResultsProps> = () => {
             </section>
           </main>
         </div>
-        {/*<ModalDetail singleTire={singleproductTest} />*/}
         <CollapsibleSearchBar />
       </main>
     </Suspense>

@@ -4,7 +4,7 @@ import { FC, useContext, useState } from 'react';
 
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
 import { SizeIcon, TextIcon } from '@/app/ui/icons';
-import SearchSection from '@/app/ui/sections/SearchSection/SearchSection';
+import { SearchSection } from '@/app/ui/sections';
 
 const SearchContainer: FC = () => {
   const [activeTab, setActiveTab] = useState<'size' | 'text'>('size');
@@ -14,8 +14,9 @@ const SearchContainer: FC = () => {
   const handleChangeTab = (tab: 'size' | 'text') => {
     setActiveTab(tab);
     setSelectedFilters({
-      front: { width: '', sidewall: '', diameter: '' },
-      rear: { width: '', sidewall: '', diameter: '' },
+      width: '',
+      sidewall: '',
+      diameter: '',
     });
   };
 

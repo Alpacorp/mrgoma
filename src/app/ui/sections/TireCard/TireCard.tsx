@@ -18,8 +18,6 @@ interface TireCardProps {
 const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) => {
   const { addToCart, isInCart } = useCart();
 
-  console.log('logale, products:', products);
-
   const handleAddToCart = (event: SyntheticEvent, product: any) => {
     event.preventDefault();
     addToCart(product);
@@ -29,8 +27,6 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
     <ul className="mt-3">
       {products.map((product: any) => {
         const productInCart = isInCart(product.id);
-
-        console.log('logale, product:', product);
 
         return (
           <li
@@ -71,18 +67,20 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
                     />
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-3 justify-between bg-gray-100 py-2 px-2 xs:px-4 rounded-xl xs:rounded-2xl border border-gray-500">
+                <div className="flex flex-wrap gap-3 justify-between bg-gray-100 py-2 px-2 xs:px-4 rounded-xl xs:rounded-2xl border-gray-500">
                   {product?.features &&
                     Array.isArray(product.features) &&
-                    product.features.map((feature: any, index: number) => {
-                      return (
-                        <React.Fragment key={`feature-${index}`}>
-                          {index <= 3 && (
-                            <ProductItem feature={feature.value} title={feature.name} />
-                          )}
-                        </React.Fragment>
-                      );
-                    })}
+                    product.features.map(
+                      (feature: { name: string; value: string }, index: number) => {
+                        return (
+                          <React.Fragment key={`feature-${index}`}>
+                            {index <= 3 && (
+                              <ProductItem feature={feature.value} title={feature.name} />
+                            )}
+                          </React.Fragment>
+                        );
+                      }
+                    )}
                 </div>
               </div>
             </div>

@@ -1,18 +1,11 @@
 'use client';
 
-import React, { createContext, useState, useMemo, Dispatch, SetStateAction } from 'react';
+import React, { createContext, Dispatch, SetStateAction, useMemo, useState } from 'react';
 
 type SelectedFilters = {
-  rear: {
-    width: string;
-    sidewall: string;
-    diameter: string;
-  };
-  front: {
-    width: string;
-    sidewall: string;
-    diameter: string;
-  };
+  width: string;
+  sidewall: string;
+  diameter: string;
 };
 
 interface SelectedFiltersContextProps {
@@ -21,16 +14,9 @@ interface SelectedFiltersContextProps {
 }
 
 const defaultSelectedFilters: SelectedFilters = {
-  rear: {
-    width: '',
-    sidewall: '',
-    diameter: '',
-  },
-  front: {
-    width: '',
-    sidewall: '',
-    diameter: '',
-  },
+  width: '',
+  sidewall: '',
+  diameter: '',
 };
 
 export const SelectedFiltersContext = createContext<SelectedFiltersContextProps>({

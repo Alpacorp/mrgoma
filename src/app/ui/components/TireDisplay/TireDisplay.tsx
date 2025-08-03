@@ -13,7 +13,7 @@ const TireDisplay: FC = () => {
 
   const { selectedFilters } = useContext(SelectedFiltersContext);
 
-  const allSelected = Object.values(selectedFilters).every(value => value);
+  const allSelected = selectedFilters.width && selectedFilters.sidewall && selectedFilters.diameter;
 
   useEffect(() => {
     if (imageRef.current) {
@@ -51,8 +51,8 @@ const TireDisplay: FC = () => {
               allSelected ? 'text-green-400' : 'opacity-75'
             }`}
           >
-            {selectedFilters.front.width || '000'}/{selectedFilters.front.sidewall || '00'}/
-            {selectedFilters.front.diameter || '00'}
+            {selectedFilters.width || '000'}/{selectedFilters.sidewall || '00'}/
+            {selectedFilters.diameter || '00'}
           </div>
         </div>
       </div>
