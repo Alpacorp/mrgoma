@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { FC, Suspense, useCallback, useEffect, useState } from 'react';
+import React, { FC, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 
 import { useGenerateFixedPagination } from '@/app/hooks/useGeneratePagination';
 import { TiresData, TransformedTire } from '@/app/interfaces/tires';
@@ -34,16 +34,15 @@ interface SearchResultsProps {
     w?: string;
     s?: string;
     d?: string;
-    rw?: string;
-    rs?: string;
-    rd?: string;
   };
 }
 
 /**
- * `SearchResults` es un componente que renderiza una página de resultados de búsqueda.
- * Muestra una lista de neumáticos que coinciden con la consulta de búsqueda,
- * junto con opciones de filtros y ordenamiento.
+ * SearchResults component displays the search results page for tires,
+ * including the header section, lateral filters, and the list of tire products.
+ * It handles pagination, sorting, and filtering functionality.
+ *
+ * @returns The SearchResults component.
  */
 const SearchResults: FC<SearchResultsProps> = () => {
   const router = useRouter();
@@ -66,12 +65,16 @@ const SearchResults: FC<SearchResultsProps> = () => {
   const totalPages = Math.ceil(tiresData.totalCount / pageSize);
   const maxVisiblePages = 10;
 
+  // Refs to track current values for comparison in effects
+  const pageRef = useRef(page);
+  const pageSizeRef = useRef(pageSize);
+
   // Tire size parameters
   const width = searchParams.get('w') || '';
   const sidewall = searchParams.get('s') || '';
   const diameter = searchParams.get('d') || '';
 
-  // Función para obtener el tamaño de neumático para mostrar
+  // Function to get the tire size to display
   const getTireSize = () => {
     if (width && sidewall && diameter) {
       return `${width}/${sidewall}/${diameter}`;
@@ -185,12 +188,21 @@ const SearchResults: FC<SearchResultsProps> = () => {
     size => size <= tiresData.totalCount
   );
 
+  // Update refs when state changes
+  useEffect(() => {
+    pageRef.current = page;
+  }, [page]);
+
+  useEffect(() => {
+    pageSizeRef.current = pageSize;
+  }, [pageSize]);
+
   useEffect(() => {
     const urlPage = parseInt(searchParams.get('page') || '1', 10);
     const urlSize = parseInt(searchParams.get('pageSize') || '10', 10);
 
-    if (page !== urlPage) setPage(urlPage);
-    if (pageSize !== urlSize) setPageSize(urlSize);
+    if (pageRef.current !== urlPage) setPage(urlPage);
+    if (pageSizeRef.current !== urlSize) setPageSize(urlSize);
   }, [searchParams]);
 
   useEffect(() => {
