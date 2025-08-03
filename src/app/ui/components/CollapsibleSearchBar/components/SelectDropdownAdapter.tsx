@@ -4,18 +4,24 @@ import React from 'react';
 
 import { SelectDropdown } from '@/app/ui/components';
 
-import { FilterOption } from '../data/tireOptions';
+import { DimensionOption } from '../hooks/useTireDynamicOptions';
 import { TireFilters } from '../hooks/useTireSearch';
 
 interface SelectDropdownAdapterProps {
   label: string;
-  options: FilterOption[];
+  options: DimensionOption[];
   type: keyof TireFilters;
   selectedFilters: TireFilters;
   onFilterChangeAction: (value: string, type: keyof TireFilters) => void;
   isCollapsed?: boolean;
   showDefaultText?: boolean;
   disabled?: boolean;
+}
+
+// Definir el tipo que espera SelectDropdown
+interface SelectDropdownOption {
+  id: number;
+  name: number;
 }
 
 /**
@@ -53,11 +59,17 @@ export const SelectDropdownAdapter: React.FC<SelectDropdownAdapterProps> = ({
     onFilterChangeAction(value, type);
   };
 
+  // Convertir las opciones al formato esperado por SelectDropdown
+  const adaptedOptions: SelectDropdownOption[] = options.map(option => ({
+    id: option.id,
+    name: typeof option.name === 'string' ? parseFloat(option.name) : option.name,
+  }));
+
   // Create the field object expected by SelectDropdown
   const field = {
     type: mapTypeToSelectDropdownType(type),
     label,
-    options,
+    options: adaptedOptions,
   };
 
   return (
