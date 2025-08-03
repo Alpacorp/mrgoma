@@ -1,6 +1,6 @@
 'use client';
 
-import { CarIcon as CarRear, Search, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import React from 'react';
 
 import { TireFilters } from '../hooks/useTireSearch';
@@ -9,10 +9,8 @@ import { TireSelector } from './TireSelector';
 
 interface CompactFormProps {
   selectedFilters: TireFilters;
-  hasRearTires: boolean;
   onFilterChangeAction: (value: string, type: keyof TireFilters) => void;
-  onRemoveRearTiresAction: () => void;
-  onAddRearTiresAction: () => void;
+  onResetFiltersAction: () => void;
   onCloseAction: () => void;
 }
 
@@ -22,10 +20,8 @@ interface CompactFormProps {
  */
 export const CompactForm: React.FC<CompactFormProps> = ({
   selectedFilters,
-  hasRearTires,
   onFilterChangeAction,
-  onRemoveRearTiresAction,
-  onAddRearTiresAction,
+  onResetFiltersAction,
   onCloseAction,
 }) => {
   return (
@@ -36,7 +32,7 @@ export const CompactForm: React.FC<CompactFormProps> = ({
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-sm font-medium text-gray-700 flex items-center">
           <Search className="w-3 h-3 mr-1 text-green-600" />
-          Edit Tire Sizes
+          Edit Tire Size
         </h3>
         <button
           onClick={onCloseAction}
@@ -47,32 +43,20 @@ export const CompactForm: React.FC<CompactFormProps> = ({
       </div>
 
       <div className="space-y-2">
-        {/* Front tire selector */}
+        {/* Tire size selector */}
         <TireSelector
-          isRear={false}
           selectedFilters={selectedFilters}
           onFilterChangeAction={onFilterChangeAction}
           isCompact={true}
         />
 
-        {/* Rear tire selector or add a button */}
-        {hasRearTires ? (
-          <TireSelector
-            isRear={true}
-            selectedFilters={selectedFilters}
-            onFilterChangeAction={onFilterChangeAction}
-            onRemove={onRemoveRearTiresAction}
-            isCompact={true}
-          />
-        ) : (
-          <button
-            onClick={onAddRearTiresAction}
-            className="w-full flex items-center justify-center gap-1 text-green-600 hover:text-green-700 py-1 px-2 border border-green-600 rounded-md transition-colors hover:bg-green-50 text-xs"
-          >
-            <CarRear className="w-3 h-3" />
-            <span>Add Rear Tire</span>
-          </button>
-        )}
+        {/* Reset button */}
+        <button
+          onClick={onResetFiltersAction}
+          className="w-full flex items-center justify-center gap-1 text-gray-600 hover:text-gray-700 py-1 px-2 border border-gray-400 rounded-md transition-colors hover:bg-gray-50 text-xs"
+        >
+          <span>Reset Selection</span>
+        </button>
       </div>
     </div>
   );
