@@ -9,6 +9,7 @@ export async function GET(req: NextRequest) {
   const pageSize = parseInt(searchParams.get('pageSize') ?? '10', 10);
   const offset = (page - 1) * pageSize;
 
+  // Filtros estándar
   const conditionParam = searchParams.get('condition');
   const patchedParam = searchParams.get('patched');
   const brandParam = searchParams.get('brand') ?? searchParams.get('brands');
@@ -20,7 +21,15 @@ export async function GET(req: NextRequest) {
   const maxRemainingLife = searchParams.get('maxRemainingLife');
   const sort = searchParams.get('sort');
 
+  // Dimensiones del neumático (ahora solo trabajamos con una dimensión principal)
+  const width = searchParams.get('w');
+  const sidewall = searchParams.get('s');
+  const diameter = searchParams.get('d');
+
+  // Construir el objeto de filtros
   const filters: TireFilters = {};
+
+  // Agregar filtros estándar
   if (conditionParam) {
     filters.condition = conditionParam.split(',').filter(Boolean);
   }
