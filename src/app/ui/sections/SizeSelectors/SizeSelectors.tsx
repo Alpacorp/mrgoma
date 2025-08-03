@@ -1,10 +1,18 @@
 import { FC } from 'react';
 
 import { SelectDropdown, SizeSelector } from '@/app/ui/components';
-import { SizeSelectorsProps } from '@/app/ui/sections/SizeSelectors/size-selectors';
+import { TireSize } from '@/app/ui/interfaces/tireSize';
+
+interface SizeSelectorsProps {
+  width: { id: number; name: number }[];
+  sidewall: { id: number; name: number }[];
+  diameter: { id: number; name: number }[];
+  currentSize: { width: string; sidewall: string; diameter: string };
+  handleFilterChange: (value: string, type: keyof TireSize) => void;
+  removeFilter: (type: keyof TireSize) => void;
+}
 
 const SizeSelectors: FC<SizeSelectorsProps> = ({
-  position,
   width,
   sidewall,
   diameter,
@@ -20,13 +28,12 @@ const SizeSelectors: FC<SizeSelectorsProps> = ({
           { label: 'Sidewall', options: sidewall, type: 'sidewall' as const },
           { label: 'Diameter', options: diameter, type: 'diameter' as const },
         ].map(field => (
-          <div key={`${position}-${field.type}`} className="w-full">
+          <div key={field.type} className="w-full">
             <label className="text-sm font-medium text-gray-700 mb-2 block">{field.label}</label>
             <SelectDropdown
               selectedFilters={currentSize}
-              handleFilterChange={value => handleFilterChange(value, field.type, position)}
+              handleFilterChange={value => handleFilterChange(value, field.type)}
               field={field}
-              position={position}
               showDefaultText={false}
             />
           </div>
@@ -36,13 +43,7 @@ const SizeSelectors: FC<SizeSelectorsProps> = ({
         {Object.entries(currentSize).map(([key, value]) => {
           if (!value) return null;
           return (
-            <SizeSelector
-              position={position}
-              key={key}
-              filterKey={key}
-              value={value}
-              removeFilter={removeFilter}
-            />
+            <SizeSelector key={key} filterKey={key} value={value} removeFilter={removeFilter} />
           );
         })}
       </div>
