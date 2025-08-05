@@ -60,21 +60,24 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
                     <CtaButton
                       product={product}
                       text={productInCart ? 'In Cart' : 'Add cart'}
-                      style="primary"
+                      style="filled"
                       onClick={handleAddToCart}
                       disabled={productInCart}
                       isLink={false}
                     />
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-3 justify-between bg-gray-100 py-2 px-2 xs:px-4 rounded-xl xs:rounded-2xl border-gray-500">
+                <div
+                  className="flex
+                 gap-3 justify-between bg-green-50 border border-green-300 py-2 px-2 xs:px-4 rounded-md xs:rounded-2xl"
+                >
                   {product?.features &&
                     Array.isArray(product.features) &&
                     product.features.map(
                       (feature: { name: string; value: string }, index: number) => {
                         return (
                           <React.Fragment key={`feature-${index}`}>
-                            {index <= 3 && (
+                            {index <= 4 && (
                               <ProductItem feature={feature.value} title={feature.name} />
                             )}
                           </React.Fragment>

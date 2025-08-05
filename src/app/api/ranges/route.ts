@@ -3,6 +3,9 @@ import { NextResponse } from 'next/server';
 import { fetchTireRanges } from '@/repositories/tiresRepository';
 import { logger } from '@/utils/logger';
 
+/**
+ * API route to get all unique tire ranges
+ */
 export async function GET() {
   try {
     const ranges = await fetchTireRanges();

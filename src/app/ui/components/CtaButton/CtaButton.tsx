@@ -7,7 +7,7 @@ interface CtaButtonProps {
     id?: string | number;
   };
   text: string;
-  style?: 'primary' | 'secondary' | 'tertiary' | 'default';
+  style?: 'primary' | 'secondary' | 'tertiary' | 'default' | 'filled' | 'filled-secondary';
   urlParams?: Record<string, string | number>;
   onClick?: (e: MouseEvent<HTMLButtonElement | HTMLAnchorElement>, product: any) => void;
   disabled?: boolean;
@@ -56,6 +56,12 @@ const CtaButton: FC<CtaButtonProps> = ({
       break;
     case 'tertiary':
       buttonStyle += ' !border-yellow-600 text-yellow-700 hover:bg-yellow-500 hover:text-white';
+      break;
+    case 'filled':
+      buttonStyle += ' bg-green-600 text-white hover:bg-green-500 hover:text-white';
+      break;
+    case 'filled-secondary':
+      buttonStyle += ' bg-yellow-600 text-white hover:bg-yellow-500 hover:text-white';
       break;
     default:
       buttonStyle += ' !border-green-600 text-green-700 hover:bg-green-500 hover:text-white';
