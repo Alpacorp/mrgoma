@@ -1,60 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { fetchTires, TireFilters } from '@/repositories/tiresRepository';
+import { buildTireFilters } from '@/app/utils/filterUtils';
+import {
+  DEFAULT_PAGE,
+  DEFAULT_PAGE_SIZE,
+  MAX_PAGE_SIZE,
+  validatePageSize,
+} from '@/app/utils/paginationUtils';
+import { fetchTires } from '@/repositories/tiresRepository';
 import { logger } from '@/utils/logger';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const page = parseInt(searchParams.get('page') ?? '1', 10);
-  const pageSize = parseInt(searchParams.get('pageSize') ?? '10', 10);
+
+  // Get and validate pagination parameters
+  const pageParam = searchParams.get('page') ?? DEFAULT_PAGE.toString();
+  const pageSizeParam = searchParams.get('pageSize') ?? DEFAULT_PAGE_SIZE.toString();
+
+  // Convert to numbers and apply validation
+  const page = Math.max(1, parseInt(pageParam, 10) || DEFAULT_PAGE);
+  const pageSize = validatePageSize(parseInt(pageSizeParam, 10) || DEFAULT_PAGE_SIZE);
+
+  // Log for detecting manipulation attempts
+  if (parseInt(pageSizeParam, 10) > MAX_PAGE_SIZE) {
+    logger.warn(`Attempted to use large page size: ${pageSizeParam}. Limited to ${pageSize}.`);
+  }
+
   const offset = (page - 1) * pageSize;
 
-  // Filtros estándar
-  const conditionParam = searchParams.get('condition');
-  const patchedParam = searchParams.get('patched');
-  const brandParam = searchParams.get('brand') ?? searchParams.get('brands');
-  const minPrice = searchParams.get('minPrice');
-  const maxPrice = searchParams.get('maxPrice');
-  const minTreadDepth = searchParams.get('minTreadDepth');
-  const maxTreadDepth = searchParams.get('maxTreadDepth');
-  const minRemainingLife = searchParams.get('minRemainingLife');
-  const maxRemainingLife = searchParams.get('maxRemainingLife');
-  const sort = searchParams.get('sort');
-
-  // Dimensiones del neumático
-  const width = searchParams.get('w');
-  const sidewall = searchParams.get('s');
-  const diameter = searchParams.get('d');
-
-  // Construir el objeto de filtros
-  const filters: TireFilters = {};
-
-  // Agregar filtros estándar
-  if (conditionParam) {
-    filters.condition = conditionParam.split(',').filter(Boolean);
-  }
-  if (patchedParam) {
-    filters.patched = patchedParam.split(',').filter(Boolean);
-  }
-  if (brandParam) {
-    filters.brands = brandParam.split(',').filter(Boolean);
-  }
-  if (minPrice) filters.minPrice = parseInt(minPrice, 10);
-  if (maxPrice) filters.maxPrice = parseInt(maxPrice, 10);
-  if (minTreadDepth) filters.minTreadDepth = parseInt(minTreadDepth, 10);
-  if (maxTreadDepth) filters.maxTreadDepth = parseInt(maxTreadDepth, 10);
-  if (minRemainingLife) filters.minRemainingLife = parseInt(minRemainingLife, 10);
-  if (maxRemainingLife) filters.maxRemainingLife = parseInt(maxRemainingLife, 10);
-  if (sort) filters.sort = sort;
-
-  // Agregar parámetros de dimensiones
-  if (width) filters.width = width;
-  if (sidewall) filters.sidewall = sidewall;
-  if (diameter) filters.diameter = diameter;
+  // Build filters from search parameters
+  const filters = buildTireFilters(searchParams);
 
   try {
     const result = await fetchTires(offset, pageSize, filters);
-
     return NextResponse.json(result);
   } catch (err: unknown) {
     logger.error('Failed to fetch tires', err);
