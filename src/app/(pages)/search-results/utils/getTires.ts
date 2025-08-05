@@ -40,11 +40,11 @@ export async function getTires(
     const totalCount = result.totalCount;
 
     // Use the shared utility function to create a paginated response
-    return createPaginatedResponse(tiresData, page, pageSize, totalCount);
+    return createPaginatedResponse(tiresData, page, pageSize, totalCount) as PaginatedTiresResponse;
   } catch (error) {
     // Only log the error, don't throw it
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('Error fetching tires:', errorMessage);
-    return createPaginatedResponse([], page, pageSize, 0, errorMessage);
+    return createPaginatedResponse([], page, pageSize, 0, errorMessage) as PaginatedTiresResponse;
   }
 }
