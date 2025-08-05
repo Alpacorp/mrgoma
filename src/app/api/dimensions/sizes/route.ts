@@ -13,17 +13,11 @@ export async function GET(req: NextRequest) {
     const height = searchParams.get('height'); // Optional filter by height
     const width = searchParams.get('width'); // Optional filter by width
 
-    console.log('GET /api/dimensions/sizes - Parameters:', { height, width });
-
     // Convert parameters to numbers if present
     const heightNum = height ? parseFloat(height) : undefined;
     const widthNum = width ? parseFloat(width) : undefined;
 
-    console.log('Parsed parameters:', { heightNum, widthNum });
-
     const sizes = await fetchTireSizes(heightNum, widthNum);
-
-    console.log(`GET /api/dimensions/sizes - Found ${sizes.length} results`);
 
     return NextResponse.json(sizes);
   } catch (err: unknown) {
