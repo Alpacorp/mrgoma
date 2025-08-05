@@ -3,16 +3,21 @@ import { ArrowsToRight } from '@/app/ui/icons';
 export interface SectionHeaderProps {
   title: string;
   color?: string;
+  className?: string;
 }
 
 /**
  * A title section component. It renders a title with an arrow icon next to it.
  * The title is rendered as a heading element of level 2.
  */
-export const TitleSection = ({ title, color = '#272727' }: SectionHeaderProps) => {
+export const TitleSection = ({
+  title,
+  color = '#272727',
+  className = 'bg-white',
+}: SectionHeaderProps) => {
   return (
     <div
-      className={`flex items-center justify-center gap-6 py-8 bg-white max-w-3xl m-auto rounded-tl-3xl rounded-tr-3xl border border-b-0 border-lime-400`}
+      className={`flex items-center justify-center gap-6 py-8 max-w-3xl m-auto rounded-tl-3xl rounded-tr-3xl border border-b-0 border-lime-400 ${className}`}
       role="banner"
       aria-label={`Section: ${title}`}
     >
