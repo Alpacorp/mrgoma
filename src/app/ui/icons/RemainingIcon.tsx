@@ -1,6 +1,6 @@
 export const RemainingIcon = () => {
   return (
-    <svg width="50" height="25" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+    <svg width="50" height="20" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
       <rect
         x="10"
         y="15"
