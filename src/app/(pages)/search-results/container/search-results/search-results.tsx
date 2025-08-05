@@ -16,6 +16,12 @@ import {
   TireResults,
 } from '@/app/ui/components';
 import { LateralFilters, TitleSection } from '@/app/ui/sections';
+import {
+  DEFAULT_PAGE,
+  DEFAULT_PAGE_SIZE,
+  getAvailablePageSizes,
+  validatePageSize,
+} from '@/app/utils/paginationUtils';
 import { createPaginatedResponse } from '@/app/utils/transformTireData';
 
 interface PaginatedTiresResponse {
@@ -50,8 +56,8 @@ const SearchResults: FC<SearchResultsProps> = () => {
   const [tiresData, setTiresData] = useState<PaginatedTiresResponse>({
     tires: [],
     totalCount: 0,
-    page: 1,
-    pageSize: 10,
+    page: DEFAULT_PAGE,
+    pageSize: DEFAULT_PAGE_SIZE,
     totalPages: 1,
     error: '',
   });
@@ -60,8 +66,8 @@ const SearchResults: FC<SearchResultsProps> = () => {
   const [count, setCount] = useState(0);
 
   // Pagination state
-  const [page, setPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
+  const [page, setPage] = useState<number>(DEFAULT_PAGE);
+  const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
   const totalPages = Math.ceil(tiresData.totalCount / pageSize);
   const maxVisiblePages = 10;
 
@@ -86,8 +92,13 @@ const SearchResults: FC<SearchResultsProps> = () => {
   const updatePaginationParams = useCallback(
     (pageNum: number, pageSizeNum: number) => {
       try {
-        const validPageSizes = [5, 10, 15, 20, 25, 50, 100];
-        const validatedPageSize = validPageSizes.includes(pageSizeNum) ? pageSizeNum : 10;
+        // Validar el tamaño de página
+        const validatedPageSize = validatePageSize(pageSizeNum);
+
+        // Solo actualizar si es diferente
+        if (pageSizeNum !== validatedPageSize) {
+          console.warn(`Invalid pageSize: ${pageSizeNum} adjusted to ${validatedPageSize}`);
+        }
 
         // Create a new URL with the updated pagination parameters
         const params = new URLSearchParams(searchParams.toString());
@@ -120,7 +131,12 @@ const SearchResults: FC<SearchResultsProps> = () => {
           const tiresData = result.records;
           const totalCount = result.totalCount;
 
-          const dataTransformed = createPaginatedResponse(tiresData, page, pageSize, totalCount);
+          const dataTransformed = createPaginatedResponse(
+            tiresData,
+            page,
+            pageSize,
+            totalCount
+          ) as PaginatedTiresResponse;
           setTiresData(dataTransformed);
 
           setCount(0);
@@ -184,9 +200,7 @@ const SearchResults: FC<SearchResultsProps> = () => {
   );
 
   const pagination = useGenerateFixedPagination(page, totalPages, maxVisiblePages);
-  const availablePageSizes = [5, 10, 15, 20, 25, 50, 100].filter(
-    size => size <= tiresData.totalCount
-  );
+  const availablePageSizes = getAvailablePageSizes(tiresData.totalCount);
 
   // Update refs when state changes
   useEffect(() => {
@@ -198,12 +212,20 @@ const SearchResults: FC<SearchResultsProps> = () => {
   }, [pageSize]);
 
   useEffect(() => {
-    const urlPage = parseInt(searchParams.get('page') || '1', 10);
-    const urlSize = parseInt(searchParams.get('pageSize') || '10', 10);
+    const urlPage = parseInt(searchParams.get('page') || String(DEFAULT_PAGE), 10);
+    const urlPageSizeRaw = parseInt(searchParams.get('pageSize') || String(DEFAULT_PAGE_SIZE), 10);
+
+    // Validar el tamaño de página
+    const urlPageSize = validatePageSize(urlPageSizeRaw);
+
+    // Si se detectó un valor inválido, actualizarlo en la URL
+    if (urlPageSizeRaw !== urlPageSize && searchParams.has('pageSize')) {
+      updatePaginationParams(urlPage, urlPageSize);
+    }
 
     if (pageRef.current !== urlPage) setPage(urlPage);
-    if (pageSizeRef.current !== urlSize) setPageSize(urlSize);
-  }, [searchParams]);
+    if (pageSizeRef.current !== urlPageSize) setPageSize(urlPageSize);
+  }, [searchParams, updatePaginationParams]);
 
   useEffect(() => {
     void getDataTires(page);
@@ -219,7 +241,7 @@ const SearchResults: FC<SearchResultsProps> = () => {
 
   return (
     <Suspense fallback={<LoadingScreen message="Preparing your tire selection..." />}>
-      <main className="bg-white">
+      <main className="bg-gray-50">
         <section aria-labelledby="products-heading" className="relative">
           <div className="h-64 sm:h-80 lg:h-64">
             <Image
@@ -231,11 +253,11 @@ const SearchResults: FC<SearchResultsProps> = () => {
             />
           </div>
           <div id="services" className="absolute z-30 -mt-26 left-0 w-full">
-            <TitleSection title="STORE TIRES" />
+            <TitleSection title="STORE TIRES" className="!bg-gray-50" />
           </div>
         </section>
         <div>
-          <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <main className="bg-gray-50 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <section aria-labelledby="products-heading" className="pb-24">
               <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4 md:mt-10">
                 <div>
@@ -245,7 +267,7 @@ const SearchResults: FC<SearchResultsProps> = () => {
                 </div>
                 <div className="lg:col-span-3">
                   <div>
-                    <div className="bg-white">
+                    <div className="bg-gray-50">
                       <div className="mx-auto">
                         <div className="flex-1">
                           <div className="mb-6">
