@@ -26,22 +26,18 @@ export function transformTireData(tire: TiresData) {
       {
         name: 'Patched',
         value: tire.Patched === '0' ? 'No' : 'Yes',
-        icon: null,
       },
       {
         name: 'Remaining life',
         value: tire.RemainingLife || '-',
-        icon: null,
       },
       {
         name: 'Tread depth',
         value: tire.Tread || '-',
-        icon: null,
       },
       {
         name: 'Run Flat',
         value: tire.KindSaleId === 1 ? 'Yes' : 'No',
-        icon: null,
       },
     ],
   };
