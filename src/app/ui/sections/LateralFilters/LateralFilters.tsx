@@ -59,7 +59,7 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
         className={`${borderClass} border-gray-200 py-6 ${paddingClass}`}
       >
         <h3 className="-my-3 flow-root">
-          <DisclosureButton className="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
+          <DisclosureButton className="flex w-full items-center justify-between bg-gray-50 py-3 text-sm text-gray-400 hover:text-gray-500">
             <span className="font-medium text-gray-900">Price</span>
             <span className="ml-6 flex items-center text-green-primary">
               <DisclosureIcon />
@@ -99,7 +99,7 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
         className={`${borderClass} border-gray-200 py-6 ${paddingClass}`}
       >
         <h3 className="-my-3 flow-root">
-          <DisclosureButton className="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
+          <DisclosureButton className="flex w-full items-center justify-between bg-gray-50 py-3 text-sm text-gray-400 hover:text-gray-500">
             <span className="font-medium text-gray-900">Tread Depth</span>
             <span className="ml-6 flex items-center text-green-primary">
               <DisclosureIcon />
@@ -139,7 +139,7 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
         className={`${borderClass} border-gray-200 py-6 ${paddingClass}`}
       >
         <h3 className="-my-3 flow-root">
-          <DisclosureButton className="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
+          <DisclosureButton className="flex w-full items-center justify-between bg-gray-50 py-3 text-sm text-gray-400 hover:text-gray-500">
             <span className="font-medium text-gray-900">Remaining Life</span>
             <span className="ml-6 flex items-center text-green-primary">
               <DisclosureIcon />
@@ -182,7 +182,7 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
         >
           <h3 className={`${isMobile ? '-mx-2' : ''} -my-3 flow-root`}>
             <DisclosureButton
-              className={`flex w-full items-center justify-between bg-white ${isMobile ? 'px-2' : ''} py-3 text-sm text-gray-400 hover:text-gray-500`}
+              className={`flex w-full items-center justify-between bg-gray-50 ${isMobile ? 'px-2' : ''} py-3 text-sm text-gray-400 hover:text-gray-500`}
             >
               <span className="font-medium text-gray-900">{section.name}</span>
               <span className="ml-6 flex items-center text-green-primary">
@@ -224,7 +224,7 @@ const FilterContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
         >
           <h3 className={`${isMobile ? '-mx-2' : ''} -my-3 flow-root`}>
             <DisclosureButton
-              className={`flex w-full items-center justify-between bg-white ${isMobile ? 'px-2' : ''} py-3 text-sm text-gray-400 hover:text-gray-500`}
+              className={`flex w-full items-center justify-between bg-gray-50 ${isMobile ? 'px-2' : ''} py-3 text-sm text-gray-400 hover:text-gray-500`}
             >
               <span className="font-medium text-gray-900">Brands</span>
               <span className="ml-6 flex items-center text-green-primary">
@@ -316,7 +316,7 @@ const LateralFilters: FC = () => {
         >
           <DialogPanel
             transition
-            className="relative mr-auto flex h-full w-full max-w-xs transform flex-col overflow-y-auto bg-white py-4 pb-12 shadow-xl transition duration-300 ease-in-out"
+            className="relative mr-auto flex h-full w-full max-w-xs transform flex-col overflow-y-auto bg-gray-50 py-4 pb-12 shadow-xl transition duration-300 ease-in-out"
           >
             <div className="flex items-center justify-between px-4">
               <h2 className="text-lg font-medium text-gray-900">Additional Filters</h2>
