@@ -1,4 +1,4 @@
-export const lateralItems = [
+export const filtersItems = [
   {
     id: 'condition',
     name: 'Condition',

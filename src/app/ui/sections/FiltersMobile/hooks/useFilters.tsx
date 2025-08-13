@@ -1,4 +1,5 @@
 'use client';
+
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 
@@ -20,7 +21,7 @@ interface CheckboxInputs {
   brands: string[];
 }
 
-export const useLateralFilters = () => {
+export const useFilters = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 

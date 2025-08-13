@@ -15,7 +15,7 @@ import {
   ResultsSkeleton,
   TireResults,
 } from '@/app/ui/components';
-import { LateralFilters, TitleSection } from '@/app/ui/sections';
+import { FiltersMobile, TitleSection, TopFilters } from '@/app/ui/sections';
 import {
   DEFAULT_PAGE,
   DEFAULT_PAGE_SIZE,
@@ -257,16 +257,15 @@ const SearchResults: FC<SearchResultsProps> = () => {
           </div>
         </section>
         <div>
-          <main className="bg-gray-50 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <main className="bg-gray-50 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative h-full">
             <section aria-labelledby="products-heading" className="pb-24">
-              <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4 md:mt-10">
-                <div>
-                  <aside>
-                    <LateralFilters />
-                  </aside>
+              <div className="md:mt-10 space-y-6">
+                <div className="w-full">
+                  <FiltersMobile />
                 </div>
-                <div className="lg:col-span-3">
+                <div>
                   <div>
+                    <TopFilters />
                     <div className="bg-gray-50">
                       <div className="mx-auto">
                         <div className="flex-1">
