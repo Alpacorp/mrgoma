@@ -1,5 +1,5 @@
 export { default as Header } from './Header/Header';
-export { default as LateralFilters } from './LateralFilters/LateralFilters';
+export { default as FiltersMobile } from './FiltersMobile/FiltersMobile';
 export { default as MenuMobile } from './MenuMobile/MenuMobile';
 export { default as TireCard } from './TireCard/TireCard';
 export { default as TireInformation } from './TireInformation/TireInformation';
@@ -16,3 +16,6 @@ export { default as SearchContainer } from './SearchContainer/SearchContainer';
 export { default as SearchSection } from './SearchSection/SearchSection';
 export { default as SizeSelectors } from './SizeSelectors/SizeSelectors';
 export { default as CartModal } from './CartModal/CartModal';
+export { default as TopFilters } from './TopFilters/TopFilters';
+export { default as FilterBody } from './FilterBody/FilterBody';
+export { default as FilterMobileContent } from './FilterMobileContent/FilterMobileContent';
