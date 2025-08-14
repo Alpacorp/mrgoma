@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import React, { FC } from 'react';
 
 import {
@@ -17,13 +16,17 @@ const HomeContent: FC = () => {
         <main className="mx-auto">
           <section aria-labelledby="products-heading" className="px-4 sm:px-6 lg:px-8 relative">
             <div className="absolute inset-0 overflow-hidden">
-              <Image
-                src="/assets/images/banner-hero.webp"
-                alt=""
-                fill
-                className="absolute inset-0 object-cover"
-                priority
-              />
+              <video
+                className="absolute inset-0 h-full w-full object-cover"
+                autoPlay
+                muted
+                loop
+                playsInline
+                poster="/assets/images/banner-hero.gif"
+              >
+                <source src="/assets/images/banner-hero.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
             </div>
             <div className="relative grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-3">
               <div className="lg:col-span-3">
