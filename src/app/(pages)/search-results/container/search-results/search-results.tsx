@@ -297,82 +297,113 @@ const SearchResults: FC<SearchResultsProps> = () => {
                               )}
                               {tiresData.tires.length > 0 && (
                                 <div className="mt-16">
-                                  <div className="flex mt-16 items-baseline w-full overflow-auto h-min sm:justify-start md:justify-center">
-                                    <div className="mt-4 flex justify-center gap-1 h-min">
-                                      <div className="flex gap-1">
-                                        <button
-                                          onClick={handleFirstPage}
-                                          disabled={page === 1}
-                                          className={`${page === 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400`}
+                                  <div className="mt-16 w-full">
+                                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                                      <div className="overflow-auto">
+                                        <nav
+                                          aria-label="Pagination"
+                                          className="mt-4 flex items-center justify-start md:justify-center gap-2 h-min"
                                         >
-                                          &lt;&lt;
-                                        </button>
-                                        <button
-                                          onClick={handlePreviousPage}
-                                          disabled={page === 1}
-                                          className={`${page === 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400`}
-                                        >
-                                          &lt;
-                                        </button>
-                                      </div>
-                                      {pagination.map((pageNumber, index) =>
-                                        typeof pageNumber === 'number' ? (
-                                          <button
-                                            key={index}
-                                            onClick={() => handlePageClick(pageNumber)}
-                                            className={`px-3 py-1 h-min border border-gray-300 rounded cursor-pointer ${
-                                              pageNumber === page
-                                                ? 'bg-green-500 text-white'
-                                                : 'text-gray-700 hover:bg-green-800 hover:text-white'
-                                            }`}
-                                          >
-                                            {pageNumber}
-                                          </button>
-                                        ) : (
-                                          <span
-                                            key={index}
-                                            className="px-3 py-1 mx-1 text-gray-500"
-                                          >
-                                            {pageNumber}
+                                          <div className="flex gap-1">
+                                            <button
+                                              onClick={handleFirstPage}
+                                              disabled={page === 1}
+                                              aria-label="First page"
+                                              title="First page"
+                                              aria-disabled={page === 1}
+                                              className={`${page === 1 ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200' : 'cursor-pointer bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'} px-3 py-1.5 h-min rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`}
+                                            >
+                                              &lt;&lt;
+                                            </button>
+                                            <button
+                                              onClick={handlePreviousPage}
+                                              disabled={page === 1}
+                                              aria-label="Previous page"
+                                              title="Previous page"
+                                              aria-disabled={page === 1}
+                                              className={`${page === 1 ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200' : 'cursor-pointer bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'} px-3 py-1.5 h-min rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`}
+                                            >
+                                              &lt;
+                                            </button>
+                                          </div>
+                                          {pagination.map((pageNumber, index) =>
+                                            typeof pageNumber === 'number' ? (
+                                              <button
+                                                key={index}
+                                                onClick={() => handlePageClick(pageNumber)}
+                                                aria-current={pageNumber === page ? 'page' : undefined}
+                                                className={`px-3 py-1.5 cursor-pointer h-min rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
+                                                  pageNumber === page
+                                                    ? 'bg-green-600 text-white border-green-600'
+                                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'
+                                                }`}
+                                              >
+                                                {pageNumber}
+                                              </button>
+                                            ) : (
+                                              <span
+                                                key={index}
+                                                className="px-3 py-1.5 mx-1 text-gray-500"
+                                              >
+                                                {pageNumber}
+                                              </span>
+                                            )
+                                          )}
+                                          <div className="flex gap-1">
+                                            <button
+                                              onClick={handleNextPage}
+                                              disabled={page === totalPages}
+                                              aria-label="Next page"
+                                              title="Next page"
+                                              aria-disabled={page === totalPages}
+                                              className={`${page === totalPages ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200' : 'cursor-pointer bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'} px-3 py-1.5 h-min rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`}
+                                            >
+                                              &gt;
+                                            </button>
+                                            <button
+                                              onClick={handleLastPage}
+                                              disabled={page === totalPages}
+                                              aria-label="Last page"
+                                              title="Last page"
+                                              aria-disabled={page === totalPages}
+                                              className={`${page === totalPages ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200' : 'cursor-pointer bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'} px-3 py-1.5 h-min rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`}
+                                            >
+                                              &gt;&gt;
+                                            </button>
+                                          </div>
+                                          <span className="ml-3 text-sm text-gray-500 shrink-0">
+                                            Page{' '}
+                                            <span className="font-semibold text-gray-700">{page}</span>{' '}
+                                            of{' '}
+                                            <span className="font-semibold text-gray-700">
+                                              {totalPages}
+                                            </span>
                                           </span>
-                                        )
+                                        </nav>
+                                      </div>
+                                      {tiresData.totalCount >= 10 && (
+                                        <div className="md:ml-4 h-min flex items-center md:justify-end">
+                                          <label
+                                            htmlFor="pageSize"
+                                            className="mr-2 text-sm text-gray-600"
+                                          >
+                                            Rows per page:
+                                          </label>
+                                          <select
+                                            id="pageSize"
+                                            value={pageSize}
+                                            onChange={handlePageSizeChange}
+                                            className="bg-white border border-gray-300 rounded-md py-1.5 px-3 text-sm text-gray-700 shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer transition-colors"
+                                          >
+                                            {availablePageSizes.map(size => (
+                                              <option key={size} value={size}>
+                                                {size}
+                                              </option>
+                                            ))}
+                                          </select>
+                                        </div>
                                       )}
-                                      <div className="flex gap-1">
-                                        <button
-                                          onClick={handleNextPage}
-                                          disabled={page === totalPages}
-                                          className={`${page === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400`}
-                                        >
-                                          &gt;
-                                        </button>
-                                        <button
-                                          onClick={handleLastPage}
-                                          disabled={page === totalPages}
-                                          className={`${page === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} px-4 py-1 bg-gray-700 h-min text-white rounded hover:bg-gray-600 disabled:bg-gray-400`}
-                                        >
-                                          &gt;&gt;
-                                        </button>
-                                      </div>
                                     </div>
-                                    {tiresData.totalCount >= 10 && (
-                                      <div className="ml-4 h-min">
-                                        <label htmlFor="pageSize" className="mr-2">
-                                          Page Size:
-                                        </label>
-                                        <select
-                                          id="pageSize"
-                                          value={pageSize}
-                                          onChange={handlePageSizeChange}
-                                          className="px-4 py-2 bg-gray-700 rounded text-white"
-                                        >
-                                          {availablePageSizes.map(size => (
-                                            <option key={size} value={size}>
-                                              {size}
-                                            </option>
-                                          ))}
-                                        </select>
-                                      </div>
-                                    )}
                                   </div>
                                 </div>
                               )}

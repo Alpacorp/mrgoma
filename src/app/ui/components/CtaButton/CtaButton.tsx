@@ -45,7 +45,7 @@ const CtaButton: FC<CtaButtonProps> = ({
 
   // Define styles based on the style prop
   let buttonStyle =
-    'relative cursor-pointer flex items-center justify-center rounded-md border px-8 py-2 text-sm font-medium duration-150 w-full sm:w-auto';
+    'relative cursor-pointer flex items-center justify-center rounded-md border px-8 py-2 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 w-full sm:w-auto';
 
   switch (style) {
     case 'primary':
@@ -58,7 +58,7 @@ const CtaButton: FC<CtaButtonProps> = ({
       buttonStyle += ' !border-yellow-600 text-yellow-700 hover:bg-yellow-500 hover:text-white';
       break;
     case 'filled':
-      buttonStyle += ' bg-green-600 text-white hover:bg-green-500 hover:text-white';
+      buttonStyle += ' bg-green-600 !text-white hover:bg-green-700 hover:!text-white shadow-sm hover:shadow-md border-transparent';
       break;
     case 'filled-secondary':
       buttonStyle += ' bg-yellow-600 text-white hover:bg-yellow-500 hover:text-white';

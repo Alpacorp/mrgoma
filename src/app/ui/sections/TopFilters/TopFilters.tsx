@@ -17,6 +17,7 @@ export const TopFilters: FC = () => {
     isChecked,
     resetFilters,
     isLoadingBrands,
+    checkboxInputs,
   } = useFilters();
 
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -51,44 +52,78 @@ export const TopFilters: FC = () => {
     isLoadingBrands,
   });
 
+  const isRangeActive = (id: 'price' | 'treadDepth' | 'remainingLife') => {
+    const [curMin, curMax] = rangeInputs[id];
+    const [defMin, defMax] = rangeBounds[id];
+    return curMin > defMin || curMax < defMax;
+  };
+
+  const isCheckboxGroupActive = (id: 'condition' | 'patched') => {
+    return (checkboxInputs?.[id] || []).length > 0;
+  };
+
+  const isBrandsActive = () => (checkboxInputs?.brands || []).length > 0;
+
+  const isFilterActive = (id: string) => {
+    if (id === 'price' || id === 'treadDepth' || id === 'remainingLife') return isRangeActive(id);
+    if (id === 'condition' || id === 'patched') return isCheckboxGroupActive(id);
+    if (id === 'brands') return isBrandsActive();
+    return false;
+  };
+
+  const activeClass = 'bg-green-50 border-green-500 text-green-700';
+  const defaultClass = 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50';
+
   return (
     <div ref={menuRef} className="w-full sticky top-21 z-40 hidden lg:block">
       <div className="flex items-start bg-white border border-gray-200 rounded-lg p-2">
         <div className="flex flex-wrap items-center gap-2 md:gap-3">
-          {topSections.map(item => (
-            <div key={item.id} className="relative">
-              <button
-                type="button"
-                onClick={() => setOpenMenu(prev => (prev === item.id ? null : item.id))}
-                className={`px-3 py-2 text-sm rounded-md border cursor-pointer ${openMenu === item.id ? 'bg-green-50 border-green-500 text-green-700' : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'}`}
-              >
-                {item.name}
-              </button>
-              {openMenu === item.id && (
-                <div className="absolute left-0 mt-2 z-50 w-80 md:w-96 bg-white border border-gray-200 rounded-lg shadow-lg p-4">
-                  {FilterBody(item.id, buildDeps(), { isMobile: false })}
-                </div>
-              )}
-            </div>
-          ))}
+          {topSections.map(item => {
+            const isOpen = openMenu === item.id;
+            const isActive = isFilterActive(item.id);
+            return (
+              <div key={item.id} className="relative">
+                <button
+                  type="button"
+                  onClick={() => setOpenMenu(prev => (prev === item.id ? null : item.id))}
+                  className={`px-3 py-2 text-sm rounded-md border cursor-pointer ${isOpen || isActive ? activeClass : defaultClass}`}
+                >
+                  {item.name}
+                </button>
+                {isOpen && (
+                  <div className="absolute left-0 mt-2 z-50 w-80 md:w-96 bg-white border border-gray-200 rounded-lg shadow-lg p-4">
+                    {FilterBody(item.id, buildDeps(), { isMobile: false })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
 
           {(availableBrands.length > 0 || isLoadingBrands) && (
             <div className="relative">
-              <button
-                type="button"
-                onClick={() => setOpenMenu(prev => (prev === 'brands' ? null : 'brands'))}
-                className={`px-3 py-2 text-sm rounded-md border cursor-pointer ${openMenu === 'brands' ? 'bg-green-50 border-green-500 text-green-700' : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'}`}
-              >
-                Brands
-              </button>
-              {openMenu === 'brands' && (
-                <div className="absolute left-0 mt-2 z-50 w-80 md:w-96 bg-white border border-gray-200 rounded-lg shadow-lg p-4">
-                  {FilterBody('brands', buildDeps(), {
-                    isMobile: false,
-                    containerExtraClass: 'pr-1',
-                  })}
-                </div>
-              )}
+              {(() => {
+                const isOpen = openMenu === 'brands';
+                const isActive = isBrandsActive();
+                return (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setOpenMenu(prev => (prev === 'brands' ? null : 'brands'))}
+                      className={`px-3 py-2 text-sm rounded-md border cursor-pointer ${isOpen || isActive ? activeClass : defaultClass}`}
+                    >
+                      Brands
+                    </button>
+                    {isOpen && (
+                      <div className="absolute left-0 mt-2 z-50 w-80 md:w-96 bg-white border border-gray-200 rounded-lg shadow-lg p-4">
+                        {FilterBody('brands', buildDeps(), {
+                          isMobile: false,
+                          containerExtraClass: 'pr-1',
+                        })}
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
             </div>
           )}
         </div>

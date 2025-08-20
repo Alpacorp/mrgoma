@@ -63,10 +63,10 @@ const ResultsHeader: FC<ResultsHeaderProps> = ({ getTireSize, resultsCount, tota
         <h2 className="text-lg sm:text-xl font-bold text-gray-900">
           {tireSize ? (
             <>
-              Results Tires for: <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-green-700">{tireSize}</span>
+              Tire results for: <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-green-700 ring-1 ring-green-200">{tireSize}</span>
             </>
           ) : (
-            'All Tires'
+            'All tires'
           )}
         </h2>
         <button

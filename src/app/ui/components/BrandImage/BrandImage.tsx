@@ -11,7 +11,7 @@ interface BrandImageProps {
 const BrandImage: FC<BrandImageProps> = ({ product }) => {
   return (
     <Image
-      className="w-full h-10 max-w-[8.125rem] pl-1 object-contain object-center"
+      className="h-6 w-auto max-w-[8.125rem] pl-1 object-contain object-center"
       src={`/assets/images/TireBrand/${product.brandId}-logo.png`}
       alt={product.brand}
       title={product.brand}
@@ -19,6 +19,7 @@ const BrandImage: FC<BrandImageProps> = ({ product }) => {
       priority
       width={400}
       height={300}
+      sizes="(max-width: 768px) 130px, 130px"
     />
   );
 };

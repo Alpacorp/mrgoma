@@ -32,7 +32,7 @@ const Header: FC = (): ReactNode => {
 
   return (
     <>
-      <header className="w-full sticky top-0 z-40 bg-black backdrop-blur-sm backdrop-filter backdrop-saturate-150">
+      <header className="w-full sticky top-0 z-40 bg-black backdrop-blur-sm backdrop-filter backdrop-saturate-150 border-b border-white/10 shadow-sm">
         <div className="absolute inset-0 bg-[#111]">
           <div className="absolute z-10 w-full h-full bg-gradient-to-r from-black via-[#1A1A1A] to-[#9DFB40] opacity-80"></div>
           <Image src="/assets/images/bg-header.svg" alt="" fill className="object-cover" priority />
@@ -40,46 +40,48 @@ const Header: FC = (): ReactNode => {
 
         <nav
           aria-label="Global"
-          className="relative z-10 mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
+          className="relative z-10 mx-auto flex max-w-7xl items-center justify-between p-4"
         >
-          <HamburgerMenu />
-          <Link href="/" className="-m-1.5 p-1.5">
-            <Image
-              alt="Mr. Goma Tires logo"
-              title="Go to the home page"
-              aria-label="Go to the home page"
-              src={mrGomaLogo || '/placeholder.svg'}
-              className="h-8 w-auto"
-              priority
-            />
-          </Link>
-          <div className="hidden lg:flex lg:gap-x-12">
-            {menuItems.map(item => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="text-sm font-semibold leading-6 text-white hover:text-[#65D01E] transition-colors"
-              >
-                {item.name}
-              </Link>
-            ))}
+          <div className="w-full flex items-center justify-between gap-4 rounded-2xl bg-black/40 border border-white/10 px-4 py-2 shadow-sm backdrop-blur-md">
+            <HamburgerMenu />
+            <Link href="/" className="-m-1.5 p-1.5">
+              <Image
+                alt="Mr. Goma Tires logo"
+                title="Go to the home page"
+                aria-label="Go to the home page"
+                src={mrGomaLogo || '/placeholder.svg'}
+                className="h-8 w-auto"
+                priority
+              />
+            </Link>
+            <div className="hidden lg:flex lg:gap-x-12">
+              {menuItems.map(item => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="text-sm font-semibold leading-6 text-white hover:text-[#65D01E] transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+            <button
+              onClick={handleCartClick}
+              className="flex items-center justify-center cursor-pointer rounded-full bg-white/10 border border-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/20 transition-colors relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+              aria-label={isMounted ? `Shopping cart with ${cartCount} items` : 'Shopping cart'}
+            >
+              <ShoppingCart className="mr-2 h-5 w-5" />
+              Cart
+              {isMounted && cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 h-5 w-5" aria-hidden="true">
+                  <span className="absolute inset-0 rounded-full bg-green-500 opacity-75 animate-ping"></span>
+                  <span className="relative bg-green-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                </span>
+              )}
+            </button>
           </div>
-          <button
-            onClick={handleCartClick}
-            className="flex items-center justify-center rounded-full bg-zinc-800 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 transition-colors relative"
-            aria-label={isMounted ? `Shopping cart with ${cartCount} items` : 'Shopping cart'}
-          >
-            <ShoppingCart className="mr-2 h-5 w-5" />
-            Cart
-            {isMounted && cartCount > 0 && (
-              <span
-                className="absolute -top-2 -right-2 bg-green-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center"
-                aria-hidden="true"
-              >
-                {cartCount}
-              </span>
-            )}
-          </button>
         </nav>
       </header>
       <MenuMobile />

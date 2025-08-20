@@ -54,7 +54,7 @@ export const CompactForm: React.FC<CompactFormProps> = ({
         {/* Reset button */}
         <button
           onClick={onResetFiltersAction}
-          className="w-full flex items-center justify-center gap-1 text-gray-700 hover:text-gray-900 py-1 px-2 border border-gray-300 rounded-md transition-colors hover:bg-gray-50 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+          className="w-full cursor-pointer flex items-center justify-center gap-1 text-gray-700 hover:text-gray-900 py-1 px-2 border border-gray-300 rounded-md transition-colors hover:bg-gray-50 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
         >
           <span>Reset Selection</span>
         </button>
