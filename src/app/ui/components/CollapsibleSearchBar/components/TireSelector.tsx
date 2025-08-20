@@ -37,9 +37,7 @@ export const TireSelector: React.FC<TireSelectorProps> = ({
   const isDiameterDisabled = !selectedFilters.w || !selectedFilters.s || isLoadingDiameter;
 
   return (
-    <div
-      className={`${isCompact ? 'bg-green-200' : 'bg-gray-50'} p-2 rounded-lg border border-gray-200`}
-    >
+    <div className="bg-green-200 p-2 rounded-lg border border-gray-200">
       <div className="flex items-center mb-1">
         <div className="bg-gray-100 p-0.5 rounded-full">
           <CarFront className="w-3 h-3 text-green-600" />
@@ -50,7 +48,7 @@ export const TireSelector: React.FC<TireSelectorProps> = ({
       <div className="grid grid-cols-3 gap-1">
         {/* Width Selector */}
         <div className="my-1">
-          <label className="block my-1 text-xs font-medium text-gray-700 flex items-center">
+          <label className="my-1 text-xs font-medium text-gray-700 flex items-center">
             {isCompact ? 'W' : 'Width'}
             {isLoadingWidth && (
               <span className="ml-1 inline-block h-3 w-3 animate-spin rounded-full border-2 border-solid border-current border-r-transparent align-[-0.125em] text-green-600 motion-reduce:animate-[spin_1.5s_linear_infinite]"></span>

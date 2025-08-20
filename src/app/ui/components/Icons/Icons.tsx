@@ -62,3 +62,19 @@ export const AdjustmentsHorizontalIcon: React.FC<IconProps> = ({ className = '',
     </svg>
   );
 };
+
+export const EditIcon: React.FC<IconProps> = ({ className = '', 'aria-hidden': ariaHidden = true }) => {
+  // Pencil/edit icon
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden={ariaHidden}
+    >
+      <path d="M15.232 5.232a2.5 2.5 0 113.536 3.536l-9.193 9.193a4 4 0 01-1.682.992l-3.032.867a.75.75 0 01-.924-.924l.867-3.032a4 4 0 01.992-1.682l9.193-9.193z" />
+      <path d="M13.5 6.5l4 4" />
+    </svg>
+  );
+};

@@ -61,7 +61,13 @@ const ResultsHeader: FC<ResultsHeaderProps> = ({ getTireSize, resultsCount, tota
       {/* Left side - Tire size title */}
       <div className="flex flex-wrap items-center gap-2 min-w-[250px]">
         <h2 className="text-lg sm:text-xl font-bold text-gray-900">
-          {tireSize ? `Results Tires for: ${tireSize}` : 'All Tires'}
+          {tireSize ? (
+            <>
+              Results Tires for: <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-green-700">{tireSize}</span>
+            </>
+          ) : (
+            'All Tires'
+          )}
         </h2>
         <button
           type="button"
@@ -77,11 +83,12 @@ const ResultsHeader: FC<ResultsHeaderProps> = ({ getTireSize, resultsCount, tota
 
       {/* Right side - Sort and count */}
       <div className="flex items-center gap-4">
-        <span className="text-sm text-gray-500">
-          {`Showing ${resultsCount} of ${totalCount.toLocaleString('en-US')} results`}
+        <span className="text-sm text-gray-500" aria-live="polite">
+          Showing <span className="font-semibold text-gray-700">{resultsCount}</span> of{' '}
+          <span className="font-semibold text-gray-700">{totalCount.toLocaleString('en-US')}</span> results
         </span>
         <select
-          className="bg-white border border-gray-300 rounded-md py-1 px-3 text-sm text-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="bg-white border border-gray-300 rounded-md py-1 px-3 text-sm text-gray-700 shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer transition-colors"
           value={sortOption}
           onChange={handleSortChange}
           aria-label="Sort results"

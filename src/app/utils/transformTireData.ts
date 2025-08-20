@@ -32,6 +32,10 @@ export function transformTireData(tire: TiresData) {
         value: tire.RemainingLife || '-',
       },
       {
+        name: 'Condition',
+        value: tire.ProductTypeId === 1 ? 'New' : 'Used',
+      },
+      {
         name: 'Tread depth',
         value: tire.Tread || '-',
       },

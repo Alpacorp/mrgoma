@@ -23,10 +23,14 @@ const SearchContainer: FC = () => {
   return (
     <div className="py-14">
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4 text-white [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.45)]">
-          Search Your Perfect Tire
+        <h1 className="text-3xl sm:text-4xl md:text-5xl uppercase font-extrabold text-white tracking-tight [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.45)]">
+          The <span className="text-lime-400">Tires</span> you{' '}
+          <span className="text-lime-400">need</span>
         </h1>
-        <p className="text-lg text-white">You can purchase your tires on the view details page</p>
+        <p className="text-2xl sm:text-3xl font-bold uppercase text-white tracking-tight">
+          The <span className="text-lime-400">Price</span> you{' '}
+          <span className="text-lime-400">want</span>
+        </p>
       </div>
 
       <div className="w-full">
@@ -36,8 +40,8 @@ const SearchContainer: FC = () => {
               onClick={() => handleChangeTab('size')}
               role="tab"
               aria-selected={activeTab === 'size'}
-              className={`py-2 px-4 transition-all text-neutral-800 rounded-tl-3xl rounded-tr-3xl text-md cursor-pointer ${
-                activeTab === 'size' ? 'bg-lime-400' : 'bg-gray-100 hover:bg-gray-200'
+              className={`py-2 px-4 transition-all text-neutral-800 rounded-tl-3xl rounded-tr-3xl text-md cursor-pointer font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-500 ${
+                activeTab === 'size' ? 'bg-lime-400 ring-2 ring-lime-500' : 'bg-gray-100 hover:bg-gray-200'
               }`}
             >
               <div className="flex items-center gap-2 justify-center leading-none">
@@ -49,8 +53,8 @@ const SearchContainer: FC = () => {
               onClick={() => handleChangeTab('text')}
               role="tab"
               aria-selected={activeTab === 'text'}
-              className={`py-2 px-4 transition-all text-neutral-800 rounded-tl-3xl rounded-tr-3xl text-md cursor-pointer ${
-                activeTab === 'text' ? 'bg-lime-400' : 'bg-gray-100 hover:bg-gray-200'
+              className={`py-2 px-4 transition-all text-neutral-800 rounded-tl-3xl rounded-tr-3xl text-md cursor-pointer font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-500 ${
+                activeTab === 'text' ? 'bg-lime-400 ring-2 ring-lime-500' : 'bg-gray-100 hover:bg-gray-200'
               }`}
             >
               <div className="flex items-center gap-2 justify-center">

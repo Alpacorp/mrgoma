@@ -1,7 +1,8 @@
 'use client';
 
-import { Search, X } from 'lucide-react';
 import React from 'react';
+
+import { EditIcon, XMarkIcon } from '@/app/ui/components/Icons/Icons';
 
 import { TireFilters } from '../hooks/useTireSearch';
 
@@ -30,15 +31,16 @@ export const CompactForm: React.FC<CompactFormProps> = ({
       style={{ position: 'fixed' }}
     >
       <div className="flex justify-between items-center mb-2">
-        <h3 className="text-sm font-medium text-gray-700 flex items-center">
-          <Search className="w-3 h-3 mr-1 text-green-600" />
+        <h3 className="text-sm font-medium text-gray-700 flex items-center gap-1">
+          <EditIcon className="w-4 h-4 text-green-600" aria-hidden />
           Edit Tire Size
         </h3>
         <button
           onClick={onCloseAction}
-          className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+          aria-label="Close"
+          className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 rounded"
         >
-          <X className="w-4 h-4" />
+          <XMarkIcon className="w-4 h-4" aria-hidden />
         </button>
       </div>
 
@@ -47,13 +49,12 @@ export const CompactForm: React.FC<CompactFormProps> = ({
         <TireSelector
           selectedFilters={selectedFilters}
           onFilterChangeAction={onFilterChangeAction}
-          isCompact={true}
         />
 
         {/* Reset button */}
         <button
           onClick={onResetFiltersAction}
-          className="w-full flex items-center justify-center gap-1 text-gray-600 hover:text-gray-700 py-1 px-2 border border-gray-400 rounded-md transition-colors hover:bg-gray-50 text-xs"
+          className="w-full flex items-center justify-center gap-1 text-gray-700 hover:text-gray-900 py-1 px-2 border border-gray-300 rounded-md transition-colors hover:bg-gray-50 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
         >
           <span>Reset Selection</span>
         </button>
