@@ -61,7 +61,7 @@ const HomeContent: FC = () => {
             </div>
           </section>
           <section className="relative">
-            <div id="locations" className="absolute -top-[6.563rem] left-0 w-full">
+            <div id="locations" className="absolute -top-[6.3rem] left-0 w-full">
               <TitleSection title="OUR LOCATIONS" />
             </div>
             <div>
