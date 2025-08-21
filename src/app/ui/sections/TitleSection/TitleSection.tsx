@@ -24,12 +24,15 @@ export const TitleSection = ({
       <span className="inline-flex items-center justify-center rounded-full bg-lime-100 ring-1 ring-lime-300 p-2">
         <ArrowsToRight className="w-16 h-5 sm:w-20 sm:h-6 text-lime-600" />
       </span>
-      <h2 className={`text-2xl sm:text-3xl md:text-4xl font-extrabold uppercase tracking-tight`} style={{ color }}>
+      <h2
+        className={`text-2xl sm:text-3xl md:text-4xl font-extrabold uppercase tracking-tight`}
+        style={{ color }}
+      >
         {title}
       </h2>
       <span
         aria-hidden
-        className="pointer-events-none absolute -bottom-0.5 left-3 right-3 h-1 rounded-b-3xl bg-gradient-to-r from-lime-400/60 via-lime-300/30 to-transparent"
+        className="pointer-events-none absolute -bottom-0.5 left-0 right-3 h-1 rounded-b-3xl bg-gradient-to-r from-lime-400/60 via-lime-300/30 to-transparent"
       />
     </div>
   );

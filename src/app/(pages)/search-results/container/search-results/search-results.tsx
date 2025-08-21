@@ -252,7 +252,7 @@ const SearchResults: FC<SearchResultsProps> = () => {
               priority
             />
           </div>
-          <div id="services" className="absolute z-30 -mt-26 left-0 w-full">
+          <div id="services" className="absolute z-30 -mt-25 left-0 w-full">
             <TitleSection title="STORE TIRES" className="!bg-gray-50" />
           </div>
         </section>
@@ -331,7 +331,9 @@ const SearchResults: FC<SearchResultsProps> = () => {
                                               <button
                                                 key={index}
                                                 onClick={() => handlePageClick(pageNumber)}
-                                                aria-current={pageNumber === page ? 'page' : undefined}
+                                                aria-current={
+                                                  pageNumber === page ? 'page' : undefined
+                                                }
                                                 className={`px-3 py-1.5 cursor-pointer h-min rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
                                                   pageNumber === page
                                                     ? 'bg-green-600 text-white border-green-600'
@@ -373,7 +375,9 @@ const SearchResults: FC<SearchResultsProps> = () => {
                                           </div>
                                           <span className="ml-3 text-sm text-gray-500 shrink-0">
                                             Page{' '}
-                                            <span className="font-semibold text-gray-700">{page}</span>{' '}
+                                            <span className="font-semibold text-gray-700">
+                                              {page}
+                                            </span>{' '}
                                             of{' '}
                                             <span className="font-semibold text-gray-700">
                                               {totalPages}

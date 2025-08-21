@@ -11,7 +11,7 @@ interface BrandImageProps {
 const BrandImage: FC<BrandImageProps> = ({ product }) => {
   return (
     <Image
-      className="h-6 w-auto max-w-[8.125rem] pl-1 object-contain object-center"
+      className="h-6 w-auto pl-1 object-contain object-center"
       src={`/assets/images/TireBrand/${product.brandId}-logo.png`}
       alt={product.brand}
       title={product.brand}

@@ -45,7 +45,7 @@ const HomeContent: FC = () => {
             </div>
           </section>
           <section className="relative">
-            <div id="services" className="absolute -top-[6.563rem] left-0 w-full">
+            <div id="services" className="absolute -top-[6.3rem] left-0 w-full">
               <TitleSection title="OUR SERVICES" />
             </div>
             <div>
