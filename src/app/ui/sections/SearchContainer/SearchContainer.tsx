@@ -62,13 +62,16 @@ const SearchContainer: FC = () => {
               onClick={() => handleChangeTab('size')}
               role="tab"
               aria-selected={activeTab === 'size'}
-              className={`py-2 px-4 transition-colors duration-200 text-neutral-800 rounded-tl-3xl rounded-tr-3xl text-md cursor-pointer font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-500 ${
-                activeTab === 'size' ? 'bg-lime-400 ring-2 ring-lime-500 shadow-sm' : 'bg-gray-100 hover:bg-gray-200'
+              className={`py-2 px-4 transition-colors duration-200 text-neutral-800 rounded-tl-3xl rounded-tr-3xl text-md cursor-pointer font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-lime-500 ${
+                activeTab === 'size'
+                  ? 'bg-lime-400 ring-1 ring-lime-500 shadow-sm'
+                  : 'bg-gray-100 hover:bg-gray-200'
               }`}
             >
-              <div className={`flex items-center gap-2 justify-center leading-none ${activeTab === 'size' ? 'text-neutral-800' : 'text-gray-600'}`}>
-                <SizeIcon className="w-6 h-6" fill="currentColor" />{' '}
-                Search by Size
+              <div
+                className={`flex items-center gap-2 justify-center leading-none ${activeTab === 'size' ? 'text-neutral-800' : 'text-gray-600'}`}
+              >
+                <SizeIcon className="w-6 h-6" fill="currentColor" /> Search by Size
               </div>
             </button>
             <button
@@ -76,12 +79,15 @@ const SearchContainer: FC = () => {
               role="tab"
               aria-selected={activeTab === 'text'}
               className={`py-2 px-4 transition-colors duration-200 text-neutral-800 rounded-tl-3xl rounded-tr-3xl text-md cursor-pointer font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-500 ${
-                activeTab === 'text' ? 'bg-lime-400 ring-2 ring-lime-500 shadow-sm' : 'bg-gray-100 hover:bg-gray-200'
+                activeTab === 'text'
+                  ? 'bg-lime-400 ring-1 ring-lime-500 shadow-sm'
+                  : 'bg-gray-100 hover:bg-gray-200'
               }`}
             >
-              <div className={`flex items-center gap-2 justify-center ${activeTab === 'text' ? 'text-neutral-800' : 'text-gray-600'}`}>
-                <TextIcon className="w-6 h-6" fill="currentColor" />{' '}
-                Search by Text
+              <div
+                className={`flex items-center gap-2 justify-center ${activeTab === 'text' ? 'text-neutral-800' : 'text-gray-600'}`}
+              >
+                <TextIcon className="w-6 h-6" fill="currentColor" /> Search by Text
               </div>
             </button>
             {/* Active tab indicator */}

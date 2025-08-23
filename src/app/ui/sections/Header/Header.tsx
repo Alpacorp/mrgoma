@@ -46,7 +46,7 @@ const Header: FC = (): ReactNode => {
             <HamburgerMenu />
             <Link href="/" className="-m-1.5 p-1.5">
               <Image
-                alt="Mr. Goma Tires logo"
+                alt="MrGoma Tires logo"
                 title="Go to the home page"
                 aria-label="Go to the home page"
                 src={mrGomaLogo || '/placeholder.svg'}

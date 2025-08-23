@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import React from 'react';
 
 export const metadata: Metadata = {
-  title: 'Mr. Goma Tires',
-  description: 'Mr. Goma Tires is a tire shop in Miami, FL',
+  title: 'MrGoma Tires',
+  description: 'MrGoma Tires is a tire shop in Miami, FL',
   keywords: 'tires, miami, shop, tire shop, used tires, new tires',
 };
 

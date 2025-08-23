@@ -11,7 +11,7 @@ interface SearchSectionProps {
 const SearchSection: FC<SearchSectionProps> = ({ type }) => {
   return (
     <div className="w-full max-w-3xl mx-auto">
-      <div className="flex items-center justify-center xs:rounded-none sm:rounded-xl xs:rounded-b-xl p-4 shadow-xl bg-white h-64 overflow-auto border border-[#A3E635]">
+      <div className="flex items-center rounded-b-2xl md:rounded-2xl bg-white bg-gradient-to-br from-green-primary via-lime-200 to-white justify-center p-4 shadow-xl h-64 overflow-auto ring-1 ring-lime-500">
         {type === 'size' ? <SearchBySize /> : <SearchByText />}
       </div>
     </div>

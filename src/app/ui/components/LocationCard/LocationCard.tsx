@@ -10,6 +10,7 @@ export const LocationCard = ({
   id,
   name,
   address,
+  locationStore,
   phone,
   backgroundImage,
   coordinates,
@@ -30,7 +31,7 @@ export const LocationCard = ({
   };
 
   const handleLocationClick = () => {
-    onLocationClick?.({ id, name, address, phone, backgroundImage, coordinates });
+    onLocationClick?.({ id, name, address, phone, backgroundImage, coordinates, locationStore });
     window.open(getGoogleMapsUrl(), '_blank');
   };
 
@@ -57,19 +58,24 @@ export const LocationCard = ({
           className="object-cover transition-transform duration-300"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
-        <div className="absolute inset-0 bg-black opacity-20" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
       </div>
       <div className="absolute bottom-0 left-0 right-0 p-4">
-        <div className="flex justify-between items-end gap-4">
+        <div className="flex flex-wrap justify-between items-start gap-4">
           <button
             onClick={handleLocationClick}
-            className="flex items-center gap-2 transition-colors cursor-pointer group"
+            className="flex gap-2 transition-colors cursor-pointer group"
             aria-label={`Open ${address} in Google Maps`}
           >
             <LocationIcon className="group-hover:scale-110 transition-transform" />
-            <span className="text-sm text-white font-medium hover:underline hover:underline-offset-8">
-              {address}
-            </span>
+            <div className="flex flex-col gap-1" aria-label={`Address and Store`} role="group">
+              <span className="text-sm text-left text-white font-medium hover:underline hover:underline-offset-8">
+                {address}
+              </span>
+              <span className="text-sm text-left text-white font-medium hover:underline hover:underline-offset-8">
+                {locationStore}
+              </span>
+            </div>
           </button>
           <button
             onClick={handlePhoneClick}
@@ -77,7 +83,7 @@ export const LocationCard = ({
             aria-label={`Call ${phone}`}
           >
             <PhoneIcon className="group-hover:scale-110 transition-transform" />
-            <span className="text-sm text-white font-medium hover:underline hover:underline-offset-8">
+            <span className="text-sm text-left text-white font-medium hover:underline hover:underline-offset-8">
               {phone}
             </span>
           </button>

@@ -14,8 +14,8 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Mr. Goma Tires',
-  description: 'Mr. Goma Tires is a tire shop in Miami, FL',
+  title: 'MrGoma Tires',
+  description: 'MrGoma Tires is a tire shop in Miami, FL',
 };
 
 export default function RootLayout({

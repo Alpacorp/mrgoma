@@ -1,11 +1,13 @@
+import Image from 'next/image';
 import Link from 'next/link';
+import React from 'react';
 
+import { mrGomaLogo } from '#public/assets/images/Logo';
 import type {
   FooterProps,
   FooterSection as FooterSectionType,
   SocialLink,
 } from '@/app/ui/sections/Footer/footer-section';
-import { FooterLogo } from '@/app/ui/sections/Footer/FooterLogo';
 import { FooterSection } from '@/app/ui/sections/Footer/FooterSection';
 import { SocialIcon } from '@/app/ui/sections/Footer/SocialIcons';
 
@@ -46,7 +48,7 @@ export const Footer = ({
   sections = defaultSections,
   socialLinks = defaultSocialLinks,
   copyrightYear = new Date().getFullYear(),
-  companyName = 'Mr. Goma TIRES',
+  companyName = 'MrGoma Tires',
 }: FooterProps) => {
   return (
     <footer className={`bg-black relative overflow-hidden ${className}`}>
@@ -64,7 +66,14 @@ export const Footer = ({
         <div className="container mx-auto px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="lg:col-span-1">
-              <FooterLogo />
+              <Image
+                alt="MrGoma Tires logo"
+                title="Go to the home page"
+                aria-label="Go to the home page"
+                src={mrGomaLogo || '/placeholder.svg'}
+                className="h-8 w-auto"
+                priority
+              />
             </div>
             {sections.map(section => (
               <FooterSection key={section.title} section={section} />

@@ -36,8 +36,9 @@ const InfoSlider = () => {
           <div
             key={slide.id}
             className={`absolute inset-0 transition-opacity duration-500 ${
-              index === currentSlide ? 'opacity-100' : 'opacity-0'
+              index === currentSlide ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
             }`}
+            aria-hidden={index !== currentSlide}
           >
             <div className="absolute inset-0">
               <Image

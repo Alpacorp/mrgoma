@@ -23,7 +23,7 @@ export const MenuHeader: React.FC<MenuHeaderProps> = ({ onClose, animationStage 
     >
       <Link href="/" className="-m-1.5 p-1.5 bg-black rounded">
         <Image
-          alt="Mr. Goma Tires logo"
+          alt="MrGoma Tires logo"
           title="Go to the home page"
           aria-label="Go to the home page"
           src={mrGomaLogo}

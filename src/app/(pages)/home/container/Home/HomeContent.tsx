@@ -23,6 +23,7 @@ const HomeContent: FC = () => {
                 loop
                 playsInline
                 poster="/assets/images/banner-hero.gif"
+                controls={false}
               >
                 <source src="/assets/images/banner-hero.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
@@ -54,7 +55,7 @@ const HomeContent: FC = () => {
           </section>
           <section>
             <div id="about">
-              <TitleSection title="Why Mr. Goma" />
+              <TitleSection title="Why MrGoma Tires" />
             </div>
             <div>
               <InfoCardsSection className="bg-[url('/assets/images/bg-section.webp')] bg-cover bg-center bg-no-repeat bg-fixed bg-opacity-50 bg-black/50 pb-48" />

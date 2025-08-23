@@ -21,7 +21,7 @@ const ServiceCard = ({
   const cardContent = (
     <div
       className={`
-        relative overflow-hidden rounded-2xl cursor-pointer group
+        relative overflow-hidden rounded-2xl cursor-crosshair group
         transition-all duration-500 ease-out
         ${isHovered ? 'transform scale-105' : ''}
         ${className}

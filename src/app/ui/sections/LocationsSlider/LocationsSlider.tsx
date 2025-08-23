@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 
-import { locationsData } from '#public/assets/images/locationsData';
 import { LocationCard } from '@/app/ui/components';
 import type { LocationData } from '@/app/ui/components/LocationCard/location-card';
+import { locationsData } from '@/app/ui/sections/LocationsSlider/locationsData';
 
 interface LocationsSliderProps {
   locations?: LocationData[];
@@ -26,7 +26,7 @@ export const LocationsSlider = ({
   // Effect to handle responsive behavior
   useEffect(() => {
     const handleResize = () => {
-      // Check if we're on mobile (less than 768px width)
+      // Check if we're on mobile (less than 768 px width)
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
       setCardsPerSlide(mobile ? 1 : 2);
@@ -152,12 +152,9 @@ export const LocationsSlider = ({
             </div>
           </div>
 
-          {/* Gradient edge fades */}
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white to-transparent hidden sm:block" />
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white to-transparent hidden sm:block" />
           <button
             onClick={prevSlide}
-            className="absolute cursor-pointer left-3 sm:left-4 top-1/2 -translate-y-1/2 bg-[#9DFB40]/90 hover:bg-[#9DFB40] text-black p-3 sm:p-3.5 rounded-full transition-all duration-200 shadow-md backdrop-blur focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 border border-black/10 opacity-95 group-hover:opacity-100"
+            className="absolute cursor-pointer left-3 sm:left-4 top-1/2 -translate-y-3/6 bg-[#9DFB40]/90 hover:bg-[#9DFB40] text-black p-2 rounded-full transition-all duration-200 shadow-md backdrop-blur focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 border border-black/10 opacity-95 group-hover:opacity-100"
             aria-label="Previous location"
             title="Previous"
           >
@@ -179,7 +176,7 @@ export const LocationsSlider = ({
           </button>
           <button
             onClick={nextSlide}
-            className="absolute cursor-pointer right-3 sm:right-4 top-1/2 -translate-y-1/2 bg-[#9DFB40]/90 hover:bg-[#9DFB40] text-black p-3 sm:p-3.5 rounded-full transition-all duration-200 shadow-md backdrop-blur focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 border border-black/10 opacity-95 group-hover:opacity-100"
+            className="absolute cursor-pointer right-3 sm:right-4 top-1/2 -translate-y-1/2 bg-[#9DFB40]/90 hover:bg-[#9DFB40] text-black p-2 rounded-full transition-all duration-200 shadow-md backdrop-blur focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 border border-black/10 opacity-95 group-hover:opacity-100"
             aria-label="Next location"
             title="Next"
           >
