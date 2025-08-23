@@ -77,6 +77,9 @@ export const TopFilters: FC = () => {
   return (
     <div ref={menuRef} className="w-full sticky top-21 z-40 hidden lg:block">
       <div className="flex items-start bg-white border border-gray-200 rounded-lg p-2">
+        <div className="flex items-center mr-2 md:mr-3">
+          <span className="text-xs font-medium text-gray-500">Filters</span>
+        </div>
         <div className="flex flex-wrap items-center gap-2 md:gap-3">
           {topSections.map(item => {
             const isOpen = openMenu === item.id;
@@ -86,9 +89,22 @@ export const TopFilters: FC = () => {
                 <button
                   type="button"
                   onClick={() => setOpenMenu(prev => (prev === item.id ? null : item.id))}
-                  className={`px-3 py-2 text-sm rounded-md border cursor-pointer ${isOpen || isActive ? activeClass : defaultClass}`}
+                  className={`px-3 py-2 text-sm rounded-md border cursor-pointer flex items-center gap-2 ${isOpen || isActive ? activeClass : defaultClass}`}
                 >
-                  {item.name}
+                  <span>{item.name}</span>
+                  <svg
+                    className={`h-4 w-4 text-current transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
                 </button>
                 {isOpen && (
                   <div className="absolute left-0 mt-2 z-50 w-80 md:w-96 bg-white border border-gray-200 rounded-lg shadow-lg p-4">
@@ -109,9 +125,22 @@ export const TopFilters: FC = () => {
                     <button
                       type="button"
                       onClick={() => setOpenMenu(prev => (prev === 'brands' ? null : 'brands'))}
-                      className={`px-3 py-2 text-sm rounded-md border cursor-pointer ${isOpen || isActive ? activeClass : defaultClass}`}
+                      className={`px-3 py-2 text-sm rounded-md border cursor-pointer flex items-center gap-2 ${isOpen || isActive ? activeClass : defaultClass}`}
                     >
-                      Brands
+                      <span>Brands</span>
+                      <svg
+                        className={`h-4 w-4 text-current transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
                     </button>
                     {isOpen && (
                       <div className="absolute left-0 mt-2 z-50 w-80 md:w-96 bg-white border border-gray-200 rounded-lg shadow-lg p-4">
