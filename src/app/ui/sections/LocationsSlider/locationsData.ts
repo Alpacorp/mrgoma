@@ -5,7 +5,7 @@ export const locationsData: LocationData[] = [
     id: 'location-1',
     name: 'MrGoma Tires - Main Location',
     address: '18200 S Dixie Hwy, Miami, FL 33157',
-    locationStore: 'Serving Cutler Bay • Palmetto Bay • South Miami-Dade',
+    locationStore: 'Serving Cutler Bay • Palmetto Bay • South Miami • Kendall • Pinecrest',
     phone: '305-278-4632',
     backgroundImage: '/assets/images/18200.jpg',
     coordinates: {
@@ -17,7 +17,7 @@ export const locationsData: LocationData[] = [
     id: 'location-2',
     name: 'MrGoma Tires - Service Center',
     address: '3251 NW 27th Ave, Miami, FL 33142',
-    locationStore: 'Serving Allapattah • Liberty City • Near Miami Int’l Airport',
+    locationStore: 'Serving Allapattah • Midtown • Near Miami Int’l Airport',
     phone: '786-555-0192',
     backgroundImage: '/assets/images/3251.jpg',
     coordinates: {
@@ -29,7 +29,7 @@ export const locationsData: LocationData[] = [
     id: 'location-3',
     name: 'MrGoma Tires - South Branch',
     address: '20282 NW 2nd Ave, Miami, FL 33169',
-    locationStore: 'Serving Miami Gardens • Norland • Golden Glades',
+    locationStore: 'Serving Miami Gardens • Hollywood • Aventura',
     phone: '(305)770-1154',
     backgroundImage: '/assets/images/20282.jpg',
     coordinates: {
@@ -41,7 +41,7 @@ export const locationsData: LocationData[] = [
     id: 'location-4',
     name: 'MrGoma Tires - Express',
     address: '900 South Le Jeune Rd, Miami, FL 33134',
-    locationStore: 'Serving Coral Gables • West Miami • Near MIA Airport',
+    locationStore: 'Serving Coral Gables • Westchester • Near MIA Airport',
     phone: '305-123-4567',
     backgroundImage: '/assets/images/900.jpg',
     coordinates: {
@@ -65,7 +65,7 @@ export const locationsData: LocationData[] = [
     id: 'location-6',
     name: 'MrGoma Tires ',
     address: '4400 W Colonial Dr, Orlando, FL 32808',
-    locationStore: 'Serving Pine Hills • West Orlando • Near John Young Pkwy',
+    locationStore: 'Serving Midtown • Wintergarden • West Orlando',
     phone: '305-836-4200',
     backgroundImage: '/assets/images/4400.jpg',
     coordinates: {
@@ -77,7 +77,7 @@ export const locationsData: LocationData[] = [
     id: 'location-7',
     name: 'MrGoma Tires AUTOMOTIVE',
     address: '575 N Semoran Blvd, Orlando, FL 32807 (MrGoma Tires Automotive)',
-    locationStore: 'Serving Azalea Park • East Orlando • Near Executive Airport',
+    locationStore: "Serving Azalea Park • Winter Park • East Orlando • Near Orlando Int'l Airport",
     phone: '407-282-3100',
     backgroundImage: '/assets/images/575.jpg',
     coordinates: {

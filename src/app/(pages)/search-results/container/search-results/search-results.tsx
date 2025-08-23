@@ -422,7 +422,9 @@ const SearchResults: FC<SearchResultsProps> = () => {
             </section>
           </main>
         </div>
-        <CollapsibleSearchBar />
+        <div className="block lg:hidden">
+          <CollapsibleSearchBar />
+        </div>
       </main>
     </Suspense>
   );

@@ -2,6 +2,8 @@
 
 import { FC, useState, useRef, useEffect } from 'react';
 
+import { TireSelector } from '@/app/ui/components/CollapsibleSearchBar/components/TireSelector';
+import { useTireSearch } from '@/app/ui/components/CollapsibleSearchBar/hooks/useTireSearch';
 import { FilterBody } from '@/app/ui/sections/';
 import { filtersItems } from '@/app/ui/sections/FiltersMobile/FiltersItems';
 import { useFilters } from '@/app/ui/sections/FiltersMobile/hooks/useFilters';
@@ -20,6 +22,13 @@ export const TopFilters: FC = () => {
     checkboxInputs,
   } = useFilters();
 
+  // Tire size form state (CompactForm equivalent) using the same hook used in CollapsibleSearchBar
+  const {
+    selectedFilters: tireSelectedFilters,
+    handleFilterChange: handleTireFilterChange,
+    resetFilters: resetTireFilters,
+  } = useTireSearch();
+
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
@@ -32,6 +41,9 @@ export const TopFilters: FC = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const isTireSizeActive = () =>
+    Boolean(tireSelectedFilters.w || tireSelectedFilters.s || tireSelectedFilters.d);
 
   const topSections = [
     { id: 'price', name: 'Price' },
@@ -81,6 +93,63 @@ export const TopFilters: FC = () => {
           <span className="text-xs font-medium text-gray-500">Filters</span>
         </div>
         <div className="flex flex-wrap items-center gap-2 md:gap-3">
+          {/* Tire Size filter */}
+          {(() => {
+            const isOpen = openMenu === 'tireSize';
+            const isActive = isTireSizeActive();
+            return (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setOpenMenu(prev => (prev === 'tireSize' ? null : 'tireSize'))}
+                  className={`px-3 py-2 text-sm rounded-md border cursor-pointer flex items-center gap-2 ${isOpen || isActive ? activeClass : defaultClass}`}
+                >
+                  <span>Tire Size</span>
+                  <svg
+                    className={`h-4 w-4 text-current transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+                {isOpen && (
+                  <div className="absolute left-0 mt-2 z-50 w-[22rem] md:w-[26rem] bg-white border border-gray-200 rounded-lg shadow-lg p-4">
+                    <div className="space-y-2">
+                      <TireSelector
+                        selectedFilters={tireSelectedFilters}
+                        onFilterChangeAction={handleTireFilterChange}
+                      />
+                      <div className="flex items-center justify-between gap-2 pt-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            resetTireFilters();
+                          }}
+                          className="px-3 py-1.5 cursor-pointer text-xs rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
+                        >
+                          Reset Selection
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setOpenMenu(null)}
+                          className="px-3 py-1.5 cursor-pointer text-xs rounded-md bg-green-600 text-white hover:bg-green-500"
+                        >
+                          Done
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
           {topSections.map(item => {
             const isOpen = openMenu === item.id;
             const isActive = isFilterActive(item.id);
