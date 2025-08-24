@@ -8,7 +8,7 @@ import SearchResults from './container/search-results/search-results';
 
 export default function Page() {
   return (
-    <Suspense fallback={<LoadingScreen message="Cargando resultados..." />}>
+    <Suspense fallback={<LoadingScreen message="Loading results ..." />}>
       <SearchResults />
     </Suspense>
   );
