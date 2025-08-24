@@ -23,11 +23,16 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
   };
 
   return (
-    <div>
-      <div className="flex justify-between">
+    <section aria-labelledby={`tire-title-${singleTire.id}`}>
+      <h1 id={`tire-title-${singleTire.id}`} className="sr-only">
+        {singleTire.name}
+      </h1>
+      <div role="group" aria-label="Product header">
         <div>
           <div className="mb-3">
-            <ArrowsToRight className="w-20 h-6" />
+            <span aria-hidden="true" role="presentation">
+              <ArrowsToRight className="w-20 h-6" />
+            </span>
             <div className="my-1">
               <BrandImage
                 product={{
@@ -37,27 +42,45 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
               />
             </div>
             <ProductName type={1} size="3xl" weight="bold" name={singleTire.name} />
+            {singleTire.model2 && <p className="text-sm text-gray-600 mt-1">{singleTire.model2}</p>}
           </div>
-          <div className="mt-3">
+          <div className="mt-3 flex items-center justify-between">
             <h2 className="sr-only">Product information</h2>
             <ProductPrice price={singleTire.price} />
+            <div className="flex gap-2">
+              <CtaButton
+                product={singleTire}
+                text={productInCart ? 'In Cart' : 'Add to Cart'}
+                style="primary"
+                onClick={handleAddToCart}
+                disabled={productInCart}
+                isLink={false}
+              />
+              <div className="sr-only" aria-live="polite" role="status">
+                {productInCart ? 'This item is already in your cart.' : ''}
+              </div>
+            </div>
           </div>
+          <ul aria-label="Key specifications" className="mt-4 flex flex-wrap gap-2">
+            <li className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
+              Condition: {singleTire.condition}
+            </li>
+            <li className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
+              Remaining life: {singleTire.remainingLife}
+            </li>
+            <li className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
+              Tread depth: {singleTire.treadDepth}
+            </li>
+            <li className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
+              Patched: {singleTire.patched}
+            </li>
+          </ul>
         </div>
       </div>
       <div className="my-6">
         <ProductDescription description={singleTire.description || ''} />
       </div>
-      <div className="flex gap-2">
-        <CtaButton
-          product={singleTire}
-          text={productInCart ? 'In Cart' : 'Add cart'}
-          style="primary"
-          onClick={handleAddToCart}
-          disabled={productInCart}
-          isLink={false}
-        />
-      </div>
-    </div>
+    </section>
   );
 };
 

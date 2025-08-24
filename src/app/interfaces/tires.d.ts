@@ -1,3 +1,5 @@
+import React from 'react';
+
 export interface TiresData {
   TireId: string;
   VaultId?: number;

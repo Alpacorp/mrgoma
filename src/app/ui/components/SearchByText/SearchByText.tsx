@@ -14,10 +14,12 @@ const SearchByText: FC = () => {
   const router = useRouter();
 
   const { setSelectedFilters } = useContext(SelectedFiltersContext);
+  const isComplete = /^\d{3}\/\d{2}\/\d{2}$/.test(value);
+  const isInvalid = value.trim().length > 0 && !isComplete;
 
   const handleSearch = (event: FormEvent) => {
     event.preventDefault();
-    if (value) {
+    if (isComplete) {
       const [width, aspectRatio, diameter] = value.split('/').map(part => part.trim());
       const params = new URLSearchParams();
 
@@ -45,22 +47,49 @@ const SearchByText: FC = () => {
                 </span>
               </label>
               <input
+                autoFocus={true}
                 id="tireSize"
                 inputMode="numeric"
                 type="text"
-                placeholder="e.g. 255/55R18"
+                placeholder="e.g. 255/55/18"
+                autoComplete="off"
+                title="Enter tire size as Width/Aspect/Diameter, e.g. 255/55/18"
+                aria-describedby="tireSizeHelp tireSizeError"
+                aria-invalid={isInvalid}
                 value={value}
                 onChange={(event: ChangeEvent<HTMLInputElement>) =>
                   handleChange({ event, setValue, setSelectedFilters })
                 }
                 onKeyDown={handleKeyPress}
-                className="w-full bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className={`w-full bg-white rounded-md py-2 px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white transition-shadow border ${
+                  isInvalid ? 'border-red-500' : 'border-gray-300'
+                }`}
               />
-              <p className="text-xs text-gray-600">
-                Enter the tire size in the format: Width/AspectRatio R Diameter
-              </p>
+              <div className="flex items-center justify-between">
+                <p id="tireSizeHelp" className="text-xs text-gray-600">
+                  Enter size as Width/Aspect/Diameter (e.g., 255/55/18).
+                </p>
+                {value && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setValue('');
+                      setSelectedFilters({ width: '', sidewall: '', diameter: '' });
+                    }}
+                    className="text-xs text-gray-600 cursor-pointer underline hover:text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 rounded"
+                    aria-describedby="tireSizeHelp"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+              {isInvalid && (
+                <p id="tireSizeError" className="text-xs text-red-600">
+                  Please complete the size as 3 digits / 2 digits / 2 digits.
+                </p>
+              )}
             </div>
-            <ButtonSearch type={'submit'} disabled={value.trim()} />
+            <ButtonSearch type={'submit'} disabled={isComplete} />
           </form>
         </div>
       </div>

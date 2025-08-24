@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
     // Map DB record to SingleTire shape expected by UI
     const singleTire = {
       id: String(record.TireId ?? ''),
-      name: `(${record.Code || ''}) | ${record.Brand || 'Unknown'} | ${record.Model2 || ''} | ${record.RealSize || ''}`.trim(),
+      name: `(${record.Code || ''}) | ${record.Brand || 'Unknown'} | ${record.RealSize || ''}`.trim(),
       color: 'Black',
       dot: record.DOT || 'N/A',
       price: record.Price?.toString() || '-',
@@ -50,19 +50,17 @@ export async function GET(req: NextRequest) {
       remainingLife: (record.RemainingLife as string) || '-',
       treadDepth: (record.Tread as string) || '-',
       images,
-      description: (record.Description as string) || undefined,
+      // description: (record.Description as string) || undefined,
+      description: '',
       model2: (record.Model2 as string) || undefined,
       details: [
         {
-          name: 'Features',
+          name: 'More Details',
           items: [
-            `Condition: ${record.ProductTypeId === 1 ? 'New' : 'Used'}`,
-            `Patched: ${record.Patched === '0' ? 'No' : 'Yes'}`,
-            `Remaining life: ${(record.RemainingLife as string) || '-'}`,
-            `Tread depth: ${(record.Tread as string) || '-'}`,
-            `Size: ${(record.RealSize as string) || '-'}`,
             `Load Index: ${(record.loadIndex as string) || '-'}`,
-            `DOT: ${record.DOT || 'N/A'}`,
+            `DOT: ${record.DOT || ''}`,
+            `Traction Ratio: ${record.Status || ''}`,
+            `Speed Index: ${record.speedIndex || ''}`,
           ],
         },
       ],

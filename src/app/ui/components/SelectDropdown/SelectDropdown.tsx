@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useId } from 'react';
 
 interface SelectDropdownProps {
   field: {
@@ -20,16 +20,29 @@ const SelectDropdown: FC<SelectDropdownProps> = ({
   showDefaultText = true,
   disabled = false,
 }) => {
+  const reactId = useId();
+  const selectId = `select-${field.type}-${reactId}`;
+  const labelText = `Select ${field.label}`;
+
   return (
     <div className="relative">
+      {/* Visually hidden label for screen readers */}
+      <label htmlFor={selectId} className="sr-only">
+        {labelText}
+      </label>
       <select
+        id={selectId}
+        name={field.type}
+        title={labelText}
+        aria-label={labelText}
+        aria-disabled={disabled}
         value={selectedFilters[field.type as keyof typeof selectedFilters]}
         onChange={e =>
           handleFilterChange(e.target.value, field.type as 'width' | 'sidewall' | 'diameter')
         }
-        className={`w-full bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 text-xs appearance-none
-          ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
-        `}
+        className={`w-full bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus:border-transparent transition-all duration-200 text-xs appearance-none ${
+          disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+        }`}
         disabled={disabled}
       >
         <option value="">Select {showDefaultText && field.label}</option>
@@ -44,7 +57,7 @@ const SelectDropdown: FC<SelectDropdownProps> = ({
         aria-hidden="true"
       >
         <svg
-          className="h-4 w-4 text-gray-400"
+          className={`h-4 w-4 ${disabled ? 'text-gray-300' : 'text-gray-400'}`}
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
           fill="currentColor"

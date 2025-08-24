@@ -23,6 +23,8 @@ export type DocumentRecord = {
   Condition?: string;
   Patched?: string;
   RemainingLife?: string;
+  Status?: string;
+  speedIndex?: string;
   Tread?: string;
   RealSize?: string;
 };

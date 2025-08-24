@@ -35,4 +35,10 @@ export const terminology = [
     description:
       'The amount of air pressure inside a tire, measured in PSI (pounds per square inch). Maintaining proper tire pressure is critical for optimal performance, fuel efficiency, and tire longevity. The recommended pressure can be found in your vehicle\'s manual or on the driver\'s door jamb.',
   },
+  {
+    id: 7,
+    title: 'Speed index',
+    description:
+      'A letter code indicating the maximum speed a tire can safely sustain under optimal conditions. Common ratings include Q (99 mph), S (112 mph), H (130 mph), V (149 mph), W (168 mph), and Y (186+ mph). Always match or exceed your vehicle manufacturer\'s recommended speed index.',
+  },
 ];
