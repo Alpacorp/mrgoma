@@ -73,13 +73,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   // Add a product to the cart
   const addToCart = (product: any) => {
     setCartItems(prevItems => {
-      // Check if the product is already in the cart
-      const existingItem = prevItems.find(item => item.id === product.id);
+      const prodId = String(product.id);
+      // Check if the product is already in the cart (normalize id comparison)
+      const existingItem = prevItems.find(item => String(item.id) === prodId);
 
       if (existingItem) {
         // If it exists, increase the quantity
         return prevItems.map(item =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          String(item.id) === prodId ? { ...item, quantity: item.quantity + 1 } : item
         );
       } else {
         // If it doesn't exist, add it with quantity 1
@@ -91,8 +92,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           {
             brand: product.brand,
             brandId: product.brandId,
-            id: product.id,
-            image: product.imageSrc,
+            id: prodId,
+            image: product.imageSrc || (product.images?.[0]?.src ?? undefined),
             name: product.name,
             price: price,
             quantity: 1,
@@ -118,7 +119,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   // Check if a product is in the cart
   const isInCart = useCallback(
     (productId: string | number) => {
-      return cartItems.some(item => item.id === productId);
+      const pid = String(productId);
+      return cartItems.some(item => String(item.id) === pid);
     },
     [cartItems]
   );

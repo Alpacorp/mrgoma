@@ -72,7 +72,7 @@ export interface SingleTireDetails {
 }
 
 export interface SingleTire {
-  id: number;
+  id: string | number;
   name: string;
   color: string;
   price: string;
@@ -83,7 +83,8 @@ export interface SingleTire {
   remainingLife: string;
   treadDepth: string;
   images: singleProductImages[];
-  description: string;
+  description?: string;
+  model2?: string;
   details: SingleProductDetails;
 }
 

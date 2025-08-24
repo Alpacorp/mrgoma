@@ -1,5 +1,7 @@
+'use client';
+
 import Image from 'next/image';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 
 interface BrandImageProps {
   product: {
@@ -9,17 +11,19 @@ interface BrandImageProps {
 }
 
 const BrandImage: FC<BrandImageProps> = ({ product }) => {
+  const [src, setSrc] = useState(`/assets/images/TireBrand/${product.brandId}-logo.png`);
   return (
     <Image
-      className="h-6 w-auto pl-1 object-contain object-center"
-      src={`/assets/images/TireBrand/${product.brandId}-logo.png`}
+      className="h-auto aspect-auto max-w-32 w-full pl-1 object-contain object-center"
+      src={src}
       alt={product.brand}
       title={product.brand}
       aria-label={product.brand}
       priority
       width={400}
       height={300}
-      sizes="(max-width: 768px) 130px, 130px"
+      sizes="(max-width: 768px) 160px, 200px"
+      onError={() => setSrc('/assets/images/TireBrand/default-logo.png')}
     />
   );
 };

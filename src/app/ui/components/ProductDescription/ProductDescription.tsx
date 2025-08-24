@@ -7,7 +7,7 @@ interface ProductDescriptionProps {
 const ProductDescription: FC<ProductDescriptionProps> = ({ description }) => {
   return (
     <div>
-      <h3 className="sr-only">Description</h3>
+      <h3>Description:</h3>
       <div className="space-y-6 text-base text-gray-700" />
       <p>{description}</p>
     </div>

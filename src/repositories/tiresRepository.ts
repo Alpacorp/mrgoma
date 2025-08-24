@@ -4,19 +4,27 @@ import { getPool } from '@/connection/db';
 
 export type DocumentRecord = {
   id?: number;
+  ProductTypeId?: number;
   TireId: string;
   Code: string;
+  DOT?: string;
+  loadIndex?: string;
   Brand?: string;
   Model?: string;
+  Model2?: string;
+  Description?: string;
   Size?: string;
   Image1?: string;
+  Image2?: string;
+  Image3?: string;
+  Image4?: string;
   Price?: string | number;
   BrandId?: number;
   Condition?: string;
   Patched?: string;
   RemainingLife?: string;
   Tread?: string;
-  RealSize?: string; // Dimensión real del neumático (formato 225/70/16)
+  RealSize?: string;
 };
 
 export type TireFilters = {
@@ -301,4 +309,16 @@ export async function fetchBrands(filters: TireFilters = {}): Promise<string[]> 
 
   const result = await request.query(query);
   return result.recordset.map(row => row.Brand as string);
+}
+
+export async function fetchTireById(tireId: string): Promise<DocumentRecord | null> {
+  const pool = await getPool();
+  const request = pool.request();
+  request.input('tireId', VarChar, tireId);
+
+  const query = `SELECT TOP 1 * FROM dbo.View_Tires WHERE TireId = @tireId`;
+
+  const result = await request.query(query);
+  const record = (result.recordset && result.recordset[0]) as DocumentRecord | undefined;
+  return record || null;
 }

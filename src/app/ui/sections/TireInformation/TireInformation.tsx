@@ -28,6 +28,14 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
         <div>
           <div className="mb-3">
             <ArrowsToRight className="w-20 h-6" />
+            <div className="my-1">
+              <BrandImage
+                product={{
+                  brand: singleTire.brand,
+                  brandId: singleTire.brandId,
+                }}
+              />
+            </div>
             <ProductName type={1} size="3xl" weight="bold" name={singleTire.name} />
           </div>
           <div className="mt-3">
@@ -35,26 +43,20 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
             <ProductPrice price={singleTire.price} />
           </div>
         </div>
-        <div>
-          <BrandImage
-            product={{
-              brand: singleTire.brand,
-              brandId: singleTire.brandId,
-            }}
-          />
-        </div>
       </div>
       <div className="my-6">
-        <ProductDescription description="The Zip Tote Basket is the perfect midpoint between shopping tote and comfy backpack. With convertible straps, you can hand carry, should sling, or backpack this convenient and spacious bag. The zip top and durable canvas construction keeps your goods protected for all-day use" />
+        <ProductDescription description={singleTire.description || ''} />
       </div>
-      <CtaButton
-        product={singleTire}
-        text={productInCart ? 'In Cart' : 'Add cart'}
-        style="primary"
-        onClick={handleAddToCart}
-        disabled={productInCart}
-        isLink={false}
-      />
+      <div className="flex gap-2">
+        <CtaButton
+          product={singleTire}
+          text={productInCart ? 'In Cart' : 'Add cart'}
+          style="primary"
+          onClick={handleAddToCart}
+          disabled={productInCart}
+          isLink={false}
+        />
+      </div>
     </div>
   );
 };
