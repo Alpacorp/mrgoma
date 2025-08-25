@@ -72,6 +72,7 @@ const Detail = () => {
         <div className="relative w-full rounded-lg overflow-hidden aspect-square sm:aspect-[16/10] lg:aspect-[16/9]">
           <div className="absolute inset-0 bg-gray-100 animate-pulse" />
           <div className="pointer-events-none absolute top-2 left-2 h-7 w-28 rounded-full bg-gray-200/80 shadow-sm" />
+          <div className="pointer-events-none absolute top-2 right-2 h-6 w-24 rounded-full bg-gray-200/80 shadow-sm" />
         </div>
         <div className="mx-auto mt-6 w-full max-w-2xl lg:max-w-none">
           <div className="grid grid-cols-4 gap-3">

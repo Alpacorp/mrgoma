@@ -10,10 +10,14 @@ const TireCardSkeleton: FC = () => (
     <div className="grid grid-cols-12 gap-4">
       {/* Image skeleton - left side - Matches ProductImage placement */}
       <div className="relative col-span-12 md:col-span-4">
-        <div className="w-full max-w-[17.313rem] h-52 bg-gray-200 rounded-lg" />
+        <div className="w-full h-52 bg-gray-200 rounded-lg shadow-sm" />
         {/* Condition badge skeleton */}
         <div className="absolute top-0 left-0 z-30">
           <div className="h-6 w-20 bg-gray-300 rounded-br-lg" />
+        </div>
+        {/* Stock badge skeleton (top-right) */}
+        <div className="absolute top-2 right-2 z-30">
+          <div className="h-6 w-24 bg-gray-200/80 rounded-full shadow-sm" />
         </div>
       </div>
 

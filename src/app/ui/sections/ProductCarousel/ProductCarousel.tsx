@@ -4,7 +4,7 @@ import Image from 'next/image';
 import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import { TireInformationProps } from '@/app/interfaces/tires';
-import { ProductCondition, ProductCarouselMiniature } from '@/app/ui/components';
+import { ProductCondition, ProductCarouselMiniature, StockBadge } from '@/app/ui/components';
 
 const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
   const images = useMemo(() => singleTire.images || [], [singleTire.images]);
@@ -102,8 +102,11 @@ const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
               priority={false}
             />
-            <div className="absolute z-30 text-lg font-semibold text-white top-0 left-0 text-center">
+            <div className="pointer-events-none absolute top-0 left-0 z-30 text-lg font-semibold text-white">
               <ProductCondition condition={singleTire.condition} />
+            </div>
+            <div className="pointer-events-none absolute top-2 right-2">
+              <StockBadge />
             </div>
           </div>
         </div>
