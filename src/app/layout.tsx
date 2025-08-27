@@ -7,6 +7,7 @@ import { SelectedFiltersProvider } from '@/app/context/SelectedFilters';
 import { DetailModalProvider } from '@/app/context/ShowDetailModal';
 import { FiltersProvider } from '@/app/context/ShowFilterContext';
 import { MenuProvider } from '@/app/context/ShowMenuContext';
+import CookieConsent from '@/app/ui/components/CookieConsent/CookieConsent';
 import { Footer, Header } from '@/app/ui/sections';
 
 import './globals.css';
@@ -38,6 +39,7 @@ export default function RootLayout({
                   <Header />
                   {children}
                   <Footer />
+                  <CookieConsent />
                 </body>
               </CartProvider>
             </MenuProvider>

@@ -48,7 +48,7 @@ export const Footer = ({
   sections = defaultSections,
   socialLinks = defaultSocialLinks,
   copyrightYear = new Date().getFullYear(),
-  companyName = 'MrGoma Tires',
+  companyName = 'MrGoma Tires®',
 }: FooterProps) => {
   return (
     <footer className={`bg-black relative overflow-hidden ${className}`}>
@@ -119,18 +119,18 @@ export const Footer = ({
         <div className="container mx-auto px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-300 text-sm">
-              All rights reserved{' '}
-              <span className="text-[#9dfb40] font-semibold">{companyName}</span> {copyrightYear}
+              <span className="text-[#9dfb40] font-semibold">{companyName}</span> is a registered
+              trademark of Jomah Trading Inc. All rights reserved {copyrightYear}
             </p>
             <div className="flex gap-6">
               <Link
-                href="#"
+                href="/legal-policies"
                 className="text-gray-300 hover:text-[#9dfb40] transition-colors duration-200 text-sm"
               >
                 Terms and Conditions
               </Link>
               <Link
-                href="#"
+                href="/legal-policies#privacy"
                 className="text-gray-300 hover:text-[#9dfb40] transition-colors duration-200 text-sm"
               >
                 Privacy Policy
