@@ -55,7 +55,7 @@ export const locationsData: LocationData[] = [
     address: '4040 E 10th Ct, Hialeah, FL 33013 (MrGoma Tires Automotive)',
     locationStore: 'Serving Hialeah • Miami Springs • East Hialeah',
     phone: '305-836-4200',
-    backgroundImage: '/assets/images/4040.jpg',
+    backgroundImage: '/assets/images/4040.webp',
     coordinates: {
       lat: 25.859899563153597,
       lng: -80.26171361533953,

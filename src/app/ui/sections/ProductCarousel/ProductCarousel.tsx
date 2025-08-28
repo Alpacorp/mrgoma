@@ -93,7 +93,7 @@ const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
           aria-labelledby={`image-tab-${current.id}`}
           className="w-full"
         >
-          <div className="relative w-full bg-white rounded-lg overflow-hidden aspect-square sm:aspect-[16/10] lg:aspect-[16/9]">
+          <div className="relative isolate w-full bg-white rounded-lg overflow-hidden aspect-square sm:aspect-[16/10] lg:aspect-[16/9]">
             <Image
               alt={current.alt || current.name}
               src={current.src}
@@ -105,7 +105,7 @@ const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
             <div className="pointer-events-none absolute top-0 left-0 z-30 text-lg font-semibold text-white">
               <ProductCondition condition={singleTire.condition} />
             </div>
-            <div className="pointer-events-none absolute top-2 right-2">
+            <div className="pointer-events-none absolute right-2 top-3 sm:top-2 z-[60]">
               <StockBadge />
             </div>
           </div>

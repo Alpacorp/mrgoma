@@ -22,7 +22,6 @@ const HomeContent: FC = () => {
                 muted
                 loop
                 playsInline
-                poster="/assets/images/banner-hero.gif"
                 controls={false}
               >
                 <source src="/assets/images/banner-hero.mp4" type="video/mp4" />

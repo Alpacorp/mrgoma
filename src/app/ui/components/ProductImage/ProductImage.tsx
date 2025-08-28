@@ -47,7 +47,7 @@ const ProductImage: FC<ProductImageProps> = ({ product }) => {
   };
 
   return (
-    <div className="relative z-30 h-full w-full overflow-hidden rounded-lg">
+    <div className="relative z-20 h-full w-full overflow-hidden rounded-lg">
       <Image
         className={`w-full object-contain object-center transition ease-in-out hover:scale-105 duration-300`}
         alt={product.imageAlt || product.brand || 'Tire image'}
