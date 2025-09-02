@@ -33,7 +33,7 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
             <span aria-hidden="true" role="presentation">
               <ArrowsToRight className="w-20 h-6" />
             </span>
-            <div className="my-1">
+            <div className="my-4">
               <BrandImage
                 product={{
                   brand: singleTire.brand,

@@ -9,13 +9,11 @@ import { locationsData } from '@/app/ui/sections/LocationsSlider/locationsData';
 interface LocationsSliderProps {
   locations?: LocationData[];
   className?: string;
-  onLocationInteraction?: (action: 'map' | 'phone', data: string) => void;
 }
 
 export const LocationsSlider = ({
   locations = locationsData,
   className = '',
-  onLocationInteraction,
 }: LocationsSliderProps) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [cardsPerSlide, setCardsPerSlide] = useState(2);
@@ -41,20 +39,6 @@ export const LocationsSlider = ({
     // Clean up
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  const handleLocationClick = useCallback(
-    (location: LocationData) => {
-      onLocationInteraction?.('map', location.address);
-    },
-    [onLocationInteraction]
-  );
-
-  const handlePhoneClick = useCallback(
-    (phone: string) => {
-      onLocationInteraction?.('phone', phone);
-    },
-    [onLocationInteraction]
-  );
 
   const goToSlide = (index: number) => {
     setCurrentSlide(index);
@@ -138,12 +122,7 @@ export const LocationsSlider = ({
                   <div key={slideIndex} className="w-full flex-shrink-0 px-2 flex gap-4">
                     {locationsForSlide.map(location => (
                       <div key={location.id} className={isMobile ? 'w-full' : 'w-1/2'}>
-                        <LocationCard
-                          {...location}
-                          onLocationClick={handleLocationClick}
-                          onPhoneClick={handlePhoneClick}
-                          className="mx-auto"
-                        />
+                        <LocationCard {...location} className="mx-auto" />
                       </div>
                     ))}
                   </div>

@@ -7,6 +7,7 @@ import React, { FC } from 'react';
 import { useCart } from '@/app/context/CartContext';
 import { XMarkIcon } from '@/app/ui/components';
 import { Dialog, DialogBackdrop, DialogPanel } from '@/app/ui/components/Dialog/Dialog';
+import ProductMeta from '@/app/ui/components/ProductMeta/ProductMeta';
 
 const CartModal: FC = () => {
   const { cartItems, removeFromCart, cartTotal, showCartModal, setShowCartModal } = useCart();
@@ -21,7 +22,10 @@ const CartModal: FC = () => {
       onCloseAction={closeModal}
       className="fixed inset-0 z-50 overflow-y-auto animate-slide-in-right"
     >
-      <DialogBackdrop className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300" transition={true} />
+      <DialogBackdrop
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300"
+        transition={true}
+      />
       <div className="flex h-full justify-end animate-slide-in-right">
         <DialogPanel
           className="w-full sm:max-w-md bg-white shadow-xl h-full overflow-y-auto animate-slide-in-right sm:rounded-l-2xl ring-1 ring-black/5"
@@ -49,60 +53,76 @@ const CartModal: FC = () => {
                   <p className="text-gray-500">Your cart is empty</p>
                 </div>
               ) : (
-                <ul className="divide-y divide-gray-200">
-                  {cartItems.map(item => (
-                    <li key={item.id} className="py-3 flex gap-3 -mx-2 px-2 rounded-md hover:bg-gray-50 transition-colors group">
-                      {/* Product Image */}
-                      <div className="flex-shrink-0 w-16 h-16 border border-gray-200 rounded-md overflow-hidden group-hover:ring-1 group-hover:ring-green-200">
-                        {item.image ? (
-                          <Image
-                            src={item.image}
-                            alt={item.name}
-                            width={64}
-                            height={64}
-                            className="w-full h-full object-center object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                            <span className="text-xs text-gray-500">No image</span>
-                          </div>
-                        )}
-                      </div>
+                <>
+                  <div
+                    className="sr-only"
+                    aria-live="polite"
+                  >{`Items in cart: ${cartItems.length}`}</div>
+                  <ul className="divide-y divide-gray-200" aria-label="Cart items">
+                    {cartItems.map(item => (
+                      <li
+                        key={item.id}
+                        className="py-3 flex gap-3 -mx-2 px-2 rounded-md hover:bg-gray-50 transition-colors group"
+                      >
+                        {/* Product Image */}
+                        <div className="flex-shrink-0 w-16 h-16 border border-gray-200 rounded-md overflow-hidden group-hover:ring-1 group-hover:ring-green-200">
+                          {item.image ? (
+                            <Image
+                              src={item.image}
+                              alt={item.name}
+                              width={64}
+                              height={64}
+                              className="w-full h-full object-center object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                              <span className="text-xs text-gray-500">No image</span>
+                            </div>
+                          )}
+                        </div>
 
-                      {/* Product Details */}
-                      <div className="ml-4 flex-1 flex flex-col">
-                        <div>
-                          <div className="flex justify-between text-base font-medium text-gray-900">
-                            <h3>{item.name}</h3>
-                            <p className="ml-4">${item.price.toFixed(2)}</p>
+                        {/* Product Details */}
+                        <div className="ml-4 flex-1 flex flex-col">
+                          <div>
+                            <div className="flex justify-between text-base font-medium text-gray-900">
+                              <h3>{item.name}</h3>
+                              <p className="ml-4">${item.price.toFixed(2)}</p>
+                            </div>
+                            <ProductMeta brand={item.brand} condition={item.condition} />
                           </div>
-                          {item.brand && <p className="mt-1 text-sm text-gray-500">{item.brand}</p>}
+                          <div className="flex-1 flex items-end justify-between text-sm">
+                            <p className="text-gray-500">Qty {item.quantity}</p>
+                            <button
+                              type="button"
+                              className="font-medium text-gray-500 hover:text-red-600 transition-colors cursor-pointer"
+                              onClick={() => removeFromCart(item.id)}
+                              aria-label={`Remove ${item.name} from cart`}
+                            >
+                              Remove
+                            </button>
+                          </div>
                         </div>
-                        <div className="flex-1 flex items-end justify-between text-sm">
-                          <p className="text-gray-500">Qty {item.quantity}</p>
-                          <button
-                            type="button"
-                            className="font-medium text-gray-500 hover:text-red-600 transition-colors cursor-pointer"
-                            onClick={() => removeFromCart(item.id)}
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                      </li>
+                    ))}
+                  </ul>
+                </>
               )}
             </div>
 
             {/* Footer */}
             <div className="sticky bottom-0 z-10 border-t border-gray-200 p-4 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/75">
-              <div className="flex items-center justify-between text-base font-semibold text-gray-900 mb-3" aria-live="polite">
+              <div
+                className="flex items-center justify-between text-base font-semibold text-gray-900 mb-3"
+                aria-live="polite"
+              >
                 <p>Subtotal</p>
                 <p>${cartTotal.toFixed(2)}</p>
               </div>
               <Link
                 href="/checkout"
+                aria-disabled={cartItems.length === 0}
+                role={cartItems.length === 0 ? 'link' : undefined}
+                tabIndex={cartItems.length === 0 ? -1 : 0}
                 className={`flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
                   cartItems.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
                 }`}

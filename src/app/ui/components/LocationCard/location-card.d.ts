@@ -5,14 +5,9 @@ export interface LocationData {
   locationStore: string;
   phone: string;
   backgroundImage: string;
-  coordinates?: {
-    lat: number;
-    lng: number;
-  };
+  link?: string;
 }
 
 export interface LocationCardProps extends LocationData {
   className?: string;
-  onLocationClick?: (location: LocationData) => void;
-  onPhoneClick?: (phone: string) => void;
 }

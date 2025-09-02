@@ -7,37 +7,27 @@ import { LocationIcon, PhoneIcon } from '@/app/ui/icons';
 import { LocationCardProps } from './location-card';
 
 export const LocationCard = ({
-  id,
   name,
   address,
   locationStore,
   phone,
   backgroundImage,
-  coordinates,
+  link,
   className = '',
-  onLocationClick,
-  onPhoneClick,
 }: LocationCardProps) => {
-  const getGoogleMapsUrl = () => {
-    if (coordinates) {
-      return `https://www.google.com/maps?q=${coordinates.lat},${coordinates.lng}`;
-    }
-    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-  };
-
   const getPhoneUrl = () => {
     const cleanPhone = phone.replace(/[^\d+]/g, '');
     return `tel:${cleanPhone}`;
   };
 
   const handleLocationClick = () => {
-    onLocationClick?.({ id, name, address, phone, backgroundImage, coordinates, locationStore });
-    window.open(getGoogleMapsUrl(), '_blank');
+    if (link) {
+      window.open(link, '_blank', 'noopener,noreferrer');
+    }
   };
 
   const handlePhoneClick = () => {
-    onPhoneClick?.(phone);
-    window.open(getPhoneUrl());
+    window.open(getPhoneUrl(), '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -65,7 +55,7 @@ export const LocationCard = ({
           <button
             onClick={handleLocationClick}
             className="flex gap-2 transition-colors cursor-pointer group"
-            aria-label={`Open ${address} in Google Maps`}
+            aria-label={`Open address link`}
           >
             <LocationIcon className="group-hover:scale-110 transition-transform" />
             <div className="flex flex-col gap-1" aria-label={`Address and Store`} role="group">

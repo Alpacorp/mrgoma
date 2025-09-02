@@ -11,7 +11,7 @@ interface BrandImageProps {
 }
 
 const BrandImage: FC<BrandImageProps> = ({ product }) => {
-  const [src, setSrc] = useState(`/assets/images/TireBrand/${product.brandId}-logo.png`);
+  const [src, setSrc] = useState(`/assets/images/TireBrand/${product.brandId}-logo.webp`);
   return (
     <Image
       className="h-auto aspect-auto max-w-32 w-full pl-1 object-contain object-center"
@@ -23,7 +23,7 @@ const BrandImage: FC<BrandImageProps> = ({ product }) => {
       width={400}
       height={300}
       sizes="(max-width: 768px) 160px, 200px"
-      onError={() => setSrc('/assets/images/TireBrand/default-logo.png')}
+      onError={() => setSrc('/assets/images/TireBrand/no-brand.webp')}
     />
   );
 };

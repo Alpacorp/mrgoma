@@ -7,6 +7,7 @@ import React from 'react';
 
 import { useCart } from '@/app/context/CartContext';
 import { LoadingScreen } from '@/app/ui/components';
+import ProductMeta from '@/app/ui/components/ProductMeta/ProductMeta';
 
 const TAX_RATE = (() => {
   if (typeof process !== 'undefined') {
@@ -533,9 +534,11 @@ export default function Checkout() {
                                   >
                                     {item.name}
                                   </Link>
-                                  {item.brand && (
-                                    <p className="mt-0.5 text-sm text-gray-500">{item.brand}</p>
-                                  )}
+                                  <ProductMeta
+                                    brand={item.brand}
+                                    condition={item.condition}
+                                    className="mt-0.5"
+                                  />
                                 </div>
                               </div>
                             </td>

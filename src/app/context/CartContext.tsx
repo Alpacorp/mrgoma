@@ -15,6 +15,7 @@ export interface CartItem {
   id: string | number;
   name: string;
   price: number;
+  condition?: string;
   image?: string;
   quantity: number;
   brand?: string;
@@ -91,6 +92,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           ...prevItems,
           {
             brand: product.brand,
+            condition: product.condition,
             brandId: product.brandId,
             id: prodId,
             image: product.imageSrc || (product.images?.[0]?.src ?? undefined),
