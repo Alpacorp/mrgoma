@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import React from 'react';
@@ -7,7 +8,7 @@ import { SelectedFiltersProvider } from '@/app/context/SelectedFilters';
 import { DetailModalProvider } from '@/app/context/ShowDetailModal';
 import { FiltersProvider } from '@/app/context/ShowFilterContext';
 import { MenuProvider } from '@/app/context/ShowMenuContext';
-import CookieConsent from '@/app/ui/components/CookieConsent/CookieConsent';
+import { CookieConsent } from '@/app/ui/components';
 import { Footer, Header } from '@/app/ui/sections';
 
 import './globals.css';
@@ -40,6 +41,7 @@ export default function RootLayout({
                   {children}
                   <Footer />
                   <CookieConsent />
+                  <Analytics />
                 </body>
               </CartProvider>
             </MenuProvider>

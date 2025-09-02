@@ -36,3 +36,4 @@ export { default as NoResultsFound } from './NotResultsFound/NoResultsFound';
 export { default as ResultsSkeleton } from './TireCardSkeleton/TireCardSkeleton';
 export { default as ErrorDisplay } from './ErrorDisplay/ErrorDisplay';
 export { default as StockBadge } from './StockBadge/StockBadge';
+export { default as CookieConsent } from './CookieConsent/CookieConsent';
