@@ -59,6 +59,8 @@ export async function POST(req: NextRequest) {
         cache: 'no-store',
       });
 
+      console.log('logale, res session:', res.body);
+
       if (!res.ok) {
         unavailable.push({ id: it.id, reason: `Product not available (status ${res.status})` });
         continue;
@@ -66,14 +68,24 @@ export async function POST(req: NextRequest) {
 
       // The tire detail returns a JSON with fields compatible with SingleTire
       const data: any = await res.json().catch(() => null);
+
+      console.log('logale, data session:', data);
+
       if (!data) {
         unavailable.push({ id: it.id, reason: 'Invalid product data' });
         continue;
       }
 
+      // Validate Condition is not 'sold' (case-insensitive); support both Condition and condition fields
+      const conditionVal: string | undefined = data?.status as any;
+      if (typeof conditionVal === 'string' && conditionVal.trim().toLowerCase() === 'sold') {
+        unavailable.push({ id: it.id, reason: 'Product is already sold' });
+        continue;
+      }
+
       // Derive name and price from server data
       const name: string = data?.name ?? `Item ${it.id}`;
-      const priceRaw = data?.price;
+      const priceRaw = data?.price ?? data?.Price;
       const priceNum = typeof priceRaw === 'string' ? parseFloat(priceRaw) : Number(priceRaw);
       const price = Number.isFinite(priceNum) && priceNum > 0 ? priceNum : 0;
 

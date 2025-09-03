@@ -39,6 +39,7 @@ export async function GET(req: NextRequest) {
     // Map DB record to SingleTire shape expected by UI
     const singleTire = {
       id: String(record.TireId ?? ''),
+      status: record.Condition,
       name: `(${record.Code || ''}) | ${record.Brand || 'Unknown'} | ${record.RealSize || ''}`.trim(),
       color: 'Black',
       dot: record.DOT || 'N/A',
@@ -50,8 +51,7 @@ export async function GET(req: NextRequest) {
       remainingLife: (record.RemainingLife as string) || '-',
       treadDepth: (record.Tread as string) || '-',
       images,
-      // description: (record.Description as string) || undefined,
-      description: '',
+      description: (record.Description as string) || undefined,
       model2: (record.Model2 as string) || undefined,
       details: [
         {

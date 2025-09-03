@@ -32,6 +32,9 @@ function formatCents(amountInCents: number, currencyCode: string | undefined) {
 
 export default function Checkout() {
   const { cartItems, removeFromCart, cartTotal, clearCart } = useCart();
+
+  console.log('logale, cartItems:', cartItems);
+
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -173,8 +176,9 @@ export default function Checkout() {
         const data = await res.json().catch(() => ({}));
         const details = data?.unavailable?.map((u: any) => u.id).join(', ');
         setError(
-          data?.message ||
-            (details ? `Unavailable items: ${details}` : 'Some items are unavailable.')
+          details
+            ? `Some items in your cart are unavailable: ${details}`
+            : 'Some items are unavailable.'
         );
         return;
       }
@@ -481,6 +485,12 @@ export default function Checkout() {
                         </th>
                         <th
                           scope="col"
+                          className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600"
+                        >
+                          ID
+                        </th>
+                        <th
+                          scope="col"
                           className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-600"
                         >
                           Price
@@ -542,6 +552,11 @@ export default function Checkout() {
                                 </div>
                               </div>
                             </td>
+                            <td className="px-4 py-4 text-left text-gray-600">
+                              <span className="font-mono text-xs bg-gray-50 border border-gray-200 rounded px-2 py-0.5 inline-block">
+                                {String(item.id)}
+                              </span>
+                            </td>
                             <td className="px-4 py-4 text-right text-gray-700">
                               {currency(item.price)}
                             </td>
@@ -598,10 +613,9 @@ export default function Checkout() {
                     <dd className="font-semibold text-gray-900">{currency(total)}</dd>
                   </div>
                 </dl>
-
                 {error && (
                   <div
-                    className="mb-3 rounded-md border border-red-200 bg-red-50 text-red-700 text-sm p-3"
+                    className="my-3 rounded-md border border-red-200 bg-red-50 text-red-700 text-sm p-3"
                     role="alert"
                   >
                     {error}
