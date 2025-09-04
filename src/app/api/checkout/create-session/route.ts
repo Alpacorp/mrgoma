@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
 
     // Re-validate availability and get authoritative pricing and names
     const unavailable: { id: string; reason: string }[] = [];
-    const validated: { id: string; name: string; price: number; quantity: number; condition?: string | null }[] = [];
+    const validated: { id: string; name: string; price: number; quantity: number; condition?: string | null; image?: string | null }[] = [];
 
     for (const it of normalized) {
       const res = await fetch(`${origin}/api/tire?productId=${encodeURIComponent(it.id)}`, {
@@ -83,8 +83,33 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      // Derive name and price from server data
-      const name: string = data?.name ?? `Item ${it.id}`;
+      // Derive name (inject model if missing) and price from server data
+      const baseName: string = (data?.name ?? `Item ${it.id}`).toString();
+      const model2: string | undefined = (data?.model2 || data?.Model2) ? String(data?.model2 || data?.Model2) : undefined;
+      let name: string = baseName;
+      if (model2) {
+        const normBase = baseName.toLowerCase();
+        const normModel = model2.toLowerCase();
+        if (!normBase.includes(normModel)) {
+          // Try to insert model2 into pattern: (CODE) | BRAND | SIZE
+          const parts = baseName.split('|').map(p => p.trim());
+          if (parts.length === 3 && /^\(.+\)$/.test(parts[0])) {
+            // (CODE) | BRAND | SIZE => (CODE) | BRAND | MODEL | SIZE
+            name = `${parts[0]} | ${parts[1]} | ${model2} | ${parts[2]}`;
+          } else if (parts.length === 2) {
+            // BRAND | SIZE => BRAND | MODEL | SIZE
+            name = `${parts[0]} | ${model2} | ${parts[1]}`;
+          } else {
+            // Fallback: append model after brand if we can detect brand, else append at end
+            const brand: string | undefined = (data?.brand || data?.Brand) ? String(data?.brand || data?.Brand) : undefined;
+            if (brand && normBase.includes(brand.toLowerCase())) {
+              name = baseName.replace(brand, `${brand} | ${model2}`);
+            } else {
+              name = `${baseName} | ${model2}`;
+            }
+          }
+        }
+      }
       const priceRaw = data?.price ?? data?.Price;
       const priceNum = typeof priceRaw === 'string' ? parseFloat(priceRaw) : Number(priceRaw);
       const price = Number.isFinite(priceNum) && priceNum > 0 ? priceNum : 0;
@@ -94,7 +119,23 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      validated.push({ id: it.id, name, price, quantity: it.quantity, condition: typeof conditionVal === 'string' ? conditionVal : null });
+      // Extract product image (first image) and normalize to absolute URL
+      const firstImage = Array.isArray(data?.images) && data.images.length > 0
+        ? (data.images[0]?.src || data.images[0])
+        : (data?.imageSrc || data?.image || null);
+      let image: string | null = null;
+      if (typeof firstImage === 'string' && firstImage.trim()) {
+        const urlStr = firstImage.trim();
+        if (/^https?:\/\//i.test(urlStr)) {
+          image = urlStr;
+        } else if (urlStr.startsWith('/')) {
+          image = `${origin}${urlStr}`;
+        } else {
+          image = `${origin}/${urlStr.replace(/^\.?\//, '')}`;
+        }
+      }
+
+      validated.push({ id: it.id, name, price, quantity: it.quantity, condition: typeof conditionVal === 'string' ? conditionVal : null, image });
     }
 
     if (unavailable.length > 0) {
@@ -177,6 +218,7 @@ export async function POST(req: NextRequest) {
         currency: (process.env.NEXT_PUBLIC_STRIPE_CURRENCY || 'usd').toLowerCase(),
         product_data: {
           name: v.name,
+          images: v.image ? [v.image] : undefined,
           metadata: {
             productId: v.id,
             condition: (v.condition || '').toString(),
