@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
 
     // Re-validate availability and get authoritative pricing and names
     const unavailable: { id: string; reason: string }[] = [];
-    const validated: { id: string; name: string; price: number; quantity: number }[] = [];
+    const validated: { id: string; name: string; price: number; quantity: number; condition?: string | null }[] = [];
 
     for (const it of normalized) {
       const res = await fetch(`${origin}/api/tire?productId=${encodeURIComponent(it.id)}`, {
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
       }
 
       // Validate Condition is not 'sold' (case-insensitive); support both Condition and condition fields
-      const conditionVal: string | undefined = data?.status as any;
+      const conditionVal: string | undefined = (data?.Condition ?? data?.condition ?? data?.status) as any;
       if (typeof conditionVal === 'string' && conditionVal.trim().toLowerCase() === 'sold') {
         unavailable.push({ id: it.id, reason: 'Product is already sold' });
         continue;
@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      validated.push({ id: it.id, name, price, quantity: it.quantity });
+      validated.push({ id: it.id, name, price, quantity: it.quantity, condition: typeof conditionVal === 'string' ? conditionVal : null });
     }
 
     if (unavailable.length > 0) {
@@ -177,6 +177,10 @@ export async function POST(req: NextRequest) {
         currency: (process.env.NEXT_PUBLIC_STRIPE_CURRENCY || 'usd').toLowerCase(),
         product_data: {
           name: v.name,
+          metadata: {
+            productId: v.id,
+            condition: (v.condition || '').toString(),
+          },
         },
         unit_amount: Math.round(v.price * 100), // cents
       },

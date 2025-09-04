@@ -71,6 +71,8 @@ export async function GET(req: NextRequest) {
     const currency = (session.currency || 'usd').toUpperCase();
     const items = (lineItems.data || []).map((li: any) => ({
       id: li.id,
+      productId: li.price?.product?.metadata?.productId || li.price?.product?.id || null,
+      condition: li.price?.product?.metadata?.condition || null,
       description: li.description || li.price?.product?.name || 'Item',
       quantity: li.quantity || 1,
       amount_subtotal: li.amount_subtotal || 0,

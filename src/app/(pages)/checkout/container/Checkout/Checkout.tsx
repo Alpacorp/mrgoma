@@ -54,6 +54,8 @@ export default function Checkout() {
     payment_method: string | null;
     items: Array<{
       id: string;
+      productId: string | null;
+      condition: string | null;
       description: string;
       quantity: number;
       amount_total: number;
@@ -328,7 +330,33 @@ export default function Checkout() {
                           <li key={it.id} className="p-3 flex items-center justify-between gap-3">
                             <div>
                               <p className="text-sm text-gray-900">{it.description}</p>
-                              <p className="text-xs text-gray-500">Qty {it.quantity}</p>
+                              <div className="text-xs text-gray-500 flex flex-wrap gap-2 items-center mt-1">
+                                <span>Qty {it.quantity}</span>
+                                {it.condition && (
+                                  <span
+                                    className={
+                                      "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ring-1 ring-inset " +
+                                      ((((it.condition || '') as string).toString().trim().toLowerCase() === 'new' ||
+                                        (((it.condition || '') as string).toString().trim().toLowerCase() === 'nuevo'))
+                                        ? 'bg-green-50 text-green-700 ring-green-200'
+                                        : 'bg-slate-50 text-slate-700 ring-slate-200')
+                                    }
+                                  >
+                                    {(() => {
+                                      const c = (it.condition || '').toString().toLowerCase();
+                                      if (c === 'new') return 'NEW';
+                                      if (c === 'used') return 'USED';
+                                      if (c === 'sold') return 'SOLD';
+                                      return (it.condition || '').toString();
+                                    })()}
+                                  </span>
+                                )}
+                                {it.productId && (
+                                  <span className="font-mono bg-gray-50 border border-gray-200 rounded px-1 py-0.5">
+                                    ID: {it.productId}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                             <div className="text-sm font-medium text-gray-900">
                               {formatCents(it.amount_total, it.currency)}
@@ -467,7 +495,7 @@ export default function Checkout() {
           </section>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Items table */}
+            {/* Item table */}
             <section className="lg:col-span-8 xl:col-span-9" aria-labelledby="cart-heading">
               <h2 id="cart-heading" className="sr-only">
                 Items in cart
@@ -568,7 +596,7 @@ export default function Checkout() {
                               <button
                                 type="button"
                                 onClick={() => removeFromCart(item.id)}
-                                className="inline-flex items-center rounded-md border border-red-200 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+                                className="inline-flex items-center cursor-pointer rounded-md border border-red-200 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
                                 aria-label={`Remove ${item.name} from cart`}
                               >
                                 Remove
@@ -625,7 +653,7 @@ export default function Checkout() {
                   <button
                     type="button"
                     onClick={proceedToPayment}
-                    className="inline-flex w-full items-center justify-center rounded-md bg-green-600 px-5 py-2.5 text-base font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex w-full cursor-pointer items-center justify-center rounded-md bg-green-600 px-5 py-2.5 text-base font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isEmpty || loading}
                     aria-disabled={isEmpty || loading}
                   >

@@ -67,7 +67,7 @@ export async function fetchTires(
   countRequest.input('offset', Int, offset).input('pageSize', Int, pageSize);
 
   let whereClause =
-    "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND RemainingLife > '70%' AND Price != 0";
+    "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND RemainingLife >= '50%' AND Price != 0";
 
   // Filtro por dimensiones de neumático usando RealSize
   if (filters.width || filters.sidewall || filters.diameter) {
@@ -209,7 +209,7 @@ export async function fetchTireRanges(): Promise<TireRangeResult> {
       MIN(TRY_CAST(REPLACE(RemainingLife, '%', '') AS int)) AS minRemainingLife,
       MAX(TRY_CAST(REPLACE(RemainingLife, '%', '') AS int)) AS maxRemainingLife
     FROM dbo.View_Tires
-    WHERE Local = '0' AND Trash = 'false' AND Condition != 'sold' AND TRY_CAST(REPLACE(RemainingLife, '%', '') AS int) > 70 AND Price != 0`;
+    WHERE Local = '0' AND Trash = 'false' AND Condition != 'sold' AND TRY_CAST(REPLACE(RemainingLife, '%', '') AS int) >= 50 AND Price != 0`;
 
   const result = await pool.request().query(query);
 
@@ -221,7 +221,7 @@ export async function fetchBrands(filters: TireFilters = {}): Promise<string[]> 
   const request = pool.request();
 
   let whereClause =
-    "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND RemainingLife > '70%' AND Price != 0";
+    "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND RemainingLife >= '50%' AND Price != 0";
 
   // Filtro por dimensiones de neumático usando RealSize
   if (filters.width || filters.sidewall || filters.diameter) {

@@ -40,7 +40,7 @@ const Detail = () => {
         });
 
         if (!res.ok) {
-          // Distinguish not found VS other errors
+          // Distinguish didn't found VS other errors
           if (res.status === 404) {
             throw Object.assign(new Error('NOT_FOUND'), { code: 'NOT_FOUND' });
           }

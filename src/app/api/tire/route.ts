@@ -59,7 +59,6 @@ export async function GET(req: NextRequest) {
           items: [
             `Load Index: ${(record.loadIndex as string) || '-'}`,
             `DOT: ${record.DOT || ''}`,
-            `Traction Ratio: ${record.Status || ''}`,
             `Speed Index: ${record.speedIndex || ''}`,
           ],
         },
