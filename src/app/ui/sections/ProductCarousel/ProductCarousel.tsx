@@ -105,9 +105,15 @@ const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
             <div className="pointer-events-none absolute top-0 left-0 z-30 text-lg font-semibold text-white">
               <ProductCondition condition={singleTire.condition} />
             </div>
-            <div className="pointer-events-none absolute right-2 top-3 sm:top-2 z-[60]">
-              <StockBadge />
-            </div>
+            {(() => {
+              const statusVal = (singleTire as any)?.status;
+              const isSold = typeof statusVal === 'string' && statusVal.trim().toLowerCase() === 'sold';
+              return !isSold ? (
+                <div className="pointer-events-none absolute right-2 top-3 sm:top-2 z-[60]">
+                  <StockBadge />
+                </div>
+              ) : null;
+            })()}
           </div>
         </div>
         <div className="sr-only" aria-live="polite">

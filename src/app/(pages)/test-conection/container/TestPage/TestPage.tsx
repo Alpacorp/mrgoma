@@ -16,8 +16,6 @@ export default function TestPage() {
   const totalPages = Math.ceil(totalRecords / pageSize);
   const maxVisiblePages = 10;
 
-  console.log('logale, records:', records);
-
   const getTires = useCallback(
     async (page: number) => {
       setLoading(true);

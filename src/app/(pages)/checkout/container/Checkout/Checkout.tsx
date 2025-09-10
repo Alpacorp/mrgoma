@@ -33,8 +33,6 @@ function formatCents(amountInCents: number, currencyCode: string | undefined) {
 export default function Checkout() {
   const { cartItems, removeFromCart, cartTotal, clearCart } = useCart();
 
-  console.log('logale, cartItems:', cartItems);
-
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -129,8 +127,6 @@ export default function Checkout() {
           throw new Error(data?.message || `Failed to load order details (${res.status})`);
         }
         const json = await res.json();
-
-        console.log('logale, Stripe session details:', json);
 
         if (active) {
           setSessionDetails(json);
@@ -335,9 +331,15 @@ export default function Checkout() {
                                 {it.condition && (
                                   <span
                                     className={
-                                      "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ring-1 ring-inset " +
-                                      ((((it.condition || '') as string).toString().trim().toLowerCase() === 'new' ||
-                                        (((it.condition || '') as string).toString().trim().toLowerCase() === 'nuevo'))
+                                      'inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ring-1 ring-inset ' +
+                                      (((it.condition || '') as string)
+                                        .toString()
+                                        .trim()
+                                        .toLowerCase() === 'new' ||
+                                      ((it.condition || '') as string)
+                                        .toString()
+                                        .trim()
+                                        .toLowerCase() === 'nuevo'
                                         ? 'bg-green-50 text-green-700 ring-green-200'
                                         : 'bg-slate-50 text-slate-700 ring-slate-200')
                                     }

@@ -75,6 +75,8 @@ export interface SingleTireDetails {
 
 export interface SingleTire {
   id: string | number;
+  // DB Condition, e.g., 'sold' when already sold; used for availability checks
+  status?: string;
   name: string;
   color: string;
   price: string;

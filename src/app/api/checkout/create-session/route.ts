@@ -51,15 +51,20 @@ export async function POST(req: NextRequest) {
 
     // Re-validate availability and get authoritative pricing and names
     const unavailable: { id: string; reason: string }[] = [];
-    const validated: { id: string; name: string; price: number; quantity: number; condition?: string | null; image?: string | null }[] = [];
+    const validated: {
+      id: string;
+      name: string;
+      price: number;
+      quantity: number;
+      condition?: string | null;
+      image?: string | null;
+    }[] = [];
 
     for (const it of normalized) {
       const res = await fetch(`${origin}/api/tire?productId=${encodeURIComponent(it.id)}`, {
         // Avoid caching; we need fresh availability
         cache: 'no-store',
       });
-
-      console.log('logale, res session:', res.body);
 
       if (!res.ok) {
         unavailable.push({ id: it.id, reason: `Product not available (status ${res.status})` });
@@ -69,15 +74,14 @@ export async function POST(req: NextRequest) {
       // The tire detail returns a JSON with fields compatible with SingleTire
       const data: any = await res.json().catch(() => null);
 
-      console.log('logale, data session:', data);
-
       if (!data) {
         unavailable.push({ id: it.id, reason: 'Invalid product data' });
         continue;
       }
 
       // Validate Condition is not 'sold' (case-insensitive); support both Condition and condition fields
-      const conditionVal: string | undefined = (data?.Condition ?? data?.condition ?? data?.status) as any;
+      const conditionVal: string | undefined = data.status;
+
       if (typeof conditionVal === 'string' && conditionVal.trim().toLowerCase() === 'sold') {
         unavailable.push({ id: it.id, reason: 'Product is already sold' });
         continue;
@@ -85,7 +89,8 @@ export async function POST(req: NextRequest) {
 
       // Derive name (inject model if missing) and price from server data
       const baseName: string = (data?.name ?? `Item ${it.id}`).toString();
-      const model2: string | undefined = (data?.model2 || data?.Model2) ? String(data?.model2 || data?.Model2) : undefined;
+      const model2: string | undefined =
+        data?.model2 || data?.Model2 ? String(data?.model2 || data?.Model2) : undefined;
       let name: string = baseName;
       if (model2) {
         const normBase = baseName.toLowerCase();
@@ -101,7 +106,8 @@ export async function POST(req: NextRequest) {
             name = `${parts[0]} | ${model2} | ${parts[1]}`;
           } else {
             // Fallback: append model after brand if we can detect brand, else append at end
-            const brand: string | undefined = (data?.brand || data?.Brand) ? String(data?.brand || data?.Brand) : undefined;
+            const brand: string | undefined =
+              data?.brand || data?.Brand ? String(data?.brand || data?.Brand) : undefined;
             if (brand && normBase.includes(brand.toLowerCase())) {
               name = baseName.replace(brand, `${brand} | ${model2}`);
             } else {
@@ -120,9 +126,10 @@ export async function POST(req: NextRequest) {
       }
 
       // Extract product image (first image) and normalize to absolute URL
-      const firstImage = Array.isArray(data?.images) && data.images.length > 0
-        ? (data.images[0]?.src || data.images[0])
-        : (data?.imageSrc || data?.image || null);
+      const firstImage =
+        Array.isArray(data?.images) && data.images.length > 0
+          ? data.images[0]?.src || data.images[0]
+          : data?.imageSrc || data?.image || null;
       let image: string | null = null;
       if (typeof firstImage === 'string' && firstImage.trim()) {
         const urlStr = firstImage.trim();
@@ -135,7 +142,14 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      validated.push({ id: it.id, name, price, quantity: it.quantity, condition: typeof conditionVal === 'string' ? conditionVal : null, image });
+      validated.push({
+        id: it.id,
+        name,
+        price,
+        quantity: it.quantity,
+        condition: typeof conditionVal === 'string' ? conditionVal : null,
+        image,
+      });
     }
 
     if (unavailable.length > 0) {

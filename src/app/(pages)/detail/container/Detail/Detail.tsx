@@ -49,8 +49,6 @@ const Detail = () => {
         }
         const json: SingleTire = await res.json();
 
-        console.log('logale, json:', json);
-
         setData(json);
       } catch (e: any) {
         if (e.name !== 'AbortError') {

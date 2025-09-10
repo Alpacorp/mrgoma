@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { markTiresSoldByIds } from '@/repositories/tiresRepository';
+import { logger } from '@/utils/logger';
+
 function badRequest(message: string) {
   return NextResponse.json({ message }, { status: 400 });
 }
@@ -32,15 +35,11 @@ export async function GET(req: NextRequest) {
     // Retrieve the session
     const session = await stripe.checkout.sessions.retrieve(sessionId as string);
 
-    console.log('logale, session:', session);
-
     // Retrieve line items with expanded product data
     const lineItems = await stripe.checkout.sessions.listLineItems(sessionId as string, {
       limit: 100,
       expand: ['data.price.product'],
     });
-
-    console.log('logale, lineItems:', lineItems);
 
     // Retrieve payment intent with latest charge for receipt URL, if any
     let receiptUrl: string | null = null;
@@ -53,8 +52,6 @@ export async function GET(req: NextRequest) {
       const paymentIntent = await stripe.paymentIntents.retrieve(piId, {
         expand: ['latest_charge'],
       });
-
-      console.log('logale, paymentIntent:', paymentIntent);
 
       const latestCharge: any = (paymentIntent as any).latest_charge;
       if (latestCharge && typeof latestCharge === 'object') {
@@ -80,6 +77,28 @@ export async function GET(req: NextRequest) {
       currency: (li.currency || currency).toUpperCase(),
     }));
 
+    // If payment is completed, mark purchased tires as sold in the database.
+    let updated_sold = 0;
+    try {
+      if ((session.payment_status || '').toLowerCase() === 'paid') {
+        const productIds = Array.from(
+          new Set(
+            (items.map(it => it.productId).filter(Boolean) as Array<string | number>).map(v =>
+              String(v)
+            )
+          )
+        );
+        if (productIds.length > 0) {
+          const res = await markTiresSoldByIds(productIds);
+          updated_sold = res.updated || 0;
+          logger.info(`Marked ${updated_sold} tires as sold for session ${sessionId}`);
+        }
+      }
+    } catch (err) {
+      logger.error('Failed to mark tires as sold', err as any);
+      // Do not fail the endpoint; still return the session details
+    }
+
     const payload = {
       id: session.id,
       created: session.created ? new Date(session.created * 1000).toISOString() : null,
@@ -90,6 +109,7 @@ export async function GET(req: NextRequest) {
       receipt_url: receiptUrl,
       payment_method: paymentMethodType,
       items,
+      updated_sold,
     };
 
     return NextResponse.json(payload, { status: 200 });

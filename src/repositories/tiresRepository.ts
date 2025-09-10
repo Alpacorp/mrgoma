@@ -324,3 +324,35 @@ export async function fetchTireById(tireId: string): Promise<DocumentRecord | nu
   const record = (result.recordset && result.recordset[0]) as DocumentRecord | undefined;
   return record || null;
 }
+
+/**
+ * Marks the provided tires as sold by updating their Condition to 'sold'.
+ * Idempotent: running it multiple times has no adverse effect.
+ */
+export async function markTiresSoldByIds(tireIds: Array<string | number>): Promise<{ updated: number }>{
+  if (!Array.isArray(tireIds) || tireIds.length === 0) return { updated: 0 };
+
+  const unique = Array.from(new Set(tireIds.map(id => String(id).trim()).filter(Boolean)));
+  if (unique.length === 0) return { updated: 0 };
+
+  const pool = await getPool();
+  const request = pool.request();
+
+  // Build parameterized IN clause
+  const params: string[] = [];
+  unique.forEach((id, idx) => {
+    const param = `id${idx}`;
+    params.push(`@${param}`);
+    request.input(param, VarChar, id);
+  });
+
+  const query = `UPDATE dbo.View_Tires SET Condition = 'sold' WHERE TireId IN (${params.join(', ')})`;
+
+  const result = await request.query(query);
+  // mssql rowsAffected is number[]; sum them
+  const rows = Array.isArray(result.rowsAffected)
+    ? result.rowsAffected.reduce((acc, n) => acc + (typeof n === 'number' ? n : 0), 0)
+    : (result as any).rowsAffected || 0;
+
+  return { updated: rows || 0 };
+}

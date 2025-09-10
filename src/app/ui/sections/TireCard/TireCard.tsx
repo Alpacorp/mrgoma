@@ -34,9 +34,15 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
             key={product.id}
             className="relative bg-white rounded-xl overflow-hidden p-5 border border-gray-100 shadow-sm hover:shadow-lg hover:transition-shadow w-full mb-8 items-center transition-transform duration-200 focus-within:ring-2 focus-within:ring-green-500 group"
           >
-            <div className="pointer-events-none absolute top-2 right-2 z-30">
-              <StockBadge />
-            </div>
+            {(() => {
+              const statusVal = (product as any)?.status;
+              const isSold = typeof statusVal === 'string' && statusVal.trim().toLowerCase() === 'sold';
+              return !isSold ? (
+                <div className="pointer-events-none absolute top-2 right-2 z-30">
+                  <StockBadge />
+                </div>
+              ) : null;
+            })()}
             <div className="grid grid-cols-12 gap-4">
               <div className="relative col-span-12 md:col-span-4 rounded-md transition-shadow group-hover:ring-1 group-hover:ring-green-200">
                 <ProductImage product={product} />

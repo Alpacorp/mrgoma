@@ -17,6 +17,10 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
   const { addToCart, isInCart } = useCart();
   const productInCart = isInCart(singleTire.id);
 
+  // Determine availability from DB Condition (exposed as status)
+  const isSold = typeof (singleTire as any)?.status === 'string' &&
+    ((singleTire as any).status as string).trim().toLowerCase() === 'sold';
+
   const handleAddToCart = (event: SyntheticEvent, product: any) => {
     event.preventDefault();
     addToCart(product);
@@ -47,19 +51,25 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
           <div className="mt-3 flex items-center justify-between">
             <h2 className="sr-only">Product information</h2>
             <ProductPrice price={singleTire.price} />
-            <div className="flex gap-2">
-              <CtaButton
-                product={singleTire}
-                text={productInCart ? 'In Cart' : 'Add to Cart'}
-                style="primary"
-                onClick={handleAddToCart}
-                disabled={productInCart}
-                isLink={false}
-              />
-              <div className="sr-only" aria-live="polite" role="status">
-                {productInCart ? 'This item is already in your cart.' : ''}
+            {isSold ? (
+              <div className="inline-flex items-center rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700" role="status" aria-live="polite">
+                Not available
               </div>
-            </div>
+            ) : (
+              <div className="flex gap-2">
+                <CtaButton
+                  product={singleTire}
+                  text={productInCart ? 'In Cart' : 'Add to Cart'}
+                  style="primary"
+                  onClick={handleAddToCart}
+                  disabled={productInCart}
+                  isLink={false}
+                />
+                <div className="sr-only" aria-live="polite" role="status">
+                  {productInCart ? 'This item is already in your cart.' : ''}
+                </div>
+              </div>
+            )}
           </div>
           <ul aria-label="Key specifications" className="mt-4 flex flex-wrap gap-2">
             <li className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
