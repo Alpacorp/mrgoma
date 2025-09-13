@@ -76,9 +76,9 @@ async function fetchProduct(productId?: string) {
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: { productId?: string };
+  searchParams: Promise<{ productId?: string }>;
 }): Promise<Metadata> {
-  const id = searchParams?.productId;
+  const { productId: id } = await searchParams;
 
   if (!id) {
     return {
@@ -170,8 +170,8 @@ async function ProductJsonLd({ productId }: { productId?: string }) {
   return <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>;
 }
 
-export default function DetailPage({ searchParams }: { searchParams: { productId?: string } }) {
-  const id = searchParams?.productId;
+export default async function DetailPage({ searchParams }: { searchParams: Promise<{ productId?: string }> }) {
+  const { productId: id } = await searchParams;
   return (
     <>
       <ProductJsonLd productId={id} />
