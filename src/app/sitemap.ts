@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+
 import { absUrl, getSiteUrl } from '@/app/utils/seo';
 import { fetchActiveTireIds } from '@/repositories/tiresRepository';
 
