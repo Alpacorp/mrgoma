@@ -9,12 +9,13 @@ import SearchResults from './container/search-results/search-results';
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: { w?: string; s?: string; d?: string; page?: string };
+  searchParams: Promise<{ w?: string; s?: string; d?: string; page?: string }>;
 }): Promise<Metadata> {
-  const w = (searchParams?.w || '').trim();
-  const s = (searchParams?.s || '').trim();
-  const d = (searchParams?.d || '').trim();
-  const page = parseInt(searchParams?.page || '1', 10) || 1;
+  const sp = await searchParams;
+  const w = (sp?.w || '').trim();
+  const s = (sp?.s || '').trim();
+  const d = (sp?.d || '').trim();
+  const page = parseInt(sp?.page || '1', 10) || 1;
 
   const hasSize = w && s && d;
   const sizeLabel = hasSize ? `${w}/${s}/${d}` : '';
