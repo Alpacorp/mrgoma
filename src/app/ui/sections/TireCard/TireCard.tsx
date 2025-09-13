@@ -36,7 +36,8 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
           >
             {(() => {
               const statusVal = (product as any)?.status;
-              const isSold = typeof statusVal === 'string' && statusVal.trim().toLowerCase() === 'sold';
+              const isSold =
+                typeof statusVal === 'string' && statusVal.trim().toLowerCase() === 'sold';
               return !isSold ? (
                 <div className="pointer-events-none absolute top-2 right-2 z-30">
                   <StockBadge />
@@ -52,7 +53,7 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
               </div>
 
               <div className="col-span-12 md:col-span-8 content-center">
-                <ProductName type={1} size="lg" weight="bold" name={product.name} />
+                <ProductName type={2} size="lg" weight="bold" name={product.name} />
                 <div className="h-px bg-gray-100 mt-2" />
                 <div className="flex flex-wrap mb-4 mt-3 gap-5 items-center justify-between">
                   <div className="flex gap-2 items-center justify-center">

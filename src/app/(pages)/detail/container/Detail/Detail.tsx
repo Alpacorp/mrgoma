@@ -213,7 +213,7 @@ const Detail = () => {
           <ProductCarousel singleTire={data} />
           <div className="mt-10 sm:mt-16 lg:mt-0">
             <TireInformation singleTire={data} />
-            <section aria-labelledby="details-heading" className="mt-1">
+            <section aria-labelledby="details-heading" className="my-6">
               <TireFeatures singleTire={data} />
             </section>
           </div>

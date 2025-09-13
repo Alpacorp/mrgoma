@@ -14,7 +14,7 @@ const BrandImage: FC<BrandImageProps> = ({ product }) => {
   const [src, setSrc] = useState(`/assets/images/TireBrand/${product.brandId}-logo.webp`);
   return (
     <Image
-      className="h-auto aspect-auto max-w-32 w-full pl-1 object-contain object-center"
+      className="h-full aspect-auto max-w-32 w-full pl-1 object-contain object-center"
       src={src}
       alt={product.brand}
       title={product.brand}

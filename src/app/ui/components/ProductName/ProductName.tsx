@@ -18,12 +18,15 @@ interface ProductNameProps {
     | '8xl'
     | '9xl';
   weight: 'medium' | 'semibold' | 'bold';
+  id?: string;
+  className?: string;
 }
 
-const ProductName: FC<ProductNameProps> = ({ type, size, weight, name }) => {
+const ProductName: FC<ProductNameProps> = ({ type, size, weight, name, id, className }) => {
+  const baseClass = `text-${size} font-${weight} text-gray-900`;
   return react.createElement(
     `h${type}`,
-    { className: `text-${size} font-${weight} text-gray-900` },
+    { id, className: className ? `${baseClass} ${className}` : baseClass },
     name
   );
 };

@@ -50,11 +50,9 @@ export const useTireDimensions = () => {
 
     setIsLoadingSidewall(true);
     try {
-      console.log('Fetching sidewall options for width:', width); // Debugging
       const response = await fetch(`/api/dimensions/widths?height=${encodeURIComponent(width)}`);
       if (!response.ok) throw new Error('Failed to fetch sidewall options');
       const data = await response.json();
-      console.log('Sidewall options received:', data); // Debugging
       setSidewallOptions(data);
     } catch (error) {
       console.error('Error loading sidewall options:', error);
@@ -73,9 +71,7 @@ export const useTireDimensions = () => {
 
     setIsLoadingDiameter(true);
     try {
-      console.log('Fetching diameter options for width:', width, 'sidewall:', sidewall);
       const url = `/api/dimensions/sizes?height=${encodeURIComponent(width)}&width=${encodeURIComponent(sidewall)}`;
-      console.log('Request URL:', url);
 
       const response = await fetch(url);
       if (!response.ok) {
@@ -84,7 +80,6 @@ export const useTireDimensions = () => {
       }
 
       const data = await response.json();
-      console.log('Diameter options received:', data);
       setDiameterOptions(data);
     } catch (error) {
       console.error('Error loading diameter options:', error);
@@ -97,7 +92,6 @@ export const useTireDimensions = () => {
   // Función para manejar el cambio de width
   const handleWidthChange = useCallback(
     (value: string) => {
-      console.log('Width changed to:', value); // Debugging
       setSelectedWidth(value);
       setSelectedSidewall('');
       setSelectedDiameter('');
@@ -109,7 +103,6 @@ export const useTireDimensions = () => {
   // Función para manejar el cambio de sidewall
   const handleSidewallChange = useCallback(
     (value: string) => {
-      console.log('Sidewall changed to:', value); // Debugging
       setSelectedSidewall(value);
       setSelectedDiameter('');
       loadDiameterOptions(selectedWidth, value);
@@ -119,7 +112,6 @@ export const useTireDimensions = () => {
 
   // Función para manejar el cambio de diameter
   const handleDiameterChange = useCallback((value: string) => {
-    console.log('Diameter changed to:', value); // Debugging
     setSelectedDiameter(value);
   }, []);
 

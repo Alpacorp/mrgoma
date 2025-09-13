@@ -10,15 +10,13 @@ import { FiltersProvider } from '@/app/context/ShowFilterContext';
 import { MenuProvider } from '@/app/context/ShowMenuContext';
 import { CookieConsent } from '@/app/ui/components';
 import { Footer, Header } from '@/app/ui/sections';
+import { buildDefaultMetadata, organizationJsonLd, websiteJsonLd } from '@/app/utils/seo';
 
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
-  title: 'MrGoma Tires',
-  description: 'MrGoma Tires is a tire shop in Miami, FL',
-};
+export const metadata: Metadata = buildDefaultMetadata();
 
 export default function RootLayout({
   children,
@@ -29,7 +27,8 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" href="/favicon.png" sizes="any" type="image/x-icon" />
-        <title>Mr Goma Tires</title>
+        <script type="application/ld+json">{JSON.stringify(organizationJsonLd())}</script>
+        <script type="application/ld+json">{JSON.stringify(websiteJsonLd())}</script>
       </head>
       <DetailModalProvider>
         <FiltersProvider>

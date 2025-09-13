@@ -18,7 +18,8 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
   const productInCart = isInCart(singleTire.id);
 
   // Determine availability from DB Condition (exposed as status)
-  const isSold = typeof (singleTire as any)?.status === 'string' &&
+  const isSold =
+    typeof (singleTire as any)?.status === 'string' &&
     ((singleTire as any).status as string).trim().toLowerCase() === 'sold';
 
   const handleAddToCart = (event: SyntheticEvent, product: any) => {
@@ -27,10 +28,7 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
   };
 
   return (
-    <section aria-labelledby={`tire-title-${singleTire.id}`}>
-      <h1 id={`tire-title-${singleTire.id}`} className="sr-only">
-        {singleTire.name}
-      </h1>
+    <section aria-labelledby={`product-name-${singleTire.id}`}>
       <div role="group" aria-label="Product header">
         <div>
           <div className="mb-3">
@@ -45,14 +43,24 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
                 }}
               />
             </div>
-            <ProductName type={1} size="3xl" weight="bold" name={singleTire.name} />
+            <ProductName
+              id={`product-name-${singleTire.id}`}
+              type={1}
+              size="3xl"
+              weight="bold"
+              name={singleTire.name}
+            />
             {singleTire.model2 && <p className="text-sm text-gray-600 mt-1">{singleTire.model2}</p>}
           </div>
           <div className="mt-3 flex items-center justify-between">
             <h2 className="sr-only">Product information</h2>
             <ProductPrice price={singleTire.price} />
             {isSold ? (
-              <div className="inline-flex items-center rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700" role="status" aria-live="polite">
+              <div
+                className="inline-flex items-center rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700"
+                role="status"
+                aria-live="polite"
+              >
                 Not available
               </div>
             ) : (
@@ -87,9 +95,9 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
           </ul>
         </div>
       </div>
-      <div className="my-6">
-        <ProductDescription description={singleTire.description || ''} />
-      </div>
+      {/*<div className="my-6">*/}
+      {/*  <ProductDescription description={singleTire.description || ''} />*/}
+      {/*</div>*/}
     </section>
   );
 };
