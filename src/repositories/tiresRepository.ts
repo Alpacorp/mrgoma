@@ -329,7 +329,9 @@ export async function fetchTireById(tireId: string): Promise<DocumentRecord | nu
  * Marks the provided tires as sold by updating their Condition to 'sold'.
  * Idempotent: running it multiple times has no adverse effect.
  */
-export async function markTiresSoldByIds(tireIds: Array<string | number>): Promise<{ updated: number }>{
+export async function markTiresSoldByIds(
+  tireIds: Array<string | number>
+): Promise<{ updated: number }> {
   if (!Array.isArray(tireIds) || tireIds.length === 0) return { updated: 0 };
 
   const unique = Array.from(new Set(tireIds.map(id => String(id).trim()).filter(Boolean)));
@@ -357,7 +359,9 @@ export async function markTiresSoldByIds(tireIds: Array<string | number>): Promi
   return { updated: rows || 0 };
 }
 
-export async function fetchActiveTireIds(limit: number = 2000): Promise<Array<{ id: string; modified?: Date }>> {
+export async function fetchActiveTireIds(
+  limit: number = 2000
+): Promise<Array<{ id: string; modified?: Date }>> {
   const pool = await getPool();
   const request = pool.request();
   // SQL Server allows TOP (@limit) with a variable
@@ -367,5 +371,40 @@ export async function fetchActiveTireIds(limit: number = 2000): Promise<Array<{ 
                  WHERE Local = '0' AND Trash = 'false' AND Condition != 'sold' AND Price != 0
                  ORDER BY ModificationDate DESC`;
   const result = await request.query(query);
-  return (result.recordset || []).map((row: any) => ({ id: String(row.TireId), modified: row.ModificationDate }));
+  return (result.recordset || []).map((row: any) => ({
+    id: String(row.TireId),
+    modified: row.ModificationDate,
+  }));
+}
+
+export async function setTiresConditionIdToSoldByIds(
+  tireIds: Array<string | number>,
+  conditionId: number = 7
+): Promise<{ updated: number }> {
+  if (!Array.isArray(tireIds) || tireIds.length === 0) return { updated: 0 };
+
+  const unique = Array.from(new Set(tireIds.map(id => String(id).trim()).filter(Boolean)));
+  if (unique.length === 0) return { updated: 0 };
+
+  const pool = await getPool();
+  const request = pool.request();
+
+  // Bind parameters for IN clause
+  const params: string[] = [];
+  unique.forEach((id, idx) => {
+    const param = `id${idx}`;
+    params.push(`@${param}`);
+    request.input(param, VarChar, id);
+  });
+
+  request.input('condId', Int, conditionId);
+
+  const sql = `UPDATE dbo.Tires SET ConditionId = @condId WHERE TireId IN (${params.join(', ')})`;
+  const result = await request.query(sql);
+
+  const rows = Array.isArray(result.rowsAffected)
+    ? result.rowsAffected.reduce((acc, n) => acc + (typeof n === 'number' ? n : 0), 0)
+    : (result as any).rowsAffected || 0;
+
+  return { updated: rows || 0 };
 }
