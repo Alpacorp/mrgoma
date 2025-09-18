@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { LocationCard } from '@/app/ui/components';
 import type { LocationData } from '@/app/ui/components/LocationCard/location-card';

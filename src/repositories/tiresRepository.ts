@@ -399,7 +399,7 @@ export async function setTiresConditionIdToSoldByIds(
 
   request.input('condId', Int, conditionId);
 
-  const sql = `UPDATE dbo.Tires SET ConditionId = @condId WHERE TireId IN (${params.join(', ')})`;
+  const sql = `UPDATE dbo.Tires SET ConditionId = @condId, Trash = 1 WHERE TireId IN (${params.join(', ')})`;
   const result = await request.query(sql);
 
   const rows = Array.isArray(result.rowsAffected)

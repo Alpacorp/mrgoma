@@ -53,8 +53,9 @@ export const useTireSearch = () => {
 
   /**
    * Reset all tire dimension filters
+   * Optionally avoid pushing to the router (for coordinated URL updates)
    */
-  const resetFilters = useCallback(() => {
+  const resetFilters = useCallback((shouldPush: boolean = true) => {
     const params = new URLSearchParams(searchParams.toString());
     params.delete('w');
     params.delete('s');
@@ -66,7 +67,9 @@ export const useTireSearch = () => {
       d: '',
     });
 
-    router.push(`/search-results?${params.toString()}`);
+    if (shouldPush) {
+      router.push(`/search-results?${params.toString()}`);
+    }
   }, [searchParams, router]);
 
   return {

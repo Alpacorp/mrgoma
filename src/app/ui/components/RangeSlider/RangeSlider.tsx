@@ -27,9 +27,11 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
   const [localValue, setLocalValue] = useState(value);
 
   const sliderRef = useRef<HTMLDivElement>(null);
+  const lastEmittedRef = useRef<[number, number]>(value);
 
   useEffect(() => {
     setLocalValue(value);
+    lastEmittedRef.current = value;
   }, [value]);
 
   const getPercentage = useCallback(
@@ -61,30 +63,48 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
       const newValue = Math.round((percentage * (max - min) + min) / step) * step;
 
       setLocalValue(prev => {
+        let next: [number, number];
         if (dragging === 'min') {
           const clampedValue = Math.min(newValue, prev[1] - step);
-          return [Math.max(min, clampedValue), prev[1]];
+          next = [Math.max(min, clampedValue), prev[1]];
         } else {
           const clampedValue = Math.max(newValue, prev[0] + step);
-          return [prev[0], Math.min(max, clampedValue)];
+          next = [prev[0], Math.min(max, clampedValue)];
         }
+        if (next[0] !== prev[0] || next[1] !== prev[1]) {
+          onChange(next);
+          lastEmittedRef.current = next;
+        }
+        return next;
       });
     },
-    [dragging, max, min, step]
+    [dragging, max, min, step, onChange]
   );
 
   useEffect(() => {
     const handleMouseUp = () => {
       if (dragging) {
         setDragging(null);
-        onChange(localValue);
+        if (
+          localValue[0] !== lastEmittedRef.current[0] ||
+          localValue[1] !== lastEmittedRef.current[1]
+        ) {
+          onChange(localValue);
+          lastEmittedRef.current = localValue;
+        }
       }
     };
 
     const handleTouchEnd = () => {
       if (dragging) {
         setDragging(null);
-        onChange(localValue);
+        if (
+          localValue[0] !== lastEmittedRef.current[0] ||
+          localValue[1] !== lastEmittedRef.current[1]
+        ) {
+          onChange(localValue);
+          lastEmittedRef.current = localValue;
+        }
       }
     };
 

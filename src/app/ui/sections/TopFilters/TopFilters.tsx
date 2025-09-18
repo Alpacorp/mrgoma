@@ -229,7 +229,12 @@ export const TopFilters: FC = () => {
         <div className="ml-auto pl-2">
           <button
             type="button"
-            onClick={resetFilters}
+            onClick={() => {
+              // First reset tire filters without pushing a new URL to avoid race conditions
+              resetTireFilters(false);
+              // Then reset the rest of filters and perform a single URL update that removes all params
+              resetFilters();
+            }}
             className="px-3 py-2 cursor-pointer text-sm rounded-md text-white bg-green-600 hover:bg-green-500"
           >
             Reset Filters

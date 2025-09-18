@@ -192,45 +192,42 @@ export const useFilters = () => {
   const updateUrlParams = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());
 
-    params.set('page', '1');
+    let filterChanged = false;
+
+    const setOrDelete = (key: string, shouldSet: boolean, val: string) => {
+      const curVal = params.get(key);
+      if (shouldSet) {
+        if (curVal !== val) {
+          filterChanged = true;
+        }
+        params.set(key, val);
+      } else {
+        if (curVal !== null) {
+          filterChanged = true;
+        }
+        params.delete(key);
+      }
+    };
 
     // Update range inputs in URL
-    if (rangeInputs.price[0] > rangeBounds.price[0])
-      params.set('minPrice', rangeInputs.price[0].toString());
-    else params.delete('minPrice');
+    setOrDelete('minPrice', rangeInputs.price[0] > rangeBounds.price[0], rangeInputs.price[0].toString());
+    setOrDelete('maxPrice', rangeInputs.price[1] < rangeBounds.price[1], rangeInputs.price[1].toString());
 
-    if (rangeInputs.price[1] < rangeBounds.price[1])
-      params.set('maxPrice', rangeInputs.price[1].toString());
-    else params.delete('maxPrice');
+    setOrDelete('minTreadDepth', rangeInputs.treadDepth[0] > rangeBounds.treadDepth[0], rangeInputs.treadDepth[0].toString());
+    setOrDelete('maxTreadDepth', rangeInputs.treadDepth[1] < rangeBounds.treadDepth[1], rangeInputs.treadDepth[1].toString());
 
-    if (rangeInputs.treadDepth[0] > rangeBounds.treadDepth[0])
-      params.set('minTreadDepth', rangeInputs.treadDepth[0].toString());
-    else params.delete('minTreadDepth');
-
-    if (rangeInputs.treadDepth[1] < rangeBounds.treadDepth[1])
-      params.set('maxTreadDepth', rangeInputs.treadDepth[1].toString());
-    else params.delete('maxTreadDepth');
-
-    if (rangeInputs.remainingLife[0] > rangeBounds.remainingLife[0])
-      params.set('minRemainingLife', rangeInputs.remainingLife[0].toString());
-    else params.delete('minRemainingLife');
-
-    if (rangeInputs.remainingLife[1] < rangeBounds.remainingLife[1])
-      params.set('maxRemainingLife', rangeInputs.remainingLife[1].toString());
-    else params.delete('maxRemainingLife');
+    setOrDelete('minRemainingLife', rangeInputs.remainingLife[0] > rangeBounds.remainingLife[0], rangeInputs.remainingLife[0].toString());
+    setOrDelete('maxRemainingLife', rangeInputs.remainingLife[1] < rangeBounds.remainingLife[1], rangeInputs.remainingLife[1].toString());
 
     // Update checkbox inputs in URL
-    if (checkboxInputs.condition.length > 0)
-      params.set('condition', checkboxInputs.condition.join(','));
-    else params.delete('condition');
+    setOrDelete('condition', checkboxInputs.condition.length > 0, checkboxInputs.condition.join(','));
+    setOrDelete('patched', checkboxInputs.patched.length > 0, checkboxInputs.patched.join(','));
+    setOrDelete('brands', checkboxInputs.brands.length > 0, checkboxInputs.brands.join(','));
 
-    if (checkboxInputs.patched.length > 0) params.set('patched', checkboxInputs.patched.join(','));
-    else params.delete('patched');
-
-    if (checkboxInputs.brands.length > 0) params.set('brands', checkboxInputs.brands.join(','));
-    else params.delete('brands');
-
-    params.set('page', '1');
+    // Only reset pagination when filters actually changed
+    if (filterChanged) {
+      params.set('page', '1');
+    }
 
     // Preserve existing search parameters that aren't related to filters
     const newUrl = `/search-results?${params.toString()}`;
@@ -338,6 +335,11 @@ export const useFilters = () => {
     params.delete('condition');
     params.delete('patched');
     params.delete('brands');
+
+    // Also remove tire size parameters to ensure full reset
+    params.delete('w');
+    params.delete('s');
+    params.delete('d');
 
     params.set('page', '1');
 
