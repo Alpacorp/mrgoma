@@ -9,7 +9,7 @@ import { DetailModalProvider } from '@/app/context/ShowDetailModal';
 import { FiltersProvider } from '@/app/context/ShowFilterContext';
 import { MenuProvider } from '@/app/context/ShowMenuContext';
 import { CookieConsent } from '@/app/ui/components';
-import { Footer, Header } from '@/app/ui/sections';
+import { Footer, Header, TopHeader } from '@/app/ui/sections';
 import { buildDefaultMetadata, organizationJsonLd, websiteJsonLd } from '@/app/utils/seo';
 
 import './globals.css';
@@ -36,6 +36,7 @@ export default function RootLayout({
             <MenuProvider>
               <CartProvider>
                 <body className={inter.className}>
+                  <TopHeader />
                   <Header />
                   {children}
                   <Footer />

@@ -1,7 +1,7 @@
 export const infoSliderData = [
   {
     id: 1,
-    title: 'Now serving Miami & Orlando',
+    title: 'Now serving Miami & Orlando Area',
     information: 'Same MrGoma Quality, Expanded Services',
     buttonText: 'Our Locations',
     buttonLink: '#locations',

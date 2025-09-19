@@ -60,6 +60,9 @@ export default function Checkout() {
       currency: string;
     }>;
   }>(null);
+
+  console.log('logale, sessionDetails', sessionDetails);
+
   const [detailsLoading, setDetailsLoading] = React.useState(false);
   const [detailsError, setDetailsError] = React.useState<string | null>(null);
   const [copied, setCopied] = React.useState(false);
@@ -340,7 +343,7 @@ export default function Checkout() {
                                       ((it.condition || '') as string)
                                         .toString()
                                         .trim()
-                                        .toLowerCase() === 'nuevo'
+                                        .toLowerCase() === 'mrgomatiresnew'
                                         ? 'bg-green-50 text-green-700 ring-green-200'
                                         : 'bg-slate-50 text-slate-700 ring-slate-200')
                                     }
@@ -348,6 +351,7 @@ export default function Checkout() {
                                     {(() => {
                                       const c = (it.condition || '').toString().toLowerCase();
                                       if (c === 'new') return 'NEW';
+                                      if (c === 'mrgomatiresnew') return 'NEW';
                                       if (c === 'used') return 'USED';
                                       if (c === 'sold') return 'SOLD';
                                       return (it.condition || '').toString();
@@ -529,7 +533,12 @@ export default function Checkout() {
                         id="checkout-info-text"
                         className={`text-sm leading-5 ${infoExpanded ? '' : 'max-h-10 overflow-hidden'}`}
                       >
-                        During checkout you will be redirected to complete your order. We will ask for your contact and shipping details (name, address and phone) and your payment information. This information is requested to comply with our terms of service and to properly process and ship your order. We will notify you by email or phone with the carrier tracking guide/number once your order has been dispatched. By proceeding, you agree to our{' '}
+                        During checkout you will be redirected to complete your order. We will ask
+                        for your contact and shipping details (name, address and phone) and your
+                        payment information. This information is requested to comply with our terms
+                        of service and to properly process and ship your order. We will notify you
+                        by email or phone with the carrier tracking guide/number once your order has
+                        been dispatched. By proceeding, you agree to our{' '}
                         <Link
                           href="/legal-policies#terms"
                           className="underline font-medium text-green-700 hover:text-green-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 rounded"

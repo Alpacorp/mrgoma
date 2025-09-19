@@ -19,3 +19,4 @@ export { default as CartModal } from './CartModal/CartModal';
 export { default as TopFilters } from './TopFilters/TopFilters';
 export { default as FilterBody } from './FilterBody/FilterBody';
 export { default as FilterMobileContent } from './FilterMobileContent/FilterMobileContent';
+export { default as TopHeader } from './TopHeader/TopHeader';
