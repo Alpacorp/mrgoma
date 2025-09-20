@@ -61,12 +61,9 @@ export default function Checkout() {
     }>;
   }>(null);
 
-  console.log('logale, sessionDetails', sessionDetails);
-
   const [detailsLoading, setDetailsLoading] = React.useState(false);
   const [detailsError, setDetailsError] = React.useState<string | null>(null);
   const [copied, setCopied] = React.useState(false);
-  const [infoExpanded, setInfoExpanded] = React.useState(false);
 
   const taxes = Math.max(0, cartTotal * TAX_RATE);
   const total = cartTotal + taxes;
@@ -508,60 +505,6 @@ export default function Checkout() {
                 Items in cart
               </h2>
               <div className="overflow-hidden rounded-lg border border-gray-200 shadow-sm">
-                {/* Informational banner at the top of the products table */}
-                <div
-                  role="note"
-                  aria-label="Checkout information"
-                  className="bg-blue-50 text-blue-900 border-b border-blue-200 p-3 flex items-start gap-2"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    aria-hidden="true"
-                    className="h-5 w-5 mt-0.5 shrink-0 text-blue-600"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 7.5a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm-.75 2.25a.75.75 0 0 0-.75.75v6a.75.75 0 0 0 1.5 0v-6a.75.75 0 0 0-.75-.75Z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <div className="flex-1">
-                    <div className="relative">
-                      <p
-                        id="checkout-info-text"
-                        className={`text-sm leading-5 ${infoExpanded ? '' : 'max-h-10 overflow-hidden'}`}
-                      >
-                        During checkout you will be redirected to complete your order. We will ask
-                        for your contact and shipping details (name, address and phone) and your
-                        payment information. This information is requested to comply with our terms
-                        of service and to properly process and ship your order. We will notify you
-                        by email or phone with the carrier tracking guide/number once your order has
-                        been dispatched. By proceeding, you agree to our{' '}
-                        <Link
-                          href="/legal-policies#terms"
-                          className="underline font-medium text-green-700 hover:text-green-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 rounded"
-                        >
-                          Terms & Conditions
-                        </Link>
-                        .
-                      </p>
-                      {!infoExpanded && (
-                        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-blue-50 to-transparent" />
-                      )}
-                    </div>
-                    <button
-                      type="button"
-                      aria-expanded={infoExpanded}
-                      aria-controls="checkout-info-text"
-                      onClick={() => setInfoExpanded(prev => !prev)}
-                      className="mt-1 inline-flex items-center cursor-pointer text-xs font-medium text-green-700 hover:text-green-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 rounded"
-                    >
-                      {infoExpanded ? 'Show less' : 'Show more'}
-                    </button>
-                  </div>
-                </div>
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
