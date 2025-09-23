@@ -37,7 +37,9 @@ export default function RootLayout({
             <MenuProvider>
               <CartProvider>
                 <body className={inter.className}>
-                  <GoogleAnalytics />
+                  <React.Suspense fallback={null}>
+                    <GoogleAnalytics />
+                  </React.Suspense>
                   <TopHeader />
                   <Header />
                   {children}
