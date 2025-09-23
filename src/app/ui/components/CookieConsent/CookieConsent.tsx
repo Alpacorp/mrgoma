@@ -78,6 +78,11 @@ export const CookieConsent: React.FC = () => {
       if (typeof window !== 'undefined') {
         window.localStorage.setItem('cookiesAccepted', 'true');
         window.localStorage.removeItem(DECLINE_LS_KEY);
+        try {
+          window.dispatchEvent(new Event('cookies:accepted'));
+        } catch {
+          // ignore
+        }
       }
       setCookie('cookiesAccepted', 'true', ONE_YEAR_SECONDS);
     } catch {
@@ -91,6 +96,11 @@ export const CookieConsent: React.FC = () => {
       if (typeof window !== 'undefined') {
         const until = Date.now() + DECLINE_MS;
         window.localStorage.setItem(DECLINE_LS_KEY, String(until));
+        try {
+          window.dispatchEvent(new Event('cookies:declined'));
+        } catch {
+          // ignore
+        }
       }
       // Do not persist a long-lived "false" cookie; rely on a timed localStorage re-show
     } catch {
