@@ -146,3 +146,38 @@ How it works under the hood:
 
 WhatsApp flow
 - When Stripe is disabled or the WhatsApp route is selected, the page shows a distinct confirmation (no Stripe details are requested). The cart is cleared and the user is prompted to continue shopping.
+
+
+## Google Analytics (GA4)
+
+This project includes a Google Analytics 4 integration with consent-controlled loading:
+- GA scripts are loaded only after the user accepts cookies in the consent banner.
+- Page views are sent on initial load and on every SPA route change in the App Router (after consent).
+
+Setup
+1) Add your GA4 Measurement ID to `.env`:
+
+```
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+```
+
+2) Restart the dev server/build.
+
+How tracking is activated
+- On first visit, the cookie banner appears at the bottom. GA will not load yet.
+- When the user clicks “Accept”, the app:
+  - Stores `cookiesAccepted=true` in localStorage and as a cookie (1 year).
+  - Dispatches a `cookies:accepted` browser event.
+  - Immediately loads GA and starts sending page views.
+- If the user clicks “Decline”, GA remains disabled. The banner will reappear after a short period.
+
+Testing tips
+- Clear the value and refresh:
+  - localStorage: remove the key `cookiesAccepted`
+  - Cookie: delete `cookiesAccepted`
+- You can simulate consent in dev tools by running:
+  - `localStorage.setItem('cookiesAccepted','true'); window.dispatchEvent(new Event('cookies:accepted'));`
+
+Notes
+- Existing Vercel Analytics remains enabled; it can be used alongside GA.
+- If you prefer to always load GA regardless of consent (not recommended), render the GoogleAnalytics component unconditionally and remove the consent checks.
