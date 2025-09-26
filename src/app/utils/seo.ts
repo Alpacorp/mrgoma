@@ -22,7 +22,7 @@ export const DEFAULT_KEYWORDS = [
 
 export function getSiteUrl(): string {
   const env = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL;
-  const fallback = 'https://mrgomatires.com';
+  const fallback = 'https://www.mrgomatires.com';
   const base = (env || fallback).trim();
   return base.endsWith('/') ? base.slice(0, -1) : base;
 }
