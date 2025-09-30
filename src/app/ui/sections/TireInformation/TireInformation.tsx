@@ -10,6 +10,7 @@ import {
   ProductDescription,
   BrandImage,
   CtaButton,
+  FreeShippingBadge,
 } from '@/app/ui/components';
 import { ArrowsToRight } from '@/app/ui/icons';
 
@@ -54,7 +55,10 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
           </div>
           <div className="mt-3 flex items-center justify-between">
             <h2 className="sr-only">Product information</h2>
-            <ProductPrice price={singleTire.price} />
+            <div className="flex items-center gap-2">
+              <ProductPrice price={singleTire.price} />
+              <FreeShippingBadge />
+            </div>
             {isSold ? (
               <div
                 className="inline-flex items-center rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700"

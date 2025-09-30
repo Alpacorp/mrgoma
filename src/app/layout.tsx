@@ -8,7 +8,7 @@ import { SelectedFiltersProvider } from '@/app/context/SelectedFilters';
 import { DetailModalProvider } from '@/app/context/ShowDetailModal';
 import { FiltersProvider } from '@/app/context/ShowFilterContext';
 import { MenuProvider } from '@/app/context/ShowMenuContext';
-import { CookieConsent } from '@/app/ui/components';
+import { CookieConsent, PromoBar } from '@/app/ui/components';
 import GoogleAnalytics from '@/app/ui/components/GoogleAnalytics/GoogleAnalytics';
 import { Footer, Header, TopHeader } from '@/app/ui/sections';
 import { buildDefaultMetadata, organizationJsonLd, websiteJsonLd } from '@/app/utils/seo';
@@ -41,6 +41,7 @@ export default function RootLayout({
                     <GoogleAnalytics />
                   </React.Suspense>
                   <TopHeader />
+                  <PromoBar />
                   <Header />
                   {children}
                   <Footer />

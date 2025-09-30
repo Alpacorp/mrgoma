@@ -10,6 +10,7 @@ import {
   ProductName,
   ProductPrice,
   StockBadge,
+  FreeShippingBadge,
 } from '@/app/ui/components';
 
 interface TireCardProps {
@@ -57,7 +58,10 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
                 <div className="h-px bg-gray-100 mt-2" />
                 <div className="flex flex-wrap mb-4 mt-3 gap-5 items-center justify-between">
                   <div className="flex gap-2 items-center justify-center">
-                    <ProductPrice price={product.price} />
+                    <div className="flex items-center gap-2">
+                      <ProductPrice price={product.price} />
+                      <FreeShippingBadge className="ml-1" />
+                    </div>
                     {product.brandId && (
                       <div className="h-10 md:h-12 overflow-hidden flex items-center">
                         <BrandImage
