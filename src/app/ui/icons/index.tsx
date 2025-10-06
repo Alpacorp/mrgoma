@@ -22,3 +22,4 @@ export * from './PatchedIcon';
 export * from './RemainingIcon';
 export * from './TreadIcon';
 export * from './RunFlatIcon';
+export * from './EnvelopeIcon';

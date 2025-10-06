@@ -639,20 +639,18 @@ export default function Checkout() {
                       )}
                     </dt>
                     <dd className="font-medium text-gray-900">
-                      <span className="text-gray-700">Calculate at next step</span>
+                      <span className="text-gray-700">Calculated at checkout</span>
                     </dd>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <dt className="text-gray-600">Shipping</dt>
+                    <dd className="font-medium text-gray-900">Free</dd>
                   </div>
                   <div className="mt-2 border-t border-gray-200 pt-2 flex items-center justify-between text-base">
                     <dt className="font-semibold text-gray-900">Total</dt>
                     <dd className="font-semibold text-gray-900">{currency(total)}</dd>
                   </div>
                 </dl>
-                <div
-                  className="mt-3 rounded-md border border-green-200 bg-green-50 text-green-800 text-sm p-3"
-                  role="note"
-                >
-                  Free Shipping
-                </div>
                 {error && (
                   <div
                     className="my-3 rounded-md border border-red-200 bg-red-50 text-red-700 text-sm p-3"

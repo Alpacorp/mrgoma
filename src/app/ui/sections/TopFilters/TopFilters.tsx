@@ -87,7 +87,7 @@ export const TopFilters: FC = () => {
   const defaultClass = 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50';
 
   return (
-    <div ref={menuRef} className="w-full sticky top-23 z-40 hidden lg:block">
+    <div ref={menuRef} className="w-full sticky top-32 z-40 hidden lg:block">
       <div className="flex items-start bg-white border border-gray-200 rounded-lg p-2">
         <div className="flex items-center mr-2 md:mr-3">
           <span className="text-xs font-medium text-gray-500">Filters</span>
