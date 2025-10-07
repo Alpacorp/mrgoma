@@ -8,6 +8,7 @@ import React from 'react';
 import { useCart } from '@/app/context/CartContext';
 import { LoadingScreen } from '@/app/ui/components';
 import ProductMeta from '@/app/ui/components/ProductMeta/ProductMeta';
+import ShippingStateGate from '@/app/ui/components/ShippingStateGate/ShippingStateGate';
 
 const TAX_RATE = (() => {
   if (typeof process !== 'undefined') {
@@ -65,12 +66,23 @@ export default function Checkout() {
   const [detailsError, setDetailsError] = React.useState<string | null>(null);
   const [copied, setCopied] = React.useState(false);
 
+  // Avoid hydration mismatch by rendering cart content after mount
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const taxes = Math.max(0, cartTotal * TAX_RATE);
   const total = cartTotal + taxes;
 
   const isEmpty = cartItems.length === 0;
 
   const stripeEnabled = (process.env.NEXT_PUBLIC_ENABLE_STRIPE || '').toLowerCase() === 'true';
+
+  // Shipping state gating
+  const [selectedState, setSelectedState] = React.useState<string>('');
+  const blockedStates = React.useMemo(() => new Set(['AK', 'HI', 'PR']), []);
+  const isBlockedState = selectedState ? blockedStates.has(selectedState) : false;
 
   // Detect checkout return states
   const success = (searchParams.get('success') || '') === '1';
@@ -83,7 +95,7 @@ export default function Checkout() {
 
   const clearedRef = React.useRef(false);
   React.useEffect(() => {
-    // Show cancel banner if canceled
+    // Show the cancel banner if canceled
     setShowCancelBanner(canceled);
 
     // On success (Stripe) or whatsapp=1, clear cart and set success state
@@ -145,7 +157,7 @@ export default function Checkout() {
   }, [orderState, sessionId]);
 
   // Loading overlay logic
-  const showLoader = resolvingReturn || detailsLoading || loading;
+  const showLoader = !mounted || resolvingReturn || detailsLoading || loading;
   const loaderMsg = (() => {
     if (resolvingReturn) {
       if (success) return 'Finalizing your payment...';
@@ -161,6 +173,14 @@ export default function Checkout() {
   const proceedToPayment = async () => {
     if (isEmpty || loading) return;
     setError(null);
+    if (!selectedState) {
+      setError('Please select your state to continue.');
+      return;
+    }
+    if (isBlockedState) {
+      setError('Sorry, we currently do not ship to Alaska, Hawaii, or Puerto Rico.');
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch('/api/checkout/create-session', {
@@ -482,7 +502,14 @@ export default function Checkout() {
           </div>
         )}
 
-        {isEmpty ? (
+        {!mounted ? (
+          <section
+            aria-live="polite"
+            className="rounded-lg border border-dashed border-gray-200 p-10 text-center"
+          >
+            <p className="text-gray-600">Loading cart…</p>
+          </section>
+        ) : isEmpty ? (
           <section
             aria-live="polite"
             className="rounded-lg border border-dashed border-gray-200 p-10 text-center"
@@ -651,6 +678,12 @@ export default function Checkout() {
                     <dd className="font-semibold text-gray-900">{currency(total)}</dd>
                   </div>
                 </dl>
+                {/* Shipping state restriction */}
+                <ShippingStateGate
+                  selectedState={selectedState}
+                  onChange={setSelectedState}
+                  isBlockedState={isBlockedState}
+                />
                 {error && (
                   <div
                     className="my-3 rounded-md border border-red-200 bg-red-50 text-red-700 text-sm p-3"
@@ -664,8 +697,8 @@ export default function Checkout() {
                     type="button"
                     onClick={proceedToPayment}
                     className="inline-flex w-full cursor-pointer items-center justify-center rounded-md bg-green-600 px-5 py-2.5 text-base font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={isEmpty || loading}
-                    aria-disabled={isEmpty || loading}
+                    disabled={isEmpty || loading || !selectedState || isBlockedState}
+                    aria-disabled={isEmpty || loading || !selectedState || isBlockedState}
                   >
                     {loading
                       ? 'Processing…'
