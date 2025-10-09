@@ -253,6 +253,19 @@ export async function POST(req: NextRequest) {
       shipping_address_collection: {
         allowed_countries: ['US'],
       },
+      // Free shipping option (amount = 0)
+      shipping_options: [
+        {
+          shipping_rate_data: {
+            type: 'fixed_amount',
+            fixed_amount: {
+              amount: 0,
+              currency: (process.env.NEXT_PUBLIC_STRIPE_CURRENCY || 'usd').toLowerCase(),
+            },
+            display_name: 'Free shipping',
+          },
+        },
+      ],
       automatic_tax: {
         enabled: true,
       },

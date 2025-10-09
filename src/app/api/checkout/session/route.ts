@@ -178,6 +178,12 @@ export async function GET(req: NextRequest) {
       // Do not fail the endpoint; still return the session details
     }
 
+    // Determine shipping total (in cents) from session fields
+    const shipping_total_cents =
+      (session as any)?.shipping_cost?.amount_total ??
+      (session as any)?.total_details?.amount_shipping ??
+      0;
+
     const payload = {
       id: session.id,
       created: session.created ? new Date(session.created * 1000).toISOString() : null,
@@ -188,6 +194,7 @@ export async function GET(req: NextRequest) {
       receipt_url: receiptUrl,
       payment_method: paymentMethodType,
       items,
+      shipping_total: shipping_total_cents,
       updated_sold,
       sc_order_id,
       sc_order_guid,

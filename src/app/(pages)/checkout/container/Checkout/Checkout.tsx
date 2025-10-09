@@ -60,6 +60,7 @@ export default function Checkout() {
       amount_total: number;
       currency: string;
     }>;
+    shipping_total?: number | null;
   }>(null);
 
   const [detailsLoading, setDetailsLoading] = React.useState(false);
@@ -335,6 +336,12 @@ export default function Checkout() {
                             sessionDetails.amount_total || 0,
                             sessionDetails.currency || undefined
                           )}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between sm:justify-start sm:gap-3">
+                        <span className="text-gray-600">Shipping</span>
+                        <span className="text-gray-900">
+                          {formatCents(sessionDetails.shipping_total ?? 0, sessionDetails.currency || undefined)}
                         </span>
                       </div>
                     </div>
