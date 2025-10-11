@@ -38,7 +38,7 @@ const defaultSocialLinks: SocialLink[] = [
   },
   {
     platform: 'facebook',
-    href: 'https://facebook.com/mrgomatires',
+    href: 'https://www.facebook.com/profile.php?id=61573861890811',
     icon: 'facebook',
   },
 ];
