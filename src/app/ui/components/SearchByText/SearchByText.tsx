@@ -9,7 +9,12 @@ import { CarFront } from '@/app/ui/icons';
 import { handleChange } from '@/app/utils/handleChangeInput';
 import { handleKeyPress } from '@/app/utils/handleKeyPress';
 
-const SearchByText: FC = () => {
+interface SearchByTextProps {
+  showButton?: boolean;
+  enableSubmit?: boolean;
+}
+
+const SearchByText: FC<SearchByTextProps> = ({ showButton = true, enableSubmit = true }) => {
   const [value, setValue] = useState('');
   const router = useRouter();
 
@@ -19,6 +24,7 @@ const SearchByText: FC = () => {
 
   const handleSearch = (event: FormEvent) => {
     event.preventDefault();
+    if (!enableSubmit) return; // In input-only mode, do nothing on submit/Enter
     if (isComplete) {
       const [width, aspectRatio, diameter] = value.split('/').map(part => part.trim());
       const params = new URLSearchParams();
@@ -89,7 +95,7 @@ const SearchByText: FC = () => {
                 </p>
               )}
             </div>
-            <ButtonSearch type={'submit'} disabled={isComplete} />
+            {showButton && <ButtonSearch type={'submit'} disabled={isComplete} />}
           </form>
         </div>
       </div>
