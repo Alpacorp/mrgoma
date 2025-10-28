@@ -6,7 +6,7 @@ import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
 import { SearchByText } from '@/app/ui/components';
 
 // Types
- type Condition = 'new' | 'used';
+ type Condition = 'new' | 'like-new' | 'used';
 
 interface LeadForm {
   brand: string; // tire brand
@@ -55,6 +55,8 @@ const InstantQuote: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  // Honeypot field for spam bots (should remain empty by humans)
+  const [hp, setHp] = useState('');
 
   const errorRef = useRef<HTMLDivElement>(null);
   const successRef = useRef<HTMLDivElement>(null);
@@ -105,7 +107,7 @@ const InstantQuote: React.FC = () => {
     Boolean(lead.brand) &&
     Boolean(lead.carBrand) &&
     isYearValid(lead.year) &&
-    (lead.condition === 'new' || lead.condition === 'used') &&
+    ((['new','like-new','used'] as const).includes(lead.condition as Condition)) &&
     lead.name.trim().length > 1 &&
     isEmailValid(lead.email) &&
     isPhoneValid(lead.phone);
@@ -161,7 +163,7 @@ const InstantQuote: React.FC = () => {
         (el as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
         break;
       }
-      if (id === 'condition' && !(lead.condition === 'new' || lead.condition === 'used')) {
+      if (id === 'condition' && !(['new','like-new','used'] as const).includes(lead.condition as Condition)) {
         el.focus();
         (el as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
         break;
@@ -212,6 +214,7 @@ const InstantQuote: React.FC = () => {
           name: lead.name,
           email: lead.email,
           phone: lead.phone,
+          hp,
           submittedAt: new Date().toISOString(),
           source: 'instant-quote',
         }),
@@ -239,13 +242,30 @@ const InstantQuote: React.FC = () => {
           <p className="text-sm text-gray-600 mt-1">Get a quick quote by entering your tire size and basic vehicle details, then share your contact info. We&#39;ll reach out shortly.</p>
         </header>
 
-        {/* Segment 1: Size + Brand + Year + Condition */}
-        <SectionCard step={1} title="Vehicle & Tire" subtitle="Enter your tire size and basic vehicle details.">
-          <div className="lg:col-span-2">
-            <SearchByText showButton={false} enableSubmit={false} />
-          </div>
+        {/* Segment 1: Tire & Vehicle */}
+        <SectionCard step={1} title="Tire & Vehicle" subtitle="Add vehicle and tire details, then enter your tire size.">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="condition">
+                Tire Condition
+              </label>
+              <select
+                id="condition"
+                name="condition"
+                value={lead.condition}
+                onChange={handleChange}
+                className="w-full bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white text-sm"
+                required
+              >
+                <option value="" disabled>
+                  Select condition
+                </option>
+                <option value="new">New</option>
+                <option value="like-new">Like-New</option>
+                <option value="used">Used</option>
+              </select>
+            </div>
 
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-4 mt-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="brand">
                 Tire Brand
@@ -255,7 +275,6 @@ const InstantQuote: React.FC = () => {
                 name="brand"
                 value={lead.brand}
                 onChange={handleChange}
-                aria-describedby="brandHelp"
                 className={`w-full bg-white border rounded-md py-2 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white text-sm ${isLoadingBrands ? 'border-gray-200 text-gray-400' : 'border-gray-300'}`}
                 required
                 disabled={isLoadingBrands || brands.length === 0}
@@ -269,7 +288,6 @@ const InstantQuote: React.FC = () => {
                   </option>
                 ))}
               </select>
-              <p id="brandHelp" className="text-xs text-gray-500 mt-1">Choose your tire brand.</p>
             </div>
 
             <div>
@@ -281,7 +299,6 @@ const InstantQuote: React.FC = () => {
                 name="carBrand"
                 value={lead.carBrand}
                 onChange={handleChange}
-                aria-describedby="carBrandHelp"
                 className="w-full bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white text-sm"
                 required
               >
@@ -294,12 +311,11 @@ const InstantQuote: React.FC = () => {
                   </option>
                 ))}
               </select>
-              <p id="carBrandHelp" className="text-xs text-gray-500 mt-1">Choose your vehicle brand.</p>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="year">
-                Year Car Model
+                Model Year
               </label>
               <input
                 id="year"
@@ -309,40 +325,21 @@ const InstantQuote: React.FC = () => {
                 value={lead.year}
                 onChange={handleChange}
                 placeholder="e.g. 2020"
-                aria-describedby="yearHelp yearError"
+                aria-describedby="yearError"
                 aria-invalid={lead.year !== '' && !isYearValid(lead.year)}
                 className="w-full bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white text-sm"
                 required
                 min={1980}
                 max={new Date().getFullYear() + 1}
               />
-              <p id="yearHelp" className="text-xs text-gray-500 mt-1">Enter the model year (1980 to present).</p>
               {!isYearValid(lead.year) && lead.year !== '' && (
                 <p id="yearError" className="text-xs text-red-600 mt-1">Enter a valid year.</p>
               )}
             </div>
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="condition">
-                Condition
-              </label>
-              <select
-                id="condition"
-                name="condition"
-                value={lead.condition}
-                onChange={handleChange}
-                aria-describedby="conditionHelp"
-                className="w-full bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white text-sm"
-                required
-              >
-                <option value="" disabled>
-                  Select condition
-                </option>
-                <option value="new">New</option>
-                <option value="used">Used</option>
-              </select>
-              <p id="conditionHelp" className="text-xs text-gray-500 mt-1">Is the tire new or used?</p>
-            </div>
+          <div className="lg:col-span-2 mt-6">
+            <SearchByText showButton={false} enableSubmit={false} />
           </div>
 
           {/* Helper showing current size captured */}
@@ -351,13 +348,13 @@ const InstantQuote: React.FC = () => {
             {sizeText ? (
               <span className="text-gray-800">{sizeText}</span>
             ) : (
-              <span className="text-red-600">Please enter tire size above.</span>
+              <span className="text-red-600">Please enter your tire size.</span>
             )}
           </div>
         </SectionCard>
 
         {/* Segment 2: Lead info */}
-        <SectionCard step={2} title="Contact information" subtitle="We will use this to send your quote.">
+        <SectionCard step={2} title="Where should we send your quote?" subtitle="We will use this to send your quote.">
           <form ref={formRef} onSubmit={onSubmit} className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <div className="lg:col-span-2 grid grid-cols-1 gap-6 lg:grid-cols-3">
               <div>
@@ -421,6 +418,19 @@ const InstantQuote: React.FC = () => {
             <input type="hidden" name="carBrandHidden" value={lead.carBrand} readOnly />
             <input type="hidden" name="yearHidden" value={lead.year} readOnly />
             <input type="hidden" name="conditionHidden" value={lead.condition} readOnly />
+            {/* Honeypot field: visually hidden; bots may fill it */}
+            <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', top: 'auto', width: 1, height: 1, overflow: 'hidden' }}>
+              <label htmlFor="hp">Leave this field empty</label>
+              <input
+                id="hp"
+                name="hp"
+                type="text"
+                autoComplete="off"
+                tabIndex={-1}
+                value={hp}
+                onChange={e => setHp(e.target.value)}
+              />
+            </div>
 
             {error && (
               <div
@@ -454,7 +464,7 @@ const InstantQuote: React.FC = () => {
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                   </svg>
                 )}
-                {submitting ? 'Sending…' : 'Send'}
+                {submitting ? 'Sending…' : 'Get My Quote'}
               </button>
             </div>
           </form>
@@ -466,13 +476,13 @@ const InstantQuote: React.FC = () => {
             ref={successRef}
             tabIndex={-1}
             aria-live="polite"
-            className="rounded-md border border-green-200 bg-green-50 p-4 flex items-start gap-2"
+            className="rounded-lg border border-green-200 bg-green-50 p-8 flex items-start gap-4"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 text-green-600 mt-0.5">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.78-9.72a.75.75 0 00-1.06-1.06L9 10.94 7.28 9.22a.75.75 0 10-1.06 1.06l2.25 2.25a.75.75 0 001.06 0l4.25-4.25z" clipRule="evenodd" />
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-8 w-8 text-green-600 mt-0.5">
+              <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM16.28 9.72a.75.75 0 10-1.06-1.06L10.5 13.38l-1.72-1.72a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.06 0l4.25-4.25z" clipRule="evenodd" />
             </svg>
-            <p className="text-green-700">
-              Your information was sent successfully. We will contact you shortly.
+            <p className="text-green-800 text-base sm:text-lg font-medium">
+              Thanks! Our team is finding your best price. You&#39;ll get your quote in minutes.
             </p>
           </section>
         )}
