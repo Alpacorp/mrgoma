@@ -9,7 +9,8 @@ import { SearchByText } from '@/app/ui/components';
  type Condition = 'new' | 'used';
 
 interface LeadForm {
-  brand: string;
+  brand: string; // tire brand
+  carBrand: string; // vehicle brand
   year: string;
   condition: Condition | '';
   name: string;
@@ -19,6 +20,7 @@ interface LeadForm {
 
 const initialLead: LeadForm = {
   brand: '',
+  carBrand: '',
   year: '',
   condition: '',
   name: '',
@@ -38,6 +40,12 @@ const SectionCard: React.FC<{ step: number; title: string; subtitle?: string; ch
     <div className="p-4 sm:p-6">{children}</div>
   </section>
 );
+
+const carBrandsList = [
+  'Toyota','Honda','Ford','Chevrolet','Nissan','Hyundai','Kia','Volkswagen','BMW','Mercedes-Benz',
+  'Audi','Mazda','Subaru','Jeep','Tesla','Dodge','Ram','GMC','Cadillac','Acura',
+  'Infiniti','Lexus','Volvo','Porsche','Land Rover','Mini','Buick','Chrysler','Mitsubishi','Fiat'
+];
 
 const InstantQuote: React.FC = () => {
   const { selectedFilters } = useContext(SelectedFiltersContext);
@@ -95,6 +103,7 @@ const InstantQuote: React.FC = () => {
   const allRequiredFilled =
     Boolean(sizeText) &&
     Boolean(lead.brand) &&
+    Boolean(lead.carBrand) &&
     isYearValid(lead.year) &&
     (lead.condition === 'new' || lead.condition === 'used') &&
     lead.name.trim().length > 1 &&
@@ -128,7 +137,7 @@ const InstantQuote: React.FC = () => {
   const focusFirstInvalid = () => {
     const form = formRef.current;
     if (!form) return;
-    const requiredIds = ['tireSize', 'brand', 'year', 'condition', 'name', 'email', 'phone'];
+    const requiredIds = ['tireSize', 'brand', 'carBrand', 'year', 'condition', 'name', 'email', 'phone'];
     for (const id of requiredIds) {
       const el = form.querySelector<HTMLElement>(`#${id}`);
       if (!el) continue;
@@ -138,6 +147,11 @@ const InstantQuote: React.FC = () => {
         break;
       }
       if (id === 'brand' && !lead.brand) {
+        el.focus();
+        (el as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
+        break;
+      }
+      if (id === 'carBrand' && !lead.carBrand) {
         el.focus();
         (el as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
         break;
@@ -191,7 +205,8 @@ const InstantQuote: React.FC = () => {
           width: selectedFilters.width,
           sidewall: selectedFilters.sidewall,
           diameter: selectedFilters.diameter,
-          brand: lead.brand,
+          tireBrand: lead.brand,
+          carBrand: lead.carBrand,
           year: lead.year,
           condition: lead.condition,
           name: lead.name,
@@ -230,10 +245,10 @@ const InstantQuote: React.FC = () => {
             <SearchByText showButton={false} enableSubmit={false} />
           </div>
 
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 mt-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-4 mt-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="brand">
-                Brand Car
+                Tire Brand
               </label>
               <select
                 id="brand"
@@ -254,7 +269,32 @@ const InstantQuote: React.FC = () => {
                   </option>
                 ))}
               </select>
-              <p id="brandHelp" className="text-xs text-gray-500 mt-1">Choose your vehicle brand.</p>
+              <p id="brandHelp" className="text-xs text-gray-500 mt-1">Choose your tire brand.</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="carBrand">
+                Car Brand
+              </label>
+              <select
+                id="carBrand"
+                name="carBrand"
+                value={lead.carBrand}
+                onChange={handleChange}
+                aria-describedby="carBrandHelp"
+                className="w-full bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white text-sm"
+                required
+              >
+                <option value="" disabled>
+                  Select car brand
+                </option>
+                {carBrandsList.map(b => (
+                  <option key={b} value={b}>
+                    {b}
+                  </option>
+                ))}
+              </select>
+              <p id="carBrandHelp" className="text-xs text-gray-500 mt-1">Choose your vehicle brand.</p>
             </div>
 
             <div>
@@ -378,6 +418,7 @@ const InstantQuote: React.FC = () => {
 
             {/* Hidden fields mirroring Segment 1 to include in the same submitting */}
             <input type="hidden" name="brandHidden" value={lead.brand} readOnly />
+            <input type="hidden" name="carBrandHidden" value={lead.carBrand} readOnly />
             <input type="hidden" name="yearHidden" value={lead.year} readOnly />
             <input type="hidden" name="conditionHidden" value={lead.condition} readOnly />
 
