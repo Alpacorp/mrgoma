@@ -1,5 +1,5 @@
 interface SocialIconProps {
-  platform: "instagram" | "facebook" | "twitter" | "linkedin"
+  platform: "instagram" | "facebook" | "twitter" | "linkedin" | "x" | "tiktok"
   className?: string
   size?: number
 }
@@ -50,6 +50,22 @@ export const SocialIcon = ({ platform, className = "", size = 24 }: SocialIconPr
             <rect x="2" y="9" width="4" height="12" stroke="currentColor" strokeWidth="2" fill="none" />
             <circle cx="4" cy="4" r="2" stroke="currentColor" strokeWidth="2" fill="none" />
           </>
+        );
+      case "x":
+        // Accurate X (formerly Twitter) logo path (based on Simple Icons). Using fill=currentColor for brand-correct look.
+        return (
+          <path
+            d="M18.244 2H21.5l-7.59 8.682L23 22h-6.344l-4.957-6.137L5.9 22H2.641l8.096-9.26L1 2h6.461l4.478 5.757L18.244 2zm-2.232 17.35h1.751L7.054 4.56H5.234l10.778 14.79z"
+            fill="currentColor"
+          />
+        );
+      case "tiktok":
+        // Accurate TikTok logo path (based on Simple Icons). Using fill=currentColor.
+        return (
+          <path
+            d="M12.43 2.001h3.203c.329 2.24 2.138 3.932 4.56 4.097v3.253a7.54 7.54 0 0 1-4.094-1.246v6.027c0 3.97-3.218 7.188-7.187 7.188S1.724 18.102 1.724 14.133c0-3.97 3.218-7.188 7.188-7.188.452 0 .893.041 1.317.12v3.35a3.9 3.9 0 0 0-1.317-.236 3.57 3.57 0 1 0 3.57 3.57V2.001z"
+            fill="currentColor"
+          />
         );
       default:
         return null;

@@ -41,6 +41,16 @@ const defaultSocialLinks: SocialLink[] = [
     href: 'https://www.facebook.com/profile.php?id=61573861890811',
     icon: 'facebook',
   },
+  {
+    platform: 'x',
+    href: 'https://x.com/MrGomaTires',
+    icon: 'x',
+  },
+  {
+    platform: 'tiktok',
+    href: 'https://www.tiktok.com/@mrgomatires',
+    icon: 'tiktok',
+  },
 ];
 
 export const Footer = ({

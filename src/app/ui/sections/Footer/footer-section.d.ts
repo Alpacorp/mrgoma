@@ -12,7 +12,7 @@ export interface FooterSection {
 export interface SocialLink {
   platform: string
   href: string
-  icon: "instagram" | "facebook" | "twitter" | "linkedin"
+  icon: "instagram" | "facebook" | "twitter" | "linkedin" | "x" | "tiktok"
 }
 
 export interface FooterProps {
