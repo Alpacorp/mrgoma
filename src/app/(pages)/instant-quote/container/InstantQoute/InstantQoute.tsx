@@ -236,7 +236,7 @@ const InstantQuote: React.FC = () => {
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900">
             Instant Quote
           </h1>
-          <p className="text-sm text-gray-600 mt-1">Get a quick quote by entering your tire size and basic vehicle details, then share your contact info. We'll reach out shortly.</p>
+          <p className="text-sm text-gray-600 mt-1">Get a quick quote by entering your tire size and basic vehicle details, then share your contact info. We&#39;ll reach out shortly.</p>
         </header>
 
         {/* Segment 1: Size + Brand + Year + Condition */}
