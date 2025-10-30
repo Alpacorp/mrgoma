@@ -6,7 +6,7 @@ import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
 import { SearchByText } from '@/app/ui/components';
 
 // Types
- type Condition = 'new' | 'like-new' | 'used';
+type Condition = 'new' | 'like-new' | 'used';
 
 interface LeadForm {
   brand: string; // tire brand
@@ -28,10 +28,20 @@ const initialLead: LeadForm = {
   phone: '',
 };
 
-const SectionCard: React.FC<{ step: number; title: string; subtitle?: string; children: React.ReactNode; className?: string }> = ({ step, title, subtitle, children, className = '' }) => (
-  <section className={`mb-8 rounded-xl border border-gray-200 bg-white/80 backdrop-blur-sm shadow-sm ${className}`}>
+const SectionCard: React.FC<{
+  step: number;
+  title: string;
+  subtitle?: string;
+  children: React.ReactNode;
+  className?: string;
+}> = ({ step, title, subtitle, children, className = '' }) => (
+  <section
+    className={`mb-8 rounded-xl border border-gray-200 bg-white/80 backdrop-blur-sm shadow-sm ${className}`}
+  >
     <div className="flex items-start gap-3 border-b border-gray-100 px-4 sm:px-6 py-4">
-      <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-lime-400 text-neutral-900 font-semibold text-sm select-none">{step}</span>
+      <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-lime-400 text-neutral-900 font-semibold text-sm select-none">
+        {step}
+      </span>
       <div>
         <h2 className="text-base sm:text-lg font-semibold text-gray-900">{title}</h2>
         {subtitle && <p className="text-xs sm:text-sm text-gray-600 mt-0.5">{subtitle}</p>}
@@ -42,9 +52,36 @@ const SectionCard: React.FC<{ step: number; title: string; subtitle?: string; ch
 );
 
 const carBrandsList = [
-  'Toyota','Honda','Ford','Chevrolet','Nissan','Hyundai','Kia','Volkswagen','BMW','Mercedes-Benz',
-  'Audi','Mazda','Subaru','Jeep','Tesla','Dodge','Ram','GMC','Cadillac','Acura',
-  'Infiniti','Lexus','Volvo','Porsche','Land Rover','Mini','Buick','Chrysler','Mitsubishi','Fiat'
+  'Toyota',
+  'Honda',
+  'Ford',
+  'Chevrolet',
+  'Nissan',
+  'Hyundai',
+  'Kia',
+  'Volkswagen',
+  'BMW',
+  'Mercedes-Benz',
+  'Audi',
+  'Mazda',
+  'Subaru',
+  'Jeep',
+  'Tesla',
+  'Dodge',
+  'Ram',
+  'GMC',
+  'Cadillac',
+  'Acura',
+  'Infiniti',
+  'Lexus',
+  'Volvo',
+  'Porsche',
+  'Land Rover',
+  'Mini',
+  'Buick',
+  'Chrysler',
+  'Mitsubishi',
+  'Fiat',
 ];
 
 const InstantQuote: React.FC = () => {
@@ -107,17 +144,22 @@ const InstantQuote: React.FC = () => {
     Boolean(lead.brand) &&
     Boolean(lead.carBrand) &&
     isYearValid(lead.year) &&
-    ((['new','like-new','used'] as const).includes(lead.condition as Condition)) &&
+    (['new', 'like-new', 'used'] as const).includes(lead.condition as Condition) &&
     lead.name.trim().length > 1 &&
     isEmailValid(lead.email) &&
     isPhoneValid(lead.phone);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+    const { name } = e.target;
+    let value = (e.target as HTMLInputElement).value;
+    if (name === 'year') {
+      // Allow only digits and limit to 4 characters
+      value = value.replace(/\D/g, '').slice(0, 4);
+    }
     setLead(prev => ({ ...prev, [name]: value }));
   };
 
-  // Focus feedback banners when they appear
+  // Focus feed back banners when they appear
   useEffect(() => {
     if (error) {
       requestAnimationFrame(() => {
@@ -139,7 +181,16 @@ const InstantQuote: React.FC = () => {
   const focusFirstInvalid = () => {
     const form = formRef.current;
     if (!form) return;
-    const requiredIds = ['tireSize', 'brand', 'carBrand', 'year', 'condition', 'name', 'email', 'phone'];
+    const requiredIds = [
+      'tireSize',
+      'brand',
+      'carBrand',
+      'year',
+      'condition',
+      'name',
+      'email',
+      'phone',
+    ];
     for (const id of requiredIds) {
       const el = form.querySelector<HTMLElement>(`#${id}`);
       if (!el) continue;
@@ -163,7 +214,10 @@ const InstantQuote: React.FC = () => {
         (el as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
         break;
       }
-      if (id === 'condition' && !(['new','like-new','used'] as const).includes(lead.condition as Condition)) {
+      if (
+        id === 'condition' &&
+        !(['new', 'like-new', 'used'] as const).includes(lead.condition as Condition)
+      ) {
         el.focus();
         (el as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
         break;
@@ -239,11 +293,21 @@ const InstantQuote: React.FC = () => {
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900">
             Instant Quote
           </h1>
-          <p className="text-sm text-gray-600 mt-1">Get a quick quote by entering your tire size and basic vehicle details, then share your contact info. We&#39;ll reach out shortly.</p>
+          <p className="text-sm text-gray-600 mt-1">
+            Get a quick quote by entering your tire size and basic vehicle details, then share your
+            contact info. We&#39;ll reach out shortly.
+          </p>
         </header>
 
         {/* Segment 1: Tire & Vehicle */}
-        <SectionCard step={1} title="Tire & Vehicle" subtitle="Add vehicle and tire details, then enter your tire size.">
+        <SectionCard
+          step={1}
+          title="Tire & Vehicle"
+          subtitle="Add vehicle and tire details, then enter your tire size."
+        >
+          <div className="lg:col-span-2 mb-6">
+            <SearchByText showButton={false} enableSubmit={false} />
+          </div>
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="condition">
@@ -315,7 +379,7 @@ const InstantQuote: React.FC = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="year">
-                Model Year
+                Model Year test
               </label>
               <input
                 id="year"
@@ -331,15 +395,14 @@ const InstantQuote: React.FC = () => {
                 required
                 min={1980}
                 max={new Date().getFullYear() + 1}
+                maxLength={4}
               />
               {!isYearValid(lead.year) && lead.year !== '' && (
-                <p id="yearError" className="text-xs text-red-600 mt-1">Enter a valid year.</p>
+                <p id="yearError" className="text-xs text-red-600 mt-1">
+                  Enter a valid year.
+                </p>
               )}
             </div>
-          </div>
-
-          <div className="lg:col-span-2 mt-6">
-            <SearchByText showButton={false} enableSubmit={false} />
           </div>
 
           {/* Helper showing current size captured */}
@@ -354,7 +417,11 @@ const InstantQuote: React.FC = () => {
         </SectionCard>
 
         {/* Segment 2: Lead info */}
-        <SectionCard step={2} title="Where should we send your quote?" subtitle="We will use this to send your quote.">
+        <SectionCard
+          step={2}
+          title="Where should we send your quote?"
+          subtitle="We will use this to send your quote."
+        >
           <form ref={formRef} onSubmit={onSubmit} className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <div className="lg:col-span-2 grid grid-cols-1 gap-6 lg:grid-cols-3">
               <div>
@@ -389,7 +456,9 @@ const InstantQuote: React.FC = () => {
                   required
                 />
                 {lead.email && !isEmailValid(lead.email) && (
-                  <p id="emailError" className="text-xs text-red-600 mt-1">Enter a valid email.</p>
+                  <p id="emailError" className="text-xs text-red-600 mt-1">
+                    Enter a valid email.
+                  </p>
                 )}
               </div>
               <div>
@@ -408,7 +477,9 @@ const InstantQuote: React.FC = () => {
                   required
                 />
                 {lead.phone && !isPhoneValid(lead.phone) && (
-                  <p id="phoneError" className="text-xs text-red-600 mt-1">Enter a valid phone.</p>
+                  <p id="phoneError" className="text-xs text-red-600 mt-1">
+                    Enter a valid phone.
+                  </p>
                 )}
               </div>
             </div>
@@ -419,7 +490,17 @@ const InstantQuote: React.FC = () => {
             <input type="hidden" name="yearHidden" value={lead.year} readOnly />
             <input type="hidden" name="conditionHidden" value={lead.condition} readOnly />
             {/* Honeypot field: visually hidden; bots may fill it */}
-            <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', top: 'auto', width: 1, height: 1, overflow: 'hidden' }}>
+            <div
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                left: '-10000px',
+                top: 'auto',
+                width: 1,
+                height: 1,
+                overflow: 'hidden',
+              }}
+            >
               <label htmlFor="hp">Leave this field empty</label>
               <input
                 id="hp"
@@ -440,15 +521,26 @@ const InstantQuote: React.FC = () => {
                 role="alert"
                 aria-live="assertive"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 mt-0.5">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.5a.75.75 0 00-1.5 0v5a.75.75 0 001.5 0v-5zM10 13a1 1 0 100 2 1 1 0 000-2z" clipRule="evenodd" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="h-5 w-5 mt-0.5"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.5a.75.75 0 00-1.5 0v5a.75.75 0 001.5 0v-5zM10 13a1 1 0 100 2 1 1 0 000-2z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 <span>{error}</span>
               </div>
             )}
 
             <div className="lg:col-span-2 flex flex-col sm:flex-row items-start gap-3 sm:items-center justify-between">
-              <p className="text-xs text-gray-500">By sending, you agree to be contacted about your quote.</p>
+              <p className="text-xs text-gray-500">
+                By sending, you agree to be contacted about your quote.
+              </p>
               <button
                 type="submit"
                 disabled={!allRequiredFilled || submitting}
@@ -459,9 +551,26 @@ const InstantQuote: React.FC = () => {
                 }`}
               >
                 {submitting && (
-                  <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                  <svg
+                    className="h-4 w-4 animate-spin"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    ></path>
                   </svg>
                 )}
                 {submitting ? 'Sending…' : 'Get My Quote'}
@@ -478,8 +587,17 @@ const InstantQuote: React.FC = () => {
             aria-live="polite"
             className="rounded-lg border border-green-200 bg-green-50 p-8 flex items-start gap-4"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-8 w-8 text-green-600 mt-0.5">
-              <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM16.28 9.72a.75.75 0 10-1.06-1.06L10.5 13.38l-1.72-1.72a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.06 0l4.25-4.25z" clipRule="evenodd" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="h-8 w-8 text-green-600 mt-0.5"
+            >
+              <path
+                fillRule="evenodd"
+                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM16.28 9.72a.75.75 0 10-1.06-1.06L10.5 13.38l-1.72-1.72a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.06 0l4.25-4.25z"
+                clipRule="evenodd"
+              />
             </svg>
             <p className="text-green-800 text-base sm:text-lg font-medium">
               Thanks! Our team is finding your best price. You&#39;ll get your quote in minutes.
