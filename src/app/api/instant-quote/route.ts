@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Server webhook not configured' }, { status: 500 });
     }
 
-    // 1) Origin/Referer allow-list
+    // 1) Origin/Referer allowlist
     if (!isAllowedOrigin(req)) {
       return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
     }
@@ -86,21 +86,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
-    // Basic validation (all required by spec)
-    const required = [
-      'size',
-      'width',
-      'sidewall',
-      'diameter',
-      'tireBrand',
-      'carBrand',
-      'year',
-      'condition',
-      'name',
-      'email',
-      'phone',
-    ];
-    const missing = required.filter(k => !payload?.[k]);
+    // Basic validation (only the fields required for submission)
+    // Required: size, name, and at least one contact method (valid email OR valid 10-digit phone)
+    const missing: string[] = [];
+
+    const size = typeof payload?.size === 'string' ? payload.size.trim() : '';
+    if (!size) missing.push('size');
+
+    const name = typeof payload?.name === 'string' ? payload.name.trim() : '';
+    if (!name) missing.push('name');
+
+    const email = typeof payload?.email === 'string' ? payload.email.trim() : '';
+    const phoneRaw = typeof payload?.phone === 'string' ? payload.phone : '';
+    const phoneDigits = String(phoneRaw || '').replace(/\D/g, '');
+
+    const emailValid = !!email && /\S+@\S+\.\S+/.test(email);
+    const phoneValid = !!phoneDigits && /^\d{10}$/.test(phoneDigits);
+
+    if (!emailValid && !phoneValid) {
+      missing.push('contact (email or phone)');
+    }
+
     if (missing.length) {
       return NextResponse.json(
         { message: `Missing required fields: ${missing.join(', ')}` },
@@ -108,7 +114,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Append some meta information
+    // Append some meta-information
     const meta = {
       ip: clientIp,
       userAgent: req.headers.get('user-agent') || undefined,
