@@ -9,7 +9,6 @@ import { SearchByText } from '@/app/ui/components';
 type Condition = 'new' | 'like-new' | 'used';
 
 interface LeadForm {
-  brand: string; // tire brand
   vehicleDetails: string; // free text: Make, Model, Year
   condition: Condition[];
   name: string;
@@ -18,7 +17,6 @@ interface LeadForm {
 }
 
 const initialLead: LeadForm = {
-  brand: '',
   vehicleDetails: '',
   condition: [],
   name: '',
@@ -53,8 +51,6 @@ const SectionCard: React.FC<{
 const InstantQuote: React.FC = () => {
   const { selectedFilters } = useContext(SelectedFiltersContext);
   const [lead, setLead] = useState<LeadForm>(initialLead);
-  const [brands, setBrands] = useState<string[]>([]);
-  const [isLoadingBrands, setIsLoadingBrands] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -65,31 +61,6 @@ const InstantQuote: React.FC = () => {
   const successRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  // Fetch brands (unfiltered)
-  useEffect(() => {
-    let isMounted = true;
-    setIsLoadingBrands(true);
-    fetch('/api/brands')
-      .then(async res => {
-        if (!res.ok) throw new Error('Failed to load brands');
-        return (await res.json()) as string[];
-      })
-      .then(list => {
-        if (!isMounted) return;
-        setBrands(list);
-      })
-      .catch(() => {
-        if (!isMounted) return;
-        setBrands([]);
-      })
-      .finally(() => {
-        if (!isMounted) return;
-        setIsLoadingBrands(false);
-      });
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   const sizeText = useMemo(() => {
     const { width, sidewall, diameter } = selectedFilters || {};
@@ -227,7 +198,6 @@ const InstantQuote: React.FC = () => {
           width: selectedFilters.width,
           sidewall: selectedFilters.sidewall,
           diameter: selectedFilters.diameter,
-          tireBrand: lead.brand,
           vehicleDetails: lead.vehicleDetails,
           carBrand: derivedCarBrand,
           year: derivedYear,
@@ -320,28 +290,6 @@ const InstantQuote: React.FC = () => {
               </fieldset>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="brand">
-                Tire Brand
-              </label>
-              <select
-                id="brand"
-                name="brand"
-                value={lead.brand}
-                onChange={handleChange}
-                className={`w-full bg-white border rounded-md py-2 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white text-sm ${isLoadingBrands ? 'border-gray-200 text-gray-400' : 'border-gray-300'}`}
-                disabled={isLoadingBrands || brands.length === 0}
-              >
-                <option value="" disabled>
-                  {isLoadingBrands ? 'Loading brands…' : 'Select brand'}
-                </option>
-                {brands.map(b => (
-                  <option key={b} value={b}>
-                    {b}
-                  </option>
-                ))}
-              </select>
-            </div>
 
             <div className="lg:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="vehicleDetails">
@@ -445,7 +393,6 @@ const InstantQuote: React.FC = () => {
             </div>
 
             {/* Hidden fields mirroring Segment 1 to include in the same submitting */}
-            <input type="hidden" name="brandHidden" value={lead.brand} readOnly />
             <input type="hidden" name="vehicleDetailsHidden" value={lead.vehicleDetails} readOnly />
             <input type="hidden" name="conditionHidden" value={lead.condition.join(',')} readOnly />
             {/* Honeypot field: visually hidden; bots may fill it */}
