@@ -10,9 +10,8 @@ type Condition = 'new' | 'like-new' | 'used';
 
 interface LeadForm {
   brand: string; // tire brand
-  carBrand: string; // vehicle brand
-  year: string;
-  condition: Condition | '';
+  vehicleDetails: string; // free text: Make, Model, Year
+  condition: Condition[];
   name: string;
   email: string;
   phone: string;
@@ -20,9 +19,8 @@ interface LeadForm {
 
 const initialLead: LeadForm = {
   brand: '',
-  carBrand: '',
-  year: '',
-  condition: '',
+  vehicleDetails: '',
+  condition: [],
   name: '',
   email: '',
   phone: '',
@@ -51,38 +49,6 @@ const SectionCard: React.FC<{
   </section>
 );
 
-const carBrandsList = [
-  'Toyota',
-  'Honda',
-  'Ford',
-  'Chevrolet',
-  'Nissan',
-  'Hyundai',
-  'Kia',
-  'Volkswagen',
-  'BMW',
-  'Mercedes-Benz',
-  'Audi',
-  'Mazda',
-  'Subaru',
-  'Jeep',
-  'Tesla',
-  'Dodge',
-  'Ram',
-  'GMC',
-  'Cadillac',
-  'Acura',
-  'Infiniti',
-  'Lexus',
-  'Volvo',
-  'Porsche',
-  'Land Rover',
-  'Mini',
-  'Buick',
-  'Chrysler',
-  'Mitsubishi',
-  'Fiat',
-];
 
 const InstantQuote: React.FC = () => {
   const { selectedFilters } = useContext(SelectedFiltersContext);
@@ -132,30 +98,55 @@ const InstantQuote: React.FC = () => {
   }, [selectedFilters]);
 
   const isEmailValid = (email: string) => /\S+@\S+\.\S+/.test(email);
-  const isPhoneValid = (phone: string) => /[0-9]{7,}/.test(phone.replace(/\D/g, ''));
-  const isYearValid = (year: string) => {
-    const y = Number(year);
-    const now = new Date().getFullYear();
-    return Number.isInteger(y) && y >= 1980 && y <= now + 1;
+  const isPhoneValid = (phone: string) => {
+    const digits = phone.replace(/\D/g, '');
+    return /^\d{10}$/.test(digits);
+  };
+  const hasValid4DigitYear = (text: string) => {
+    const match = text.match(/\b(\d{4})\b/);
+    return !!match;
   };
 
   const allRequiredFilled =
     Boolean(sizeText) &&
-    Boolean(lead.brand) &&
-    Boolean(lead.carBrand) &&
-    isYearValid(lead.year) &&
-    (['new', 'like-new', 'used'] as const).includes(lead.condition as Condition) &&
     lead.name.trim().length > 1 &&
-    isEmailValid(lead.email) &&
-    isPhoneValid(lead.phone);
+    (isEmailValid(lead.email) || isPhoneValid(lead.phone));
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name } = e.target;
-    let value = (e.target as HTMLInputElement).value;
-    if (name === 'year') {
-      // Allow only digits and limit to 4 characters
-      value = value.replace(/\D/g, '').slice(0, 4);
+    const target = e.target as HTMLInputElement;
+    const { name } = target;
+    let value = target.value;
+
+    if (name === 'condition') {
+      const val = target.value as Condition;
+      const checked = target.checked;
+      setLead(prev => {
+        const cur = new Set(prev.condition);
+        if (checked) cur.add(val);
+        else cur.delete(val);
+        return { ...prev, condition: Array.from(cur) };
+      });
+      return;
     }
+
+    if (name === 'phone') {
+      // Keep only digits and limit to 10
+      const digits = value.replace(/\D/g, '').slice(0, 10);
+      const part1 = digits.slice(0, 3);
+      const part2 = digits.slice(3, 6);
+      const part3 = digits.slice(6, 10);
+      if (digits.length <= 3) value = part1 ? `(${part1}` : '';
+      else if (digits.length <= 6) value = `(${part1}) ${part2}`;
+      else value = `(${part1}) ${part2}-${part3}`;
+    }
+
+    if (name === 'vehicleDetails') {
+      // Auto-capitalize each word
+      value = value
+        .toLowerCase()
+        .replace(/\b([a-z])(\w*)/g, (_, a: string, b: string) => a.toUpperCase() + b);
+    }
+
     setLead(prev => ({ ...prev, [name]: value }));
   };
 
@@ -181,60 +172,30 @@ const InstantQuote: React.FC = () => {
   const focusFirstInvalid = () => {
     const form = formRef.current;
     if (!form) return;
-    const requiredIds = [
-      'tireSize',
-      'brand',
-      'carBrand',
-      'year',
-      'condition',
-      'name',
-      'email',
-      'phone',
-    ];
-    for (const id of requiredIds) {
-      const el = form.querySelector<HTMLElement>(`#${id}`);
+    const ids = ['tireSize', 'name', 'email', 'phone'] as const;
+    for (const id of ids) {
+      const el = form.querySelector<HTMLElement>(`#${id}`) || document.getElementById(id);
       if (!el) continue;
       if (id === 'tireSize' && !sizeText) {
         el.focus();
-        (el as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
-        break;
-      }
-      if (id === 'brand' && !lead.brand) {
-        el.focus();
-        (el as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
-        break;
-      }
-      if (id === 'carBrand' && !lead.carBrand) {
-        el.focus();
-        (el as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
-        break;
-      }
-      if (id === 'year' && !isYearValid(lead.year)) {
-        el.focus();
-        (el as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
-        break;
-      }
-      if (
-        id === 'condition' &&
-        !(['new', 'like-new', 'used'] as const).includes(lead.condition as Condition)
-      ) {
-        el.focus();
-        (el as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         break;
       }
       if (id === 'name' && !(lead.name.trim().length > 1)) {
         el.focus();
-        (el as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         break;
       }
-      if (id === 'email' && !isEmailValid(lead.email)) {
+      if (id === 'email' && !lead.email && !isPhoneValid(lead.phone)) {
+        // Require at least one contact method; focus email first
         el.focus();
-        (el as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         break;
       }
-      if (id === 'phone' && !isPhoneValid(lead.phone)) {
-        el.focus();
-        (el as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (id === 'phone' && !lead.phone && !isEmailValid(lead.email)) {
+        const tel = form.querySelector<HTMLElement>('#phone');
+        (tel || el).focus();
+        (tel || el).scrollIntoView({ behavior: 'smooth', block: 'center' });
         break;
       }
     }
@@ -253,6 +214,11 @@ const InstantQuote: React.FC = () => {
 
     try {
       setSubmitting(true);
+
+      const yearMatch = lead.vehicleDetails.match(/\b(\d{4})\b/);
+      const derivedYear = yearMatch ? yearMatch[1] : '';
+      const derivedCarBrand = lead.vehicleDetails.trim().split(/\s+/)[0] || '';
+
       const res = await fetch('/api/instant-quote', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -262,9 +228,10 @@ const InstantQuote: React.FC = () => {
           sidewall: selectedFilters.sidewall,
           diameter: selectedFilters.diameter,
           tireBrand: lead.brand,
-          carBrand: lead.carBrand,
-          year: lead.year,
-          condition: lead.condition,
+          vehicleDetails: lead.vehicleDetails,
+          carBrand: derivedCarBrand,
+          year: derivedYear,
+          condition: lead.condition.join(','),
           name: lead.name,
           email: lead.email,
           phone: lead.phone,
@@ -305,29 +272,52 @@ const InstantQuote: React.FC = () => {
           title="Tire & Vehicle"
           subtitle="Add vehicle and tire details, then enter your tire size."
         >
+          <div id="tireSize" tabIndex={-1} className="-mt-4 mb-2 h-0" />
           <div className="lg:col-span-2 mb-6">
             <SearchByText showButton={false} enableSubmit={false} />
           </div>
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="condition">
-                Tire Condition
-              </label>
-              <select
-                id="condition"
-                name="condition"
-                value={lead.condition}
-                onChange={handleChange}
-                className="w-full bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white text-sm"
-                required
-              >
-                <option value="" disabled>
-                  Select condition
-                </option>
-                <option value="new">New</option>
-                <option value="like-new">Like-New</option>
-                <option value="used">Used</option>
-              </select>
+              <fieldset>
+                <legend className="block text-sm font-medium text-gray-700 mb-1" id="condition">
+                  Tire Condition
+                </legend>
+                <div className="flex flex-col gap-2">
+                  <label className="inline-flex items-center gap-2 text-sm text-gray-700">
+                    <input
+                      type="checkbox"
+                      name="condition"
+                      value="new"
+                      checked={lead.condition.includes('new')}
+                      onChange={handleChange}
+                      className="text-green-600 focus:ring-green-500"
+                    />
+                    <span>New</span>
+                  </label>
+                  <label className="inline-flex items-center gap-2 text-sm text-gray-700">
+                    <input
+                      type="checkbox"
+                      name="condition"
+                      value="like-new"
+                      checked={lead.condition.includes('like-new')}
+                      onChange={handleChange}
+                      className="text-green-600 focus:ring-green-500"
+                    />
+                    <span>Used Like-New</span>
+                  </label>
+                  <label className="inline-flex items-center gap-2 text-sm text-gray-700">
+                    <input
+                      type="checkbox"
+                      name="condition"
+                      value="used"
+                      checked={lead.condition.includes('used')}
+                      onChange={handleChange}
+                      className="text-green-600 focus:ring-green-500"
+                    />
+                    <span>Used</span>
+                  </label>
+                </div>
+              </fieldset>
             </div>
 
             <div>
@@ -340,7 +330,6 @@ const InstantQuote: React.FC = () => {
                 value={lead.brand}
                 onChange={handleChange}
                 className={`w-full bg-white border rounded-md py-2 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white text-sm ${isLoadingBrands ? 'border-gray-200 text-gray-400' : 'border-gray-300'}`}
-                required
                 disabled={isLoadingBrands || brands.length === 0}
               >
                 <option value="" disabled>
@@ -354,52 +343,25 @@ const InstantQuote: React.FC = () => {
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="carBrand">
-                Car Brand
-              </label>
-              <select
-                id="carBrand"
-                name="carBrand"
-                value={lead.carBrand}
-                onChange={handleChange}
-                className="w-full bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white text-sm"
-                required
-              >
-                <option value="" disabled>
-                  Select car brand
-                </option>
-                {carBrandsList.map(b => (
-                  <option key={b} value={b}>
-                    {b}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="year">
-                Model Year test
+            <div className="lg:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="vehicleDetails">
+                Vehicle Details (Make, Model, Year)
               </label>
               <input
-                id="year"
-                name="year"
-                type="number"
-                inputMode="numeric"
-                value={lead.year}
+                id="vehicleDetails"
+                name="vehicleDetails"
+                type="text"
+                value={lead.vehicleDetails}
                 onChange={handleChange}
-                placeholder="e.g. 2020"
-                aria-describedby="yearError"
-                aria-invalid={lead.year !== '' && !isYearValid(lead.year)}
+                placeholder="e.g. Toyota Camry 2019"
+                aria-describedby="vehicleDetailsHelp vehicleDetailsError"
+                aria-invalid={lead.vehicleDetails !== '' && !hasValid4DigitYear(lead.vehicleDetails)}
                 className="w-full bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white text-sm"
-                required
-                min={1980}
-                max={new Date().getFullYear() + 1}
-                maxLength={4}
               />
-              {!isYearValid(lead.year) && lead.year !== '' && (
-                <p id="yearError" className="text-xs text-red-600 mt-1">
-                  Enter a valid year.
+              <p id="vehicleDetailsHelp" className="text-xs text-gray-500 mt-1">Example: Honda Civic 2020</p>
+              {lead.vehicleDetails !== '' && !hasValid4DigitYear(lead.vehicleDetails) && (
+                <p id="vehicleDetailsError" className="text-xs text-red-600 mt-1">
+                  Please include a 4-digit model year (e.g., 2021).
                 </p>
               )}
             </div>
@@ -453,7 +415,6 @@ const InstantQuote: React.FC = () => {
                   placeholder="you@email.com"
                   aria-describedby="emailError"
                   className="w-full bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white text-sm"
-                  required
                 />
                 {lead.email && !isEmailValid(lead.email) && (
                   <p id="emailError" className="text-xs text-red-600 mt-1">
@@ -474,7 +435,6 @@ const InstantQuote: React.FC = () => {
                   placeholder="(555) 555-5555"
                   aria-describedby="phoneError"
                   className="w-full bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white text-sm"
-                  required
                 />
                 {lead.phone && !isPhoneValid(lead.phone) && (
                   <p id="phoneError" className="text-xs text-red-600 mt-1">
@@ -486,9 +446,8 @@ const InstantQuote: React.FC = () => {
 
             {/* Hidden fields mirroring Segment 1 to include in the same submitting */}
             <input type="hidden" name="brandHidden" value={lead.brand} readOnly />
-            <input type="hidden" name="carBrandHidden" value={lead.carBrand} readOnly />
-            <input type="hidden" name="yearHidden" value={lead.year} readOnly />
-            <input type="hidden" name="conditionHidden" value={lead.condition} readOnly />
+            <input type="hidden" name="vehicleDetailsHidden" value={lead.vehicleDetails} readOnly />
+            <input type="hidden" name="conditionHidden" value={lead.condition.join(',')} readOnly />
             {/* Honeypot field: visually hidden; bots may fill it */}
             <div
               aria-hidden="true"
@@ -600,7 +559,7 @@ const InstantQuote: React.FC = () => {
               />
             </svg>
             <p className="text-green-800 text-base sm:text-lg font-medium">
-              Thanks! Our team is finding your best price. You&#39;ll get your quote in minutes.
+              Thanks for choosing MrGoma Tires! Our team is preparing your quote now — you’ll receive prices and options shortly.
             </p>
           </section>
         )}
