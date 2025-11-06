@@ -9,6 +9,7 @@ import { useCart } from '@/app/context/CartContext';
 import { LoadingScreen } from '@/app/ui/components';
 import ProductMeta from '@/app/ui/components/ProductMeta/ProductMeta';
 import ShippingStateGate from '@/app/ui/components/ShippingStateGate/ShippingStateGate';
+import { locationsData } from '@/app/ui/sections/LocationsSlider/locationsData';
 
 const TAX_RATE = (() => {
   if (typeof process !== 'undefined') {
@@ -84,6 +85,10 @@ export default function Checkout() {
   const [selectedState, setSelectedState] = React.useState<string>('');
   const blockedStates = React.useMemo(() => new Set(['AK', 'HI', 'PR']), []);
   const isBlockedState = selectedState ? blockedStates.has(selectedState) : false;
+
+  // Fulfillment selection: delivery vs pick up in store
+  const [fulfillmentMethod, setFulfillmentMethod] = React.useState<'delivery' | 'pickup'>('delivery');
+  const [pickupStoreId, setPickupStoreId] = React.useState<string>('');
 
   // Detect checkout return states
   const success = (searchParams.get('success') || '') === '1';
@@ -174,14 +179,22 @@ export default function Checkout() {
   const proceedToPayment = async () => {
     if (isEmpty || loading) return;
     setError(null);
-    if (!selectedState) {
-      setError('Please select your state to continue.');
-      return;
+    if (fulfillmentMethod === 'delivery') {
+      if (!selectedState) {
+        setError('Please select your state to continue.');
+        return;
+      }
+      if (isBlockedState) {
+        setError('Sorry, we currently do not ship to Alaska, Hawaii, or Puerto Rico.');
+        return;
+      }
+    } else {
+      if (!pickupStoreId) {
+        setError('Please choose a store for pick-up.');
+        return;
+      }
     }
-    if (isBlockedState) {
-      setError('Sorry, we currently do not ship to Alaska, Hawaii, or Puerto Rico.');
-      return;
-    }
+    const selectedStore = fulfillmentMethod === 'pickup' ? locationsData.find(l => l.id === pickupStoreId) : undefined;
     setLoading(true);
     try {
       const res = await fetch('/api/checkout/create-session', {
@@ -189,6 +202,11 @@ export default function Checkout() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           items: cartItems.map(i => ({ id: i.id, quantity: i.quantity })),
+          shippingState: selectedState,
+          fulfillmentMethod,
+          pickupStoreId: fulfillmentMethod === 'pickup' ? pickupStoreId : undefined,
+          pickupStoreName: selectedStore?.name,
+          pickupStoreAddress: selectedStore?.address,
         }),
       });
 
@@ -691,6 +709,64 @@ export default function Checkout() {
                   onChange={setSelectedState}
                   isBlockedState={isBlockedState}
                 />
+
+                {/* Fulfillment method */}
+                <div className="mt-3">
+                  <label className="block text-sm font-medium text-gray-900">
+                    How would you like to receive your tires?
+                  </label>
+                  <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Fulfillment method">
+                    <label className={`flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm ${fulfillmentMethod === 'delivery' ? 'border-green-300 bg-green-50 text-green-800' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}>
+                      <input
+                        type="radio"
+                        name="fulfillment"
+                        value="delivery"
+                        className="h-4 w-4 text-green-600 focus:ring-green-500"
+                        checked={fulfillmentMethod === 'delivery'}
+                        onChange={() => setFulfillmentMethod('delivery')}
+                        aria-label="Delivery to my address"
+                      />
+                      <span>Delivery to my address</span>
+                    </label>
+                    <label className={`flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm ${fulfillmentMethod === 'pickup' ? 'border-green-300 bg-green-50 text-green-800' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}>
+                      <input
+                        type="radio"
+                        name="fulfillment"
+                        value="pickup"
+                        className="h-4 w-4 text-green-600 focus:ring-green-500"
+                        checked={fulfillmentMethod === 'pickup'}
+                        onChange={() => setFulfillmentMethod('pickup')}
+                        aria-label="Pick up in store"
+                      />
+                      <span>Pick up in store</span>
+                    </label>
+                  </div>
+
+                  {fulfillmentMethod === 'pickup' && (
+                    <div className="mt-3">
+                      <label htmlFor="pickup-store" className="block text-sm font-medium text-gray-900">
+                        Choose a store for pick-up
+                      </label>
+                      <select
+                        id="pickup-store"
+                        value={pickupStoreId}
+                        onChange={e => setPickupStoreId(e.target.value)}
+                        className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-500"
+                      >
+                        <option value="">Select a store…</option>
+                        {locationsData.map(loc => (
+                          <option key={loc.id} value={loc.id}>
+                            {loc.name} — {loc.address}
+                          </option>
+                        ))}
+                      </select>
+                      <p className="mt-1 text-xs text-gray-500">
+                        We will prepare your order at the selected store. Bring your ID and order confirmation.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
                 {error && (
                   <div
                     className="my-3 rounded-md border border-red-200 bg-red-50 text-red-700 text-sm p-3"
@@ -704,8 +780,18 @@ export default function Checkout() {
                     type="button"
                     onClick={proceedToPayment}
                     className="inline-flex w-full cursor-pointer items-center justify-center rounded-md bg-green-600 px-5 py-2.5 text-base font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={isEmpty || loading || !selectedState || isBlockedState}
-                    aria-disabled={isEmpty || loading || !selectedState || isBlockedState}
+                    disabled={
+                      isEmpty ||
+                      loading ||
+                      (fulfillmentMethod === 'delivery' && (!selectedState || isBlockedState)) ||
+                      (fulfillmentMethod === 'pickup' && !pickupStoreId)
+                    }
+                    aria-disabled={
+                      isEmpty ||
+                      loading ||
+                      (fulfillmentMethod === 'delivery' && (!selectedState || isBlockedState)) ||
+                      (fulfillmentMethod === 'pickup' && !pickupStoreId)
+                    }
                   >
                     {loading
                       ? 'Processing…'

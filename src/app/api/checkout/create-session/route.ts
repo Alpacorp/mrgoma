@@ -18,6 +18,11 @@ interface IncomingItem {
 
 interface Body {
   items: IncomingItem[];
+  shippingState?: string;
+  fulfillmentMethod?: 'delivery' | 'pickup';
+  pickupStoreId?: string;
+  pickupStoreName?: string;
+  pickupStoreAddress?: string;
 }
 
 function formatCurrency(n: number) {
@@ -48,6 +53,18 @@ export async function POST(req: NextRequest) {
       id: String(it.id),
       quantity: Math.max(1, Math.floor(it.quantity ?? 1)),
     }));
+
+    // Fulfillment parsing and validation
+    const fulfillmentMethod: 'delivery' | 'pickup' =
+      (body.fulfillmentMethod === 'pickup' ? 'pickup' : 'delivery');
+    const shippingState = (body.shippingState || '').toString().trim().toUpperCase();
+    const pickupStoreId = (body.pickupStoreId || '').toString().trim();
+    const pickupStoreName = (body.pickupStoreName || '').toString().trim() || null;
+    const pickupStoreAddress = (body.pickupStoreAddress || '').toString().trim() || null;
+
+    // Soft validation (do not block checkout if data is missing)
+    // - shippingState is recommended for delivery but optional
+    // - pickupStoreId is recommended for pickup but optional (UI enforces it)
 
     // Re-validate availability and get authoritative pricing and names
     const unavailable: { id: string; reason: string }[] = [];
@@ -180,6 +197,16 @@ export async function POST(req: NextRequest) {
       lines.push(`New order from the website`);
       lines.push(`Date: ${new Date().toLocaleString('en-US')}`);
       lines.push('');
+      // Fulfillment details
+      if (fulfillmentMethod === 'pickup') {
+        lines.push('Fulfillment: PICK UP IN STORE');
+        if (pickupStoreName) lines.push(`Store: ${pickupStoreName}`);
+        if (pickupStoreAddress) lines.push(`Address: ${pickupStoreAddress}`);
+      } else {
+        lines.push('Fulfillment: DELIVERY');
+        if (shippingState) lines.push(`State: ${shippingState}`);
+      }
+      lines.push('');
       lines.push('Products:');
       validated.forEach(v => {
         const lineTotal = v.price * v.quantity;
@@ -270,6 +297,22 @@ export async function POST(req: NextRequest) {
         enabled: true,
       },
       line_items,
+      payment_intent_data: {
+        metadata: {
+          fulfillmentMethod,
+          shippingState: fulfillmentMethod === 'delivery' ? shippingState : '',
+          pickupStoreId: fulfillmentMethod === 'pickup' ? pickupStoreId : '',
+          pickupStoreName: fulfillmentMethod === 'pickup' ? (pickupStoreName || '') : '',
+          pickupStoreAddress: fulfillmentMethod === 'pickup' ? (pickupStoreAddress || '') : '',
+        },
+      },
+      metadata: {
+        fulfillmentMethod,
+        shippingState: fulfillmentMethod === 'delivery' ? shippingState : '',
+        pickupStoreId: fulfillmentMethod === 'pickup' ? pickupStoreId : '',
+        pickupStoreName: fulfillmentMethod === 'pickup' ? (pickupStoreName || '') : '',
+        pickupStoreAddress: fulfillmentMethod === 'pickup' ? (pickupStoreAddress || '') : '',
+      },
       success_url: `${origin}/checkout?success=1&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/checkout?canceled=1`,
     });
