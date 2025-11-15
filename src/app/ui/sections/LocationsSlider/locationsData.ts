@@ -40,7 +40,7 @@ export const locationsData: LocationData[] = [
   {
     id: 'location-5',
     name: 'MrGoma Tires OUTLET',
-    address: '4040 E 10th Ct, Hialeah, FL 33013 (MrGoma Tires Automotive)',
+    address: '4040 E 10th Ct, Hialeah, FL 33013',
     locationStore: 'Serving Hialeah • Miami Springs • East Hialeah',
     phone: '(305)-836-4200',
     backgroundImage: '/assets/images/Locations/4040.webp',
@@ -48,7 +48,7 @@ export const locationsData: LocationData[] = [
   },
   {
     id: 'location-6',
-    name: 'MrGoma Tires ',
+    name: 'MrGoma Tires',
     address: '4400 W Colonial Dr, Orlando, FL 32808',
     locationStore: 'Serving Midtown • Wintergarden • West Orlando',
     phone: '(407)-203-3912',
@@ -58,7 +58,7 @@ export const locationsData: LocationData[] = [
   {
     id: 'location-7',
     name: 'MrGoma Tires AUTOMOTIVE',
-    address: '575 N Semoran Blvd, Orlando, FL 32807 (MrGoma Tires Automotive)',
+    address: '575 N Semoran Blvd, Orlando, FL 32807',
     locationStore: "Serving Azalea Park • Winter Park • East Orlando • Near Orlando Int'l Airport",
     phone: '(407)-282-3100',
     backgroundImage: '/assets/images/Locations/575.jpg',

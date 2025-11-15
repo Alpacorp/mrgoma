@@ -254,9 +254,10 @@ export async function POST(req: NextRequest) {
     } as any);
 
     // Build line items with authoritative data
-    const line_items = validated.map(v => ({
+    const currency = (process.env.NEXT_PUBLIC_STRIPE_CURRENCY || 'usd').toLowerCase();
+    const productLineItems = validated.map(v => ({
       price_data: {
-        currency: (process.env.NEXT_PUBLIC_STRIPE_CURRENCY || 'usd').toLowerCase(),
+        currency,
         product_data: {
           name: v.name,
           images: v.image ? [v.image] : undefined,
@@ -270,32 +271,34 @@ export async function POST(req: NextRequest) {
       quantity: v.quantity,
     }));
 
-    const session = await stripe.checkout.sessions.create({
+    // If pickup in store, do NOT collect address and add a 7% tax line item
+    let line_items = [...productLineItems];
+    if (fulfillmentMethod === 'pickup') {
+      const subtotalCents = productLineItems.reduce((sum, li: any) => {
+        const unit = Number(li?.price_data?.unit_amount) || 0;
+        const qty = Number(li?.quantity) || 0;
+        return sum + unit * qty;
+      }, 0);
+      const taxCents = Math.round(subtotalCents * 0.07);
+      if (taxCents > 0) {
+        line_items.push({
+          price_data: {
+            currency,
+            product_data: { name: 'Sales tax (7%)' },
+            unit_amount: taxCents,
+          },
+          quantity: 1,
+        });
+      }
+    }
+
+    // Build session params conditionally based on fulfillment method
+    const sessionParams: any = {
       mode: 'payment',
       payment_method_types: ['card'],
-      phone_number_collection: {
-        enabled: true,
-      },
-      billing_address_collection: 'required',
-      shipping_address_collection: {
-        allowed_countries: ['US'],
-      },
-      // Free shipping option (amount = 0)
-      shipping_options: [
-        {
-          shipping_rate_data: {
-            type: 'fixed_amount',
-            fixed_amount: {
-              amount: 0,
-              currency: (process.env.NEXT_PUBLIC_STRIPE_CURRENCY || 'usd').toLowerCase(),
-            },
-            display_name: 'Free shipping',
-          },
-        },
-      ],
-      automatic_tax: {
-        enabled: true,
-      },
+      phone_number_collection: { enabled: true },
+      billing_address_collection: fulfillmentMethod === 'delivery' ? 'required' : 'auto',
+      automatic_tax: { enabled: fulfillmentMethod === 'delivery' },
       line_items,
       payment_intent_data: {
         metadata: {
@@ -315,7 +318,23 @@ export async function POST(req: NextRequest) {
       },
       success_url: `${origin}/checkout?success=1&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/checkout?canceled=1`,
-    });
+      ...(fulfillmentMethod === 'delivery'
+        ? {
+            shipping_address_collection: { allowed_countries: ['US'] },
+            shipping_options: [
+              {
+                shipping_rate_data: {
+                  type: 'fixed_amount',
+                  fixed_amount: { amount: 0, currency },
+                  display_name: 'Free shipping',
+                },
+              },
+            ],
+          }
+        : {}),
+    };
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
 
     if (!session.url) {
       return NextResponse.json({ message: 'Failed to create checkout session.' }, { status: 500 });

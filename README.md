@@ -55,6 +55,18 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Payments (Stripe)
 
+### Test/QA mode: prevent DB writes during Checkout
+
+To safely test the Checkout flow without writing to production databases, enable the following environment flag on the server:
+
+- CHECKOUT_TEST_MODE=true
+
+When this flag is set to a truthy value ('true', '1', 'yes', 'on'), the server will:
+- Skip inserting SC_Order and SC_OrderDetail records
+- Skip updating tire statuses to sold in dbo.Tires
+
+The UI and Stripe session retrieval still work, so you can validate end-to-end redirects and the confirmation page without affecting the database. This only applies to Checkout-related operations. To disable, remove or set the flag to a non‑truthy value.
+
 This project supports Stripe Checkout to process payments from the Checkout page.
 
 1) Configure environment variables (use `.env.template` as reference):
