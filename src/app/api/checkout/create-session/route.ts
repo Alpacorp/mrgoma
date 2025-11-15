@@ -272,7 +272,7 @@ export async function POST(req: NextRequest) {
     }));
 
     // If pickup in store, do NOT collect the address and add a 7% tax line item
-    let line_items = [...productLineItems];
+    const line_items = [...productLineItems];
     if (fulfillmentMethod === 'pickup') {
       const subtotalCents = productLineItems.reduce((sum, li: any) => {
         const unit = Number(li?.price_data?.unit_amount) || 0;
