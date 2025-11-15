@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
         const normBase = baseName.toLowerCase();
         const normModel = model2.toLowerCase();
         if (!normBase.includes(normModel)) {
-          // Try to insert model2 into pattern: (CODE) | BRAND | SIZE
+          // Try to insert model2 into a pattern: (CODE) | BRAND | SIZE
           const parts = baseName.split('|').map(p => p.trim());
           if (parts.length === 3 && /^\(.+\)$/.test(parts[0])) {
             // (CODE) | BRAND | SIZE => (CODE) | BRAND | MODEL | SIZE
@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
             // BRAND | SIZE => BRAND | MODEL | SIZE
             name = `${parts[0]} | ${model2} | ${parts[1]}`;
           } else {
-            // Fallback: append model after brand if we can detect brand, else append at end
+            // Fallback: append model after brand if we can detect brand, else append at the end
             const brand: string | undefined =
               data?.brand || data?.Brand ? String(data?.brand || data?.Brand) : undefined;
             if (brand && normBase.includes(brand.toLowerCase())) {
@@ -142,7 +142,7 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      // Extract product image (first image) and normalize to absolute URL
+      // Extract the product image (first image) and normalize to absolute URL
       const firstImage =
         Array.isArray(data?.images) && data.images.length > 0
           ? data.images[0]?.src || data.images[0]
@@ -271,7 +271,7 @@ export async function POST(req: NextRequest) {
       quantity: v.quantity,
     }));
 
-    // If pickup in store, do NOT collect address and add a 7% tax line item
+    // If pickup in store, do NOT collect the address and add a 7% tax line item
     let line_items = [...productLineItems];
     if (fulfillmentMethod === 'pickup') {
       const subtotalCents = productLineItems.reduce((sum, li: any) => {
@@ -284,7 +284,14 @@ export async function POST(req: NextRequest) {
         line_items.push({
           price_data: {
             currency,
-            product_data: { name: 'Sales tax (7%)' },
+            product_data: {
+              name: 'Sales tax (7%)',
+              images: undefined,
+              metadata: {
+                productId: 'tax',
+                condition: 'n/a',
+              },
+            },
             unit_amount: taxCents,
           },
           quantity: 1,
@@ -292,7 +299,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Build session params conditionally based on fulfillment method
+    // Build session params conditionally based on a fulfillment method
     const sessionParams: any = {
       mode: 'payment',
       payment_method_types: ['card'],

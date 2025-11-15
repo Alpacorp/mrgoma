@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
       expand: ['data.price.product'],
     });
 
-    // Retrieve payment intent with latest charge for receipt URL, if any
+    // Retrieve payment intent with the latest charge for receipt URL, if any
     let receiptUrl: string | null = null;
     let paymentMethodType: string | null = null;
     if (session.payment_intent) {
