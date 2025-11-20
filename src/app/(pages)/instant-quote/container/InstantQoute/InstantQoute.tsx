@@ -6,7 +6,7 @@ import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
 import { SearchByText } from '@/app/ui/components';
 
 // Types
-type Condition = 'new' | 'like-new' | 'used';
+type Condition = 'new' | 'used' | 'both';
 
 interface LeadForm {
   vehicleDetails: string; // free text: Make, Model, Year
@@ -14,6 +14,7 @@ interface LeadForm {
   name: string;
   email: string;
   phone: string;
+  notes?: string;
 }
 
 const initialLead: LeadForm = {
@@ -22,6 +23,7 @@ const initialLead: LeadForm = {
   name: '',
   email: '',
   phone: '',
+  notes: '',
 };
 
 const SectionCard: React.FC<{
@@ -83,7 +85,9 @@ const InstantQuote: React.FC = () => {
     lead.name.trim().length > 1 &&
     (isEmailValid(lead.email) || isPhoneValid(lead.phone));
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     const target = e.target as HTMLInputElement;
     const { name } = target;
     let value = target.value;
@@ -205,6 +209,7 @@ const InstantQuote: React.FC = () => {
           name: lead.name,
           email: lead.email,
           phone: lead.phone,
+          notes: lead.notes,
           hp,
           submittedAt: new Date().toISOString(),
           source: 'instant-quote',
@@ -268,23 +273,23 @@ const InstantQuote: React.FC = () => {
                     <input
                       type="checkbox"
                       name="condition"
-                      value="like-new"
-                      checked={lead.condition.includes('like-new')}
-                      onChange={handleChange}
-                      className="text-green-600 focus:ring-green-500"
-                    />
-                    <span>Used Like-New</span>
-                  </label>
-                  <label className="inline-flex items-center gap-2 text-sm text-gray-700">
-                    <input
-                      type="checkbox"
-                      name="condition"
                       value="used"
                       checked={lead.condition.includes('used')}
                       onChange={handleChange}
                       className="text-green-600 focus:ring-green-500"
                     />
                     <span>Used</span>
+                  </label>
+                  <label className="inline-flex items-center gap-2 text-sm text-gray-700">
+                    <input
+                      type="checkbox"
+                      name="condition"
+                      value="both"
+                      checked={lead.condition.includes('both')}
+                      onChange={handleChange}
+                      className="text-green-600 focus:ring-green-500"
+                    />
+                    <span>Both</span>
                   </label>
                 </div>
               </fieldset>
@@ -392,9 +397,29 @@ const InstantQuote: React.FC = () => {
               </div>
             </div>
 
+            {/* Notes (optional) */}
+            <div className="lg:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="notes">
+                Notes (optional)
+              </label>
+              <textarea
+                id="notes"
+                name="notes"
+                value={lead.notes}
+                onChange={handleChange}
+                maxLength={120}
+                placeholder="Add any additional comment (max 120 characters)"
+                className="w-full bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white text-sm h-24"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                {`${(lead.notes || '').length}/120 characters`}
+              </p>
+            </div>
+
             {/* Hidden fields mirroring Segment 1 to include in the same submitting */}
             <input type="hidden" name="vehicleDetailsHidden" value={lead.vehicleDetails} readOnly />
             <input type="hidden" name="conditionHidden" value={lead.condition.join(',')} readOnly />
+            <input type="hidden" name="notesHidden" value={lead.notes || ''} readOnly />
             {/* Honeypot field: visually hidden; bots may fill it */}
             <div
               aria-hidden="true"
