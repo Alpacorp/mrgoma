@@ -15,7 +15,8 @@ import {
   ResultsSkeleton,
   TireResults,
 } from '@/app/ui/components';
-import { FiltersMobile, TitleSection, TopFilters } from '@/app/ui/sections';
+import { FiltersMobile, TitleSection, TopFilters, PromoBanner } from '@/app/ui/sections';
+import { promoBannerConfig } from '@/app/ui/sections/PromoBanner/config/promoBanner';
 import {
   DEFAULT_PAGE,
   DEFAULT_PAGE_SIZE,
@@ -282,6 +283,10 @@ const SearchResults: FC<SearchResultsProps> = () => {
                               totalCount={tiresData.totalCount}
                             />
                           </div>
+                          <PromoBanner
+                            content={promoBannerConfig.searchResults}
+                            className="mb-6"
+                          />
                           {error ? (
                             <ErrorDisplay
                               title="Error Loading Tires"

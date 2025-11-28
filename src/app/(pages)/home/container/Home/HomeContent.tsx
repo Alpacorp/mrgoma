@@ -6,7 +6,9 @@ import {
   SearchContainer,
   ServicesGrid,
   TitleSection,
+  PromoBanner,
 } from '@/app/ui/sections';
+import { promoBannerConfig } from '@/app/ui/sections/PromoBanner/config/promoBanner';
 import { LocationsSlider } from '@/app/ui/sections/LocationsSlider/LocationsSlider';
 
 const HomeContent: FC = () => {
@@ -36,6 +38,10 @@ const HomeContent: FC = () => {
               </div>
             </div>
           </section>
+          <PromoBanner
+            content={promoBannerConfig.home}
+            className="rounded-none"
+          />
           <section className="bg-[url('/assets/images/bg-section.webp')] bg-cover bg-center bg-no-repeat bg-fixed bg-black/50 pb-28">
             <div
               aria-labelledby="benefits-heading"
