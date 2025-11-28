@@ -1,7 +1,7 @@
 'use client';
 
-import React, { FC, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 
 export interface PromoContent {
   enabled: boolean;

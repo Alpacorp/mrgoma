@@ -8,8 +8,8 @@ import {
   TitleSection,
   PromoBanner,
 } from '@/app/ui/sections';
-import { promoBannerConfig } from '@/app/ui/sections/PromoBanner/config/promoBanner';
 import { LocationsSlider } from '@/app/ui/sections/LocationsSlider/LocationsSlider';
+import { promoBannerConfig } from '@/app/ui/sections/PromoBanner/config/promoBanner';
 
 const HomeContent: FC = () => {
   return (
