@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import {NextRequest, NextResponse} from 'next/server';
 
 // Helper to build the application's origin from the request URL
 function getOrigin(req: NextRequest) {
@@ -6,7 +6,70 @@ function getOrigin(req: NextRequest) {
     const url = new URL(req.url);
     return url.origin;
   } catch {
-    return process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    return process.env.NEXT_PUBLIC_BASE_URL || process.env.API_URL || 'http://localhost:3000';
+  }
+}
+
+// Normalize a product image URL to a public, Stripe-compatible https/http URL.
+// If the image is relative or points to localhost, try rewriting it to a public assets base.
+function normalizeProductImage(
+  origin: string,
+  rawImage: string,
+  assetsBase?: string | null
+): string | null {
+  const raw = (rawImage || '').trim();
+  if (!raw) return null;
+
+  const baseCandidate = (assetsBase || '').trim();
+
+  // Helper to safely join a base and a path
+  const join = (base: string, path: string) => {
+    if (!base) return '';
+    const b = base.endsWith('/') ? base.slice(0, -1) : base;
+    const p = path.startsWith('/') ? path : `/${path}`;
+    return `${b}${p}`;
+  };
+
+  // Build an initial absolute candidate
+  let candidate = /^https?:\/\//i.test(raw)
+    ? raw
+    : raw.startsWith('/')
+    ? `${origin}${raw}`
+    : `${origin}/${raw.replace(/^\.?\//, '')}`;
+
+  try {
+    let u = new URL(candidate);
+    const isLocalhost = /^(localhost|127\.0\.0\.1)$/i.test(u.hostname);
+
+    // If pointing to localhost and we have a public assets base, rewrite preserving the path
+    if (isLocalhost && baseCandidate) {
+      try {
+        const publicBase = new URL(baseCandidate);
+        if (publicBase.protocol === 'http:' || publicBase.protocol === 'https:') {
+          candidate = join(publicBase.origin, u.pathname) + `${u.search}${u.hash}`;
+          u = new URL(candidate);
+        }
+      } catch {
+        // ignore invalid assets base
+      }
+    }
+
+    // Re-validate after potential rewrite
+    const isHttp2 = u.protocol === 'http:' || u.protocol === 'https:';
+    const isLocalhost2 = /^(localhost|127\.0\.0\.1)$/i.test(u.hostname);
+    if (!isHttp2 || isLocalhost2) return null;
+
+    // Encode pathname to remove spaces/unsafe chars avoiding double-encoding
+    // Ensure we don't re-encode already encoded sequences like %20 -> %2520
+    let safePathname = u.pathname;
+    try {
+      safePathname = decodeURI(safePathname);
+    } catch {
+      // keep original if decode fails
+    }
+    return `${u.origin}${encodeURI(safePathname)}${u.search}${u.hash}`;
+  } catch {
+    return null;
   }
 }
 
@@ -39,6 +102,13 @@ function formatCurrency(n: number) {
 export async function POST(req: NextRequest) {
   try {
     const origin = getOrigin(req);
+    const assetsBase =
+      process.env.ASSETS_BASE_URL ||
+      process.env.NEXT_PUBLIC_ASSETS_BASE_URL ||
+      process.env.API_URL ||
+      process.env.NEXT_PUBLIC_BASE_URL ||
+      null;
+    const fallbackImage = process.env.CHECKOUT_FALLBACK_IMAGE_URL?.trim() || null;
     const body = (await req.json()) as Partial<Body> | null;
 
     if (!body || !Array.isArray(body.items) || body.items.length === 0) {
@@ -147,16 +217,17 @@ export async function POST(req: NextRequest) {
         Array.isArray(data?.images) && data.images.length > 0
           ? data.images[0]?.src || data.images[0]
           : data?.imageSrc || data?.image || null;
-      let image: string | null = null;
-      if (typeof firstImage === 'string' && firstImage.trim()) {
-        const urlStr = firstImage.trim();
-        if (/^https?:\/\//i.test(urlStr)) {
-          image = urlStr;
-        } else if (urlStr.startsWith('/')) {
-          image = `${origin}${urlStr}`;
-        } else {
-          image = `${origin}/${urlStr.replace(/^\.?\//, '')}`;
-        }
+
+      let image: string | null =
+        typeof firstImage === 'string' && firstImage.trim()
+          ? normalizeProductImage(origin, firstImage, assetsBase)
+          : null;
+
+      // If the image could not be normalized (e.g., localhost in dev without asset base),
+      // optionally use a public fallback image if provided
+      if (!image && fallbackImage && fallbackImage.trim()) {
+        const fb = normalizeProductImage(origin, fallbackImage.trim(), assetsBase);
+        if (fb) image = fb;
       }
 
       validated.push({
@@ -260,7 +331,8 @@ export async function POST(req: NextRequest) {
         currency,
         product_data: {
           name: v.name,
-          images: v.image ? [v.image] : undefined,
+          // Only send images that Stripe will accept; omit otherwise
+          images: v.image && /^https?:\/\//i.test(v.image) ? [v.image] : undefined,
           metadata: {
             productId: v.id,
             condition: (v.condition || '').toString(),

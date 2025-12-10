@@ -96,23 +96,32 @@ const SearchResults: FC<SearchResultsProps> = () => {
         // Validar el tamaño de página
         const validatedPageSize = validatePageSize(pageSizeNum);
 
-        // Solo actualizar si es diferente
+        // Solo avisar si se ajustó
         if (pageSizeNum !== validatedPageSize) {
           console.warn(`Invalid pageSize: ${pageSizeNum} adjusted to ${validatedPageSize}`);
         }
 
-        // Create a new URL with the updated pagination parameters
-        const params = new URLSearchParams(searchParams.toString());
+        // Usar la ubicación actual para evitar dependencia de la identidad de searchParams
+        const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+
+        const currentPage = parseInt(params.get('page') || String(DEFAULT_PAGE), 10);
+        const currentPageSize = parseInt(params.get('pageSize') || String(DEFAULT_PAGE_SIZE), 10);
+
+        // Si ya coincide, no navegar para evitar loops
+        if (currentPage === pageNum && currentPageSize === validatedPageSize) {
+          return;
+        }
+
+        // Actualizar y reemplazar (no push) para no contaminar el historial
         params.set('page', pageNum.toString());
         params.set('pageSize', validatedPageSize.toString());
-
-        router.push(`?${params.toString()}`, { scroll: false });
+        router.replace(`?${params.toString()}`, { scroll: false });
       } catch (e) {
         const errorMessage = e instanceof Error ? e.message : String(e);
         console.error('Error updating pagination:', errorMessage);
       }
     },
-    [router, searchParams]
+    [router]
   );
 
   const getDataTires = useCallback(

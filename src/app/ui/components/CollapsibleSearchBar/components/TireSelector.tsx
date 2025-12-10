@@ -1,6 +1,6 @@
 'use client';
 
-import { CarFront } from 'lucide-react';
+import { CarFront } from '@/app/ui/icons';
 import React from 'react';
 
 import { useTireDynamicOptions } from '../hooks/useTireDynamicOptions';
@@ -68,7 +68,7 @@ export const TireSelector: React.FC<TireSelectorProps> = ({
 
         {/* Sidewall Selector */}
         <div className="my-1">
-          <label className="block my-1 text-xs font-medium text-gray-700 flex items-center">
+          <label className="my-1 text-xs font-medium text-gray-700 flex items-center">
             {isCompact ? 'S' : 'Sidewall'}
             {isLoadingSidewall && (
               <span className="ml-1 inline-block h-3 w-3 animate-spin rounded-full border-2 border-solid border-current border-r-transparent align-[-0.125em] text-green-600 motion-reduce:animate-[spin_1.5s_linear_infinite]"></span>
@@ -88,7 +88,7 @@ export const TireSelector: React.FC<TireSelectorProps> = ({
 
         {/* Diameter Selector */}
         <div className="my-1">
-          <label className="block my-1 text-xs font-medium text-gray-700 flex items-center">
+          <label className="my-1 text-xs font-medium text-gray-700 flex items-center">
             {isCompact ? 'D' : 'Diameter'}
             {isLoadingDiameter && (
               <span className="ml-1 inline-block h-3 w-3 animate-spin rounded-full border-2 border-solid border-current border-r-transparent align-[-0.125em] text-green-600 motion-reduce:animate-[spin_1.5s_linear_infinite]"></span>

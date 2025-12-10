@@ -1,4 +1,3 @@
-import headlessUi from '@headlessui/tailwindcss';
 import aspectRatio from '@tailwindcss/aspect-ratio';
 import forms from '@tailwindcss/forms';
 import typography from '@tailwindcss/typography';
@@ -38,6 +37,6 @@ const config: Config = {
       },
     },
   },
-  plugins: [forms, aspectRatio, typography, headlessUi],
+  plugins: [forms, aspectRatio, typography],
 };
 export default config;
