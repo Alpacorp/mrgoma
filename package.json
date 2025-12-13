@@ -27,20 +27,23 @@
     "winston": "3.19.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@types/mssql": "9.1.8",
     "@types/node": "24.10.2",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
     "@typescript-eslint/eslint-plugin": "8.49.0",
     "@typescript-eslint/parser": "8.49.0",
-    "eslint": "9.39.1",
+    "eslint": "9.39.2",
     "eslint-config-next": "16.0.8",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-import": "2.32.0",
-    "eslint-plugin-react": "7.37.5",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^16.5.0",
     "postcss": "8.5.6",
     "prettier": "3.7.4",
     "tailwindcss": "4.1.17",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "typescript-eslint": "^8.49.0"
   }
 }
