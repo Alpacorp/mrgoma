@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useContext } from 'react';
+import React, { FC, useContext, useEffect, useState } from 'react';
 
 import { ShowFilterContext } from '@/app/context/ShowFilterContext';
 import { Dialog, DialogBackdrop, DialogPanel, XMarkIcon } from '@/app/ui/components';
@@ -10,6 +10,37 @@ import { useFilters } from '@/app/ui/sections/FiltersMobile/hooks/useFilters';
 const FiltersMobile: FC = () => {
   const { showFilter, setShowFilter } = useContext(ShowFilterContext);
   const { resetFilters } = useFilters();
+  const [headerOffset, setHeaderOffset] = useState(0);
+  // Separación mínima para evitar solapamiento visual con el header
+  const EXTRA_TOP = 4;
+
+  useEffect(() => {
+    const getHeaderEl = () => document.querySelector('header') as HTMLElement | null;
+    let headerEl = getHeaderEl();
+
+    const updateOffset = () => {
+      headerEl = headerEl || getHeaderEl();
+      const rect = headerEl?.getBoundingClientRect();
+      const base = rect?.bottom ?? 0;
+      const offset = Math.max(0, Math.round(base) + EXTRA_TOP);
+      setHeaderOffset(offset);
+    };
+
+    updateOffset();
+
+    let ro: ResizeObserver | null = null;
+    if (headerEl && typeof ResizeObserver !== 'undefined') {
+      ro = new ResizeObserver(() => updateOffset());
+      ro.observe(headerEl);
+    }
+
+    window.addEventListener('resize', updateOffset);
+
+    return () => {
+      window.removeEventListener('resize', updateOffset);
+      if (ro && headerEl) ro.unobserve(headerEl);
+    };
+  }, []);
 
   return (
     <>
@@ -25,6 +56,7 @@ const FiltersMobile: FC = () => {
         />
         <div
           className="fixed inset-0 z-40 flex"
+          style={{ top: headerOffset }}
           onClick={e => {
             if (e.target === e.currentTarget) {
               setShowFilter(false);

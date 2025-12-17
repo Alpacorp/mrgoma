@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 
 import { Disclosure, DisclosureButton, DisclosureIcon, DisclosurePanel } from '@/app/ui/components';
 import { FilterBody } from '@/app/ui/sections';

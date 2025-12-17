@@ -552,7 +552,7 @@ export default function Checkout() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Item table */}
-            <section className="lg:col-span-8 xl:col-span-9" aria-labelledby="cart-heading">
+            <section className="lg:col-span-8 xl:col-span-8" aria-labelledby="cart-heading">
               <h2 id="cart-heading" className="sr-only">
                 Items in cart
               </h2>
@@ -669,7 +669,7 @@ export default function Checkout() {
 
             {/* Order summary */}
             <aside
-              className="lg:col-span-4 xl:col-span-3 lg:sticky lg:top-4"
+              className="lg:col-span-4 xl:col-span-4 lg:sticky lg:top-4"
               aria-labelledby="summary-heading"
             >
               <h2 id="summary-heading" className="text-lg font-semibold text-gray-900">
