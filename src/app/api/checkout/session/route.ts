@@ -90,17 +90,23 @@ export async function GET(req: NextRequest) {
     let sc_order_store: string | null = null;
     try {
       if ((session.payment_status || '').toLowerCase() === 'paid') {
+        const meta = session.metadata || {};
+        const fulfillmentMethod = meta.fulfillmentMethod;
+        const pickupStoreId = meta.pickupStoreId;
+
         // Derive Store from VaultId of the purchased product(s)
         const productIds = Array.from(
           new Set(
-            (items.map(it => it.productId).filter(Boolean) as Array<string | number>).map(v =>
-              String(v)
-            )
+            (items.map(it => it.productId).filter(v => v && v !== 'tax') as Array<
+              string | number
+            >).map(v => String(v))
           )
         );
 
         let store = '0';
-        if (productIds.length > 0) {
+        if (fulfillmentMethod === 'pickup' && pickupStoreId) {
+          store = pickupStoreId;
+        } else if (productIds.length > 0) {
           const vaults: string[] = [];
           for (const pid of productIds) {
             try {
@@ -155,7 +161,11 @@ export async function GET(req: NextRequest) {
                   ? { productId: String(productId), unitPrice, quantity: Number(quantity) }
                   : null;
               })
-              .filter(Boolean) as Array<{ productId: string; unitPrice: number; quantity: number }>;
+              .filter(it => it && it.productId !== 'tax') as Array<{
+              productId: string;
+              unitPrice: number;
+              quantity: number;
+            }>;
 
             if (detailItems.length > 0 && sc_order_id) {
               const res = await insertOrderDetailsByOrderId(sc_order_id, detailItems);
