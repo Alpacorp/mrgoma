@@ -1,180 +1,842 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React from 'react';
 
-export interface PromoContent {
-  enabled: boolean;
-  title: string;
-  description?: string;
-  ctaLabel?: string;
-  ctaHref?: string;
-  imageUrl?: string; // Optional right-side image
-  dismissible?: boolean; // Allows users to close the banner
-  bgColor?: string; // Tailwind bg classes (e.g., 'bg-green-600')
-  textColor?: string; // Tailwind text classes (e.g., 'text-white')
-  backgroundImageUrl?: string; // Optional background image
-  startDate?: string; // ISO date to auto-enable within range
-  endDate?: string; // ISO date to auto-enable within range
-}
+import { useCart } from '@/app/context/CartContext';
+import { LoadingScreen } from '@/app/ui/components';
+import ProductMeta from '@/app/ui/components/ProductMeta/ProductMeta';
+import ShippingStateGate from '@/app/ui/components/ShippingStateGate/ShippingStateGate';
+import { locationsData } from '@/app/ui/sections/LocationsSlider/locationsData';
 
-export interface PromoBannerProps {
-  content: PromoContent;
-  className?: string;
-  storageKey?: string; // Used to persist dismissed state per banner config
-}
-
-const isWithinRange = (start?: string, end?: string): boolean => {
-  try {
-    const now = new Date();
-    if (start && Number.isNaN(Date.parse(start))) return true;
-    if (end && Number.isNaN(Date.parse(end))) return true;
-    const s = start ? new Date(start) : undefined;
-    const e = end ? new Date(end) : undefined;
-    if (s && now < s) return false;
-    return !(e && now > e);
-  } catch {
-    return true;
+const TAX_RATE = (() => {
+  if (typeof process !== 'undefined') {
+    const fromEnv = process.env.NEXT_PUBLIC_TAX_RATE;
+    const parsed = fromEnv ? parseFloat(fromEnv) : NaN;
+    if (!Number.isNaN(parsed) && parsed >= 0) return parsed; // accepts 0 to disable
   }
-};
+  return 0;
+})();
 
-const PromoBanner: FC<PromoBannerProps> = ({ content, className = '', storageKey }) => {
-  const {
-    enabled,
-    title,
-    description,
-    ctaLabel,
-    ctaHref,
-    imageUrl,
-    dismissible = true,
-    bgColor = 'bg-green-600',
-    textColor = 'text-white',
-    backgroundImageUrl,
-    startDate,
-    endDate,
-  } = content || {};
+const currency = (n: number) => `$${n.toFixed(2)}`;
 
-  const withinRange = useMemo(() => isWithinRange(startDate, endDate), [startDate, endDate]);
+function formatCents(amountInCents: number, currencyCode: string | undefined) {
+  const code = (currencyCode || 'USD').toUpperCase();
+  const amount = (amountInCents || 0) / 100;
+  try {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: code }).format(amount);
+  } catch {
+    return `$${amount.toFixed(2)}`;
+  }
+}
 
-  const [dismissed, setDismissed] = useState(false);
+export default function Checkout() {
+  const { cartItems, removeFromCart, cartTotal, clearCart } = useCart();
 
-  useEffect(() => {
-    if (!storageKey) return;
-    try {
-      const persisted = localStorage.getItem(`promo:${storageKey}`);
-      setDismissed(persisted === 'dismissed');
-    } catch {
-      // ignore
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [showCancelBanner, setShowCancelBanner] = React.useState(false);
+  const [orderState, setOrderState] = React.useState<'idle' | 'success' | 'whatsapp'>('idle');
+  // Stripe session details when returning from Stripe
+  const [sessionDetails, setSessionDetails] = React.useState<null | {
+    id: string;
+    created: string | null;
+    customer_email: string | null;
+    payment_status: string | null;
+    amount_total: number | null;
+    currency: string | null;
+    receipt_url: string | null;
+    payment_method: string | null;
+    items: Array<{
+      id: string;
+      productId: string | null;
+      condition: string | null;
+      description: string;
+      quantity: number;
+      amount_total: number;
+      currency: string;
+    }>;
+    shipping_total?: number | null;
+  }>(null);
+
+  const [detailsLoading, setDetailsLoading] = React.useState(false);
+  const [detailsError, setDetailsError] = React.useState<string | null>(null);
+  const [copied, setCopied] = React.useState(false);
+
+  // Avoid hydration mismatch by rendering cart content after mount
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const taxes = Math.max(0, cartTotal * TAX_RATE);
+  const total = cartTotal + taxes;
+
+  const isEmpty = cartItems.length === 0;
+
+  const stripeEnabled = (process.env.NEXT_PUBLIC_ENABLE_STRIPE || '').toLowerCase() === 'true';
+
+  // Shipping state gating
+  const [selectedState, setSelectedState] = React.useState<string>('');
+  const blockedStates = React.useMemo(() => new Set(['AK', 'HI', 'PR']), []);
+  const isBlockedState = selectedState ? blockedStates.has(selectedState) : false;
+
+  // Fulfillment selection: delivery vs. pickup in store
+  const [fulfillmentMethod, setFulfillmentMethod] = React.useState<'delivery' | 'pickup'>(
+    'delivery'
+  );
+  const [pickupStoreId, setPickupStoreId] = React.useState<string>('');
+
+  // Detect checkout return states
+  const success = (searchParams.get('success') || '') === '1';
+  const canceled = (searchParams.get('canceled') || '') === '1';
+  const whatsappFlag = (searchParams.get('whatsapp') || '') === '1';
+  const sessionId = searchParams.get('session_id') || '';
+  const [resolvingReturn, setResolvingReturn] = React.useState<boolean>(
+    success || canceled || whatsappFlag
+  );
+
+  const clearedRef = React.useRef(false);
+  React.useEffect(() => {
+    // Show the cancel banner if canceled
+    setShowCancelBanner(canceled);
+
+    // On success (Stripe) or whatsapp=1, clear cart and set success state
+    if ((success || whatsappFlag) && !clearedRef.current) {
+      const key = `order-cleared-key`;
+      if (success) {
+        // Deduplicate via session id
+        const token = `stripe:${sessionId || 'ok'}`;
+        const last = typeof window !== 'undefined' ? localStorage.getItem(key) : null;
+        if (last !== token) {
+          clearCart();
+          if (typeof window !== 'undefined') localStorage.setItem(key, token);
+        }
+        setOrderState('success');
+      } else if (whatsappFlag) {
+        // Always clear for WhatsApp to avoid blocking future orders
+        clearCart();
+        setOrderState('whatsapp');
+      }
+      clearedRef.current = true;
+    } else if (!success && !whatsappFlag) {
+      setOrderState('idle');
     }
-  }, [storageKey]);
+    // End of initial URL param resolving
+    setResolvingReturn(false);
+  }, [success, whatsappFlag, sessionId, canceled, clearCart]);
 
-  const onClose = () => {
-    setDismissed(true);
-    if (!storageKey) return;
+  // Load Stripe session details on success
+  React.useEffect(() => {
+    let active = true;
+    async function load() {
+      if (orderState !== 'success' || !sessionId) return;
+      try {
+        setDetailsLoading(true);
+        setDetailsError(null);
+        const res = await fetch(
+          `/api/checkout/session?session_id=${encodeURIComponent(sessionId)}`,
+          { cache: 'no-store' }
+        );
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data?.message || `Failed to load order details (${res.status})`);
+        }
+        const json = await res.json();
+
+        if (active) {
+          setSessionDetails(json);
+        }
+      } catch (e: unknown) {
+        if (active) {
+          const message = e instanceof Error ? e.message : 'Unable to load order details';
+          setDetailsError(message);
+        }
+      } finally {
+        if (active) setDetailsLoading(false);
+      }
+    }
+    void load();
+    return () => {
+      active = false;
+    };
+  }, [orderState, sessionId]);
+
+  // Loading overlay logic
+  const showLoader = !mounted || resolvingReturn || detailsLoading || loading;
+  const loaderMsg = (() => {
+    if (resolvingReturn) {
+      if (success) return 'Finalizing your payment...';
+      if (canceled) return 'Confirming cancellation...';
+      if (whatsappFlag) return 'Confirming your order...';
+      return 'Please wait...';
+    }
+    if (detailsLoading) return 'Loading order details...';
+    if (loading) return stripeEnabled ? 'Redirecting to payment...' : 'Opening WhatsApp...';
+    return 'Loading...';
+  })();
+
+  const proceedToPayment = async () => {
+    if (isEmpty || loading) return;
+    setError(null);
+    if (fulfillmentMethod === 'delivery') {
+      if (!selectedState) {
+        setError('Please select your state to continue.');
+        return;
+      }
+      if (isBlockedState) {
+        setError('Sorry, we currently do not ship to Alaska, Hawaii, or Puerto Rico.');
+        return;
+      }
+    } else {
+      if (!pickupStoreId) {
+        setError('Please choose a store for pick-up.');
+        return;
+      }
+    }
+    const selectedStore =
+      fulfillmentMethod === 'pickup' ? locationsData.find(l => l.id === pickupStoreId) : undefined;
+    setLoading(true);
     try {
-      localStorage.setItem(`promo:${storageKey}`, 'dismissed');
-    } catch {
-      // ignore
+      const res = await fetch('/api/checkout/create-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: cartItems.map(i => ({ id: i.id, quantity: i.quantity })),
+          shippingState: selectedState,
+          fulfillmentMethod,
+          pickupStoreId: fulfillmentMethod === 'pickup' ? pickupStoreId : undefined,
+          pickupStoreName: selectedStore?.name,
+          pickupStoreAddress: selectedStore?.address,
+        }),
+      });
+
+      if (res.status === 409) {
+        const data = await res.json().catch(() => ({}));
+        const details = data?.unavailable?.map((u: { id: string }) => u.id).join(', ');
+        setError(
+          details
+            ? `Some items in your cart are unavailable: ${details}`
+            : 'Some items are unavailable.'
+        );
+        return;
+      }
+
+      if (res.status === 501) {
+        const data = await res.json().catch(() => ({}));
+        setError(data?.message || 'Payment gateway is not configured.');
+        return;
+      }
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError(data?.message || 'Failed to start payment. Please try again.');
+        return;
+      }
+
+      const data = await res.json();
+      if (data?.whatsappUrl) {
+        window.open(data.whatsappUrl, '_blank', 'noopener,noreferrer');
+        // Reflect order initiation on the current page
+        router.replace('/checkout?whatsapp=1');
+        return;
+      }
+      if (data?.url) {
+        window.location.assign(data.url);
+        return;
+      }
+      setError('Failed to start checkout. Please try again.');
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Unexpected error. Please try again.';
+      setError(message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (!enabled || !withinRange || dismissed) return null;
+  // Success / WhatsApp confirmation view
+  if (orderState !== 'idle') {
+    if (orderState === 'success') {
+      return (
+        <main className="min-h-[70vh] bg-white">
+          {showLoader && <LoadingScreen message={loaderMsg} />}
+          <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10">
+            <div className="flex items-start gap-3">
+              <div
+                className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center"
+                aria-hidden
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="h-7 w-7 text-green-600"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-2.59a.75.75 0 1 0-1.22-.86l-3.724 5.29-2.02-2.02a.75.75 0 1 0-1.06 1.06l2.625 2.625a.75.75 0 0 0 1.13-.094l4.27-6.001Z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Payment successful</h1>
+                <p className="mt-1 text-gray-600">
+                  Thank you for your purchase. Your order has been received and is being processed.
+                </p>
+              </div>
+            </div>
+
+            {/* Reference row with copy */}
+            <div className="mt-6 flex flex-wrap items-center gap-2 min-w-0">
+              <span className="text-sm text-gray-500">Reference:</span>
+              <span className="font-mono text-sm bg-gray-50 border border-gray-200 rounded px-2 py-0.5 break-all max-w-full w-full sm:w-auto">
+                {sessionId}
+              </span>
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(sessionId);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1500);
+                  } catch {
+                    // no-op
+                  }
+                }}
+                className="text-xs font-medium text-green-700 hover:text-green-800 border border-green-200 rounded px-2 py-1 hover:bg-green-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+                aria-label="Copy reference"
+              >
+                {copied ? 'Copied!' : 'Copy'}
+              </button>
+            </div>
+
+            {/* Details */}
+            <div className="mt-6 rounded-lg border border-gray-200 bg-white shadow-sm">
+              <div className="p-4 sm:p-5">
+                {detailsLoading && <p className="text-sm text-gray-600">Loading order details…</p>}
+                {detailsError && (
+                  <div
+                    className="rounded-md border border-amber-200 bg-amber-50 text-amber-900 text-sm p-3"
+                    role="alert"
+                  >
+                    {detailsError}
+                  </div>
+                )}
+                {sessionDetails && (
+                  <div className="space-y-6">
+                    {/* Summary header */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                      <div className="flex items-center justify-between sm:justify-start sm:gap-3">
+                        <span className="text-gray-600">Payment status</span>
+                        <span
+                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${sessionDetails.payment_status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700'}`}
+                        >
+                          {sessionDetails.payment_status}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between sm:justify-start sm:gap-3">
+                        <span className="text-gray-600">Customer</span>
+                        <span className="text-gray-900">
+                          {sessionDetails.customer_email || '—'}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between sm:justify-start sm:gap-3">
+                        <span className="text-gray-600">Date</span>
+                        <span className="text-gray-900">
+                          {sessionDetails.created
+                            ? new Date(sessionDetails.created).toLocaleString('en-US')
+                            : '—'}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between sm:justify-start sm:gap-3">
+                        <span className="text-gray-600">Total</span>
+                        <span className="text-gray-900 font-semibold">
+                          {formatCents(
+                            sessionDetails.amount_total || 0,
+                            sessionDetails.currency || undefined
+                          )}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between sm:justify-start sm:gap-3">
+                        <span className="text-gray-600">Shipping</span>
+                        <span className="text-gray-900">
+                          {formatCents(
+                            sessionDetails.shipping_total ?? 0,
+                            sessionDetails.currency || undefined
+                          )}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Items */}
+                    <div>
+                      <h2 className="text-sm font-semibold text-gray-900 mb-2">Items</h2>
+                      <ul className="divide-y divide-gray-100 rounded-md border border-gray-200">
+                        {sessionDetails.items.map(it => (
+                          <li key={it.id} className="p-3 flex items-center justify-between gap-3">
+                            <div>
+                              <p className="text-sm text-gray-900">{it.description}</p>
+                              <div className="text-xs text-gray-500 flex flex-wrap gap-2 items-center mt-1">
+                                <span>Qty {it.quantity}</span>
+                                {it.condition && (
+                                  <span
+                                    className={
+                                      'inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ring-1 ring-inset ' +
+                                      (((it.condition || '') as string)
+                                        .toString()
+                                        .trim()
+                                        .toLowerCase() === 'new' ||
+                                      ((it.condition || '') as string)
+                                        .toString()
+                                        .trim()
+                                        .toLowerCase() === 'mrgomatiresnew'
+                                        ? 'bg-green-50 text-green-700 ring-green-200'
+                                        : 'bg-slate-50 text-slate-700 ring-slate-200')
+                                    }
+                                  >
+                                    {(() => {
+                                      const c = (it.condition || '').toString().toLowerCase();
+                                      if (c === 'new') return 'NEW';
+                                      if (c === 'mrgomatiresnew') return 'NEW';
+                                      if (c === 'used') return 'USED';
+                                      if (c === 'sold') return 'SOLD';
+                                      return (it.condition || '').toString();
+                                    })()}
+                                  </span>
+                                )}
+                                {it.productId && (
+                                  <span className="font-mono bg-gray-50 border border-gray-200 rounded px-1 py-0.5">
+                                    ID: {it.productId}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {formatCents(it.amount_total, it.currency)}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Receipt link */}
+                    {sessionDetails.receipt_url && (
+                      <div>
+                        <a
+                          href={sessionDetails.receipt_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center rounded-md border border-green-200 px-4 py-2 text-sm font-semibold text-green-700 hover:bg-green-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+                        >
+                          View receipt
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-8 flex flex-col sm:flex-row gap-3">
+              <Link
+                href="/search-results"
+                className="inline-flex items-center justify-center rounded-md bg-green-600 px-5 py-2.5 text-base font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+              >
+                Continue shopping
+              </Link>
+              <Link
+                href="/"
+                className="inline-flex items-center justify-center rounded-md border border-green-200 px-5 py-2.5 text-sm font-semibold text-green-700 hover:bg-green-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+              >
+                Go to home
+              </Link>
+            </div>
+          </div>
+        </main>
+      );
+    }
+
+    // WhatsApp confirmation view remains simple
+    return (
+      <main className="min-h-[70vh] bg-white">
+        {showLoader && <LoadingScreen message={loaderMsg} />}
+        <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-16 text-center">
+          <div
+            className="mx-auto h-14 w-14 rounded-full bg-green-100 flex items-center justify-center"
+            aria-hidden
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="h-8 w-8 text-green-600"
+            >
+              <path
+                fillRule="evenodd"
+                d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-2.59a.75.75 0 1 0-1.22-.86l-3.724 5.29-2.02-2.02a.75.75 0 1 0-1.06 1.06l2.625 2.625a.75.75 0 0 0 1.13-.094l4.27-6.001Z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </div>
+          <h1 className="mt-6 text-2xl sm:text-3xl font-bold text-gray-900">
+            Order sent via WhatsApp
+          </h1>
+          <p className="mt-2 text-gray-600">
+            We opened WhatsApp in a new tab with your order details. Our team will reach out to
+            confirm your request.
+          </p>
+          <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+            <Link
+              href="/search-results"
+              className="inline-flex items-center justify-center rounded-md bg-green-600 px-5 py-2.5 text-base font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+            >
+              Continue shopping
+            </Link>
+            <Link
+              href="/"
+              className="inline-flex items-center justify-center rounded-md border border-green-200 px-5 py-2.5 text-sm font-semibold text-green-700 hover:bg-green-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+            >
+              Go to home
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
-    <aside
-      role="region"
-      aria-label="Promotion"
-      className={`w-full overflow-hidden rounded-lg ${bgColor} ${textColor} ${className} relative`}
-      style={
-        backgroundImageUrl
-          ? {
-              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${backgroundImageUrl})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              imageRendering: 'auto',
-            }
-          : {}
-      }
-    >
-      {/* Attention accent bar */}
-      <div className="relative h-1 w-full bg-gradient-to-r from-lime-400 via-emerald-400 to-lime-400 animate-[pulse_3s_ease-in-out_infinite] opacity-80" />
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="relative flex items-stretch gap-4 py-4 sm:py-5">
-          <div className="flex-1 min-w-0 pr-12 sm:pr-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h2 className="text-base sm:text-lg font-bold leading-tight drop-shadow-md">
-                {title}
-              </h2>
-              {/* Limited time badge when date range exists */}
-              {(startDate || endDate) && (
-                <span className="inline-flex items-center rounded-full bg-white/10 px-2 py-0.5 text-xs font-medium ring-1 ring-inset ring-white/25">
-                  Limited time
-                </span>
-              )}
-            </div>
-            {description && (
-              <p className="mt-1 text-sm sm:text-base font-medium opacity-100 drop-shadow-sm">
-                {description}
-              </p>
-            )}
-            {ctaLabel && ctaHref && (
-              <div className="mt-3">
-                <Link
-                  href={ctaHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-md bg-lime-400/90 text-black px-4 py-2 text-sm font-semibold shadow-sm hover:bg-lime-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-lime-300 focus-visible:ring-offset-black transition-colors"
-                >
-                  {/* WhatsApp glyph */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="h-4 w-4"
-                  >
-                    <path d="M20.52 3.48A11.86 11.86 0 0012.04 0C5.5 0 .2 5.3.2 11.85c0 2.09.55 4.14 1.58 5.95L0 24l6.36-1.73a11.78 11.78 0 005.68 1.47h.01c6.53 0 11.83-5.3 11.83-11.85 0-3.17-1.23-6.15-3.36-8.36zM12.04 21.3c-1.82 0-3.6-.49-5.15-1.42l-.37-.22-3.77 1.03 1.01-3.67-.24-.38a9.72 9.72 0 01-1.52-5.18c0-5.39 4.39-9.78 9.77-9.78 2.61 0 5.07 1.02 6.92 2.87a9.65 9.65 0 012.86 6.91c0 5.4-4.38 9.84-9.51 9.84zm5.44-7.34c-.3-.15-1.77-.87-2.04-.97-.27-.1-.46-.15-.66.15-.2.3-.75.97-.92 1.17-.17.2-.34.22-.64.07-.3-.15-1.27-.47-2.42-1.5-.9-.79-1.5-1.77-1.68-2.07-.17-.3-.02-.46.13-.61.14-.14.3-.37.45-.56.15-.2.2-.34.3-.56.1-.22.05-.41-.02-.56-.07-.15-.66-1.6-.91-2.2-.24-.58-.49-.5-.66-.5h-.57c-.2 0-.56.08-.85.41-.29.33-1.12 1.09-1.12 2.65 0 1.56 1.15 3.07 1.3 3.28.15.2 2.28 3.48 5.52 4.88.77.33 1.37.53 1.84.68.77.24 1.47.2 2.02.12.62-.09 1.9-.78 2.17-1.52.27-.74.27-1.38.19-1.52-.08-.14-.28-.22-.58-.37z" />
-                  </svg>
-                  {ctaLabel}
-                </Link>
-              </div>
-            )}
-          </div>
-          {imageUrl && (
-            <div className="hidden sm:block shrink-0">
-              <img
-                src={imageUrl}
-                alt="Promotional banner image"
-                className="h-20 w-auto object-contain drop-shadow"
-                loading="eager"
-              />
-            </div>
-          )}
-          {dismissible && (
+    <main className="min-h-[70vh] bg-white">
+      {showLoader && <LoadingScreen message={loaderMsg} />}
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+        <header className="mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">Checkout</h1>
+          <p className="mt-1 text-sm text-gray-500">Review your cart and complete your order.</p>
+        </header>
+
+        {showCancelBanner && (
+          <div
+            className="mb-6 flex items-start justify-between gap-3 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900"
+            role="status"
+            aria-live="polite"
+          >
+            <p className="pr-2">Checkout was canceled. You can review your cart and try again.</p>
             <button
               type="button"
-              aria-label="Close promotion"
-              onClick={onClose}
-              className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-md bg-white/10 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              onClick={() => setShowCancelBanner(false)}
+              className="shrink-0 inline-flex items-center justify-center rounded-md border border-amber-200 bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-900 hover:bg-amber-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              aria-label="Dismiss cancel message"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="h-4 w-4"
-                aria-hidden="true"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              Dismiss
             </button>
-          )}
-        </div>
-      </div>
-    </aside>
-  );
-};
+          </div>
+        )}
 
-export default PromoBanner;
+        {!mounted ? (
+          <section
+            aria-live="polite"
+            className="rounded-lg border border-dashed border-gray-200 p-10 text-center"
+          >
+            <p className="text-gray-600">Loading cart…</p>
+          </section>
+        ) : isEmpty ? (
+          <section
+            aria-live="polite"
+            className="rounded-lg border border-dashed border-gray-200 p-10 text-center"
+          >
+            <p className="text-gray-600">Your cart is empty.</p>
+            <div className="mt-4">
+              <Link
+                href="/search-results"
+                className="inline-flex items-center px-5 py-2.5 rounded-md bg-green-600 text-white font-semibold shadow-sm hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+              >
+                Browse products
+              </Link>
+            </div>
+          </section>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Item table */}
+            <section className="lg:col-span-8 xl:col-span-8" aria-labelledby="cart-heading">
+              <h2 id="cart-heading" className="sr-only">
+                Items in cart
+              </h2>
+              <div className="overflow-hidden rounded-lg border border-gray-200 shadow-sm">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th
+                          scope="col"
+                          className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600"
+                        >
+                          Product
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600"
+                        >
+                          ID
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-600"
+                        >
+                          Price
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-gray-600"
+                        >
+                          Quantity
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-600"
+                        >
+                          Subtotal
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-600"
+                        >
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 bg-white">
+                      {cartItems.map(item => {
+                        const lineTotal = item.price * item.quantity;
+                        return (
+                          <tr key={item.id} className="hover:bg-gray-50">
+                            <td className="px-4 py-4">
+                              <div className="flex items-center gap-3">
+                                <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 bg-white">
+                                  {item.image ? (
+                                    <Image
+                                      src={item.image}
+                                      alt={item.name}
+                                      width={64}
+                                      height={64}
+                                      className="h-full w-full object-cover object-center"
+                                    />
+                                  ) : (
+                                    <div className="flex h-full w-full items-center justify-center bg-gray-100 text-xs text-gray-500">
+                                      No image
+                                    </div>
+                                  )}
+                                </div>
+                                <div>
+                                  <Link
+                                    href={`/detail?productId=${encodeURIComponent(String(item.id))}`}
+                                    className="font-medium text-gray-900 hover:text-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+                                  >
+                                    {item.name}
+                                  </Link>
+                                  <ProductMeta
+                                    brand={item.brand}
+                                    condition={item.condition}
+                                    className="mt-0.5"
+                                  />
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-4 py-4 text-left text-gray-600">
+                              <span className="font-mono text-xs bg-gray-50 border border-gray-200 rounded px-2 py-0.5 inline-block">
+                                {String(item.id)}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4 text-right text-gray-700">
+                              {currency(item.price)}
+                            </td>
+                            <td className="px-4 py-4 text-center text-gray-700">{item.quantity}</td>
+                            <td className="px-4 py-4 text-right font-medium text-gray-900">
+                              {currency(lineTotal)}
+                            </td>
+                            <td className="px-4 py-4 text-right">
+                              <button
+                                type="button"
+                                onClick={() => removeFromCart(item.id)}
+                                className="inline-flex items-center cursor-pointer rounded-md border border-red-200 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+                                aria-label={`Remove ${item.name} from cart`}
+                              >
+                                Remove
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            {/* Order summary */}
+            <aside
+              className="lg:col-span-4 xl:col-span-4 lg:sticky lg:top-4"
+              aria-labelledby="summary-heading"
+            >
+              <h2 id="summary-heading" className="text-lg font-semibold text-gray-900">
+                Order summary
+              </h2>
+              <div className="mt-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+                <dl className="space-y-2 text-sm">
+                  <div className="flex items-center justify-between">
+                    <dt className="text-gray-600">Subtotal</dt>
+                    <dd className="font-medium text-gray-900">{currency(cartTotal)}</dd>
+                  </div>
+                  <div className="flex items-start justify-between">
+                    <dt className="text-gray-600">
+                      Taxes{' '}
+                      {TAX_RATE > 0 && (
+                        <span className="text-xs text-gray-500">
+                          (VAT {Math.round(TAX_RATE * 100)}%)
+                        </span>
+                      )}
+                    </dt>
+                    <dd className="font-medium text-gray-900">
+                      <span className="text-gray-700">Calculated at checkout</span>
+                    </dd>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <dt className="text-gray-600">Shipping</dt>
+                    <dd className="font-medium text-gray-900">Free</dd>
+                  </div>
+                  <div className="mt-2 border-t border-gray-200 pt-2 flex items-center justify-between text-base">
+                    <dt className="font-semibold text-gray-900">Total</dt>
+                    <dd className="font-semibold text-gray-900">{currency(total)}</dd>
+                  </div>
+                </dl>
+                {/* Shipping state restriction */}
+                <ShippingStateGate
+                  selectedState={selectedState}
+                  onChange={setSelectedState}
+                  isBlockedState={isBlockedState}
+                />
+
+                {/* Fulfillment method */}
+                <div className="mt-3">
+                  <label className="block text-sm font-medium text-gray-900">
+                    How would you like to receive your tires?
+                  </label>
+                  <div
+                    className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2"
+                    role="radiogroup"
+                    aria-label="Fulfillment method"
+                  >
+                    <label
+                      className={`flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm ${fulfillmentMethod === 'delivery' ? 'border-green-300 bg-green-50 text-green-800' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}
+                    >
+                      <input
+                        type="radio"
+                        name="fulfillment"
+                        value="delivery"
+                        className="h-4 w-4 text-green-600 focus:ring-green-500"
+                        checked={fulfillmentMethod === 'delivery'}
+                        onChange={() => setFulfillmentMethod('delivery')}
+                        aria-label="Delivery to my address"
+                      />
+                      <span>Delivery to my address</span>
+                    </label>
+                    <label
+                      className={`flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm ${fulfillmentMethod === 'pickup' ? 'border-green-300 bg-green-50 text-green-800' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}
+                    >
+                      <input
+                        type="radio"
+                        name="fulfillment"
+                        value="pickup"
+                        className="h-4 w-4 text-green-600 focus:ring-green-500"
+                        checked={fulfillmentMethod === 'pickup'}
+                        onChange={() => setFulfillmentMethod('pickup')}
+                        aria-label="Pick up in store"
+                      />
+                      <span>Pick up in store</span>
+                    </label>
+                  </div>
+
+                  {fulfillmentMethod === 'pickup' && (
+                    <div className="mt-3">
+                      <label
+                        htmlFor="pickup-store"
+                        className="block text-sm font-medium text-gray-900"
+                      >
+                        Choose a store for pick-up
+                      </label>
+                      <select
+                        id="pickup-store"
+                        value={pickupStoreId}
+                        onChange={e => setPickupStoreId(e.target.value)}
+                        className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-500"
+                      >
+                        <option value="">Select a store…</option>
+                        {locationsData.map(loc => (
+                          <option key={loc.id} value={loc.id}>
+                            {loc.name} — {loc.address}
+                          </option>
+                        ))}
+                      </select>
+                      <p className="mt-1 text-xs text-gray-500">
+                        We will prepare your order at the selected store. Bring your ID and order
+                        confirmation.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {error && (
+                  <div
+                    className="my-3 rounded-md border border-red-200 bg-red-50 text-red-700 text-sm p-3"
+                    role="alert"
+                  >
+                    {error}
+                  </div>
+                )}
+                <div className="mt-4 grid gap-2">
+                  <button
+                    type="button"
+                    onClick={proceedToPayment}
+                    className="inline-flex w-full cursor-pointer items-center justify-center rounded-md bg-green-600 px-5 py-2.5 text-base font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={
+                      isEmpty ||
+                      loading ||
+                      (fulfillmentMethod === 'delivery' && (!selectedState || isBlockedState)) ||
+                      (fulfillmentMethod === 'pickup' && !pickupStoreId)
+                    }
+                    aria-disabled={
+                      isEmpty ||
+                      loading ||
+                      (fulfillmentMethod === 'delivery' && (!selectedState || isBlockedState)) ||
+                      (fulfillmentMethod === 'pickup' && !pickupStoreId)
+                    }
+                  >
+                    {loading
+                      ? 'Processing…'
+                      : stripeEnabled
+                        ? 'Proceed to payment'
+                        : 'Send order via WhatsApp'}
+                  </button>
+                  <Link
+                    href="/search-results"
+                    className="inline-flex w-full items-center justify-center rounded-md border border-green-200 px-5 py-2.5 text-sm font-semibold text-green-700 hover:bg-green-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+                  >
+                    Continue shopping
+                  </Link>
+                </div>
+              </div>
+
+              <p className="mt-2 text-xs text-gray-500">
+                Taxes are estimates and may vary at checkout.
+              </p>
+            </aside>
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}
