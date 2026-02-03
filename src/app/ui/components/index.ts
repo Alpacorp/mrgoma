@@ -39,3 +39,4 @@ export { default as StockBadge } from './StockBadge/StockBadge';
 export { default as CookieConsent } from './CookieConsent/CookieConsent';
 export { default as FreeShippingBadge } from './FreeShippingBadge/FreeShippingBadge';
 export { default as PromoBar } from './PromoBar/PromoBar';
+export { default as LoginForm } from './LoginForm/LoginForm';
