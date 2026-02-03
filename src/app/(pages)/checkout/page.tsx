@@ -1,5 +1,5 @@
+import React, { Suspense } from 'react';
 import type { Metadata, NextPage } from 'next';
-import { Suspense } from 'react';
 
 import Checkout from '@/app/(pages)/checkout/container/Checkout/Checkout';
 import { LoadingScreen } from '@/app/ui/components';
