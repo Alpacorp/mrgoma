@@ -23,7 +23,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               password: credentials?.password ?? "",
             },
           };
-          const res = await fetch("", {
+          const res = await fetch("https://nbback-production.up.railway.app/api/login", {
             method: "POST",
             body: JSON.stringify(payload),
             headers: {
@@ -56,33 +56,33 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     strategy: "jwt",
   },
   pages: {
-    error: "/suppliers/login",
-    signIn: '/suppliers/login',
-    signOut: '/suppliers/login'
+    error: "/login",
+    signIn: '/login',
+    signOut: '/login'
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: any) {
       // 'user' solo tiene datos la primera vez que te logueas
       if (user && token) {
         // IMPORTANTE: mapea 'user.token' a 'token.accessToken'
-        // token.accessToken = user?.token;
-        // token.code_role = user?.code_role;
-        // token.name_role = user?.name_role;
+        token.accessToken = user?.token;
+        token.code_role = user?.code_role;
+        token.name_role = user?.name_role;
       }
       return token;
     },
     async session({ session, token }: any) {
       // Solo servidor
       if (typeof window === "undefined") {
-        // session.user.code_role = token?.code_role;
-        // session.user.name_role = token?.name_role;
-        // session.user.accessToken = token?.accessToken;
+        session.user.code_role = token?.code_role;
+        session.user.name_role = token?.name_role;
+        session.user.accessToken = token?.accessToken;
         return session;
       }else{
         //solo usuario
-        // session.user.code_role = token?.code_role;
-        // session.user.name_role = token?.name_role;
+        session.user.code_role = token?.code_role;
+        session.user.name_role = token?.name_role;
         return session;
       }
     },
