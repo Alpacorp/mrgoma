@@ -30,7 +30,7 @@ const LoginForm = () => {
         password: loginData.password,
         redirect: false
       });
-      res.error ? console.log("Email o contraseña incorrectos") : router.push("/")
+      res.error ? console.log("Email o contraseña incorrectos") : router.push("/dashboard")
     }
   };
 

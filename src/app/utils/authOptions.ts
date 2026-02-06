@@ -1,38 +1,38 @@
 // import { supplier } from "@/app/endpoints/suppliers/suppliers";
-import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
+import NextAuth from 'next-auth';
+import Credentials from 'next-auth/providers/credentials';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
       credentials: {
         email: {
-          label: "email",
-          type: "email",
+          label: 'email',
+          type: 'email',
         },
         password: {
-          label: "password",
-          type: "password",
+          label: 'password',
+          type: 'password',
         },
       },
-      authorize: async (credentials) => {
+      authorize: async credentials => {
         try {
           const payload = {
             user: {
-              email: credentials?.email ?? "",
-              password: credentials?.password ?? "",
+              email: credentials?.email ?? '',
+              password: credentials?.password ?? '',
             },
           };
-          const res = await fetch("https://nbback-production.up.railway.app/api/login", {
-            method: "POST",
+          const res = await fetch('https://nbback-production.up.railway.app/api/login', {
+            method: 'POST',
             body: JSON.stringify(payload),
             headers: {
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
           });
           const user = await res.json();
           if (!user) {
-            throw new Error("Invalid credentials.");
+            throw new Error('Invalid credentials.');
           }
           if (user) {
             return {
@@ -53,38 +53,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
   pages: {
-    error: "/login",
+    error: '/login',
     signIn: '/login',
-    signOut: '/login'
+    signOut: '/login',
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, user }: any) {
-      // 'user' solo tiene datos la primera vez que te logueas
       if (user && token) {
         // IMPORTANTE: mapea 'user.token' a 'token.accessToken'
+        //sesion visible al servidor
         token.accessToken = user?.token;
         token.code_role = user?.code_role;
         token.name_role = user?.name_role;
       }
       return token;
     },
-    async session({ session, token }: any) {
-      // Solo servidor
-      if (typeof window === "undefined") {
-        session.user.code_role = token?.code_role;
-        session.user.name_role = token?.name_role;
-        session.user.accessToken = token?.accessToken;
-        return session;
-      }else{
-        //solo usuario
-        session.user.code_role = token?.code_role;
-        session.user.name_role = token?.name_role;
-        return session;
-      }
+    async session({ session, token }) {
+      //session visible al usuario
+      return session;
     },
   },
 });

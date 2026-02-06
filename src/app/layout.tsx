@@ -8,6 +8,7 @@ import { SelectedFiltersProvider } from '@/app/context/SelectedFilters';
 import { DetailModalProvider } from '@/app/context/ShowDetailModal';
 import { FiltersProvider } from '@/app/context/ShowFilterContext';
 import { MenuProvider } from '@/app/context/ShowMenuContext';
+import { SessionProvider } from 'next-auth/react';
 import { CookieConsent } from '@/app/ui/components';
 import GoogleAnalytics from '@/app/ui/components/GoogleAnalytics/GoogleAnalytics';
 import { Footer, Header, TopHeader } from '@/app/ui/sections';
@@ -31,30 +32,32 @@ export default function RootLayout({
         <script type="application/ld+json">{JSON.stringify(organizationJsonLd())}</script>
         <script type="application/ld+json">{JSON.stringify(websiteJsonLd())}</script>
       </head>
-      <DetailModalProvider>
-        <FiltersProvider>
-          <SelectedFiltersProvider>
-            <MenuProvider>
-              <CartProvider>
-                <body className={inter.className} suppressHydrationWarning={true}>
-                  <React.Suspense fallback={null}>
-                    <GoogleAnalytics />
-                  </React.Suspense>
-                  <div className="sticky top-0 z-50">
-                    <TopHeader />
-                    {/*<PromoBar />*/}
-                    <Header />
-                  </div>
-                  {children}
-                  <Footer />
-                  <CookieConsent />
-                  <Analytics />
-                </body>
-              </CartProvider>
-            </MenuProvider>
-          </SelectedFiltersProvider>
-        </FiltersProvider>
-      </DetailModalProvider>
+      <SessionProvider>
+        <DetailModalProvider>
+          <FiltersProvider>
+            <SelectedFiltersProvider>
+              <MenuProvider>
+                <CartProvider>
+                  <body className={inter.className} suppressHydrationWarning={true}>
+                    <React.Suspense fallback={null}>
+                      <GoogleAnalytics />
+                    </React.Suspense>
+                    <div className="sticky top-0 z-50">
+                      <TopHeader />
+                      {/*<PromoBar />*/}
+                      <Header />
+                    </div>
+                    {children}
+                    <Footer />
+                    <CookieConsent />
+                    <Analytics />
+                  </body>
+                </CartProvider>
+              </MenuProvider>
+            </SelectedFiltersProvider>
+          </FiltersProvider>
+        </DetailModalProvider>
+      </SessionProvider>
     </html>
   );
 }

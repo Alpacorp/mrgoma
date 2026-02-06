@@ -10,6 +10,7 @@ import { HamburgerMenu } from '@/app/ui/components';
 import { ShoppingCart } from '@/app/ui/icons';
 import { CartModal, MenuMobile } from '@/app/ui/sections';
 import { menuItems } from '@/app/ui/sections/Header/MenuItems';
+import { useSession } from "next-auth/react"
 
 /**
  * Header component for the website
@@ -20,6 +21,8 @@ import { menuItems } from '@/app/ui/sections/Header/MenuItems';
 const Header: FC = (): ReactNode => {
   const { cartCount, setShowCartModal } = useCart();
   const [isMounted, setIsMounted] = useState(false);
+  const { data: session } = useSession()
+  console.log("session===>", session)
 
   const handleCartClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -54,7 +57,7 @@ const Header: FC = (): ReactNode => {
                 priority
               />
             </Link>
-            <div className="hidden lg:flex lg:gap-x-12">
+            <div className="hidden lg:flex lg:gap-x-12 items-center">
               {menuItems.map(item => (
                 <Link
                   key={item.name}
@@ -65,22 +68,25 @@ const Header: FC = (): ReactNode => {
                 </Link>
               ))}
             </div>
-            <button
-              onClick={handleCartClick}
-              className="flex items-center justify-center cursor-pointer rounded-full bg-white/10 border border-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/20 transition-colors relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
-              aria-label={isMounted ? `Shopping cart with ${cartCount} items` : 'Shopping cart'}
-            >
-              <ShoppingCart className="mr-2 h-5 w-5" />
-              Cart
-              {isMounted && cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 h-5 w-5" aria-hidden="true">
-                  <span className="absolute inset-0 rounded-full bg-green-500 opacity-75 animate-ping"></span>
-                  <span className="relative bg-green-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                    {cartCount}
+            <div className="flex">
+              <button
+                onClick={handleCartClick}
+                className="flex items-center justify-center cursor-pointer rounded-full bg-white/10 border border-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/20 transition-colors relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+                aria-label={isMounted ? `Shopping cart with ${cartCount} items` : 'Shopping cart'}
+              >
+                <ShoppingCart className="mr-2 h-5 w-5" />
+                Cart
+                {isMounted && cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 h-5 w-5" aria-hidden="true">
+                    <span className="absolute inset-0 rounded-full bg-green-500 opacity-75 animate-ping"></span>
+                    <span className="relative bg-green-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      {cartCount}
+                    </span>
                   </span>
-                </span>
-              )}
-            </button>
+                )}
+              </button>
+              <Link href="/login" className="bg-[#9dfb40] p-2 px-3 rounded-lg ml-4 text-sm">Sign in</Link>
+            </div>
           </div>
         </nav>
       </header>
