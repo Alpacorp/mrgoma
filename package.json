@@ -9,7 +9,9 @@
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "clean": "powershell -Command \"Remove-Item -Recurse -Force node_modules, .next, package-lock.json -ErrorAction SilentlyContinue\"",
+    "reinstall": "npm run clean && npm install"
   },
   "dependencies": {
     "@tailwindcss/aspect-ratio": "0.4.2",
@@ -19,7 +21,7 @@
     "@vercel/analytics": "1.6.1",
     "dotenv": "17.2.3",
     "mssql": "12.2.0",
-    "next": "16.0.10",
+    "next": "16.1.5",
     "react": "19.2.1",
     "react-dom": "19.2.1",
     "stripe": "20.0.0",
