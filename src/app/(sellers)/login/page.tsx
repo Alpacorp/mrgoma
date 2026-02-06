@@ -1,4 +1,4 @@
-import Login from '@/app/(pages)/login/container/Login';
+import Login from '@/app/(sellers)/login/container/Login';
 
 const LoginPage = () => {
   return (

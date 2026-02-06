@@ -42,13 +42,7 @@ export default function RootLayout({
                     <React.Suspense fallback={null}>
                       <GoogleAnalytics />
                     </React.Suspense>
-                    <div className="sticky top-0 z-50">
-                      <TopHeader />
-                      {/*<PromoBar />*/}
-                      <Header />
-                    </div>
                     {children}
-                    <Footer />
                     <CookieConsent />
                     <Analytics />
                   </body>

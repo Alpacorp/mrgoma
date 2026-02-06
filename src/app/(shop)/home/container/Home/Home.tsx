@@ -11,7 +11,7 @@ import {
 import { LocationsSlider } from '@/app/ui/sections/LocationsSlider/LocationsSlider';
 import { promoBannerConfig } from '@/app/ui/sections/PromoBanner/config/promoBanner';
 
-const HomeContent: FC = () => {
+const Home: FC = () => {
   return (
     <main className="bg-white">
       <div>
@@ -80,4 +80,4 @@ const HomeContent: FC = () => {
   );
 };
 
-export default HomeContent;
+export default Home;

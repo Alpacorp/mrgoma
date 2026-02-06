@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 
-import Detail from '@/app/(pages)/detail/container/Detail/Detail';
+import Detail from '@/app/(shop)/detail/container/Detail/Detail';
 import { LoadingScreen } from '@/app/ui/components';
 import {
   absUrl,

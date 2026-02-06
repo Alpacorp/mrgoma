@@ -12,8 +12,6 @@ export async function proxy(request: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET
    })
 
-   console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", token)
-
 
    if (!session){
       return NextResponse.redirect(new URL('/', request.url))

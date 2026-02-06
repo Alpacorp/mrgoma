@@ -31,6 +31,7 @@ const LoginForm = () => {
         redirect: false
       });
       res.error ? console.log("Email o contraseña incorrectos") : router.push("/dashboard")
+      setIsLoading(false)
     }
   };
 

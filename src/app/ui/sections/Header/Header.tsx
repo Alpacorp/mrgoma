@@ -22,7 +22,7 @@ const Header: FC = (): ReactNode => {
   const { cartCount, setShowCartModal } = useCart();
   const [isMounted, setIsMounted] = useState(false);
   const { data: session } = useSession()
-  console.log("session===>", session)
+
 
   const handleCartClick = (e: React.MouseEvent) => {
     e.preventDefault();

@@ -1,6 +1,7 @@
+import Home from '@/app/(shop)/home/container/Home/Home';
+
 import type { Metadata, NextPage } from 'next';
 
-import HomeContent from '@/app/(pages)/home/container/Home/HomeContent';
 import { canonical } from '@/app/utils/seo';
 
 export const metadata: Metadata = {
@@ -10,8 +11,8 @@ export const metadata: Metadata = {
   alternates: { canonical: canonical('/') },
 };
 
-const Home: NextPage = () => {
-  return <HomeContent />;
+const HomePage: NextPage = () => {
+  return <Home />;
 };
 
-export default Home;
+export default HomePage;
