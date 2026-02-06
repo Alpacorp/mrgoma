@@ -17,14 +17,14 @@ const nextConfig = {
     ],
   },
   allowedDevOrigins: ['local-origin.dev', '*.local-origin.dev'],
-    redirects: async () => {
+
+  async rewrites() {
     return [
       {
-        source: "/",
-        destination: "/home",
-        permanent: true,
+        source: '/',
+        destination: '/home',
       },
-    ];
+    ]
   },
 };
 
