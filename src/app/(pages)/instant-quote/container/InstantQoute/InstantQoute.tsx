@@ -53,7 +53,7 @@ const SectionCard: React.FC<{
 const InstantQuote: React.FC = () => {
   const { selectedFilters } = useContext(SelectedFiltersContext);
   const [lead, setLead] = useState<LeadForm>(initialLead);
-  const [pickupStoreId, setPickupStoreId] = useState<string>('');
+  const [pickupStore, setPickupStore] = useState<string>('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -84,7 +84,7 @@ const InstantQuote: React.FC = () => {
     Boolean(sizeText) &&
     lead.name.trim().length > 1 &&
     (isEmailValid(lead.email) || isPhoneValid(lead.phone)) &&
-    Boolean(pickupStoreId);
+    Boolean(pickupStore);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -174,7 +174,7 @@ const InstantQuote: React.FC = () => {
         (tel || el).scrollIntoView({ behavior: 'smooth', block: 'center' });
         break;
       }
-      if (id === 'pickup-store' && !pickupStoreId) {
+      if (id === 'pickup-store' && !pickupStore) {
         el.focus();
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         break;
@@ -212,7 +212,7 @@ const InstantQuote: React.FC = () => {
           carBrand: derivedCarBrand,
           year: derivedYear,
           condition: lead.condition.join(','),
-          pickupStoreId,
+          pickupStoreId: pickupStore,
           name: lead.name,
           email: lead.email,
           phone: lead.phone,
@@ -228,7 +228,7 @@ const InstantQuote: React.FC = () => {
       }
       setSuccess(true);
       setLead(initialLead);
-      setPickupStoreId('');
+      setPickupStore('');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Submission failed';
       setError(message);
@@ -419,14 +419,14 @@ const InstantQuote: React.FC = () => {
               </label>
               <select
                 id="pickup-store"
-                value={pickupStoreId}
-                onChange={e => setPickupStoreId(e.target.value)}
+                value={pickupStore}
+                onChange={e => setPickupStore(e.target.value)}
                 className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-500"
                 required
               >
                 <option value="">Select a store…</option>
                 {locationsData.map(loc => (
-                  <option key={loc.id} value={loc.id}>
+                  <option key={loc.id} value={`${loc.name} — ${loc.address}`}>
                     {loc.name} — {loc.address}
                   </option>
                 ))}
