@@ -2,11 +2,11 @@ import * as z from 'zod';
 
 export const LoginSchema = z.object({
   email: z
-    .email('Ingresa un email válido')
+    .email('Enter a valid email')
     .trim()
     .toLowerCase()
-    .refine(val => val.length > 0, { error: 'Ingresa un email ' }),
-  password: z.string().trim().nonempty('Ingresa tu contraseña'),
+    .refine(val => val.length > 0, { error: 'Enter an email ' }),
+  password: z.string().trim().nonempty('Enter your password'),
 });
 
 export type Inputs = z.infer<typeof LoginSchema>;
