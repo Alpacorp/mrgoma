@@ -39,7 +39,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="w-full max-w-96">
+    <div className="w-full max-w-96 px-4 sm:px-8">
       <div className="flex justify-center mb-16 lg:hidden">
         <Link href="/">
           <Image
