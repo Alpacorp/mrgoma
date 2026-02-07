@@ -17,15 +17,6 @@ const nextConfig = {
     ],
   },
   allowedDevOrigins: ['local-origin.dev', '*.local-origin.dev'],
-
-  async rewrites() {
-    return [
-      {
-        source: '/',
-        destination: '/home',
-      },
-    ]
-  },
 };
 
 export default nextConfig;

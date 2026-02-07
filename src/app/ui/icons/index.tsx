@@ -23,3 +23,9 @@ export * from './RemainingIcon';
 export * from './TreadIcon';
 export * from './RunFlatIcon';
 export * from './EnvelopeIcon';
+export * from './LockIcon'
+export * from './ArrowLeftIcon'
+export * from './DocumentIcon'
+export * from './BoxIcon'
+export * from './DollyIcon'
+

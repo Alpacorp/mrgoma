@@ -1,4 +1,4 @@
-import Home from '@/app/(shop)/home/container/Home/Home';
+import Home from '@/app/(home)/container/Home/Home';
 
 import type { Metadata, NextPage } from 'next';
 
