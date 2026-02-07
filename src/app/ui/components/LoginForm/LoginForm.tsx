@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { LoginSchema, Inputs } from '@/app/ui/components/LoginForm/schema/loginSchema';
 import { signIn } from 'next-auth/react';
-import { useForm, Controller, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { InputError } from '@/app/ui/components';
 import { useRouter } from 'next/navigation';
@@ -39,7 +39,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="w-full max-w-96 px-4 sm:px-8">
+    <div className="w-full sm:max-w-lg px-8">
       <div className="flex justify-center mb-16 lg:hidden">
         <Link href="/">
           <Image

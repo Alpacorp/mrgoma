@@ -85,7 +85,6 @@ const Header: FC = (): ReactNode => {
                   </span>
                 )}
               </button>
-              <Link href="/login" className="bg-[#9dfb40] p-2 px-3 rounded-lg ml-4 text-sm">Sign in</Link>
             </div>
           </div>
         </nav>
