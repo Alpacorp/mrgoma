@@ -41,3 +41,4 @@ export { default as FreeShippingBadge } from './FreeShippingBadge/FreeShippingBa
 export { default as PromoBar } from './PromoBar/PromoBar';
 export { default as LoginForm } from './LoginForm/LoginForm';
 export {default as InputError} from './InputError/InputError'
+export {default as ButtonSpinner} from './ButtonSpinner/ButtonSpinner'

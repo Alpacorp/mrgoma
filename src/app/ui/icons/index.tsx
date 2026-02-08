@@ -28,4 +28,5 @@ export * from './ArrowLeftIcon'
 export * from './DocumentIcon'
 export * from './BoxIcon'
 export * from './DollyIcon'
+export * from './CircleSpinner'
 

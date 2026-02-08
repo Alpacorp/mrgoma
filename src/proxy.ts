@@ -7,12 +7,6 @@ export async function proxy(request: NextRequest) {
   
    const session = await auth()
 
-   const token =await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET
-   })
-
-
    if (!session){
       return NextResponse.redirect(new URL('/', request.url))
    }  

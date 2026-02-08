@@ -4,7 +4,7 @@ import { LoginSchema, Inputs } from '@/app/ui/components/LoginForm/schema/loginS
 import { signIn } from 'next-auth/react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { InputError } from '@/app/ui/components';
+import { ButtonSpinner, InputError } from '@/app/ui/components';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -33,8 +33,8 @@ const LoginForm = () => {
         password: loginData.password,
         redirect: false,
       });
-      res.error ? console.log('Email o contraseña incorrectos') : router.push('/dashboard');
       setIsLoading(false);
+      res.error ? console.log('Email o contraseña incorrectos') : router.push('/dashboard');
     }
   };
 
@@ -107,9 +107,15 @@ const LoginForm = () => {
           </div>
           <InputError message={errors?.password?.message} />
         </div>
-        <button className="w-full mt-2 py-2 text-base font-medium rounded-lg transition-colors bg-[#9dfb40] text-black cursor-pointer">
-          Login
-        </button>
+        <div className="mt-6">
+          {isLoading ? (
+            <ButtonSpinner text={'Logging in…'} />
+          ) : (
+            <button className="w-full  py-2 text-base font-medium rounded-lg transition-colors bg-[#9dfb40] text-black cursor-pointer">
+              Login
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );
