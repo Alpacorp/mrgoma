@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import React, { FC, ReactNode, useEffect, useState } from 'react';
 
 import { mrGomaLogo } from '#public/assets/images/Logo';
@@ -18,8 +19,10 @@ import { menuItems } from '@/app/ui/sections/Header/MenuItems';
  * @returns {ReactNode} The rendered header component
  */
 const Header: FC = (): ReactNode => {
+  const pathname = usePathname();
   const { cartCount, setShowCartModal } = useCart();
   const [isMounted, setIsMounted] = useState(false);
+  const [activeHash, setActiveHash] = useState('');
 
   const handleCartClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -28,13 +31,25 @@ const Header: FC = (): ReactNode => {
 
   useEffect(() => {
     setIsMounted(true);
-  }, []);
+    const handleHashChange = () => {
+      setActiveHash(window.location.hash);
+    };
+
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+    window.addEventListener('popstate', handleHashChange);
+
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener('popstate', handleHashChange);
+    };
+  }, [pathname]);
 
   return (
     <>
       <header className="w-full sticky top-0 z-40 bg-black backdrop-blur-sm backdrop-filter backdrop-saturate-150 border-b border-white/10 shadow-sm">
         <div className="absolute inset-0 bg-[#111]">
-          <div className="absolute z-10 w-full h-full bg-gradient-to-r from-black via-[#1A1A1A] to-[#9DFB40] opacity-80"></div>
+          <div className="absolute z-10 w-full h-full bg-linear-to-r from-black via-[#1A1A1A] to-[#9DFB40] opacity-80"></div>
           <Image src="/assets/images/bg-header.svg" alt="" fill className="object-cover" priority />
         </div>
 
@@ -55,15 +70,22 @@ const Header: FC = (): ReactNode => {
               />
             </Link>
             <div className="hidden lg:flex lg:gap-x-12">
-              {menuItems.map(item => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="text-sm font-semibold leading-6 text-white hover:text-[#65D01E] transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
-                >
-                  {item.name}
-                </Link>
-              ))}
+              {menuItems.map(item => {
+                const isActive =
+                  pathname === item.href ||
+                  (pathname === '/' && activeHash === item.href.replace('/', ''));
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={`text-sm font-semibold leading-6 transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
+                      isActive ? 'text-[#65D01E]' : 'text-white hover:text-[#65D01E]'
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                );
+              })}
             </div>
             <button
               onClick={handleCartClick}
