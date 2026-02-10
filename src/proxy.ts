@@ -1,18 +1,25 @@
 import { auth } from '@/app/utils/authOptions';
-import { NextResponse } from "next/server";
-import type { NextRequest } from 'next/server'
-import { getToken } from "next-auth/jwt";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 export async function proxy(request: NextRequest) {
-  
-   const session = await auth()
+  const session = await auth();
+  const pathName = request.nextUrl.pathname;
 
-   if (!session){
-      return NextResponse.redirect(new URL('/', request.url))
-   }  
+  const publicRoute = !pathName.includes('dashboard');
+
+  //nonpublic route
+  if (!session && !publicRoute) {
+    return NextResponse.redirect(new URL('/', request.nextUrl));
+  }
+
+  if (session && publicRoute && pathName) {
+    return NextResponse.redirect(new URL('/dashboard', request.nextUrl));
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: '/dashboard/:path*',
-}
+  matcher: ['/login', '/dashboard/:path*'],
+};
