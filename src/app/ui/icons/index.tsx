@@ -29,4 +29,6 @@ export * from './DocumentIcon'
 export * from './BoxIcon'
 export * from './DollyIcon'
 export * from './CircleSpinner'
-
+export * from './WarningIcon'
+export * from './EyeIcon'
+export * from './EyeOffIcon'

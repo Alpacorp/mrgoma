@@ -1,4 +1,4 @@
-import { LoginForm } from '@/app/ui/components';
+import { LoginForm} from '@/app/ui/components';
 import Link from 'next/link';
 import Image from 'next/image';
 import { mrGomaLogo } from '#public/assets/images/Logo';
@@ -6,9 +6,6 @@ import { DocumentIcon, BoxIcon, DollyIcon } from '@/app/ui/icons';
 
 const Login = () => {
   return (
-    // <div className='h-[calc(100dvh-431px)] flex justify-center items-center'>
-    //     <LoginForm/>
-    // </div>
     <div className="grid grid-cols-12 bg-black">
       <div className="bg-[url(/assets/images/tireLogin.png)] bg-cover col-span-5 bg-bottom hidden lg:flex flex-col  justify-between px-12 py-12">
         <div className='pb-12'>

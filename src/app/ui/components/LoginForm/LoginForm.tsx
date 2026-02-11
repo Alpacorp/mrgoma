@@ -4,15 +4,17 @@ import { LoginSchema, Inputs } from '@/app/ui/components/LoginForm/schema/loginS
 import { signIn } from 'next-auth/react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ButtonSpinner, InputError } from '@/app/ui/components';
+import { ButtonSpinner, InputError, Snackbar } from '@/app/ui/components';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { mrGomaLogo } from '#public/assets/images/Logo';
-import { EnvelopeIcon, LockIcon, ArrowLeftIcon } from '@/app/ui/icons';
+import { EnvelopeIcon, LockIcon, ArrowLeftIcon, EyeIcon, EyeOffIcon } from '@/app/ui/icons';
 
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [passwordVisibility, setPasswordVisibility] = useState(true);
   const router = useRouter();
 
   const {
@@ -34,7 +36,7 @@ const LoginForm = () => {
         redirect: false,
       });
       setIsLoading(false);
-      res.error ? console.log('Email o contraseña incorrectos') : router.push('/dashboard');
+      res.error ? setError(true) : router.push('/dashboard');
     }
   };
 
@@ -98,14 +100,31 @@ const LoginForm = () => {
             <input
               id="password"
               {...register('password')}
-              type="password"
+              type={`${passwordVisibility ? "password": "text"}`}
               autoComplete="off"
-              className={` w-full bg-slate-800 pl-10 text-white  rounded-md py-2 px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2transition-shadow border border-transparent placeholder:text-sm font-light
+              className={` w-full bg-slate-800 pl-10 pr-10 text-white  rounded-md py-2 px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2transition-shadow border border-transparent placeholder:text-sm font-light
                 }`}
             />
-            <LockIcon className="text-slate-400 absolute top-1/2  left-3 transform  -translate-y-1/2 h-4 w-4" />
+            <LockIcon
+              className="text-slate-400 absolute top-1/2  left-3 transform  -translate-y-1/2"
+              size={20}
+            />
+            {passwordVisibility ? (
+              <span
+                onClick={() => setPasswordVisibility(false)}
+                className="text-slate-400 absolute top-1/2  right-3 transform  -translate-y-1/2 "
+              >
+                <EyeOffIcon size={20} />
+              </span>
+            ) : (
+              <span
+                onClick={() => setPasswordVisibility(true)}
+                className="text-slate-400 absolute top-1/2  right-3 transform  -translate-y-1/2 "
+              >
+                <EyeIcon size={20} />
+              </span>
+            )}
           </div>
-          <InputError message={errors?.password?.message} />
         </div>
         <div className="mt-6">
           {isLoading ? (
@@ -117,6 +136,7 @@ const LoginForm = () => {
           )}
         </div>
       </form>
+      {error && <Snackbar type={'warning'} message={'Invalid email or password.'} />}
     </div>
   );
 };
