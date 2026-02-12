@@ -4,6 +4,7 @@ import React, { FormEvent, useContext, useEffect, useMemo, useRef, useState } fr
 
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
 import { SearchByText } from '@/app/ui/components';
+import { locationsData } from '@/app/ui/sections/LocationsSlider/locationsData';
 
 // Types
 type Condition = 'new' | 'used' | 'both';
@@ -49,10 +50,10 @@ const SectionCard: React.FC<{
   </section>
 );
 
-
 const InstantQuote: React.FC = () => {
   const { selectedFilters } = useContext(SelectedFiltersContext);
   const [lead, setLead] = useState<LeadForm>(initialLead);
+  const [pickupStore, setPickupStore] = useState<string>('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -62,7 +63,6 @@ const InstantQuote: React.FC = () => {
   const errorRef = useRef<HTMLDivElement>(null);
   const successRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
-
 
   const sizeText = useMemo(() => {
     const { width, sidewall, diameter } = selectedFilters || {};
@@ -83,7 +83,8 @@ const InstantQuote: React.FC = () => {
   const allRequiredFilled =
     Boolean(sizeText) &&
     lead.name.trim().length > 1 &&
-    (isEmailValid(lead.email) || isPhoneValid(lead.phone));
+    (isEmailValid(lead.email) || isPhoneValid(lead.phone)) &&
+    Boolean(pickupStore);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -147,7 +148,7 @@ const InstantQuote: React.FC = () => {
   const focusFirstInvalid = () => {
     const form = formRef.current;
     if (!form) return;
-    const ids = ['tireSize', 'name', 'email', 'phone'] as const;
+    const ids = ['tireSize', 'name', 'email', 'phone', 'pickup-store'] as const;
     for (const id of ids) {
       const el = form.querySelector<HTMLElement>(`#${id}`) || document.getElementById(id);
       if (!el) continue;
@@ -171,6 +172,11 @@ const InstantQuote: React.FC = () => {
         const tel = form.querySelector<HTMLElement>('#phone');
         (tel || el).focus();
         (tel || el).scrollIntoView({ behavior: 'smooth', block: 'center' });
+        break;
+      }
+      if (id === 'pickup-store' && !pickupStore) {
+        el.focus();
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         break;
       }
     }
@@ -206,6 +212,7 @@ const InstantQuote: React.FC = () => {
           carBrand: derivedCarBrand,
           year: derivedYear,
           condition: lead.condition.join(','),
+          pickupStoreId: pickupStore,
           name: lead.name,
           email: lead.email,
           phone: lead.phone,
@@ -221,8 +228,10 @@ const InstantQuote: React.FC = () => {
       }
       setSuccess(true);
       setLead(initialLead);
-    } catch (err: any) {
-      setError(err?.message || 'Submission failed');
+      setPickupStore('');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Submission failed';
+      setError(message);
     } finally {
       setSubmitting(false);
     }
@@ -295,9 +304,11 @@ const InstantQuote: React.FC = () => {
               </fieldset>
             </div>
 
-
             <div className="lg:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="vehicleDetails">
+              <label
+                className="block text-sm font-medium text-gray-700 mb-1"
+                htmlFor="vehicleDetails"
+              >
                 Vehicle Details (Make, Model, Year)
               </label>
               <input
@@ -308,10 +319,14 @@ const InstantQuote: React.FC = () => {
                 onChange={handleChange}
                 placeholder="e.g. Toyota Camry 2019"
                 aria-describedby="vehicleDetailsHelp vehicleDetailsError"
-                aria-invalid={lead.vehicleDetails !== '' && !hasValid4DigitYear(lead.vehicleDetails)}
+                aria-invalid={
+                  lead.vehicleDetails !== '' && !hasValid4DigitYear(lead.vehicleDetails)
+                }
                 className="w-full bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white text-sm"
               />
-              <p id="vehicleDetailsHelp" className="text-xs text-gray-500 mt-1">Example: Honda Civic 2020</p>
+              <p id="vehicleDetailsHelp" className="text-xs text-gray-500 mt-1">
+                Example: Honda Civic 2020
+              </p>
               {lead.vehicleDetails !== '' && !hasValid4DigitYear(lead.vehicleDetails) && (
                 <p id="vehicleDetailsError" className="text-xs text-red-600 mt-1">
                   Please include a 4-digit model year (e.g., 2021).
@@ -398,6 +413,30 @@ const InstantQuote: React.FC = () => {
             </div>
 
             {/* Notes (optional) */}
+            <div className="lg:col-span-2">
+              <label htmlFor="pickup-store" className="block text-sm font-medium text-gray-900">
+                Choose a store for pick-up <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="pickup-store"
+                value={pickupStore}
+                onChange={e => setPickupStore(e.target.value)}
+                className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-500"
+                required
+              >
+                <option value="">Select a store…</option>
+                {locationsData.map(loc => (
+                  <option key={loc.id} value={`${loc.name} — ${loc.address}`}>
+                    {loc.name} — {loc.address}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-1 text-xs text-gray-500">
+                We will prepare your order at the selected store. Bring your ID and order
+                confirmation.
+              </p>
+            </div>
+
             <div className="lg:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="notes">
                 Notes (optional)
@@ -531,7 +570,8 @@ const InstantQuote: React.FC = () => {
               />
             </svg>
             <p className="text-green-800 text-base sm:text-lg font-medium">
-              Thanks for choosing MrGoma Tires! Our team is preparing your quote now — you’ll receive prices and options shortly.
+              Thanks for choosing MrGoma Tires! Our team is preparing your quote now — you’ll
+              receive prices and options shortly.
             </p>
           </section>
         )}

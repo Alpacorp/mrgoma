@@ -86,8 +86,10 @@ export default function Checkout() {
   const blockedStates = React.useMemo(() => new Set(['AK', 'HI', 'PR']), []);
   const isBlockedState = selectedState ? blockedStates.has(selectedState) : false;
 
-  // Fulfillment selection: delivery vs pick up in store
-  const [fulfillmentMethod, setFulfillmentMethod] = React.useState<'delivery' | 'pickup'>('delivery');
+  // Fulfillment selection: delivery vs. pickup in store
+  const [fulfillmentMethod, setFulfillmentMethod] = React.useState<'delivery' | 'pickup'>(
+    'delivery'
+  );
   const [pickupStoreId, setPickupStoreId] = React.useState<string>('');
 
   // Detect checkout return states
@@ -150,8 +152,11 @@ export default function Checkout() {
         if (active) {
           setSessionDetails(json);
         }
-      } catch (e: any) {
-        if (active) setDetailsError(e?.message || 'Unable to load order details');
+      } catch (e: unknown) {
+        if (active) {
+          const message = e instanceof Error ? e.message : 'Unable to load order details';
+          setDetailsError(message);
+        }
       } finally {
         if (active) setDetailsLoading(false);
       }
@@ -194,7 +199,8 @@ export default function Checkout() {
         return;
       }
     }
-    const selectedStore = fulfillmentMethod === 'pickup' ? locationsData.find(l => l.id === pickupStoreId) : undefined;
+    const selectedStore =
+      fulfillmentMethod === 'pickup' ? locationsData.find(l => l.id === pickupStoreId) : undefined;
     setLoading(true);
     try {
       const res = await fetch('/api/checkout/create-session', {
@@ -212,7 +218,7 @@ export default function Checkout() {
 
       if (res.status === 409) {
         const data = await res.json().catch(() => ({}));
-        const details = data?.unavailable?.map((u: any) => u.id).join(', ');
+        const details = data?.unavailable?.map((u: { id: string }) => u.id).join(', ');
         setError(
           details
             ? `Some items in your cart are unavailable: ${details}`
@@ -245,8 +251,9 @@ export default function Checkout() {
         return;
       }
       setError('Failed to start checkout. Please try again.');
-    } catch (e: any) {
-      setError('Unexpected error. Please try again.');
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Unexpected error. Please try again.';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -359,7 +366,10 @@ export default function Checkout() {
                       <div className="flex items-center justify-between sm:justify-start sm:gap-3">
                         <span className="text-gray-600">Shipping</span>
                         <span className="text-gray-900">
-                          {formatCents(sessionDetails.shipping_total ?? 0, sessionDetails.currency || undefined)}
+                          {formatCents(
+                            sessionDetails.shipping_total ?? 0,
+                            sessionDetails.currency || undefined
+                          )}
                         </span>
                       </div>
                     </div>
@@ -715,8 +725,14 @@ export default function Checkout() {
                   <label className="block text-sm font-medium text-gray-900">
                     How would you like to receive your tires?
                   </label>
-                  <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Fulfillment method">
-                    <label className={`flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm ${fulfillmentMethod === 'delivery' ? 'border-green-300 bg-green-50 text-green-800' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}>
+                  <div
+                    className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2"
+                    role="radiogroup"
+                    aria-label="Fulfillment method"
+                  >
+                    <label
+                      className={`flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm ${fulfillmentMethod === 'delivery' ? 'border-green-300 bg-green-50 text-green-800' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}
+                    >
                       <input
                         type="radio"
                         name="fulfillment"
@@ -728,7 +744,9 @@ export default function Checkout() {
                       />
                       <span>Delivery to my address</span>
                     </label>
-                    <label className={`flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm ${fulfillmentMethod === 'pickup' ? 'border-green-300 bg-green-50 text-green-800' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}>
+                    <label
+                      className={`flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm ${fulfillmentMethod === 'pickup' ? 'border-green-300 bg-green-50 text-green-800' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}
+                    >
                       <input
                         type="radio"
                         name="fulfillment"
@@ -744,7 +762,10 @@ export default function Checkout() {
 
                   {fulfillmentMethod === 'pickup' && (
                     <div className="mt-3">
-                      <label htmlFor="pickup-store" className="block text-sm font-medium text-gray-900">
+                      <label
+                        htmlFor="pickup-store"
+                        className="block text-sm font-medium text-gray-900"
+                      >
                         Choose a store for pick-up
                       </label>
                       <select
@@ -761,7 +782,8 @@ export default function Checkout() {
                         ))}
                       </select>
                       <p className="mt-1 text-xs text-gray-500">
-                        We will prepare your order at the selected store. Bring your ID and order confirmation.
+                        We will prepare your order at the selected store. Bring your ID and order
+                        confirmation.
                       </p>
                     </div>
                   )}
