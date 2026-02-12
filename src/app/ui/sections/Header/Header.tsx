@@ -10,7 +10,7 @@ import { HamburgerMenu } from '@/app/ui/components';
 import { ShoppingCart } from '@/app/ui/icons';
 import { CartModal, MenuMobile } from '@/app/ui/sections';
 import { menuItems } from '@/app/ui/sections/Header/MenuItems';
-import { useSession } from "next-auth/react"
+import { useSession } from 'next-auth/react';
 
 /**
  * Header component for the website
@@ -21,8 +21,7 @@ import { useSession } from "next-auth/react"
 const Header: FC = (): ReactNode => {
   const { cartCount, setShowCartModal } = useCart();
   const [isMounted, setIsMounted] = useState(false);
-  const { data: session } = useSession()
-
+  const { data: session } = useSession();
 
   const handleCartClick = (e: React.MouseEvent) => {
     e.preventDefault();
