@@ -1,5 +1,4 @@
-import React from 'react';
-import InstantQuote from '@/app/(pages)/instant-quote/container/InstantQoute/InstantQoute';
+import InstantQuote from '@/app/(shop)/instant-quote/container/InstantQoute/InstantQoute';
 
 export default function InstantQuotePage() {
   return <InstantQuote />;
