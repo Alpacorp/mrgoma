@@ -1,6 +1,6 @@
 import { IconProps } from '@/app/ui/interfaces/icons';
 
-export const PhoneIcon = ({ className = '', size = 20 }: IconProps) => {
+export const PhoneIcon: React.FC<IconProps> = ({ className = '', size = 20 }) => {
   return (
     <svg
       width={size}

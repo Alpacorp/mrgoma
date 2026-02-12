@@ -1,6 +1,7 @@
 import { IconProps } from '@/app/ui/interfaces/icons';
+import React from 'react';
 
-export const LockIcon = ({ className = '', size = 20 }: IconProps) => {
+export const LockIcon: React.FC<IconProps> = ({ className = '', size = 20 }) => {
   return (
     <svg
       width={size}
@@ -12,7 +13,6 @@ export const LockIcon = ({ className = '', size = 20 }: IconProps) => {
       focusable="false"
       className={className}
     >
-      {/* Body */}
       <rect
         x="7"
         y="16"
@@ -24,8 +24,6 @@ export const LockIcon = ({ className = '', size = 20 }: IconProps) => {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-
-      {/* Shackle */}
       <path
         d="M12 16V12C12 8.68629 14.6863 6 18 6C21.3137 6 24 8.68629 24 12V16"
         stroke="currentColor"
@@ -33,14 +31,7 @@ export const LockIcon = ({ className = '', size = 20 }: IconProps) => {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-
-      {/* Keyhole */}
-      <path
-        d="M18 22V25"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
+      <path d="M18 22V25" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
     </svg>
   );
 };

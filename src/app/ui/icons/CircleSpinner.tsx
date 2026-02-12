@@ -1,6 +1,6 @@
 import { IconProps } from '@/app/ui/interfaces/icons';
 
-const CircleSpinner = ({ className = '', size = 20 }: IconProps) => {
+const CircleSpinner: React.FC<IconProps> = ({ className = '', size = 20 }) => {
   return (
     <svg className="h-4 w-4 animate-spin text-white" viewBox="0 0 24 24">
       <circle

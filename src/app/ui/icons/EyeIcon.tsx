@@ -1,7 +1,6 @@
 import { IconProps } from '@/app/ui/interfaces/icons';
 
-export const EyeIcon = ({ className = '', size = 20 }: IconProps) => {
-
+export const EyeIcon: React.FC<IconProps> = ({ className = '', size = 20 }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

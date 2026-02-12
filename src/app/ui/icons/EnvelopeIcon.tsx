@@ -1,6 +1,6 @@
 import { IconProps } from '@/app/ui/interfaces/icons';
 
-export const EnvelopeIcon = ({ className = '', size = 20 }: IconProps) => {
+export const EnvelopeIcon:React.FC<IconProps>= ({ className = '', size = 20 }) => {
   return (
     <svg
       width={size}

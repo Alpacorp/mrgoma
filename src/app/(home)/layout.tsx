@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Footer, Header, TopHeader } from '@/app/ui/sections';
 
@@ -11,7 +10,6 @@ export default function RootLayout({
     <div>
       <div className="sticky top-0 z-50">
         <TopHeader />
-        {/*<PromoBar />*/}
         <Header />
       </div>
       {children}

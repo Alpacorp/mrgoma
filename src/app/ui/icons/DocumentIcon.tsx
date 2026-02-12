@@ -1,6 +1,7 @@
 import { IconProps } from '@/app/ui/interfaces/icons';
+import React from 'react';
 
-export const DocumentIcon = ({ className = '', size = 20 }: IconProps) => {
+export const DocumentIcon: React.FC<IconProps> = ({ className = '', size = 20 }) => {
   return (
     <svg
       width={size}
@@ -28,24 +29,9 @@ export const DocumentIcon = ({ className = '', size = 20 }: IconProps) => {
         strokeLinejoin="round"
       />
 
-      <path
-        d="M14 16H22"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
-      <path
-        d="M14 20H22"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
-      <path
-        d="M14 24H18"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
+      <path d="M14 16H22" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M14 20H22" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M14 24H18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
     </svg>
   );
 };
