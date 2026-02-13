@@ -1,15 +1,19 @@
 'use client';
 import React, { useState } from 'react';
-import { LoginSchema, Inputs } from '@/app/ui/components/LoginForm/schema/loginSchema';
+
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
+import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+
 import { ButtonSpinner, InputError, Snackbar } from '@/app/ui/components';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
-import { mrGomaLogo } from '#public/assets/images/Logo';
+import { LoginSchema, Inputs } from '@/app/ui/components/LoginForm/schema/loginSchema';
 import { EnvelopeIcon, LockIcon, ArrowLeftIcon, EyeIcon, EyeOffIcon } from '@/app/ui/icons';
+
+import { mrGomaLogo } from '#public/assets/images/Logo';
 
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -28,15 +32,26 @@ const LoginForm = () => {
 
   const processForm: SubmitHandler<Inputs> = async loginData => {
     setIsLoading(true);
-    if (loginData) {
+    setError(false);
+
+    try {
       const res = await signIn('credentials', {
         callbackUrl: '/suppliers/login',
         email: loginData.email,
         password: loginData.password,
         redirect: false,
       });
+
+      if (res?.error) {
+        setError(true);
+      } else {
+        router.push('/dashboard');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError(true);
+    } finally {
       setIsLoading(false);
-      res.error ? setError(true) : router.push('/dashboard');
     }
   };
 
@@ -57,14 +72,14 @@ const LoginForm = () => {
       <form className="w-full" onSubmit={handleSubmit(processForm)}>
         <div className="flex justify-between items-start">
           <div className="mb-0">
-            <h3 className="text-2xl font-medium  text-white mb-1.5">Seller Portal</h3>
+            <h3 className="text-2xl font-medium text-white mb-1.5">Seller Portal</h3>
             <h5 className="text-slate-400 font-light text-xs mb-8">
               Sign in with your employee account
             </h5>
           </div>
           <div>
             <Link
-              className="text-slate-400 flex text-[11px]  items-center border border-slate-400 hover:border-[#9dfb40] rounded-xl px-2 py-0.5 hover:text-[#9dfb40]"
+              className="text-slate-400 flex text-[11px] items-center border border-slate-400 hover:border-[#9dfb40] rounded-xl px-2 py-0.5 hover:text-[#9dfb40]"
               href="/"
             >
               <ArrowLeftIcon className="mr-2" size={14} />
@@ -74,7 +89,7 @@ const LoginForm = () => {
         </div>
 
         <div className="mb-4 relative">
-          <label className="text-sm  mb-2 block text-slate-400 " htmlFor="email">
+          <label className="text-sm mb-2 block text-slate-400" htmlFor="email">
             <span className="text-lime-400 mr-2">*</span>
             User
           </label>
@@ -84,10 +99,9 @@ const LoginForm = () => {
               {...register('email')}
               type="text"
               autoComplete="off"
-              className={`w-full pl-10 text-white bg-slate-800 rounded-md py-2 px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2transition-shadow placeholder:text-sm font-light
-                }`}
+              className="w-full pl-10 text-white bg-slate-800 rounded-md py-2 px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 transition-shadow placeholder:text-sm font-light"
             />
-            <EnvelopeIcon className="text-slate-400 absolute top-1/2  left-3 transform  -translate-y-1/2 h-4 w-4" />
+            <EnvelopeIcon className="text-slate-400 absolute top-1/2 left-3 transform -translate-y-1/2 h-4 w-4" />
           </div>
           <InputError message={errors?.email?.message} />
         </div>
@@ -100,26 +114,25 @@ const LoginForm = () => {
             <input
               id="password"
               {...register('password')}
-              type={`${passwordVisibility ? "password": "text"}`}
+              type={passwordVisibility ? 'password' : 'text'}
               autoComplete="off"
-              className={` w-full bg-slate-800 pl-10 pr-10 text-white  rounded-md py-2 px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2transition-shadow border border-transparent placeholder:text-sm font-light
-                }`}
+              className="w-full bg-slate-800 pl-10 pr-10 text-white rounded-md py-2 px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 transition-shadow border border-transparent placeholder:text-sm font-light"
             />
             <LockIcon
-              className="text-slate-400 absolute top-1/2  left-3 transform  -translate-y-1/2"
+              className="text-slate-400 absolute top-1/2 left-3 transform -translate-y-1/2"
               size={20}
             />
             {passwordVisibility ? (
               <span
                 onClick={() => setPasswordVisibility(false)}
-                className="text-slate-400 absolute top-1/2  right-3 transform  -translate-y-1/2 "
+                className="text-slate-400 absolute top-1/2 right-3 transform -translate-y-1/2 "
               >
                 <EyeOffIcon size={20} />
               </span>
             ) : (
               <span
                 onClick={() => setPasswordVisibility(true)}
-                className="text-slate-400 absolute top-1/2  right-3 transform  -translate-y-1/2 "
+                className="text-slate-400 absolute top-1/2 right-3 transform -translate-y-1/2 "
               >
                 <EyeIcon size={20} />
               </span>
@@ -130,7 +143,7 @@ const LoginForm = () => {
           {isLoading ? (
             <ButtonSpinner text={'Logging in…'} />
           ) : (
-            <button className="w-full  py-2 text-base font-medium rounded-lg transition-colors bg-[#9dfb40] text-black cursor-pointer">
+            <button className="w-full py-2 text-base font-medium rounded-lg transition-colors bg-[#9dfb40] text-black cursor-pointer">
               Login
             </button>
           )}
