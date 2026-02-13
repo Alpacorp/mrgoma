@@ -7,7 +7,10 @@ interface IconProps {
   'aria-hidden'?: boolean;
 }
 
-export const PlusIcon: React.FC<IconProps> = ({ className = '', 'aria-hidden': ariaHidden = true }) => {
+export const PlusIcon: React.FC<IconProps> = ({
+  className = '',
+  'aria-hidden': ariaHidden = true,
+}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -21,7 +24,10 @@ export const PlusIcon: React.FC<IconProps> = ({ className = '', 'aria-hidden': a
   );
 };
 
-export const MinusIcon: React.FC<IconProps> = ({ className = '', 'aria-hidden': ariaHidden = true }) => {
+export const MinusIcon: React.FC<IconProps> = ({
+  className = '',
+  'aria-hidden': ariaHidden = true,
+}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -30,12 +36,19 @@ export const MinusIcon: React.FC<IconProps> = ({ className = '', 'aria-hidden': 
       className={className}
       aria-hidden={ariaHidden}
     >
-      <path fillRule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clipRule="evenodd" />
+      <path
+        fillRule="evenodd"
+        d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z"
+        clipRule="evenodd"
+      />
     </svg>
   );
 };
 
-export const XMarkIcon: React.FC<IconProps> = ({ className = '', 'aria-hidden': ariaHidden = true }) => {
+export const XMarkIcon: React.FC<IconProps> = ({
+  className = '',
+  'aria-hidden': ariaHidden = true,
+}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -44,12 +57,19 @@ export const XMarkIcon: React.FC<IconProps> = ({ className = '', 'aria-hidden': 
       className={className}
       aria-hidden={ariaHidden}
     >
-      <path fillRule="evenodd" d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z" clipRule="evenodd" />
+      <path
+        fillRule="evenodd"
+        d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
+        clipRule="evenodd"
+      />
     </svg>
   );
 };
 
-export const AdjustmentsHorizontalIcon: React.FC<IconProps> = ({ className = '', 'aria-hidden': ariaHidden = true }) => {
+export const AdjustmentsHorizontalIcon: React.FC<IconProps> = ({
+  className = '',
+  'aria-hidden': ariaHidden = true,
+}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -63,7 +83,10 @@ export const AdjustmentsHorizontalIcon: React.FC<IconProps> = ({ className = '',
   );
 };
 
-export const EditIcon: React.FC<IconProps> = ({ className = '', 'aria-hidden': ariaHidden = true }) => {
+export const EditIcon: React.FC<IconProps> = ({
+  className = '',
+  'aria-hidden': ariaHidden = true,
+}) => {
   // Pencil/edit icon
   return (
     <svg

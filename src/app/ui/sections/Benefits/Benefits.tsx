@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { benefits } from '@/app/(pages)/detail/data/benefits';
+import { benefits } from '@/app/(shop)/detail/data/benefits';
 import { BenefitsItem } from '@/app/ui/components';
 
 const Benefits = () => {

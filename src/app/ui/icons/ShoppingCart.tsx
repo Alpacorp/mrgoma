@@ -1,4 +1,6 @@
-export const ShoppingCart = ({ className }: { className?: string }) => {
+import { IconProps } from '@/app/ui/interfaces/icons';
+
+export const ShoppingCart: React.FC<IconProps> = ({ className }: { className?: string }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

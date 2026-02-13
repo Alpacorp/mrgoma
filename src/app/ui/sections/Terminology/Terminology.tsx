@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { terminology } from '@/app/(pages)/detail/data/terminology';
+import { terminology } from '@/app/(shop)/detail/data/terminology';
 import { TerminologyItem } from '@/app/ui/components';
 
 const Terminology = () => {

@@ -38,4 +38,7 @@ export { default as ErrorDisplay } from './ErrorDisplay/ErrorDisplay';
 export { default as StockBadge } from './StockBadge/StockBadge';
 export { default as CookieConsent } from './CookieConsent/CookieConsent';
 export { default as FreeShippingBadge } from './FreeShippingBadge/FreeShippingBadge';
-export { default as PromoBar } from './PromoBar/PromoBar';
+export { default as LoginForm } from './LoginForm/LoginForm';
+export { default as InputError } from './InputError/InputError';
+export { default as ButtonSpinner } from './ButtonSpinner/ButtonSpinner';
+export { default as Snackbar } from './Snackbar/Snackbar';
