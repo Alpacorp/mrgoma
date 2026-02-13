@@ -1,5 +1,6 @@
-import type { Metadata } from 'next';
 import { Suspense } from 'react';
+
+import type { Metadata } from 'next';
 
 import Detail from '@/app/(shop)/detail/container/Detail/Detail';
 import { LoadingScreen } from '@/app/ui/components';

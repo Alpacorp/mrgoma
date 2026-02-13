@@ -1,16 +1,18 @@
 'use client';
 
+import React, { FC, ReactNode, useEffect, useState } from 'react';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React, { FC, ReactNode, useEffect, useState } from 'react';
 
-import { mrGomaLogo } from '#public/assets/images/Logo';
 import { useCart } from '@/app/context/CartContext';
 import { HamburgerMenu } from '@/app/ui/components';
 import { ShoppingCart } from '@/app/ui/icons';
 import { CartModal, MenuMobile } from '@/app/ui/sections';
 import { menuItems } from '@/app/ui/sections/Header/MenuItems';
+
+import { mrGomaLogo } from '#public/assets/images/Logo';
 /**
  * Header component for the website
  * Contains the logo, navigation links, and shopping cart icon

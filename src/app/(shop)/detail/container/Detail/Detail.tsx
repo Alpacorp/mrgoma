@@ -1,7 +1,8 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
+
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { SingleTire } from '@/app/interfaces/tires';
 import {

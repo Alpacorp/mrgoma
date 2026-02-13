@@ -1,5 +1,6 @@
-import Login from '@/app/(sellers)/login/container/Login';
 import type { NextPage } from 'next';
+
+import Login from '@/app/(sellers)/login/container/Login';
 
 const LoginPage: NextPage = () => {
   return <Login />;

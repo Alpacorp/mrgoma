@@ -1,5 +1,6 @@
-import { Metadata } from 'next';
 import React from 'react';
+
+import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'MrGoma Tires',
@@ -10,7 +11,7 @@ export default function DetailLayout({
   children,
 }: Readonly<{
 
-  
+
   children: React.ReactNode;
 }>) {
   return <>{children}</>;

@@ -1,7 +1,6 @@
-import Home from '@/app/(home)/container/Home/Home';
-
 import type { Metadata, NextPage } from 'next';
 
+import Home from '@/app/(home)/container/Home/Home';
 import { canonical } from '@/app/utils/seo';
 
 export const metadata: Metadata = {
