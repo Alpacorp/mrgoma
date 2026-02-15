@@ -10,7 +10,7 @@ export async function proxy(request: NextRequest) {
 
   //nonpublic route
   if (!session && !publicRoute) {
-    return NextResponse.redirect(new URL('/', request.nextUrl));
+    return NextResponse.redirect(new URL('/login', request.nextUrl));
   }
 
   if (session && publicRoute && pathName) {
