@@ -57,7 +57,7 @@ const LoginForm = () => {
 
   return (
     <div className="w-full sm:max-w-lg px-8">
-      <div className="flex justify-center lg:hidden border mb-4">
+      <div className="flex justify-center lg:hidden border mb-2">
         <Link href="/">
           <Image
             alt="MrGoma Tires logo"
@@ -149,7 +149,6 @@ const LoginForm = () => {
             </button>
           )}
         </div>
-        <h6 className='text-white text-sm mt-4 flex'>Search fast  Close strong</h6>
       </form>
       {error && <Snackbar type={'warning'} message={'Invalid email or password.'} />}
     </div>
