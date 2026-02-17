@@ -57,22 +57,23 @@ const LoginForm = () => {
 
   return (
     <div className="w-full sm:max-w-lg px-8">
-      <div className="flex justify-center mb-16 lg:hidden">
+      <div className="flex justify-center lg:hidden border mb-2">
         <Link href="/">
           <Image
             alt="MrGoma Tires logo"
             title="Go to the home page"
             aria-label="Go to the home page"
             src={mrGomaLogo || '/placeholder.svg'}
-            className="h-8 w-auto"
+            className="w-64"
             priority
           />
         </Link>
       </div>
+       <h3 className='text-white mb-20 text-center text-sm lg:hidden'>Every customer deserves our best solution</h3>
       <form className="w-full" onSubmit={handleSubmit(processForm)}>
         <div className="flex justify-between items-start">
           <div className="mb-0">
-            <h3 className="text-2xl font-medium text-white mb-1.5">Seller Portal</h3>
+            <h1 className="text-2xl font-medium text-white mb-1.5">Seller Portal</h1>
             <h5 className="text-slate-400 font-light text-xs mb-8">
               Sign in with your employee account
             </h5>
