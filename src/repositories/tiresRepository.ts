@@ -64,22 +64,18 @@ export async function fetchTires(
   const countRequest = pool.request();
 
   request.input('offset', Int, offset).input('pageSize', Int, pageSize);
-  countRequest.input('offset', Int, offset).input('pageSize', Int, pageSize);
 
+  countRequest.input('offset', Int, offset).input('pageSize', Int, pageSize);
   let whereClause =
     "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND RemainingLife >= '50%' AND Price != 0";
 
-  // Filtro por dimensiones de neumático usando RealSize
   if (filters.width || filters.sidewall || filters.diameter) {
-    // Si tenemos todas las dimensiones, buscamos una coincidencia exacta
     if (filters.width && filters.sidewall && filters.diameter) {
       const realSize = `${filters.width}/${filters.sidewall}/${filters.diameter}`;
       whereClause += ' AND RealSize = @realSize';
       request.input('realSize', VarChar, realSize);
       countRequest.input('realSize', VarChar, realSize);
-    }
-    // Si solo tenemos algunas dimensiones, usamos LIKE para búsquedas parciales
-    else {
+    } else {
       if (filters.width) {
         whereClause += ' AND RealSize LIKE @widthPattern';
         request.input('widthPattern', VarChar, `${filters.width}/%`);

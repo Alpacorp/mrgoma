@@ -9,7 +9,10 @@ import { useFilters } from '@/app/ui/sections/FiltersMobile/hooks/useFilters';
  * It takes an optional `isMobile` prop, which determines whether the component is rendered for mobile devices or not.
  * @prop {boolean} isMobile - Whether the component is rendered for mobile devices or not (default is false).
  */
-export const FilterMobileContent: FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
+export const FilterMobileContent: FC<{ isMobile?: boolean; redirectBasePath: string }> = ({
+  isMobile = false,
+  redirectBasePath,
+}) => {
   const {
     rangeInputs,
     rangeBounds,
@@ -19,7 +22,7 @@ export const FilterMobileContent: FC<{ isMobile?: boolean }> = ({ isMobile = fal
     isLoadingRanges,
     isChecked,
     isLoadingBrands,
-  } = useFilters();
+  } = useFilters(redirectBasePath);
 
   const borderClass = isMobile ? 'border-t' : 'border-b';
   const paddingClass = isMobile ? 'px-4' : '';

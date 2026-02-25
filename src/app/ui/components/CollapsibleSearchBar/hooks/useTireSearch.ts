@@ -14,7 +14,7 @@ export interface TireFilters {
  * Custom hook to manage tire search functionality
  * Handles URL parameters and tire selection state
  */
-export const useTireSearch = () => {
+export const useTireSearch = (redirectBasePath: string) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -45,8 +45,8 @@ export const useTireSearch = () => {
           params.delete(key);
         }
       });
-
-      router.push(`/search-results?${params.toString()}`);
+      //se cambio
+      router.push(`/${redirectBasePath}?${params.toString()}`);
     },
     [selectedFilters, searchParams, router]
   );
@@ -68,7 +68,7 @@ export const useTireSearch = () => {
     });
 
     if (shouldPush) {
-      router.push(`/search-results?${params.toString()}`);
+      router.push(`/${redirectBasePath}?${params.toString()}`);
     }
   }, [searchParams, router]);
 

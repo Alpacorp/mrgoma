@@ -7,9 +7,9 @@ import { ShowFilterContext } from '@/app/context/ShowFilterContext';
 import { AdjustmentsHorizontalIcon } from '@/app/ui/components/Icons/Icons';
 
 interface ResultsHeaderProps {
-  getTireSize: () => string;
-  resultsCount: number;
-  totalCount: number;
+  getTireSize?: () => string;
+  resultsCount?: number;
+  totalCount?: number;
 }
 
 /**
@@ -54,7 +54,7 @@ const ResultsHeader: FC<ResultsHeaderProps> = ({ getTireSize, resultsCount, tota
   );
 
   // Get the tire size to display
-  const tireSize = getTireSize();
+  const tireSize = getTireSize && getTireSize();
 
   return (
     <div className="flex flex-wrap gap-2 justify-between lg:justify-between items-center mt-6">
@@ -85,7 +85,7 @@ const ResultsHeader: FC<ResultsHeaderProps> = ({ getTireSize, resultsCount, tota
       <div className="flex items-center gap-4">
         <span className="text-sm text-gray-500" aria-live="polite">
           Showing <span className="font-semibold text-gray-700">{resultsCount}</span> of{' '}
-          <span className="font-semibold text-gray-700">{totalCount.toLocaleString('en-US')}</span> results
+          <span className="font-semibold text-gray-700">{totalCount?.toLocaleString('en-US')}</span> results
         </span>
         <select
           className="bg-white border border-gray-300 rounded-md py-1 px-3 text-sm text-gray-700 shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer transition-colors"

@@ -21,7 +21,7 @@ interface CheckboxInputs {
   brands: string[];
 }
 
-export const useFilters = () => {
+export const useFilters = (redirectBasePath: string) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -210,17 +210,45 @@ export const useFilters = () => {
     };
 
     // Update range inputs in URL
-    setOrDelete('minPrice', rangeInputs.price[0] > rangeBounds.price[0], rangeInputs.price[0].toString());
-    setOrDelete('maxPrice', rangeInputs.price[1] < rangeBounds.price[1], rangeInputs.price[1].toString());
+    setOrDelete(
+      'minPrice',
+      rangeInputs.price[0] > rangeBounds.price[0],
+      rangeInputs.price[0].toString()
+    );
+    setOrDelete(
+      'maxPrice',
+      rangeInputs.price[1] < rangeBounds.price[1],
+      rangeInputs.price[1].toString()
+    );
 
-    setOrDelete('minTreadDepth', rangeInputs.treadDepth[0] > rangeBounds.treadDepth[0], rangeInputs.treadDepth[0].toString());
-    setOrDelete('maxTreadDepth', rangeInputs.treadDepth[1] < rangeBounds.treadDepth[1], rangeInputs.treadDepth[1].toString());
+    setOrDelete(
+      'minTreadDepth',
+      rangeInputs.treadDepth[0] > rangeBounds.treadDepth[0],
+      rangeInputs.treadDepth[0].toString()
+    );
+    setOrDelete(
+      'maxTreadDepth',
+      rangeInputs.treadDepth[1] < rangeBounds.treadDepth[1],
+      rangeInputs.treadDepth[1].toString()
+    );
 
-    setOrDelete('minRemainingLife', rangeInputs.remainingLife[0] > rangeBounds.remainingLife[0], rangeInputs.remainingLife[0].toString());
-    setOrDelete('maxRemainingLife', rangeInputs.remainingLife[1] < rangeBounds.remainingLife[1], rangeInputs.remainingLife[1].toString());
+    setOrDelete(
+      'minRemainingLife',
+      rangeInputs.remainingLife[0] > rangeBounds.remainingLife[0],
+      rangeInputs.remainingLife[0].toString()
+    );
+    setOrDelete(
+      'maxRemainingLife',
+      rangeInputs.remainingLife[1] < rangeBounds.remainingLife[1],
+      rangeInputs.remainingLife[1].toString()
+    );
 
     // Update checkbox inputs in URL
-    setOrDelete('condition', checkboxInputs.condition.length > 0, checkboxInputs.condition.join(','));
+    setOrDelete(
+      'condition',
+      checkboxInputs.condition.length > 0,
+      checkboxInputs.condition.join(',')
+    );
     setOrDelete('patched', checkboxInputs.patched.length > 0, checkboxInputs.patched.join(','));
     setOrDelete('brands', checkboxInputs.brands.length > 0, checkboxInputs.brands.join(','));
 
@@ -230,9 +258,11 @@ export const useFilters = () => {
     }
 
     // Preserve existing search parameters that aren't related to filters
-    const newUrl = `/search-results?${params.toString()}`;
+    if (redirectBasePath) {
+      const newUrl = `/${redirectBasePath}?${params.toString()}`;
 
-    router.push(newUrl, { scroll: false });
+      router.push(newUrl, { scroll: false });
+    }
   }, [
     searchParams,
     rangeInputs.price,
@@ -344,8 +374,10 @@ export const useFilters = () => {
     params.set('page', '1');
 
     // Update URL
-    const newUrl = `/search-results?${params.toString()}`;
-    router.push(newUrl, { scroll: false });
+    if (redirectBasePath) {
+      const newUrl = `/${redirectBasePath}?${params.toString()}`;
+      router.push(newUrl, { scroll: false });
+    }
   }, [searchParams, router, rangeBounds]);
 
   return {

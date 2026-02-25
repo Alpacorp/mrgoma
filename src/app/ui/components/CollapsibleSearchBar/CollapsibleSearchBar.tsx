@@ -10,12 +10,12 @@ import { useTireSearch } from './hooks/useTireSearch';
  * CollapsibleSearchBar component
  * Provides a floating button that opens a compact form for tire selection
  */
-const CollapsibleSearchBar: React.FC = () => {
+const CollapsibleSearchBar: React.FC<{ redirectBasePath: string }> = ({ redirectBasePath }) => {
   // State for the compact form visibility
   const [isCompactFormOpen, setIsCompactFormOpen] = useState(false);
 
   // Use the custom hook for tire search functionality
-  const { selectedFilters, handleFilterChange, resetFilters } = useTireSearch();
+  const { selectedFilters, handleFilterChange, resetFilters } = useTireSearch(redirectBasePath);
 
   // Toggle the compact form visibility
   const toggleCompactForm = () => {
@@ -26,7 +26,6 @@ const CollapsibleSearchBar: React.FC = () => {
     <>
       {/* Floating button */}
       <FloatingButton action={toggleCompactForm} />
-
       {/* Compact form (conditionally rendered) */}
       {isCompactFormOpen && (
         <CompactForm

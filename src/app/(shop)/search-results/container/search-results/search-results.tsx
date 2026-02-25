@@ -102,7 +102,9 @@ const SearchResults: FC<SearchResultsProps> = () => {
         }
 
         // Usar la ubicación actual para evitar dependencia de la identidad de searchParams
-        const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+        const params = new URLSearchParams(
+          typeof window !== 'undefined' ? window.location.search : ''
+        );
 
         const currentPage = parseInt(params.get('page') || String(DEFAULT_PAGE), 10);
         const currentPageSize = parseInt(params.get('pageSize') || String(DEFAULT_PAGE_SIZE), 10);
@@ -277,11 +279,11 @@ const SearchResults: FC<SearchResultsProps> = () => {
             <section aria-labelledby="products-heading" className="pb-24">
               <div className="md:mt-10 space-y-6">
                 <div className="w-full">
-                  <FiltersMobile />
+                  <FiltersMobile redirectBasePath={'search-results'} />
                 </div>
                 <div>
                   <div>
-                    <TopFilters />
+                    <TopFilters redirectBasePath={'search-results'} />
                     <div className="bg-gray-50">
                       <div className="mx-auto">
                         <div className="flex-1">
@@ -292,10 +294,7 @@ const SearchResults: FC<SearchResultsProps> = () => {
                               totalCount={tiresData.totalCount}
                             />
                           </div>
-                          <PromoBanner
-                            content={promoBannerConfig.searchResults}
-                            className="mb-6"
-                          />
+                          <PromoBanner content={promoBannerConfig.searchResults} className="mb-6" />
                           {error ? (
                             <ErrorDisplay
                               title="Error Loading Tires"
@@ -443,7 +442,7 @@ const SearchResults: FC<SearchResultsProps> = () => {
           </main>
         </div>
         <div className="block lg:hidden">
-          <CollapsibleSearchBar />
+          <CollapsibleSearchBar redirectBasePath={'search-results'} />
         </div>
       </main>
     </Suspense>
