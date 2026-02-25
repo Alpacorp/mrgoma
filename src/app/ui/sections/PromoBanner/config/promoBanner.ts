@@ -22,8 +22,6 @@ export const promoBannerConfig: {
     textColor: 'text-white',
     backgroundImageUrl:
       'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&q=100&w=2400', // Imagen de almacén/stock de llantas
-    startDate: '2024-01-01',
-    endDate: '2026-12-31',
   },
   searchResults: {
     enabled: true,
@@ -38,7 +36,5 @@ export const promoBannerConfig: {
     textColor: 'text-white',
     backgroundImageUrl:
       'https://images.unsplash.com/photo-1620288627223-53302f4e8c74?auto=format&fit=crop&q=100&w=2400', // Imagen de llanta en carretera o ciudad
-    startDate: '2024-01-01',
-    endDate: '2026-12-31',
   },
 };

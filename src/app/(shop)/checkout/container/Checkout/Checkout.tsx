@@ -617,7 +617,7 @@ export default function Checkout() {
                           <tr key={item.id} className="hover:bg-gray-50">
                             <td className="px-4 py-4">
                               <div className="flex items-center gap-3">
-                                <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 bg-white">
+                                <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md border border-gray-200 bg-white">
                                   {item.image ? (
                                     <Image
                                       src={item.image}
@@ -783,8 +783,8 @@ export default function Checkout() {
                         ))}
                       </select>
                       <p className="mt-1 text-xs text-gray-500">
-                        We will prepare your order at the selected store. Bring your ID and order
-                        confirmation.
+                        Most orders are ready within 24–48 business hours. You will receive
+                        confirmation before pickup.
                       </p>
                     </div>
                   )}
