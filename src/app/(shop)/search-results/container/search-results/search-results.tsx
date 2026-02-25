@@ -1,8 +1,9 @@
 'use client';
 
+import React, { FC, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { FC, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 
 import { useGenerateFixedPagination } from '@/app/hooks/useGeneratePagination';
 import { TiresData, TransformedTire } from '@/app/interfaces/tires';
@@ -102,7 +103,9 @@ const SearchResults: FC<SearchResultsProps> = () => {
         }
 
         // Usar la ubicación actual para evitar dependencia de la identidad de searchParams
-        const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+        const params = new URLSearchParams(
+          typeof window !== 'undefined' ? window.location.search : ''
+        );
 
         const currentPage = parseInt(params.get('page') || String(DEFAULT_PAGE), 10);
         const currentPageSize = parseInt(params.get('pageSize') || String(DEFAULT_PAGE_SIZE), 10);
@@ -263,7 +266,7 @@ const SearchResults: FC<SearchResultsProps> = () => {
             />
           </div>
           <div id="services" className="absolute z-30 -mt-25 left-0 w-full">
-            <TitleSection title="STORE" className="!bg-gray-50" />
+            <TitleSection title="STORE" className="bg-gray-50!" />
           </div>
         </section>
         <div>
@@ -292,10 +295,7 @@ const SearchResults: FC<SearchResultsProps> = () => {
                               totalCount={tiresData.totalCount}
                             />
                           </div>
-                          <PromoBanner
-                            content={promoBannerConfig.searchResults}
-                            className="mb-6"
-                          />
+                          <PromoBanner content={promoBannerConfig.searchResults} className="mb-6" />
                           {error ? (
                             <ErrorDisplay
                               title="Error Loading Tires"
