@@ -28,8 +28,8 @@ export const promoBannerConfig: {
     enabled: true,
     title: 'Uber & Lyft Exclusive Driver Pricing 🚘',
     description:
-      'Oil Change $65 | Alignment $75 | Rotation $25 | Patch $20 | Plug $10 Your car is your income — keep it earning.',
-    ctaLabel: 'Check Discount',
+      'Oil Change $65 | Alignment $75 | Rotation $25 | Patch $20 | Plug $10\nYour car is your income — keep it earning.',
+    ctaLabel: 'WhatsApp to book',
     ctaHref:
       'https://wa.me/14073644016?text=Hi!%20Im%20an%20Uber/Lyft%20driver%20and%20I%20would%20like%20to%20know%20more%20about%20the%20special%20prices%20on%20tires.',
     dismissible: true,
