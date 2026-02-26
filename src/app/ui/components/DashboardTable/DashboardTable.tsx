@@ -56,7 +56,7 @@ const DashboardTable = () => {
         processing: true,
         searching: false,
         serverSide: true,
-        autoWidth: false,
+        autoWidth: true,
         columns: [
           { data: 'TireId' },
           { data: 'Brand' },
