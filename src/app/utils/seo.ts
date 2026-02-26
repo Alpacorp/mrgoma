@@ -13,9 +13,6 @@ export const DEFAULT_KEYWORDS = [
   'MrGoma Tires',
   'tire installation',
   'wheels',
-  'llantas',
-  'llantas usadas',
-  'llantas nuevas',
   'Florida',
   'Miami',
 ];

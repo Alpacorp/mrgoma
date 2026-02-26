@@ -1,6 +1,7 @@
 @import "tailwindcss";
-
-@tailwind utilities;
+@import "datatables.net-dt/css/dataTables.dataTables.css";
+@import "datatables.net-responsive-dt/css/responsive.dataTables.css";
+@import "datatables.net-select-dt/css/select.dataTables.css";
 
 :root {
   scroll-behavior: smooth;
@@ -51,3 +52,4 @@ input[type='range']::-moz-range-thumb {
   width: 0.7rem;
   border-radius: 3px;
 }
+

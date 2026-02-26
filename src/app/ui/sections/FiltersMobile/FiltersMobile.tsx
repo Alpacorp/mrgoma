@@ -7,9 +7,12 @@ import { Dialog, DialogBackdrop, DialogPanel, XMarkIcon } from '@/app/ui/compone
 import { FilterMobileContent } from '@/app/ui/sections';
 import { useFilters } from '@/app/ui/sections/FiltersMobile/hooks/useFilters';
 
-const FiltersMobile: FC = () => {
+const FiltersMobile: FC<{ redirectBasePath: string; apiBasePath?: string }> = ({
+  redirectBasePath,
+  apiBasePath = '/api',
+}) => {
   const { showFilter, setShowFilter } = useContext(ShowFilterContext);
-  const { resetFilters } = useFilters();
+  const { resetFilters } = useFilters(redirectBasePath, apiBasePath);
   const [headerOffset, setHeaderOffset] = useState(0);
   // Separación mínima para evitar solapamiento visual con el header
   const EXTRA_TOP = 4;
@@ -86,7 +89,11 @@ const FiltersMobile: FC = () => {
                 Reset Filters
               </button>
             </div>
-            <FilterMobileContent isMobile={true} />
+            <FilterMobileContent
+              isMobile={true}
+              redirectBasePath={redirectBasePath}
+              apiBasePath={apiBasePath}
+            />
           </DialogPanel>
         </div>
       </Dialog>

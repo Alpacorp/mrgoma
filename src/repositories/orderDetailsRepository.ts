@@ -17,7 +17,8 @@ async function getOrdenNumberByOrderId(orderId: number): Promise<number | null> 
   const result = await request.query(sql);
   const row = result.recordset?.[0] as any;
   const ordenNumber = row?.OrdenNumber;
-  const parsed = typeof ordenNumber === 'number' ? ordenNumber : parseInt(String(ordenNumber ?? ''), 10);
+  const parsed =
+    typeof ordenNumber === 'number' ? ordenNumber : parseInt(String(ordenNumber ?? ''), 10);
   return Number.isFinite(parsed) ? parsed : null;
 }
 
@@ -35,7 +36,9 @@ export async function insertOrderDetailsByOrderId(
 
   const orderNumber = await getOrdenNumberByOrderId(scOrderId);
   if (!orderNumber) {
-    logger.warn(`SC_Order OrdenNumber not found for Id=${scOrderId}. Skipping SC_OrderDetail insert.`);
+    logger.warn(
+      `SC_Order OrdenNumber not found for Id=${scOrderId}. Skipping SC_OrderDetail insert.`
+    );
     return { inserted: 0, orderNumber: null };
   }
 
@@ -44,7 +47,10 @@ export async function insertOrderDetailsByOrderId(
   for (const it of items) {
     const pid = String(it.productId ?? '').trim();
     const qty = Math.max(0, Math.floor(it.quantity || 0));
-    const price = typeof it.unitPrice === 'number' && isFinite(it.unitPrice) ? Number(it.unitPrice.toFixed(2)) : 0;
+    const price =
+      typeof it.unitPrice === 'number' && isFinite(it.unitPrice)
+        ? Number(it.unitPrice.toFixed(2))
+        : 0;
     if (!pid || qty <= 0 || price < 0) continue;
     for (let i = 0; i < qty; i++) {
       rows.push({ productId: pid, unitPrice: price });
@@ -81,7 +87,9 @@ export async function insertOrderDetailsByOrderId(
     await request.query(sql);
     await transaction.commit();
 
-    logger.info(`Inserted ${rows.length} row(s) into SC_OrderDetail for OrdenNumber=${orderNumber}`);
+    logger.info(
+      `Inserted ${rows.length} row(s) into SC_OrderDetail for OrdenNumber=${orderNumber}`
+    );
     return { inserted: rows.length, orderNumber };
   } catch (err) {
     await transaction.rollback();

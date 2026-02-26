@@ -94,15 +94,15 @@ const SearchResults: FC<SearchResultsProps> = () => {
   const updatePaginationParams = useCallback(
     (pageNum: number, pageSizeNum: number) => {
       try {
-        // Validar el tamaño de página
+        // Validate page size
         const validatedPageSize = validatePageSize(pageSizeNum);
 
-        // Solo avisar si se ajustó
+        // Notify if adjusted
         if (pageSizeNum !== validatedPageSize) {
           console.warn(`Invalid pageSize: ${pageSizeNum} adjusted to ${validatedPageSize}`);
         }
 
-        // Usar la ubicación actual para evitar dependencia de la identidad de searchParams
+        // Use current location to avoid dependency on searchParams identity
         const params = new URLSearchParams(
           typeof window !== 'undefined' ? window.location.search : ''
         );
@@ -110,12 +110,12 @@ const SearchResults: FC<SearchResultsProps> = () => {
         const currentPage = parseInt(params.get('page') || String(DEFAULT_PAGE), 10);
         const currentPageSize = parseInt(params.get('pageSize') || String(DEFAULT_PAGE_SIZE), 10);
 
-        // Si ya coincide, no navegar para evitar loops
+        // If it already matches, don't navigate to avoid loops
         if (currentPage === pageNum && currentPageSize === validatedPageSize) {
           return;
         }
 
-        // Actualizar y reemplazar (no push) para no contaminar el historial
+        // Update and replace (no push) to avoid polluting history
         params.set('page', pageNum.toString());
         params.set('pageSize', validatedPageSize.toString());
         router.replace(`?${params.toString()}`, { scroll: false });
@@ -266,7 +266,7 @@ const SearchResults: FC<SearchResultsProps> = () => {
             />
           </div>
           <div id="services" className="absolute z-30 -mt-25 left-0 w-full">
-            <TitleSection title="STORE" className="bg-gray-50!" />
+            <TitleSection title="STORE" className="!bg-gray-50" />
           </div>
         </section>
         <div>
@@ -280,11 +280,11 @@ const SearchResults: FC<SearchResultsProps> = () => {
             <section aria-labelledby="products-heading" className="pb-24">
               <div className="md:mt-10 space-y-6">
                 <div className="w-full">
-                  <FiltersMobile />
+                  <FiltersMobile redirectBasePath={'search-results'} />
                 </div>
                 <div>
                   <div>
-                    <TopFilters />
+                    <TopFilters redirectBasePath={'search-results'} />
                     <div className="bg-gray-50">
                       <div className="mx-auto">
                         <div className="flex-1">
@@ -443,7 +443,7 @@ const SearchResults: FC<SearchResultsProps> = () => {
           </main>
         </div>
         <div className="block lg:hidden">
-          <CollapsibleSearchBar />
+          <CollapsibleSearchBar redirectBasePath={'search-results'} />
         </div>
       </main>
     </Suspense>

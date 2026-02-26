@@ -1,8 +1,9 @@
 'use client';
 
+import React, { FC } from 'react';
+
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { FC } from 'react';
 
 import { useCart } from '@/app/context/CartContext';
 import { XMarkIcon } from '@/app/ui/components';

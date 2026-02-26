@@ -1,9 +1,9 @@
 import type { PromoContent } from '@/app/ui/sections/PromoBanner/PromoBanner';
 
 /**
- * Configuración central de banners promocionales por página.
- * Cambia `enabled` a true/false para mostrar u ocultar rápidamente.
- * Opcionalmente usa startDate/endDate (ISO) para activar por temporada.
+ * Central configuration of promotional banners per page.
+ * Set `enabled` to true/false to quickly show or hide.
+ * Optionally, use startDate/endDate (ISO) for seasonal activation.
  */
 export const promoBannerConfig: {
   home: PromoContent;
