@@ -1,3 +1,4 @@
+'use client';
 import dynamic from 'next/dynamic';
 
 const DashboardTable = dynamic(() => import('@/app/ui/components/DashboardTable/DashboardTable'), {
