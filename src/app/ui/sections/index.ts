@@ -21,4 +21,3 @@ export { default as FilterBody } from './FilterBody/FilterBody';
 export { default as FilterMobileContent } from './FilterMobileContent/FilterMobileContent';
 export { default as TopHeader } from './TopHeader/TopHeader';
 export { default as PromoBanner } from './PromoBanner/PromoBanner';
-export {default as DashboardTableContainer} from './DashboardTableContainer/DashboardTableContainer'

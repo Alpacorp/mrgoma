@@ -7,8 +7,10 @@ import DT, { AjaxData, AjaxResponse } from 'datatables.net-dt';
 import DataTable, { DataTableRef } from 'datatables.net-react';
 import Responsive from 'datatables.net-responsive-dt';
 
-DataTable.use(DT);
-DataTable.use(Responsive);
+if (typeof window !== 'undefined') {
+  DataTable.use(DT);
+  DataTable.use(Responsive);
+}
 
 const DashboardTable = () => {
   const tableRef = useRef<DataTableRef>(null);

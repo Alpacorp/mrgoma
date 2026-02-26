@@ -1,9 +1,15 @@
-import { DashboardTable } from '@/app/ui/components'
+import dynamic from 'next/dynamic';
+
+const DashboardTable = dynamic(() => import('@/app/ui/components/DashboardTable/DashboardTable'), {
+  ssr: false,
+});
 
 const DashboardTableContainer = () => {
   return (
-    <div><DashboardTable/></div>
-  )
-}
+    <div>
+      <DashboardTable />
+    </div>
+  );
+};
 
-export default DashboardTableContainer
+export default DashboardTableContainer;

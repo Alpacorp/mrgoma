@@ -1,7 +1,8 @@
 import { useSession, signOut } from 'next-auth/react';
 
 import { CollapsibleSearchBar, ResultsHeader } from '@/app/ui/components';
-import { FiltersMobile, DashboardTableContainer, TopFilters } from '@/app/ui/sections';
+import { FiltersMobile, TopFilters } from '@/app/ui/sections';
+import DashboardTableContainer from '@/app/ui/sections/DashboardTableContainer/DashboardTableContainer';
 
 const Dashboard = () => {
   const { data: session } = useSession();
