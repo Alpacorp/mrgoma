@@ -1,8 +1,9 @@
 'use client';
 
+import React, { FC, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { FC, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 
 import { useGenerateFixedPagination } from '@/app/hooks/useGeneratePagination';
 import { TiresData, TransformedTire } from '@/app/interfaces/tires';
@@ -93,15 +94,15 @@ const SearchResults: FC<SearchResultsProps> = () => {
   const updatePaginationParams = useCallback(
     (pageNum: number, pageSizeNum: number) => {
       try {
-        // Validar el tamaño de página
+        // Validate page size
         const validatedPageSize = validatePageSize(pageSizeNum);
 
-        // Solo avisar si se ajustó
+        // Notify if adjusted
         if (pageSizeNum !== validatedPageSize) {
           console.warn(`Invalid pageSize: ${pageSizeNum} adjusted to ${validatedPageSize}`);
         }
 
-        // Usar la ubicación actual para evitar dependencia de la identidad de searchParams
+        // Use current location to avoid dependency on searchParams identity
         const params = new URLSearchParams(
           typeof window !== 'undefined' ? window.location.search : ''
         );
@@ -109,12 +110,12 @@ const SearchResults: FC<SearchResultsProps> = () => {
         const currentPage = parseInt(params.get('page') || String(DEFAULT_PAGE), 10);
         const currentPageSize = parseInt(params.get('pageSize') || String(DEFAULT_PAGE_SIZE), 10);
 
-        // Si ya coincide, no navegar para evitar loops
+        // If it already matches, don't navigate to avoid loops
         if (currentPage === pageNum && currentPageSize === validatedPageSize) {
           return;
         }
 
-        // Actualizar y reemplazar (no push) para no contaminar el historial
+        // Update and replace (no push) to avoid polluting history
         params.set('page', pageNum.toString());
         params.set('pageSize', validatedPageSize.toString());
         router.replace(`?${params.toString()}`, { scroll: false });

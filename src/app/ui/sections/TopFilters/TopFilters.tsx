@@ -8,7 +8,10 @@ import { FilterBody } from '@/app/ui/sections/';
 import { filtersItems } from '@/app/ui/sections/FiltersMobile/FiltersItems';
 import { useFilters } from '@/app/ui/sections/FiltersMobile/hooks/useFilters';
 
-export const TopFilters: FC<{ redirectBasePath: string }> = ({ redirectBasePath }) => {
+export const TopFilters: FC<{ redirectBasePath: string; apiBasePath?: string }> = ({
+  redirectBasePath,
+  apiBasePath = '/api',
+}) => {
   const {
     rangeInputs,
     rangeBounds,
@@ -20,7 +23,7 @@ export const TopFilters: FC<{ redirectBasePath: string }> = ({ redirectBasePath 
     resetFilters,
     isLoadingBrands,
     checkboxInputs,
-  } = useFilters(redirectBasePath);
+  } = useFilters(redirectBasePath, apiBasePath);
 
   // Tire size form state (CompactForm equivalent) using the same hook used in CollapsibleSearchBar
   const {

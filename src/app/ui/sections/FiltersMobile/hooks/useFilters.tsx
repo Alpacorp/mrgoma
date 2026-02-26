@@ -1,7 +1,11 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
+
+import { useRouter, useSearchParams } from 'next/navigation';
+
+// Global cache to avoid duplicate simultaneous requests from different hook instances
+const brandsRequestCache: Record<string, Promise<any>> = {};
 
 interface RangeInputs {
   price: [number, number];
@@ -21,7 +25,7 @@ interface CheckboxInputs {
   brands: string[];
 }
 
-export const useFilters = (redirectBasePath: string) => {
+export const useFilters = (redirectBasePath: string, apiBasePath: string = '/api') => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -103,11 +107,33 @@ export const useFilters = (redirectBasePath: string) => {
       if (sidewall) params.set('s', sidewall);
       if (diameter) params.set('d', diameter);
 
-      const res = await fetch(`/api/brands?${params.toString()}`);
-      if (!res.ok) throw new Error('Failed to fetch brands');
+      const cacheKey = `${apiBasePath}/brands?${params.toString()}`;
 
-      const data = await res.json();
-      setAvailableBrands(data as string[]);
+      // Check if there is an ongoing request for the same parameters
+      if (brandsRequestCache[cacheKey]) {
+        const cachedData = await brandsRequestCache[cacheKey];
+        setAvailableBrands(cachedData);
+        return;
+      }
+
+      // Create new request and store promise in cache
+      const fetchPromise = fetch(`${apiBasePath}/brands?${params.toString()}`).then(async res => {
+        if (!res.ok) throw new Error('Failed to fetch brands');
+        return res.json();
+      });
+
+      brandsRequestCache[cacheKey] = fetchPromise;
+
+      try {
+        const data = await fetchPromise;
+        setAvailableBrands(data as string[]);
+      } finally {
+        // Remove from cache after a short delay to allow fresh requests later
+        // but avoid immediate duplicates
+        setTimeout(() => {
+          delete brandsRequestCache[cacheKey];
+        }, 1000);
+      }
     } catch (err) {
       console.error('Failed to fetch brands with filters', err);
       // En caso de error, mantener las marcas actuales
@@ -115,22 +141,29 @@ export const useFilters = (redirectBasePath: string) => {
       setIsLoadingBrands(false);
     }
   }, [
-    rangeInputs.price,
-    rangeInputs.treadDepth,
-    rangeInputs.remainingLife,
-    rangeBounds.price,
-    rangeBounds.treadDepth,
-    rangeBounds.remainingLife,
-    checkboxInputs.condition,
-    checkboxInputs.patched,
-    searchParams,
+    rangeInputs.price[0],
+    rangeInputs.price[1],
+    rangeInputs.treadDepth[0],
+    rangeInputs.treadDepth[1],
+    rangeInputs.remainingLife[0],
+    rangeInputs.remainingLife[1],
+    rangeBounds.price[0],
+    rangeBounds.price[1],
+    rangeBounds.treadDepth[0],
+    rangeBounds.treadDepth[1],
+    rangeBounds.remainingLife[0],
+    rangeBounds.remainingLife[1],
+    checkboxInputs.condition.join(','),
+    checkboxInputs.patched.join(','),
+    searchParams.toString(),
+    apiBasePath,
   ]);
 
   useEffect(() => {
     const fetchBounds = async () => {
       try {
         setIsLoadingRanges(true);
-        const res = await fetch('/api/ranges');
+        const res = await fetch(`${apiBasePath}/ranges`);
         if (!res.ok) return;
         const data = await res.json();
         const bounds: RangeBounds = {
@@ -152,7 +185,11 @@ export const useFilters = (redirectBasePath: string) => {
 
   // Cargar las marcas iniciales y cuando cambien los filtros
   useEffect(() => {
-    void fetchFilteredBrands();
+    const timer = setTimeout(() => {
+      void fetchFilteredBrands();
+    }, 400); // Debounce de 400ms para evitar ráfagas de peticiones
+
+    return () => clearTimeout(timer);
   }, [fetchFilteredBrands]);
 
   // Update filter values when URL changes
@@ -260,43 +297,50 @@ export const useFilters = (redirectBasePath: string) => {
     // Preserve existing search parameters that aren't related to filters
     if (redirectBasePath) {
       const newUrl = `/${redirectBasePath}?${params.toString()}`;
-
       router.push(newUrl, { scroll: false });
     }
   }, [
-    searchParams,
-    rangeInputs.price,
-    rangeInputs.treadDepth,
-    rangeInputs.remainingLife,
-    rangeBounds.price,
-    rangeBounds.treadDepth,
-    rangeBounds.remainingLife,
-    checkboxInputs.condition,
-    checkboxInputs.patched,
-    checkboxInputs.brands,
+    searchParams.toString(),
+    rangeInputs.price[0],
+    rangeInputs.price[1],
+    rangeInputs.treadDepth[0],
+    rangeInputs.treadDepth[1],
+    rangeInputs.remainingLife[0],
+    rangeInputs.remainingLife[1],
+    rangeBounds.price[0],
+    rangeBounds.price[1],
+    rangeBounds.treadDepth[0],
+    rangeBounds.treadDepth[1],
+    rangeBounds.remainingLife[0],
+    rangeBounds.remainingLife[1],
+    checkboxInputs.condition.join(','),
+    checkboxInputs.patched.join(','),
+    checkboxInputs.brands.join(','),
+    redirectBasePath,
     router,
   ]);
 
   // Update URL when filters change but ignore the initial mount
   const isFirstRender = useRef(true);
-  const previousFilters = useRef({ rangeInputs, checkboxInputs });
+  const previousFilters = useRef(JSON.stringify({ rangeInputs, checkboxInputs }));
 
   useEffect(() => {
     // Skip the initial render to avoid double updates
     if (isFirstRender.current) {
       isFirstRender.current = false;
-      previousFilters.current = { rangeInputs, checkboxInputs };
       return;
     }
 
-    const rangeChanged =
-      JSON.stringify(previousFilters.current.rangeInputs) !== JSON.stringify(rangeInputs);
-    const checkboxChanged =
-      JSON.stringify(previousFilters.current.checkboxInputs) !== JSON.stringify(checkboxInputs);
+    const currentFiltersStr = JSON.stringify({ rangeInputs, checkboxInputs });
+    if (previousFilters.current !== currentFiltersStr) {
+      previousFilters.current = currentFiltersStr;
 
-    if (rangeChanged || checkboxChanged) {
-      previousFilters.current = { rangeInputs, checkboxInputs };
-      updateUrlParams();
+      // Debounce the URL update to avoid excessive pushes while sliding
+      const timer = setTimeout(() => {
+        updateUrlParams();
+      }, 500);
+
+      return () => clearTimeout(timer);
     }
   }, [rangeInputs, checkboxInputs, updateUrlParams]);
 

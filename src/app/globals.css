@@ -1,9 +1,7 @@
 @import "tailwindcss";
-@import 'datatables.net-dt';
-@import 'datatables.net-responsive-dt';
-@import 'datatables.net-select-dt';
-
-@tailwind utilities;
+@import "datatables.net-dt/css/dataTables.dataTables.css";
+@import "datatables.net-responsive-dt/css/responsive.dataTables.css";
+@import "datatables.net-select-dt/css/select.dataTables.css";
 
 :root {
   scroll-behavior: smooth;

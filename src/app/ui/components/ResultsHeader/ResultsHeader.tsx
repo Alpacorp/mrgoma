@@ -1,7 +1,8 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
 import React, { FC, useCallback, useContext, useEffect, useState } from 'react';
+
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { ShowFilterContext } from '@/app/context/ShowFilterContext';
 import { AdjustmentsHorizontalIcon } from '@/app/ui/components/Icons/Icons';
@@ -10,6 +11,9 @@ interface ResultsHeaderProps {
   getTireSize?: () => string;
   resultsCount?: number;
   totalCount?: number;
+  showTitle?: boolean;
+  showCount?: boolean;
+  showSort?: boolean;
 }
 
 /**
@@ -17,7 +21,14 @@ interface ResultsHeaderProps {
  * including the current tire size, filter button for mobile, results' count,
  * and sorting options for price.
  */
-const ResultsHeader: FC<ResultsHeaderProps> = ({ getTireSize, resultsCount, totalCount }) => {
+const ResultsHeader: FC<ResultsHeaderProps> = ({
+  getTireSize,
+  resultsCount,
+  totalCount,
+  showTitle = true,
+  showCount = true,
+  showSort = true,
+}) => {
   const { setShowFilter } = useContext(ShowFilterContext);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -57,18 +68,25 @@ const ResultsHeader: FC<ResultsHeaderProps> = ({ getTireSize, resultsCount, tota
   const tireSize = getTireSize && getTireSize();
 
   return (
-    <div className="flex flex-wrap gap-2 justify-between lg:justify-between items-center mt-6">
+    <div
+      className={`flex flex-wrap gap-2 justify-between lg:justify-between items-center ${showTitle || showCount || showSort ? 'mt-6' : ''}`}
+    >
       {/* Left side - Tire size title */}
       <div className="flex flex-wrap items-center gap-2 min-w-[250px]">
-        <h2 className="text-lg sm:text-xl font-bold text-gray-900">
-          {tireSize ? (
-            <>
-              Tire results for: <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-green-700 ring-1 ring-green-200">{tireSize}</span>
-            </>
-          ) : (
-            'All tires'
-          )}
-        </h2>
+        {showTitle && (
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900">
+            {tireSize ? (
+              <>
+                Tire results for:{' '}
+                <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-green-700 ring-1 ring-green-200">
+                  {tireSize}
+                </span>
+              </>
+            ) : (
+              'All tires'
+            )}
+          </h2>
+        )}
         <button
           type="button"
           className="lg:hidden flex items-center justify-center p-2 rounded-md bg-green-500 text-white hover:bg-green-600 transition-colors"
@@ -82,22 +100,31 @@ const ResultsHeader: FC<ResultsHeaderProps> = ({ getTireSize, resultsCount, tota
       </div>
 
       {/* Right side - Sort and count */}
-      <div className="flex items-center gap-4">
-        <span className="text-sm text-gray-500" aria-live="polite">
-          Showing <span className="font-semibold text-gray-700">{resultsCount}</span> of{' '}
-          <span className="font-semibold text-gray-700">{totalCount?.toLocaleString('en-US')}</span> results
-        </span>
-        <select
-          className="bg-white border border-gray-300 rounded-md py-1 px-3 text-sm text-gray-700 shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer transition-colors"
-          value={sortOption}
-          onChange={handleSortChange}
-          aria-label="Sort results"
-        >
-          <option value="">Sort by</option>
-          <option value="price-asc">Price: Low to High</option>
-          <option value="price-desc">Price: High to Low</option>
-        </select>
-      </div>
+      {(showCount || showSort) && (
+        <div className="flex items-center gap-4">
+          {showCount && (
+            <span className="text-sm text-gray-500" aria-live="polite">
+              Showing <span className="font-semibold text-gray-700">{resultsCount}</span> of{' '}
+              <span className="font-semibold text-gray-700">
+                {totalCount?.toLocaleString('en-US')}
+              </span>{' '}
+              results
+            </span>
+          )}
+          {showSort && (
+            <select
+              className="bg-white border border-gray-300 rounded-md py-1 px-3 text-sm text-gray-700 shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer transition-colors"
+              value={sortOption}
+              onChange={handleSortChange}
+              aria-label="Sort results"
+            >
+              <option value="">Sort by</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+            </select>
+          )}
+        </div>
+      )}
     </div>
   );
 };

@@ -59,6 +59,28 @@ export async function fetchTires(
   pageSize: number,
   filters: TireFilters = {}
 ): Promise<{ records: DocumentRecord[]; totalCount: number }> {
+  return fetchTiresInternal(
+    offset,
+    pageSize,
+    filters,
+    "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND RemainingLife >= '50%' AND Price != 0"
+  );
+}
+
+export async function fetchDashboardTires(
+  offset: number,
+  pageSize: number,
+  filters: TireFilters = {}
+): Promise<{ records: DocumentRecord[]; totalCount: number }> {
+  return fetchTiresInternal(offset, pageSize, filters, "Local = '0' AND Trash = 'false'");
+}
+
+async function fetchTiresInternal(
+  offset: number,
+  pageSize: number,
+  filters: TireFilters = {},
+  baseWhereClause: string
+): Promise<{ records: DocumentRecord[]; totalCount: number }> {
   const pool = await getPool();
   const request = pool.request();
   const countRequest = pool.request();
@@ -66,8 +88,7 @@ export async function fetchTires(
   request.input('offset', Int, offset).input('pageSize', Int, pageSize);
 
   countRequest.input('offset', Int, offset).input('pageSize', Int, pageSize);
-  let whereClause =
-    "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND RemainingLife >= '50%' AND Price != 0";
+  let whereClause = baseWhereClause;
 
   if (filters.width || filters.sidewall || filters.diameter) {
     if (filters.width && filters.sidewall && filters.diameter) {
@@ -195,6 +216,16 @@ export async function fetchTires(
 }
 
 export async function fetchTireRanges(): Promise<TireRangeResult> {
+  return fetchTireRangesInternal(
+    "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND TRY_CAST(REPLACE(RemainingLife, '%', '') AS int) >= 50 AND Price != 0"
+  );
+}
+
+export async function fetchDashboardRanges(): Promise<TireRangeResult> {
+  return fetchTireRangesInternal("Local = '0' AND Trash = 'false'");
+}
+
+async function fetchTireRangesInternal(baseWhereClause: string): Promise<TireRangeResult> {
   const pool = await getPool();
 
   const query = `SELECT
@@ -205,7 +236,7 @@ export async function fetchTireRanges(): Promise<TireRangeResult> {
       MIN(TRY_CAST(REPLACE(RemainingLife, '%', '') AS int)) AS minRemainingLife,
       MAX(TRY_CAST(REPLACE(RemainingLife, '%', '') AS int)) AS maxRemainingLife
     FROM dbo.View_Tires
-    WHERE Local = '0' AND Trash = 'false' AND Condition != 'sold' AND TRY_CAST(REPLACE(RemainingLife, '%', '') AS int) >= 50 AND Price != 0`;
+    WHERE ${baseWhereClause}`;
 
   const result = await pool.request().query(query);
 
@@ -213,11 +244,24 @@ export async function fetchTireRanges(): Promise<TireRangeResult> {
 }
 
 export async function fetchBrands(filters: TireFilters = {}): Promise<string[]> {
+  return fetchBrandsInternal(
+    filters,
+    "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND RemainingLife >= '50%' AND Price != 0"
+  );
+}
+
+export async function fetchDashboardBrands(filters: TireFilters = {}): Promise<string[]> {
+  return fetchBrandsInternal(filters, "Local = '0' AND Trash = 'false'");
+}
+
+async function fetchBrandsInternal(
+  filters: TireFilters = {},
+  baseWhereClause: string
+): Promise<string[]> {
   const pool = await getPool();
   const request = pool.request();
 
-  let whereClause =
-    "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND RemainingLife >= '50%' AND Price != 0";
+  let whereClause = baseWhereClause;
 
   // Filtro por dimensiones de neumático usando RealSize
   if (filters.width || filters.sidewall || filters.diameter) {
