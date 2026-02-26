@@ -5,7 +5,7 @@ import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 // Global cache to avoid duplicate simultaneous requests from different hook instances
-const brandsRequestCache: Record<string, Promise<any>> = {};
+const brandsRequestCache: Record<string, Promise<string[]> | undefined> = {};
 
 interface RangeInputs {
   price: [number, number];
@@ -116,10 +116,10 @@ export const useFilters = (redirectBasePath: string, apiBasePath: string = '/api
         return;
       }
 
-      // Create new request and store promise in cache
+      // Create a new request and store promise in a cache
       const fetchPromise = fetch(`${apiBasePath}/brands?${params.toString()}`).then(async res => {
         if (!res.ok) throw new Error('Failed to fetch brands');
-        return res.json();
+        return (await res.json()) as string[];
       });
 
       brandsRequestCache[cacheKey] = fetchPromise;
@@ -128,7 +128,7 @@ export const useFilters = (redirectBasePath: string, apiBasePath: string = '/api
         const data = await fetchPromise;
         setAvailableBrands(data as string[]);
       } finally {
-        // Remove from cache after a short delay to allow fresh requests later
+        // Remove from the cache after a short delay to allow fresh requests later
         // but avoid immediate duplicates
         setTimeout(() => {
           delete brandsRequestCache[cacheKey];
@@ -181,7 +181,7 @@ export const useFilters = (redirectBasePath: string, apiBasePath: string = '/api
 
     void fetchBounds();
     // Ahora la carga inicial de marcas se maneja a través de fetchFilteredBrands
-  }, []);
+  }, [apiBasePath]);
 
   // Cargar las marcas iniciales y cuando cambien los filtros
   useEffect(() => {
@@ -410,7 +410,7 @@ export const useFilters = (redirectBasePath: string, apiBasePath: string = '/api
     params.delete('patched');
     params.delete('brands');
 
-    // Also remove tire size parameters to ensure full reset
+    // Also remove tire size parameters to ensure a full reset
     params.delete('w');
     params.delete('s');
     params.delete('d');
@@ -422,7 +422,17 @@ export const useFilters = (redirectBasePath: string, apiBasePath: string = '/api
       const newUrl = `/${redirectBasePath}?${params.toString()}`;
       router.push(newUrl, { scroll: false });
     }
-  }, [searchParams, router, rangeBounds]);
+  }, [
+    searchParams,
+    router,
+    rangeBounds.price[0],
+    rangeBounds.price[1],
+    rangeBounds.treadDepth[0],
+    rangeBounds.treadDepth[1],
+    rangeBounds.remainingLife[0],
+    rangeBounds.remainingLife[1],
+    redirectBasePath,
+  ]);
 
   return {
     availableBrands,

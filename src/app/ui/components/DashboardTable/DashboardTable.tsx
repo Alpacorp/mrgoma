@@ -3,46 +3,50 @@ import { useRef, useEffect } from 'react';
 
 import { useSearchParams } from 'next/navigation';
 
-import DT from 'datatables.net-dt';
-import DataTable from 'datatables.net-react';
+import DT, { AjaxData, AjaxResponse } from 'datatables.net-dt';
+import DataTable, { DataTableRef } from 'datatables.net-react';
 import Responsive from 'datatables.net-responsive-dt';
 
 DataTable.use(DT);
 DataTable.use(Responsive);
 
 const DashboardTable = () => {
-  const tableRef = useRef<any>(null);
+  const tableRef = useRef<DataTableRef>(null);
   const searchParams = useSearchParams();
 
   useEffect(() => {
     if (tableRef.current) {
-      tableRef.current.dt().ajax.reload();
+      tableRef.current.dt()?.ajax.reload();
     }
   }, [searchParams]);
 
   return (
     <DataTable
       ref={tableRef}
-      ajax={async (data: any, callback) => {
-        try {
-          const params = new URLSearchParams(window.location.search);
-          const currentPage = Math.floor(data.start / data.length) + 1;
+      ajax={(data: any, callback: any) => {
+        const d = data as AjaxData;
+        const cb = callback as (response: AjaxResponse) => void;
+        (async () => {
+          try {
+            const params = new URLSearchParams(window.location.search);
+            const currentPage = Math.floor(d.start / d.length) + 1;
 
-          params.set('page', currentPage.toString());
-          params.set('pageSize', data.length.toString());
+            params.set('page', currentPage.toString());
+            params.set('pageSize', d.length.toString());
 
-          const response = await fetch(`/api/dashboard/tires?${params.toString()}`);
-          const result = await response.json();
+            const response = await fetch(`/api/dashboard/tires?${params.toString()}`);
+            const result = await response.json();
 
-          callback({
-            draw: data.draw,
-            data: result.records || [],
-            recordsTotal: result.totalCount || 0,
-            recordsFiltered: result.totalCount || 0,
-          });
-        } catch (error) {
-          console.error('Error en fetch:', error);
-        }
+            cb({
+              draw: d.draw,
+              data: result.records || [],
+              recordsTotal: result.totalCount || 0,
+              recordsFiltered: result.totalCount || 0,
+            });
+          } catch (error) {
+            console.error('Error en fetch:', error);
+          }
+        })();
       }}
       className="display nowrap"
       options={{
@@ -53,12 +57,12 @@ const DashboardTable = () => {
         autoWidth: false,
         columns: [
           { data: 'TireId' },
-          { data: 'VaultName' },
           { data: 'Brand' },
+          { data: 'VaultName' },
           { data: 'Model2' },
-          { data: 'Size' },
           { data: 'Height' },
           { data: 'Width' },
+          { data: 'Size' },
           { data: 'LoadIndexId' },
           { data: 'speedIndex' },
           { data: 'Patched' },
@@ -70,12 +74,12 @@ const DashboardTable = () => {
       <thead>
         <tr>
           <th>ID</th>
-          <th>Store</th>
           <th>Brand</th>
+          <th>Store</th>
           <th>Model</th>
-          <th>Rin</th>
-          <th>Aspect</th>
           <th>Width</th>
+          <th>Sidewall</th>
+          <th>Diameter</th>
           <th>Load</th>
           <th>Speed</th>
           <th>Patched</th>
