@@ -114,7 +114,7 @@ const PromoBanner: FC<PromoBannerProps> = ({ content, className = '', storageKey
               )}
             </div>
             {description && (
-              <p className="mt-1 text-sm sm:text-base font-medium opacity-100 drop-shadow-sm">
+              <p className="mt-1 text-sm sm:text-base font-medium opacity-100 drop-shadow-sm whitespace-pre-line">
                 {description}
               </p>
             )}
