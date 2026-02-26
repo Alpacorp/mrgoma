@@ -1,5 +1,6 @@
-import type { Metadata } from 'next';
 import { Suspense } from 'react';
+
+import type { Metadata } from 'next';
 
 import { LoadingScreen } from '@/app/ui/components';
 import { canonical } from '@/app/utils/seo';

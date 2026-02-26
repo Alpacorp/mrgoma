@@ -1,7 +1,8 @@
 'use client';
 
-import Link from 'next/link';
 import React, { FC, useEffect, useMemo, useState } from 'react';
+
+import Link from 'next/link';
 
 export interface PromoContent {
   enabled: boolean;
@@ -97,7 +98,7 @@ const PromoBanner: FC<PromoBannerProps> = ({ content, className = '', storageKey
       }
     >
       {/* Attention accent bar */}
-      <div className="relative h-1 w-full bg-gradient-to-r from-lime-400 via-emerald-400 to-lime-400 animate-[pulse_3s_ease-in-out_infinite] opacity-80" />
+      <div className="relative h-1 w-full bg-linear-to-r from-lime-400 via-emerald-400 to-lime-400 animate-[pulse_3s_ease-in-out_infinite] opacity-80" />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="relative flex items-stretch gap-4 py-4 sm:py-5">
           <div className="flex-1 min-w-0 pr-12 sm:pr-0">
@@ -113,7 +114,7 @@ const PromoBanner: FC<PromoBannerProps> = ({ content, className = '', storageKey
               )}
             </div>
             {description && (
-              <p className="mt-1 text-sm sm:text-base font-medium opacity-100 drop-shadow-sm">
+              <p className="mt-1 text-sm sm:text-base font-medium opacity-100 drop-shadow-sm whitespace-pre-line">
                 {description}
               </p>
             )}
