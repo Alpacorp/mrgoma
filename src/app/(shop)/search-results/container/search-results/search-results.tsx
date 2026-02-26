@@ -295,7 +295,7 @@ const SearchResults: FC<SearchResultsProps> = () => {
                               totalCount={tiresData.totalCount}
                             />
                           </div>
-                          <PromoBanner content={promoBannerConfig.searchResults} className="mb-6" />
+                          <PromoBanner content={promoBannerConfig.home} className="mb-6" />
                           {error ? (
                             <ErrorDisplay
                               title="Error Loading Tires"

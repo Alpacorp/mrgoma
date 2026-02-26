@@ -1,5 +1,9 @@
+import React from 'react';
+
 import { ServiceCard } from '@/app/ui/components';
 import { ServiceCardData } from '@/app/ui/components/ServiceCard/service';
+import { PromoBanner } from '@/app/ui/sections';
+import { promoBannerConfig } from '@/app/ui/sections/PromoBanner/config/promoBanner';
 
 import { servicesData } from './servicesData';
 
@@ -20,6 +24,7 @@ export const ServicesGrid = ({ services = servicesData, className = '' }: Servic
 
   return (
     <section className={`${className} px-4 sm:px-6 lg:px-8 py-16`}>
+      <PromoBanner content={promoBannerConfig.searchResults} className="mb-6" />
       <div className="container mx-auto px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {services.map(service => (

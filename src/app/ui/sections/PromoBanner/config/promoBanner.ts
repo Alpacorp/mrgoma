@@ -8,6 +8,7 @@ import type { PromoContent } from '@/app/ui/sections/PromoBanner/PromoBanner';
 export const promoBannerConfig: {
   home: PromoContent;
   searchResults: PromoContent;
+  stockArrival: PromoContent;
 } = {
   home: {
     enabled: true,
@@ -25,9 +26,9 @@ export const promoBannerConfig: {
   },
   searchResults: {
     enabled: true,
-    title: 'Special Prices for Uber & Lyft Drivers',
+    title: 'Uber & Lyft Exclusive Driver Pricing 🚘',
     description:
-      'Working on ride-share platforms? We have exclusive discounts and savings plans to keep your work tool always ready with the best tires.',
+      'Oil Change $65 | Alignment $75 | Rotation $25 | Patch $20 | Plug $10 Your car is your income — keep it earning.',
     ctaLabel: 'Check Discount',
     ctaHref:
       'https://wa.me/14073644016?text=Hi!%20Im%20an%20Uber/Lyft%20driver%20and%20I%20would%20like%20to%20know%20more%20about%20the%20special%20prices%20on%20tires.',
@@ -36,5 +37,17 @@ export const promoBannerConfig: {
     textColor: 'text-white',
     backgroundImageUrl:
       'https://images.unsplash.com/photo-1620288627223-53302f4e8c74?auto=format&fit=crop&q=100&w=2400', // Imagen de llanta en carretera o ciudad
+  },
+  stockArrival: {
+    enabled: true,
+    title: 'New Stock Arrives Every Day!',
+    description:
+      "Didn't find your size? We update our inventory daily with quality new and used tires. Contact us to find what you need!",
+    ctaLabel: 'Inquire via WhatsApp',
+    ctaHref:
+      'https://wa.me/14073644016?text=Hi!%20I%20checked%20the%20website%20but%20couldnt%20find%20my%20tire%20size.%20Do%20you%20have%20new%20arrivals?',
+    dismissible: true,
+    bgColor: 'bg-emerald-700',
+    textColor: 'text-white',
   },
 };
