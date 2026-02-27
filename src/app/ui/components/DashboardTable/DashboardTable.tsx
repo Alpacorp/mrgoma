@@ -37,7 +37,23 @@ const DashboardTable = () => {
             params.set('pageSize', d.length.toString());
 
             const response = await fetch(`/api/dashboard/tires?${params.toString()}`);
+
             const result = await response.json();
+
+            const order = d.order?.[0];
+
+            if (order) {
+              const columnIndex = order.column;
+              const direction = order.dir;
+
+              const columnName = d.columns[columnIndex].data;
+
+              result.records.sort((a: any, b: any) => {
+                if (a[columnName] < b[columnName]) return direction === 'asc' ? -1 : 1;
+                if (a[columnName] > b[columnName]) return direction === 'asc' ? 1 : -1;
+                return 0;
+              });
+            }
 
             cb({
               draw: d.draw,
@@ -50,13 +66,19 @@ const DashboardTable = () => {
           }
         })();
       }}
-      className="display nowrap"
+      className="display"
       options={{
         responsive: true,
         processing: true,
         searching: false,
         serverSide: true,
         autoWidth: true,
+        columnDefs: [
+          {
+            targets: '_all',
+            className: 'dt-left',
+          },
+        ],
         columns: [
           { data: 'TireId' },
           { data: 'Brand' },
@@ -75,18 +97,18 @@ const DashboardTable = () => {
     >
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Brand</th>
-          <th>Store</th>
-          <th>Model</th>
-          <th>Width</th>
-          <th>Sidewall</th>
-          <th>Diameter</th>
-          <th>Load</th>
-          <th>Speed</th>
-          <th>Patched</th>
-          <th>Tread</th>
-          <th>DOT</th>
+          <th data-order="1500">ID</th>
+          <th data-order="1500">Brand</th>
+          <th data-order="1500">Store</th>
+          <th data-order="1500">Model</th>
+          <th data-order="1500">Width</th>
+          <th data-order="1500">Sidewall</th>
+          <th data-order="1500">Diameter</th>
+          <th data-order="1500">Load</th>
+          <th data-order="1500">Speed</th>
+          <th data-order="1500">Patched</th>
+          <th data-order="1500">Tread</th>
+          <th data-order="1500">DOT</th>
         </tr>
       </thead>
     </DataTable>
