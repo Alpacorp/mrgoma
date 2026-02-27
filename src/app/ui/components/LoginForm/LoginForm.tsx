@@ -11,7 +11,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 
 import { ButtonSpinner, InputError, Snackbar } from '@/app/ui/components';
 import { LoginSchema, Inputs } from '@/app/ui/components/LoginForm/schema/loginSchema';
-import { EnvelopeIcon, LockIcon, ArrowLeftIcon, EyeIcon, EyeOffIcon } from '@/app/ui/icons';
+import { UserIcon, LockIcon, ArrowLeftIcon, EyeIcon, EyeOffIcon } from '@/app/ui/icons';
 
 import { mrGomaLogo } from '#public/assets/images/Logo';
 
@@ -37,7 +37,7 @@ const LoginForm = () => {
     try {
       const res = await signIn('credentials', {
         callbackUrl: '/suppliers/login',
-        email: loginData.email,
+        username: loginData.username,
         password: loginData.password,
         redirect: false,
       });
@@ -69,7 +69,9 @@ const LoginForm = () => {
           />
         </Link>
       </div>
-       <h3 className='text-white mb-20 text-center text-sm lg:hidden'>Every customer deserves our best solution</h3>
+      <h3 className="text-white mb-20 text-center text-sm lg:hidden">
+        Every customer deserves our best solution
+      </h3>
       <form className="w-full" onSubmit={handleSubmit(processForm)}>
         <div className="flex justify-between items-start">
           <div className="mb-0">
@@ -90,21 +92,21 @@ const LoginForm = () => {
         </div>
 
         <div className="mb-4 relative">
-          <label className="text-sm mb-2 block text-slate-400" htmlFor="email">
+          <label className="text-sm mb-2 block text-slate-400" htmlFor="username">
             <span className="text-lime-400 mr-2">*</span>
             User
           </label>
           <div className="relative">
             <input
-              id="email"
-              {...register('email')}
+              id="username"
+              {...register('username')}
               type="text"
               autoComplete="off"
               className="w-full pl-10 text-white bg-slate-800 rounded-md py-2 px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 transition-shadow placeholder:text-sm font-light"
             />
-            <EnvelopeIcon className="text-slate-400 absolute top-1/2 left-3 transform -translate-y-1/2 h-4 w-4" />
+            <UserIcon className="text-slate-400 absolute top-1/2 left-3 transform -translate-y-1/2 h-4 w-4" />
           </div>
-          <InputError message={errors?.email?.message} />
+          <InputError message={errors?.username?.message} />
         </div>
         <div className="mb-4">
           <label className="text-sm mb-2 block text-slate-400" htmlFor="password">
@@ -150,7 +152,7 @@ const LoginForm = () => {
           )}
         </div>
       </form>
-      {error && <Snackbar type={'warning'} message={'Invalid email or password.'} />}
+      {error && <Snackbar type={'warning'} message={'Invalid username or password.'} />}
     </div>
   );
 };

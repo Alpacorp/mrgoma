@@ -2,13 +2,16 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 
+import { findUserByUsername } from '@/repositories/userRepository';
+import { logger } from '@/utils/logger';
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
       credentials: {
-        email: {
-          label: 'email',
-          type: 'email',
+        username: {
+          label: 'username',
+          type: 'text',
         },
         password: {
           label: 'password',
@@ -17,36 +20,43 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       authorize: async credentials => {
         try {
-          const payload = {
-            user: {
-              email: credentials?.email ?? '',
-              password: credentials?.password ?? '',
-            },
-          };
-          const res = await fetch('https://nbback-production.up.railway.app/api/login', {
-            method: 'POST',
-            body: JSON.stringify(payload),
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-          const user = await res.json();
-          if (!user) {
-            throw new Error('Invalid credentials.');
-          }
-          if (user) {
-            return {
-              id: user.data.email,
-              email: user.data.email,
-              name: user.data.fullname,
-              code_role: user.data.code_role,
-              name_role: user.data.name_role,
-              token: user.data.token,
-            };
-          } else {
+          const username = (credentials?.username as string) ?? '';
+          const password = (credentials?.password as string) ?? '';
+
+          if (!username || !password) {
             return null;
           }
+
+          const user = await findUserByUsername(username);
+
+          if (!user) {
+            logger.warn(`Auth failed: User not found: ${username}`);
+            return null;
+          }
+
+          // Password validation: Direct string comparison as passwords are plain text in DB.
+          // Trim whitespace to handle CHAR columns or potential database padding.
+          const dbPassword = user.Password?.trim() ?? '';
+          const inputPassword = password.trim();
+
+          if (dbPassword !== inputPassword) {
+            logger.warn(`Auth failed for user: ${username} (password mismatch)`);
+            return null;
+          }
+
+          logger.info(`Successful authentication for user: ${username}`);
+
+          return {
+            id: user.UserName,
+            email: user.UserName,
+            name: user.UserName,
+            // Keep fields expected by the rest of the app
+            code_role: 'user',
+            name_role: 'User',
+            token: 'direct-db-auth-token',
+          };
         } catch (error) {
+          logger.error('Auth error in authorize callback:', error);
           return null;
         }
       },
@@ -54,8 +64,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   session: {
     strategy: 'jwt',
-    maxAge:	24 * 60 * 60,
-    updateAge: 60 * 60, 
+    maxAge: 24 * 60 * 60,
+    updateAge: 60 * 60,
   },
   pages: {
     error: '/login',
@@ -66,8 +76,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async jwt({ token, user }: any) {
       if (user && token) {
-        // IMPORTANTE: mapea 'user.token' a 'token.accessToken'
-        //sesion visible al servidor
+        // IMPORTANT: map 'user.token' to the 'token.accessToken'
+        // session visible to the server
         token.accessToken = user?.token;
         token.code_role = user?.code_role;
         token.name_role = user?.name_role;
@@ -75,7 +85,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      //session visible al usuario
+      // session visible to the user
       return session;
     },
   },
