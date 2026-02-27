@@ -1,8 +1,6 @@
-// import { supplier } from "@/app/endpoints/suppliers/suppliers";
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 
-import { findUserByUsername } from '@/repositories/userRepository';
 import { logger } from '@/utils/logger';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -18,7 +16,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           type: 'password',
         },
       },
-      authorize: async credentials => {
+      authorize: async (credentials, req) => {
         try {
           const username = (credentials?.username as string) ?? '';
           const password = (credentials?.password as string) ?? '';
@@ -27,36 +25,37 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             return null;
           }
 
-          const user = await findUserByUsername(username);
+          // In production, we should use an absolute URL.
+          // For local development, Next.js allows relative paths in some contexts,
+          // but NextAuth 'authorize' usually needs a full URL or a relative path from the app origin.
+          const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+          const loginUrl = `${baseUrl}/api/login`;
 
-          if (!user) {
-            logger.warn(`Auth failed: User not found: ${username}`);
+          const response = await fetch(loginUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            logger.warn(`Auth API failed: ${errorData.message || response.statusText}`);
             return null;
           }
 
-          // Password validation: Direct string comparison as passwords are plain text in DB.
-          // Trim whitespace to handle CHAR columns or potential database padding.
-          const dbPassword = user.Password?.trim() ?? '';
-          const inputPassword = password.trim();
+          const data = await response.json();
 
-          if (dbPassword !== inputPassword) {
-            logger.warn(`Auth failed for user: ${username} (password mismatch)`);
-            return null;
+          if (data.success && data.user) {
+            logger.info(`Successful authentication via API for user: ${username}`);
+            return {
+              ...data.user,
+              token: data.token || 'api-auth-token',
+            };
           }
 
-          logger.info(`Successful authentication for user: ${username}`);
-
-          return {
-            id: user.UserName,
-            email: user.UserName,
-            name: user.UserName,
-            // Keep fields expected by the rest of the app
-            code_role: 'user',
-            name_role: 'User',
-            token: 'direct-db-auth-token',
-          };
+          return null;
         } catch (error) {
-          logger.error('Auth error in authorize callback:', error);
+          logger.error('Auth error in authorize callback calling API:', error);
           return null;
         }
       },
