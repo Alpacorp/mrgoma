@@ -2,6 +2,7 @@
 import { useSession, signOut } from 'next-auth/react';
 
 import { CollapsibleSearchBar, ResultsHeader } from '@/app/ui/components';
+import AiChat from '@/app/ui/components/AiChat/AiChat';
 import { FiltersMobile, TopFilters } from '@/app/ui/sections';
 import DashboardTableContainer from '@/app/ui/sections/DashboardTableContainer/DashboardTableContainer';
 
@@ -78,6 +79,8 @@ const Dashboard = () => {
           © {new Date().getFullYear()} Mr. Goma Tires - Internal Inventory System. Protected Page.
         </p>
       </footer>
+
+      <AiChat />
     </div>
   );
 };
