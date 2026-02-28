@@ -1,7 +1,8 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
+
+import { useRouter } from 'next/navigation';
 
 export interface ChatMessage {
   id: string;
@@ -35,10 +36,14 @@ export function useAiChat() {
     if (filters.d !== undefined) params.set('d', String(filters.d));
     if (filters.minPrice !== undefined) params.set('minPrice', String(filters.minPrice));
     if (filters.maxPrice !== undefined) params.set('maxPrice', String(filters.maxPrice));
-    if (filters.minTreadDepth !== undefined) params.set('minTreadDepth', String(filters.minTreadDepth));
-    if (filters.maxTreadDepth !== undefined) params.set('maxTreadDepth', String(filters.maxTreadDepth));
-    if (filters.minRemainingLife !== undefined) params.set('minRemainingLife', String(filters.minRemainingLife));
-    if (filters.maxRemainingLife !== undefined) params.set('maxRemainingLife', String(filters.maxRemainingLife));
+    if (filters.minTreadDepth !== undefined)
+      params.set('minTreadDepth', String(filters.minTreadDepth));
+    if (filters.maxTreadDepth !== undefined)
+      params.set('maxTreadDepth', String(filters.maxTreadDepth));
+    if (filters.minRemainingLife !== undefined)
+      params.set('minRemainingLife', String(filters.minRemainingLife));
+    if (filters.maxRemainingLife !== undefined)
+      params.set('maxRemainingLife', String(filters.maxRemainingLife));
     if (filters.condition !== undefined) params.set('condition', String(filters.condition));
     if (filters.patched !== undefined) params.set('patched', String(filters.patched));
     if (filters.brands !== undefined) params.set('brands', String(filters.brands));
@@ -55,7 +60,7 @@ export function useAiChat() {
       content: text,
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
 
     const newApiMessage: ApiMessage = { role: 'user', content: text };
@@ -88,13 +93,14 @@ export function useAiChat() {
         isFilterApplication: data.type === 'filters',
       };
 
-      setMessages((prev) => [...prev, assistantMessage]);
+      setMessages(prev => [...prev, assistantMessage]);
 
       if (data.type === 'filters' && data.filters) {
         applyFiltersToUrl(data.filters);
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+      const errorMessage =
+        err instanceof Error ? err.message : 'Something went wrong. Please try again.';
 
       const errorChatMessage: ChatMessage = {
         id: crypto.randomUUID(),
@@ -102,7 +108,7 @@ export function useAiChat() {
         content: `Error: ${errorMessage}`,
       };
 
-      setMessages((prev) => [...prev, errorChatMessage]);
+      setMessages(prev => [...prev, errorChatMessage]);
       // Remove the last user message from history on error
       apiHistoryRef.current = apiHistoryRef.current.slice(0, -1);
     } finally {

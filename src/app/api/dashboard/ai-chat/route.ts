@@ -1,5 +1,6 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
+
+import Anthropic from '@anthropic-ai/sdk';
 
 import { logger } from '@/utils/logger';
 
@@ -98,7 +99,10 @@ export async function POST(req: NextRequest) {
     const { messages }: { messages: ApiMessage[] } = body;
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      return NextResponse.json({ message: 'Invalid request: messages array is required' }, { status: 400 });
+      return NextResponse.json(
+        { message: 'Invalid request: messages array is required' },
+        { status: 400 }
+      );
     }
 
     const response = await client.messages.create({
@@ -110,7 +114,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Check if Claude used the apply_filters tool
-    const toolUseBlock = response.content.find((block) => block.type === 'tool_use');
+    const toolUseBlock = response.content.find(block => block.type === 'tool_use');
 
     if (toolUseBlock && toolUseBlock.type === 'tool_use') {
       const filters = toolUseBlock.input as Record<string, unknown>;
@@ -124,8 +128,11 @@ export async function POST(req: NextRequest) {
     }
 
     // Plain text response (no tool use)
-    const textBlock = response.content.find((block) => block.type === 'text');
-    const message = textBlock && textBlock.type === 'text' ? textBlock.text : 'I can help you search for tires. Try asking about a specific size, brand, or condition.';
+    const textBlock = response.content.find(block => block.type === 'text');
+    const message =
+      textBlock && textBlock.type === 'text'
+        ? textBlock.text
+        : 'I can help you search for tires. Try asking about a specific size, brand, or condition.';
 
     return NextResponse.json({
       type: 'message',
