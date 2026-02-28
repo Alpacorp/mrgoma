@@ -14,6 +14,8 @@ const EXAMPLE_QUERIES = [
 ];
 
 export default function AiChat() {
+  if (process.env.NEXT_PUBLIC_AI_CHAT_ENABLED !== 'true') return null;
+
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
