@@ -25,6 +25,15 @@ export default function AiChat() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
+  // Auto-close the panel 1.5s after filters are applied so the user
+  // sees the confirmation briefly and then the filtered table is revealed.
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1];
+    if (!lastMessage?.isFilterApplication) return;
+    const timer = setTimeout(() => setIsOpen(false), 1500);
+    return () => clearTimeout(timer);
+  }, [messages]);
+
   const handleSend = () => {
     const text = inputValue.trim();
     if (!text || isLoading) return;
