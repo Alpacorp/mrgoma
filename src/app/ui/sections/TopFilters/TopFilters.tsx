@@ -123,7 +123,7 @@ export const TopFilters: FC<{ redirectBasePath: string; apiBasePath?: string }> 
                   </svg>
                 </button>
                 {isOpen && (
-                  <div className="absolute left-0 mt-2 z-50 w-[22rem] md:w-[26rem] bg-white border border-gray-200 rounded-lg shadow-lg p-4">
+                  <div className="absolute left-0 mt-2 z-50 w-88 md:w-104 bg-white border border-gray-200 rounded-lg shadow-lg p-4">
                     <div className="space-y-2">
                       <TireSelector
                         selectedFilters={tireSelectedFilters}

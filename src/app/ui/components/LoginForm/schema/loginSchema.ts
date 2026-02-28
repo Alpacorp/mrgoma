@@ -1,11 +1,11 @@
 import * as z from 'zod';
 
 export const LoginSchema = z.object({
-  email: z
-    .email('Enter a valid email')
+  username: z
+    .string()
     .trim()
-    .toLowerCase()
-    .refine(val => val.length > 0, { error: 'Enter an email ' }),
+    .min(1, 'Enter your username')
+    .refine(val => val.length > 0, { message: 'Enter your username' }),
   password: z.string().trim().nonempty('Enter your password'),
 });
 

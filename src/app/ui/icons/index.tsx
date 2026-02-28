@@ -23,6 +23,7 @@ export * from './RemainingIcon';
 export * from './TreadIcon';
 export * from './RunFlatIcon';
 export * from './EnvelopeIcon';
+export * from './UserIcon';
 export * from './LockIcon';
 export * from './ArrowLeftIcon';
 export * from './DocumentIcon';
