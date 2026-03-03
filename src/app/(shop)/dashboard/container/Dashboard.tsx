@@ -1,9 +1,9 @@
 'use client';
 import { useSession, signOut } from 'next-auth/react';
 
-import { CollapsibleSearchBar, ResultsHeader } from '@/app/ui/components';
+import { CollapsibleSearchBar } from '@/app/ui/components';
 import AiChat from '@/app/ui/components/AiChat/AiChat';
-import { FiltersMobile, TopFilters } from '@/app/ui/sections';
+import { FiltersMobile, MobileQuickFilters, TopFilters } from '@/app/ui/sections';
 import DashboardTableContainer from '@/app/ui/sections/DashboardTableContainer/DashboardTableContainer';
 
 const Dashboard = () => {
@@ -55,7 +55,7 @@ const Dashboard = () => {
           <TopFilters redirectBasePath={'dashboard'} apiBasePath={'/api/dashboard'} />
 
           <div className="lg:hidden mt-2 border-t border-gray-50 pt-6">
-            <ResultsHeader showTitle={false} showCount={false} showSort={false} />
+            <MobileQuickFilters redirectBasePath={'dashboard'} apiBasePath={'/api/dashboard'} />
             <FiltersMobile redirectBasePath={'dashboard'} apiBasePath={'/api/dashboard'} />
             <div className="mt-4">
               <CollapsibleSearchBar redirectBasePath={'dashboard'} />
