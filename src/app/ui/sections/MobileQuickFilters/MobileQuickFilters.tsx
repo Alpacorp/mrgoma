@@ -24,7 +24,7 @@ const MobileQuickFilters: FC<MobileQuickFiltersProps> = ({
 }) => {
   const { setShowFilter } = useContext(ShowFilterContext);
   const { isChecked, handleCheckboxChange, checkboxInputs, rangeInputs, rangeBounds, resetFilters } =
-    useFilters(redirectBasePath, apiBasePath);
+    useFilters(redirectBasePath, apiBasePath, { enableStoreFilter: true });
 
   const toggleChip = (category: 'condition' | 'patched', value: string, active: boolean) => {
     const fakeEvent = {
@@ -40,8 +40,9 @@ const MobileQuickFilters: FC<MobileQuickFiltersProps> = ({
   };
 
   const otherActiveCount =
-    (['price', 'treadDepth', 'remainingLife'] as const).filter(isRangeActive).length +
-    (checkboxInputs.brands.length > 0 ? 1 : 0);
+    (['treadDepth', 'remainingLife'] as const).filter(isRangeActive).length +
+    (checkboxInputs.brands.length > 0 ? 1 : 0) +
+    (checkboxInputs.stores.length > 0 ? 1 : 0);
 
   const anyFilterActive =
     otherActiveCount > 0 ||
