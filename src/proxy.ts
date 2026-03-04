@@ -8,7 +8,6 @@ export async function proxy(request: NextRequest) {
   const pathName = request.nextUrl.pathname;
 
   const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET, raw: true });
-  console.log('token for request', token);
 
   const publicRoute = !pathName.includes('dashboard');
 
