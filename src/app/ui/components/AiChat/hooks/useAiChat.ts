@@ -22,7 +22,10 @@ interface AiChatResponse {
   message: string;
 }
 
-export function useAiChat() {
+export function useAiChat(options?: { apiEndpoint?: string; redirectBasePath?: string }) {
+  const apiEndpoint = options?.apiEndpoint ?? '/api/dashboard/ai-chat';
+  const redirectBasePath = options?.redirectBasePath ?? 'dashboard';
+
   const router = useRouter();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -47,10 +50,11 @@ export function useAiChat() {
     if (filters.condition !== undefined) params.set('condition', String(filters.condition));
     if (filters.patched !== undefined) params.set('patched', String(filters.patched));
     if (filters.brands !== undefined) params.set('brands', String(filters.brands));
+    if (filters.stores !== undefined) params.set('stores', String(filters.stores));
 
     params.set('page', '1');
 
-    router.push(`/dashboard?${params.toString()}`);
+    router.push(`/${redirectBasePath}?${params.toString()}`);
   };
 
   const sendMessage = async (text: string) => {
@@ -67,7 +71,7 @@ export function useAiChat() {
     apiHistoryRef.current = [...apiHistoryRef.current, newApiMessage];
 
     try {
-      const response = await fetch('/api/dashboard/ai-chat', {
+      const response = await fetch(apiEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: apiHistoryRef.current }),

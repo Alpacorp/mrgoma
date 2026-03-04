@@ -16,6 +16,7 @@ import {
   ResultsSkeleton,
   TireResults,
 } from '@/app/ui/components';
+import AiChat from '@/app/ui/components/AiChat/AiChat';
 import { FiltersMobile, TitleSection, TopFilters, PromoBanner } from '@/app/ui/sections';
 import { promoBannerConfig } from '@/app/ui/sections/PromoBanner/config/promoBanner';
 import {
@@ -445,6 +446,18 @@ const SearchResults: FC<SearchResultsProps> = () => {
         <div className="block lg:hidden">
           <CollapsibleSearchBar redirectBasePath={'search-results'} />
         </div>
+        <AiChat
+          apiEndpoint="/api/search-results/ai-chat"
+          redirectBasePath="search-results"
+          exampleQueries={[
+            '205/55/16 nuevas',
+            'used Michelin aro 17',
+            'llantas para Honda Civic',
+            'usadas menos de $50',
+            '¿qué diferencia hay entre nueva y usada?',
+            '195/65/15 con buena vida útil',
+          ]}
+        />
       </main>
     </Suspense>
   );
