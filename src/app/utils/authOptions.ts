@@ -73,18 +73,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async jwt({ token, user }: any) {
-      if (user && token) {
-        // IMPORTANT: map 'user.token' to the 'token.accessToken'
-        // session visible to the server
-        token.accessToken = user?.token;
-        token.code_role = user?.code_role;
-        token.name_role = user?.name_role;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      // session visible to the user
+    async session({ session }) {
       return session;
     },
   },
