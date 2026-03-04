@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import { useAiChat } from './hooks/useAiChat';
 
-const EXAMPLE_QUERIES = [
+const DASHBOARD_EXAMPLE_QUERIES = [
   '205/55/16 Michelin',
   'used tires under $80',
   'llantas usadas menos de 150 mil',
@@ -13,13 +13,23 @@ const EXAMPLE_QUERIES = [
   'usadas con más de 50% de vida',
 ];
 
-export default function AiChat() {
+interface AiChatProps {
+  apiEndpoint?: string;
+  redirectBasePath?: string;
+  exampleQueries?: string[];
+}
+
+export default function AiChat({
+  apiEndpoint,
+  redirectBasePath,
+  exampleQueries = DASHBOARD_EXAMPLE_QUERIES,
+}: AiChatProps = {}) {
   if (process.env.NEXT_PUBLIC_AI_CHAT_ENABLED !== 'true') return null;
 
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { messages, isLoading, sendMessage, clearChat } = useAiChat();
+  const { messages, isLoading, sendMessage, clearChat } = useAiChat({ apiEndpoint, redirectBasePath });
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -114,7 +124,7 @@ export default function AiChat() {
                 <span className="text-4xl">✨</span>
                 <p className="font-medium text-gray-600 text-sm">Try one of these:</p>
                 <div className="space-y-1.5 w-full">
-                  {EXAMPLE_QUERIES.map((q) => (
+                  {exampleQueries.map((q) => (
                     <button
                       key={q}
                       type="button"

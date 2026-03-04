@@ -23,9 +23,14 @@ interface CheckboxInputs {
   condition: string[];
   patched: string[];
   brands: string[];
+  stores: string[];
 }
 
-export const useFilters = (redirectBasePath: string, apiBasePath: string = '/api') => {
+export const useFilters = (
+  redirectBasePath: string,
+  apiBasePath: string = '/api',
+  options?: { enableStoreFilter?: boolean }
+) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -36,8 +41,10 @@ export const useFilters = (redirectBasePath: string, apiBasePath: string = '/api
   });
 
   const [availableBrands, setAvailableBrands] = useState<string[]>([]);
+  const [availableStores, setAvailableStores] = useState<string[]>([]);
   const [isLoadingRanges, setIsLoadingRanges] = useState(true);
   const [isLoadingBrands, setIsLoadingBrands] = useState(true);
+  const [isLoadingStores, setIsLoadingStores] = useState(options?.enableStoreFilter ?? false);
 
   // Initialize range inputs from URL parameters or defaults
   const [rangeInputs, setRangeInputs] = useState<RangeInputs>({
@@ -60,6 +67,7 @@ export const useFilters = (redirectBasePath: string, apiBasePath: string = '/api
     condition: searchParams.get('condition')?.split(',').filter(Boolean) || [],
     patched: searchParams.get('patched')?.split(',').filter(Boolean) || [],
     brands: searchParams.get('brands')?.split(',').filter(Boolean) || [],
+    stores: searchParams.get('stores')?.split(',').filter(Boolean) || [],
   });
 
   // Función para cargar las marcas basada en los filtros actuales
@@ -183,6 +191,36 @@ export const useFilters = (redirectBasePath: string, apiBasePath: string = '/api
     // Ahora la carga inicial de marcas se maneja a través de fetchFilteredBrands
   }, [apiBasePath]);
 
+  // Cargar las tiendas disponibles (solo cuando enableStoreFilter está activo)
+  useEffect(() => {
+    if (!options?.enableStoreFilter) return;
+    const fetchStores = async () => {
+      try {
+        setIsLoadingStores(true);
+        const res = await fetch(`${apiBasePath}/stores`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const stores = data as string[];
+        setAvailableStores(stores);
+        // Normalize URL store values to exact VaultName casing (e.g. "orlando" → "Orlando")
+        setCheckboxInputs(prev => {
+          if (!prev.stores.length) return prev;
+          const normalized = prev.stores.map(s => {
+            const match = stores.find(a => a.toLowerCase() === s.toLowerCase());
+            return match ?? s;
+          });
+          if (normalized.join(',') === prev.stores.join(',')) return prev;
+          return { ...prev, stores: normalized };
+        });
+      } catch (err) {
+        console.error('Failed to fetch stores', err);
+      } finally {
+        setIsLoadingStores(false);
+      }
+    };
+    void fetchStores();
+  }, [apiBasePath, options?.enableStoreFilter]);
+
   // Cargar las marcas iniciales y cuando cambien los filtros
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -219,6 +257,7 @@ export const useFilters = (redirectBasePath: string, apiBasePath: string = '/api
       condition: searchParams.get('condition')?.split(',').filter(Boolean) || [],
       patched: searchParams.get('patched')?.split(',').filter(Boolean) || [],
       brands: searchParams.get('brands')?.split(',').filter(Boolean) || [],
+      stores: searchParams.get('stores')?.split(',').filter(Boolean) || [],
     } as CheckboxInputs;
 
     setRangeInputs(newRangeInputs);
@@ -288,6 +327,7 @@ export const useFilters = (redirectBasePath: string, apiBasePath: string = '/api
     );
     setOrDelete('patched', checkboxInputs.patched.length > 0, checkboxInputs.patched.join(','));
     setOrDelete('brands', checkboxInputs.brands.length > 0, checkboxInputs.brands.join(','));
+    setOrDelete('stores', checkboxInputs.stores.length > 0, checkboxInputs.stores.join(','));
 
     // Only reset pagination when filters actually changed
     if (filterChanged) {
@@ -316,6 +356,7 @@ export const useFilters = (redirectBasePath: string, apiBasePath: string = '/api
     checkboxInputs.condition.join(','),
     checkboxInputs.patched.join(','),
     checkboxInputs.brands.join(','),
+    checkboxInputs.stores.join(','),
     redirectBasePath,
     router,
   ]);
@@ -391,6 +432,7 @@ export const useFilters = (redirectBasePath: string, apiBasePath: string = '/api
       condition: [],
       patched: [],
       brands: [],
+      stores: [],
     };
     setCheckboxInputs(defaultCheckboxInputs);
 
@@ -409,6 +451,7 @@ export const useFilters = (redirectBasePath: string, apiBasePath: string = '/api
     params.delete('condition');
     params.delete('patched');
     params.delete('brands');
+    params.delete('stores');
 
     // Also remove tire size parameters to ensure a full reset
     params.delete('w');
@@ -436,6 +479,7 @@ export const useFilters = (redirectBasePath: string, apiBasePath: string = '/api
 
   return {
     availableBrands,
+    availableStores,
     rangeInputs,
     rangeBounds,
     checkboxInputs,
@@ -443,6 +487,7 @@ export const useFilters = (redirectBasePath: string, apiBasePath: string = '/api
     handleCheckboxChange,
     isLoadingRanges,
     isLoadingBrands,
+    isLoadingStores,
     resetFilters,
     isChecked: (category: keyof CheckboxInputs, value: string) =>
       checkboxInputs[category].includes(value),

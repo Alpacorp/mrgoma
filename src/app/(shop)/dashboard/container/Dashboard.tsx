@@ -1,14 +1,22 @@
 'use client';
+import { useContext } from 'react';
+
 import { useSession, signOut } from 'next-auth/react';
 
-import { CollapsibleSearchBar } from '@/app/ui/components';
 import AiChat from '@/app/ui/components/AiChat/AiChat';
-import { FiltersMobile, MobileQuickFilters, TopFilters } from '@/app/ui/sections';
+import { TireSelector } from '@/app/ui/components/CollapsibleSearchBar/components/TireSelector';
+import { useTireSearch } from '@/app/ui/components/CollapsibleSearchBar/hooks/useTireSearch';
+import { AdjustmentsHorizontalIcon } from '@/app/ui/components/Icons/Icons';
+import { ShowFilterContext } from '@/app/context/ShowFilterContext';
+import { FiltersMobile, TopFilters } from '@/app/ui/sections';
 import DashboardTableContainer from '@/app/ui/sections/DashboardTableContainer/DashboardTableContainer';
 
 const Dashboard = () => {
   const { data: session } = useSession();
   const userName = session?.user?.name || session?.user?.email?.split('@')[0] || 'Administrator';
+  const { setShowFilter } = useContext(ShowFilterContext);
+  const { selectedFilters: mobileTireFilters, handleFilterChange: handleMobileTireChange } =
+    useTireSearch('dashboard');
 
   return (
     <div className="min-h-screen">
@@ -52,14 +60,33 @@ const Dashboard = () => {
             <div className="h-6 w-1 bg-green-500 rounded-full"></div>
             <h2 className="text-lg font-semibold text-gray-900">Search Filters</h2>
           </div>
-          <TopFilters redirectBasePath={'dashboard'} apiBasePath={'/api/dashboard'} />
+          <TopFilters
+            redirectBasePath={'dashboard'}
+            apiBasePath={'/api/dashboard'}
+            showPriceFilter={false}
+            showStoreFilter={true}
+          />
 
-          <div className="lg:hidden mt-2 border-t border-gray-50 pt-6">
-            <MobileQuickFilters redirectBasePath={'dashboard'} apiBasePath={'/api/dashboard'} />
-            <FiltersMobile redirectBasePath={'dashboard'} apiBasePath={'/api/dashboard'} />
-            <div className="mt-4">
-              <CollapsibleSearchBar redirectBasePath={'dashboard'} />
-            </div>
+          <div className="lg:hidden mt-2 border-t border-gray-50 pt-6 space-y-4">
+            <TireSelector
+              selectedFilters={mobileTireFilters}
+              onFilterChangeAction={handleMobileTireChange}
+            />
+            <button
+              type="button"
+              onClick={() => setShowFilter(true)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-md bg-green-500 text-white hover:bg-green-600 transition-colors text-sm font-medium"
+              aria-label="Show filters"
+            >
+              <AdjustmentsHorizontalIcon className="h-4 w-4" />
+              <span>Filters</span>
+            </button>
+            <FiltersMobile
+              redirectBasePath={'dashboard'}
+              apiBasePath={'/api/dashboard'}
+              showPriceFilter={false}
+              showStoreFilter={true}
+            />
           </div>
         </div>
 

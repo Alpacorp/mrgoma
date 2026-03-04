@@ -18,6 +18,7 @@ When the user greets you or asks a tire-related question that doesn't need filte
 
 Tire size format in Colombia: width/profile/diameter (e.g., "205/55/16" means width=205, profile=55, diameter=16)
 Common abbreviations: "llantas" = tires, "usadas" = used, "nuevas" = new, "parcheadas" = patched
+Store/branch: tires belong to a store (called "sucursal" or "tienda" in Spanish). Use the stores filter with the exact store name the user mentions (e.g., "sucursal norte" → stores="sucursal norte").
 Price context: prices are in Colombian pesos (COP). "150 mil" = 150000, "medio millón" = 500000
 
 When the user refines a previous search (e.g., "only new ones", "just Michelin"), combine with the existing context from the conversation.`;
@@ -77,6 +78,10 @@ const APPLY_FILTERS_TOOL: Anthropic.Tool = {
       brands: {
         type: 'string',
         description: 'Comma-separated list of tire brands (e.g., "Michelin,Bridgestone")',
+      },
+      stores: {
+        type: 'string',
+        description: 'Comma-separated list of store/branch names to filter by (e.g., "Sucursal Norte,Sucursal Sur")',
       },
       confirmationMessage: {
         type: 'string',

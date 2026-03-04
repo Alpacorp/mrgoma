@@ -7,9 +7,16 @@ import { Dialog, DialogBackdrop, DialogPanel, XMarkIcon } from '@/app/ui/compone
 import { FilterMobileContent } from '@/app/ui/sections';
 import { useFilters } from '@/app/ui/sections/FiltersMobile/hooks/useFilters';
 
-const FiltersMobile: FC<{ redirectBasePath: string; apiBasePath?: string }> = ({
+const FiltersMobile: FC<{
+  redirectBasePath: string;
+  apiBasePath?: string;
+  showPriceFilter?: boolean;
+  showStoreFilter?: boolean;
+}> = ({
   redirectBasePath,
   apiBasePath = '/api',
+  showPriceFilter = true,
+  showStoreFilter = false,
 }) => {
   const { showFilter, setShowFilter } = useContext(ShowFilterContext);
   const { resetFilters } = useFilters(redirectBasePath, apiBasePath);
@@ -93,6 +100,8 @@ const FiltersMobile: FC<{ redirectBasePath: string; apiBasePath?: string }> = ({
               isMobile={true}
               redirectBasePath={redirectBasePath}
               apiBasePath={apiBasePath}
+              showPriceFilter={showPriceFilter}
+              showStoreFilter={showStoreFilter}
             />
           </DialogPanel>
         </div>
