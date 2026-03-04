@@ -7,10 +7,10 @@ import { useAiChat } from './hooks/useAiChat';
 const DASHBOARD_EXAMPLE_QUERIES = [
   '205/55/16 Michelin',
   'used tires under $80',
-  'llantas usadas menos de 150 mil',
-  'nuevas aro 17',
-  'Bridgestone new 195/65/15',
-  'usadas con más de 50% de vida',
+  'new tires rim 17',
+  'Bridgestone 195/65/15',
+  'tires at Orlando store',
+  'used with more than 50% life',
 ];
 
 interface AiChatProps {
