@@ -450,11 +450,13 @@ const SearchResults: FC<SearchResultsProps> = () => {
           apiEndpoint="/api/search-results/ai-chat"
           redirectBasePath="search-results"
           exampleQueries={[
-            '205/55/16 nuevas',
+            '205/55/16 nuevas Michelin',
             'used Michelin aro 17',
             'usadas menos de $50',
             '¿qué diferencia hay entre nueva y usada?',
-            '195/65/15 con buena vida útil',
+            '195/65/15 with more than 50% life',
+            'Pirelli',
+            'used tires under $80',
           ]}
         />
       </main>

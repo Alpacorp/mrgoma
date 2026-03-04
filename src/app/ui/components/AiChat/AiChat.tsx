@@ -29,7 +29,10 @@ export default function AiChat({
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { messages, isLoading, sendMessage, clearChat } = useAiChat({ apiEndpoint, redirectBasePath });
+  const { messages, isLoading, sendMessage, clearChat } = useAiChat({
+    apiEndpoint,
+    redirectBasePath,
+  });
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -64,10 +67,7 @@ export default function AiChat({
     <>
       {/* Backdrop — only onClick needed; touch is blocked by the panel */}
       {isOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/20"
-          onClick={() => setIsOpen(false)}
-        />
+        <div className="fixed inset-0 z-40 bg-black/20" onClick={() => setIsOpen(false)} />
       )}
 
       {/* Chat Panel */}
@@ -110,7 +110,14 @@ export default function AiChat({
                 className="p-1.5 rounded-lg hover:bg-green-700 transition-colors"
                 aria-label="Close chat"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  className="w-4 h-4"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -124,7 +131,7 @@ export default function AiChat({
                 <span className="text-4xl">✨</span>
                 <p className="font-medium text-gray-600 text-sm">Try one of these:</p>
                 <div className="space-y-1.5 w-full">
-                  {exampleQueries.map((q) => (
+                  {exampleQueries.map(q => (
                     <button
                       key={q}
                       type="button"
@@ -138,8 +145,11 @@ export default function AiChat({
               </div>
             )}
 
-            {messages.map((msg) => (
-              <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+            {messages.map(msg => (
+              <div
+                key={msg.id}
+                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
                 {msg.isFilterApplication ? (
                   <div className="max-w-[85%] px-3 py-2 rounded-xl bg-green-50 border border-green-200 text-green-800 text-sm">
                     <div className="flex items-center gap-1.5 mb-0.5">
@@ -163,9 +173,18 @@ export default function AiChat({
               <div className="flex justify-start">
                 <div className="px-4 py-3 rounded-xl bg-white border border-gray-200">
                   <div className="flex gap-1">
-                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    <span
+                      className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                      style={{ animationDelay: '0ms' }}
+                    />
+                    <span
+                      className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                      style={{ animationDelay: '150ms' }}
+                    />
+                    <span
+                      className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                      style={{ animationDelay: '300ms' }}
+                    />
                   </div>
                 </div>
               </div>
@@ -175,11 +194,14 @@ export default function AiChat({
           </div>
 
           {/* Input — native form submit is the most reliable on iOS */}
-          <form onSubmit={handleSubmit} className="p-3 bg-white border-t border-gray-100 shrink-0 flex gap-2">
+          <form
+            onSubmit={handleSubmit}
+            className="p-3 bg-white border-t border-gray-100 shrink-0 flex gap-2"
+          >
             <input
               type="text"
               value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
+              onChange={e => setInputValue(e.target.value)}
               enterKeyHint="send"
               placeholder="Ask about tires..."
               disabled={isLoading}
@@ -192,8 +214,19 @@ export default function AiChat({
               className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
               aria-label="Send"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
+                />
               </svg>
             </button>
           </form>
@@ -203,14 +236,21 @@ export default function AiChat({
       {/* Floating Toggle Button */}
       <button
         type="button"
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={() => setIsOpen(prev => !prev)}
         className={`fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 ${
           isOpen ? 'bg-gray-500 hover:bg-gray-600' : 'bg-green-600 hover:bg-green-700'
         }`}
         aria-label={isOpen ? 'Close AI assistant' : 'Open AI assistant'}
       >
         {isOpen ? (
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="white" className="w-6 h-6">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2.5}
+            stroke="white"
+            className="w-6 h-6"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         ) : (
