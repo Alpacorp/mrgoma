@@ -23,6 +23,7 @@ export function buildTireFilters(searchParams: URLSearchParams): TireFilters {
   const minRemainingLife = searchParams.get('minRemainingLife');
   const maxRemainingLife = searchParams.get('maxRemainingLife');
   const sort = searchParams.get('sort');
+  const storesParam = searchParams.get('stores');
 
   // Tire dimensions
   const width = searchParams.get('w');
@@ -46,6 +47,7 @@ export function buildTireFilters(searchParams: URLSearchParams): TireFilters {
   if (minRemainingLife) filters.minRemainingLife = parseInt(minRemainingLife, 10);
   if (maxRemainingLife) filters.maxRemainingLife = parseInt(maxRemainingLife, 10);
   if (sort) filters.sort = sort;
+  if (storesParam) filters.stores = storesParam.split(',').filter(Boolean);
 
   // Add dimension parameters
   if (width) filters.width = width;

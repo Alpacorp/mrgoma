@@ -27,6 +27,7 @@ export type DocumentRecord = {
   speedIndex?: string;
   Tread?: string;
   RealSize?: string;
+  VaultName?: string;
 };
 
 export type TireFilters = {
@@ -43,6 +44,7 @@ export type TireFilters = {
   width?: string; // Ancho del neumático (w)
   sidewall?: string; // Relación de aspecto (s)
   diameter?: string; // Diámetro (d)
+  stores?: string[];
 };
 
 export type TireRangeResult = {
@@ -147,6 +149,15 @@ async function fetchTiresInternal(
     filters.brands.forEach((brand, idx) => {
       request.input(`brand${idx}`, VarChar, brand);
       countRequest.input(`brand${idx}`, VarChar, brand);
+    });
+  }
+
+  if (filters.stores && filters.stores.length > 0) {
+    const storeParams = filters.stores.map((_, idx) => `@store${idx}`).join(',');
+    whereClause += ` AND VaultName IN (${storeParams})`;
+    filters.stores.forEach((store, idx) => {
+      request.input(`store${idx}`, VarChar, store);
+      countRequest.input(`store${idx}`, VarChar, store);
     });
   }
 
@@ -351,6 +362,16 @@ async function fetchBrandsInternal(
 
   const result = await request.query(query);
   return result.recordset.map(row => row.Brand as string);
+}
+
+export async function fetchDashboardStores(): Promise<string[]> {
+  const pool = await getPool();
+  const query = `SELECT DISTINCT VaultName
+    FROM dbo.View_Tires
+    WHERE Local = '0' AND Trash = 'false' AND VaultName IS NOT NULL AND VaultName <> ''
+    ORDER BY VaultName`;
+  const result = await pool.request().query(query);
+  return result.recordset.map(row => row.VaultName as string);
 }
 
 export async function fetchTireById(tireId: string): Promise<DocumentRecord | null> {
