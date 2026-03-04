@@ -267,7 +267,7 @@ const SearchResults: FC<SearchResultsProps> = () => {
             />
           </div>
           <div id="services" className="absolute z-30 -mt-25 left-0 w-full">
-            <TitleSection title="STORE" className="!bg-gray-50" />
+            <TitleSection title="STORE" className="bg-gray-50!" />
           </div>
         </section>
         <div>
@@ -452,7 +452,6 @@ const SearchResults: FC<SearchResultsProps> = () => {
           exampleQueries={[
             '205/55/16 nuevas',
             'used Michelin aro 17',
-            'llantas para Honda Civic',
             'usadas menos de $50',
             '¿qué diferencia hay entre nueva y usada?',
             '195/65/15 con buena vida útil',
