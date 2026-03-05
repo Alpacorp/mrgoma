@@ -369,7 +369,7 @@ export async function fetchDashboardStores(): Promise<string[]> {
   const query = `SELECT DISTINCT VaultName
     FROM dbo.View_Tires
     WHERE Local = '0' AND Trash = 'false' AND VaultName IS NOT NULL AND VaultName <> ''
-    ORDER BY VaultName`;
+    ORDER BY VaultName DESC`;
   const result = await pool.request().query(query);
   return result.recordset.map(row => row.VaultName as string);
 }

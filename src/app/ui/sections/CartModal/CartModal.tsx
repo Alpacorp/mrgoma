@@ -10,7 +10,7 @@ import { XMarkIcon } from '@/app/ui/components';
 import { Dialog, DialogBackdrop, DialogPanel } from '@/app/ui/components/Dialog/Dialog';
 import ProductMeta from '@/app/ui/components/ProductMeta/ProductMeta';
 
-const CartModal: FC = () => {
+const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
   const { cartItems, removeFromCart, cartTotal, showCartModal, setShowCartModal } = useCart();
 
   const closeModal = () => {
@@ -111,42 +111,46 @@ const CartModal: FC = () => {
             </div>
 
             {/* Footer */}
-            <div className="sticky bottom-0 z-10 border-t border-gray-200 p-4 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/75">
-              <div
-                className="flex items-center justify-between text-base font-semibold text-gray-900 mb-3"
-                aria-live="polite"
-              >
-                <p>Subtotal</p>
-                <p>${cartTotal.toFixed(2)}</p>
-              </div>
-              <Link
-                href="/checkout"
-                aria-disabled={cartItems.length === 0}
-                role={cartItems.length === 0 ? 'link' : undefined}
-                tabIndex={cartItems.length === 0 ? -1 : 0}
-                className={`flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
-                  cartItems.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-                onClick={e => {
-                  if (cartItems.length === 0) {
-                    e.preventDefault();
-                  } else {
-                    closeModal();
-                  }
-                }}
-              >
-                Checkout
-              </Link>
-              <div className="mt-3 flex justify-center">
-                <button
-                  type="button"
-                  className="text-sm font-semibold text-green-700 hover:text-green-800 cursor-pointer px-4 py-2 rounded-md border border-green-200 hover:bg-green-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
-                  onClick={closeModal}
+            {footer !== undefined ? (
+              footer
+            ) : (
+              <div className="sticky bottom-0 z-10 border-t border-gray-200 p-4 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/75">
+                <div
+                  className="flex items-center justify-between text-base font-semibold text-gray-900 mb-3"
+                  aria-live="polite"
                 >
-                  Continue Shopping
-                </button>
+                  <p>Subtotal</p>
+                  <p>${cartTotal.toFixed(2)}</p>
+                </div>
+                <Link
+                  href="/checkout"
+                  aria-disabled={cartItems.length === 0}
+                  role={cartItems.length === 0 ? 'link' : undefined}
+                  tabIndex={cartItems.length === 0 ? -1 : 0}
+                  className={`flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
+                    cartItems.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                  onClick={e => {
+                    if (cartItems.length === 0) {
+                      e.preventDefault();
+                    } else {
+                      closeModal();
+                    }
+                  }}
+                >
+                  Checkout
+                </Link>
+                <div className="mt-3 flex justify-center">
+                  <button
+                    type="button"
+                    className="text-sm font-semibold text-green-700 hover:text-green-800 cursor-pointer px-4 py-2 rounded-md border border-green-200 hover:bg-green-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+                    onClick={closeModal}
+                  >
+                    Continue Shopping
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </DialogPanel>
       </div>
