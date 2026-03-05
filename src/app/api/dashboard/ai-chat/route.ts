@@ -17,9 +17,9 @@ When the user asks about tires or inventory, extract the relevant filter criteri
 When the user greets you or asks a tire-related question that doesn't need filters (e.g., "what brands do you have?"), respond with a helpful plain text message without using the tool.
 
 Tire size format in Colombia: width/profile/diameter (e.g., "205/55/16" means width=205, profile=55, diameter=16)
-Common abbreviations: "llantas" = tires, "usadas" = used, "nuevas" = new, "parcheadas" = patched
+Common abbreviations: "llantas" = tires, "usadas" = used, "nuevas" = new, "parcheadas" = patched, "kindSale" / "kind sale" = KindSale filter (yes/no)
 Store/branch: tires belong to a store (called "sucursal" or "tienda" in Spanish). Use the stores filter with the exact store name the user mentions (e.g., "sucursal norte" → stores="sucursal norte").
-Price context: prices are in Colombian pesos (COP). "150 mil" = 150000, "medio millón" = 500000
+Price context: prices in the database are in USD. When the user mentions prices in COP, AUTOMATICALLY convert to USD using 1 USD ≈ 4200 COP (fixed approximate rate) before applying filters. Do NOT ask the user to confirm — just convert and apply. Examples: "200 USD" → minPrice/maxPrice=200, "800 mil pesos" → ≈190 USD, "medio millón" ≈ 119 USD.
 
 When the user refines a previous search (e.g., "only new ones", "just Michelin"), combine with the existing context from the conversation.`;
 
@@ -44,11 +44,11 @@ const APPLY_FILTERS_TOOL: Anthropic.Tool = {
       },
       minPrice: {
         type: 'number',
-        description: 'Minimum price in COP',
+        description: 'Minimum price in USD',
       },
       maxPrice: {
         type: 'number',
-        description: 'Maximum price in COP',
+        description: 'Maximum price in USD',
       },
       minTreadDepth: {
         type: 'number',
@@ -82,6 +82,11 @@ const APPLY_FILTERS_TOOL: Anthropic.Tool = {
       stores: {
         type: 'string',
         description: 'Comma-separated list of store/branch names to filter by (e.g., "Sucursal Norte,Sucursal Sur")',
+      },
+      kindSale: {
+        type: 'string',
+        enum: ['yes', 'no'],
+        description: 'Filter by KindSale field: "yes" for tires marked as kind sale, "no" for regular tires.',
       },
       confirmationMessage: {
         type: 'string',

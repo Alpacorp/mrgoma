@@ -22,6 +22,7 @@ interface RangeBounds {
 interface CheckboxInputs {
   condition: string[];
   patched: string[];
+  kindSale: string[];
   brands: string[];
   stores: string[];
 }
@@ -66,6 +67,7 @@ export const useFilters = (
   const [checkboxInputs, setCheckboxInputs] = useState<CheckboxInputs>({
     condition: searchParams.get('condition')?.split(',').filter(Boolean) || [],
     patched: searchParams.get('patched')?.split(',').filter(Boolean) || [],
+    kindSale: searchParams.get('kindSale')?.split(',').filter(Boolean) || [],
     brands: searchParams.get('brands')?.split(',').filter(Boolean) || [],
     stores: searchParams.get('stores')?.split(',').filter(Boolean) || [],
   });
@@ -256,6 +258,7 @@ export const useFilters = (
     const newCheckboxInputs = {
       condition: searchParams.get('condition')?.split(',').filter(Boolean) || [],
       patched: searchParams.get('patched')?.split(',').filter(Boolean) || [],
+      kindSale: searchParams.get('kindSale')?.split(',').filter(Boolean) || [],
       brands: searchParams.get('brands')?.split(',').filter(Boolean) || [],
       stores: searchParams.get('stores')?.split(',').filter(Boolean) || [],
     } as CheckboxInputs;
@@ -326,6 +329,7 @@ export const useFilters = (
       checkboxInputs.condition.join(',')
     );
     setOrDelete('patched', checkboxInputs.patched.length > 0, checkboxInputs.patched.join(','));
+    setOrDelete('kindSale', checkboxInputs.kindSale.length > 0, checkboxInputs.kindSale.join(','));
     setOrDelete('brands', checkboxInputs.brands.length > 0, checkboxInputs.brands.join(','));
     setOrDelete('stores', checkboxInputs.stores.length > 0, checkboxInputs.stores.join(','));
 
@@ -355,6 +359,7 @@ export const useFilters = (
     rangeBounds.remainingLife[1],
     checkboxInputs.condition.join(','),
     checkboxInputs.patched.join(','),
+    checkboxInputs.kindSale.join(','),
     checkboxInputs.brands.join(','),
     checkboxInputs.stores.join(','),
     redirectBasePath,
@@ -431,6 +436,7 @@ export const useFilters = (
     const defaultCheckboxInputs = {
       condition: [],
       patched: [],
+      kindSale: [],
       brands: [],
       stores: [],
     };
@@ -450,6 +456,7 @@ export const useFilters = (
     // Remove checkbox input parameters
     params.delete('condition');
     params.delete('patched');
+    params.delete('kindSale');
     params.delete('brands');
     params.delete('stores');
 

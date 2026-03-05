@@ -28,6 +28,7 @@ export type DocumentRecord = {
   Tread?: string;
   RealSize?: string;
   VaultName?: string;
+  KindSale?: string;
 };
 
 export type TireFilters = {
@@ -45,6 +46,7 @@ export type TireFilters = {
   sidewall?: string; // Relación de aspecto (s)
   diameter?: string; // Diámetro (d)
   stores?: string[];
+  kindSale?: string[];
 };
 
 export type TireRangeResult = {
@@ -159,6 +161,18 @@ async function fetchTiresInternal(
       request.input(`store${idx}`, VarChar, store);
       countRequest.input(`store${idx}`, VarChar, store);
     });
+  }
+
+  if (filters.kindSale && filters.kindSale.length > 0) {
+    const normalized = filters.kindSale.map(k => k.toLowerCase());
+    const includeYes = normalized.includes('yes');
+    const includeNo = normalized.includes('no');
+
+    if (includeYes && !includeNo) {
+      whereClause += " AND KindSale = 'Yes'";
+    } else if (!includeYes && includeNo) {
+      whereClause += " AND KindSale = 'No'";
+    }
   }
 
   if (typeof filters.minPrice === 'number') {

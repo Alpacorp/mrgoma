@@ -51,6 +51,7 @@ export function useAiChat(options?: { apiEndpoint?: string; redirectBasePath?: s
     if (filters.patched !== undefined) params.set('patched', String(filters.patched));
     if (filters.brands !== undefined) params.set('brands', String(filters.brands));
     if (filters.stores !== undefined) params.set('stores', String(filters.stores));
+    if (filters.kindSale !== undefined) params.set('kindSale', String(filters.kindSale));
 
     params.set('page', '1');
 
