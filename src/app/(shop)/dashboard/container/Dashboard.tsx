@@ -4,6 +4,7 @@ import { useContext } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 
 import AiChat from '@/app/ui/components/AiChat/AiChat';
+import DashboardCartModal from '@/app/ui/sections/DashboardCartModal/DashboardCartModal';
 import { TireSelector } from '@/app/ui/components/CollapsibleSearchBar/components/TireSelector';
 import { useTireSearch } from '@/app/ui/components/CollapsibleSearchBar/hooks/useTireSearch';
 import { AdjustmentsHorizontalIcon } from '@/app/ui/components/Icons/Icons';
@@ -21,7 +22,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen">
       {/* Dashboard Header */}
-      <header className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+      <header className="mb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Welcome, {userName}</h1>
           <p className="text-sm text-gray-500 mt-1">Real-time stock management and visualization</p>
@@ -54,11 +55,11 @@ const Dashboard = () => {
       </header>
 
       {/* Filters Section */}
-      <section className="space-y-6">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-          <div className="flex items-center gap-2 mb-6">
-            <div className="h-6 w-1 bg-green-500 rounded-full"></div>
-            <h2 className="text-lg font-semibold text-gray-900">Search Filters</h2>
+      <section className="space-y-3">
+        <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="h-5 w-1 bg-green-500 rounded-full"></div>
+            <h2 className="text-base font-semibold text-gray-900">Search</h2>
           </div>
           <TopFilters
             redirectBasePath={'dashboard'}
@@ -67,7 +68,7 @@ const Dashboard = () => {
             showStoreFilter={true}
           />
 
-          <div className="lg:hidden mt-2 border-t border-gray-50 pt-6 space-y-4">
+          <div className="lg:hidden mt-2 border-t border-gray-50 pt-3 space-y-3">
             <TireSelector
               selectedFilters={mobileTireFilters}
               onFilterChangeAction={handleMobileTireChange}
@@ -91,23 +92,24 @@ const Dashboard = () => {
         </div>
 
         {/* Table Section */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-          <div className="flex items-center gap-2 mb-6">
-            <div className="h-6 w-1 bg-green-500 rounded-full"></div>
-            <h2 className="text-lg font-semibold text-gray-900">Inventory Data</h2>
+        <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="h-5 w-1 bg-green-500 rounded-full"></div>
+            <h2 className="text-base font-semibold text-gray-900">Inventory Data</h2>
           </div>
           <DashboardTableContainer />
         </div>
       </section>
 
       {/* Dashboard Footer */}
-      <footer className="mt-12 text-center pb-8">
+      <footer className="mt-6 text-center pb-4">
         <p className="text-xs text-gray-400">
           © {new Date().getFullYear()} Mr. Goma Tires - Internal Inventory System. Protected Page.
         </p>
       </footer>
 
       <AiChat />
+      <DashboardCartModal />
     </div>
   );
 };
