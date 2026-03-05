@@ -82,7 +82,7 @@ export const TopFilters: FC<{
     return curMin > defMin || curMax < defMax;
   };
 
-  const isCheckboxGroupActive = (id: 'condition' | 'patched') => {
+  const isCheckboxGroupActive = (id: 'condition' | 'patched' | 'kindSale') => {
     return (checkboxInputs?.[id] || []).length > 0;
   };
 
@@ -91,7 +91,7 @@ export const TopFilters: FC<{
 
   const isFilterActive = (id: string) => {
     if (id === 'price' || id === 'treadDepth' || id === 'remainingLife') return isRangeActive(id);
-    if (id === 'condition' || id === 'patched') return isCheckboxGroupActive(id);
+    if (id === 'condition' || id === 'patched' || id === 'kindSale') return isCheckboxGroupActive(id);
     if (id === 'brands') return isBrandsActive();
     return false;
   };

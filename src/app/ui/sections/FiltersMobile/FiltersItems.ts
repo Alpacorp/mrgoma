@@ -15,4 +15,12 @@ export const filtersItems = [
       { value: 'no', label: 'No', checked: false },
     ],
   },
+  {
+    id: 'kindSale',
+    name: 'Kind Sale',
+    options: [
+      { value: 'yes', label: 'Yes', checked: false },
+      { value: 'no', label: 'No', checked: false },
+    ],
+  },
 ];
