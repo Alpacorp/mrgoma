@@ -86,7 +86,7 @@ const LoginForm = () => {
               href="/"
             >
               <ArrowLeftIcon className="mr-2" size={14} />
-              Home
+              Mr Goma website
             </Link>
           </div>
         </div>
