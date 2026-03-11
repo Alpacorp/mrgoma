@@ -1,8 +1,9 @@
 'use client';
 
+import { useState, useEffect, useCallback } from 'react';
+
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState, useEffect, useCallback } from 'react';
 
 import { infoSliderData } from '@/app/ui/sections/InfoSlider/infoSliderData';
 
@@ -36,7 +37,9 @@ const InfoSlider = () => {
           <div
             key={slide.id}
             className={`absolute inset-0 transition-opacity duration-500 ${
-              index === currentSlide ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+              index === currentSlide
+                ? 'opacity-100 pointer-events-auto'
+                : 'opacity-0 pointer-events-none'
             }`}
             aria-hidden={index !== currentSlide}
           >

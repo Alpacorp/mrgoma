@@ -3,6 +3,7 @@
 import { FC, useContext, useEffect, useState } from 'react';
 
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
+import { BrandHeadline } from '@/app/ui/components';
 import { SizeIcon, TextIcon } from '@/app/ui/icons';
 import { SearchSection } from '@/app/ui/sections';
 
@@ -36,18 +37,11 @@ const SearchContainer: FC = () => {
   return (
     <div className="py-14">
       <div
-        className={`text-center mb-8 transition-all duration-700 ease-out transform ${
+        className={`mb-8 transition-all duration-700 ease-out transform ${
           isMounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
         }`}
       >
-        <h1 className="text-3xl sm:text-4xl md:text-5xl uppercase font-extrabold text-white tracking-tight [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.45)]">
-          The <span className="text-lime-400">Tires</span> you{' '}
-          <span className="text-lime-400">need</span>
-        </h1>
-        <p className="text-2xl sm:text-3xl font-semibold sm:font-bold uppercase text-white tracking-tight">
-          The <span className="text-lime-400">Price</span> you{' '}
-          <span className="text-lime-400">want</span>
-        </p>
+        <BrandHeadline as="h1" size="lg" />
       </div>
 
       <div className="w-full">

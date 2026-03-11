@@ -9,7 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
-import { ButtonSpinner, InputError, Snackbar } from '@/app/ui/components';
+import { BrandHeadline, ButtonSpinner, InputError, Snackbar } from '@/app/ui/components';
 import { LoginSchema, Inputs } from '@/app/ui/components/LoginForm/schema/loginSchema';
 import { UserIcon, LockIcon, ArrowLeftIcon, EyeIcon, EyeOffIcon } from '@/app/ui/icons';
 
@@ -69,9 +69,7 @@ const LoginForm = () => {
           />
         </Link>
       </div>
-      <h3 className="text-white mb-20 text-center text-sm lg:hidden">
-        Every customer deserves our best solution
-      </h3>
+      <BrandHeadline as="h2" size="sm" className="mb-8 lg:hidden" />
       <form className="w-full" onSubmit={handleSubmit(processForm)}>
         <div className="flex justify-between items-start">
           <div className="mb-0">
