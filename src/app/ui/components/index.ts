@@ -1,3 +1,4 @@
+export { default as BrandHeadline } from './BrandHeadline/BrandHeadline';
 export { default as BrandImage } from './BrandImage/BrandImage';
 export { default as CtaButton } from './CtaButton/CtaButton';
 export { default as ProductCondition } from './ProductCondition/ProductCondition';
