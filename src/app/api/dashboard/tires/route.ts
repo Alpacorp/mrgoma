@@ -9,8 +9,17 @@ import {
 } from '@/app/utils/paginationUtils';
 import { fetchDashboardTires } from '@/repositories/tiresRepository';
 import { logger } from '@/utils/logger';
+import { getToken } from 'next-auth/jwt';
 
 export async function GET(req: NextRequest) {
+  
+  const token = await getToken({ req: req, secret: process.env.NEXTAUTH_SECRET, raw: true });
+  
+  if(!token){
+    logger.warn("Unauthorized access");
+    return NextResponse.json({message: "Unauthorized user. Please log in."}, {status: 401});
+  }
+
   const { searchParams } = new URL(req.url);
 
   const pageParam = searchParams.get('page') ?? DEFAULT_PAGE.toString();

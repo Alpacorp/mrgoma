@@ -11,6 +11,7 @@ import { fetchTires } from '@/repositories/tiresRepository';
 import { logger } from '@/utils/logger';
 
 export async function GET(req: NextRequest) {
+
   const { searchParams } = new URL(req.url);
 
   // Get and validate pagination parameters
