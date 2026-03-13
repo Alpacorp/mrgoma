@@ -1,8 +1,8 @@
-import Image from 'next/image';
-import Link from 'next/link';
 import React from 'react';
 
-import { mrGomaLogo } from '#public/assets/images/Logo';
+import Image from 'next/image';
+import Link from 'next/link';
+
 import type {
   FooterProps,
   FooterSection as FooterSectionType,
@@ -10,6 +10,8 @@ import type {
 } from '@/app/ui/sections/Footer/footer-section';
 import { FooterSection } from '@/app/ui/sections/Footer/FooterSection';
 import { SocialIcon } from '@/app/ui/sections/Footer/SocialIcons';
+
+import { mrGomaLogoLight } from '#public/assets/images/Logo';
 
 const defaultSections: FooterSectionType[] = [
   {
@@ -80,7 +82,7 @@ export const Footer = ({
                 alt="MrGoma Tires logo"
                 title="Go to the home page"
                 aria-label="Go to the home page"
-                src={mrGomaLogo || '/placeholder.svg'}
+                src={mrGomaLogoLight || '/placeholder.svg'}
                 className="h-8 w-auto"
                 priority
               />

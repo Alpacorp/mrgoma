@@ -13,7 +13,7 @@ import { BrandHeadline, ButtonSpinner, InputError, Snackbar } from '@/app/ui/com
 import { LoginSchema, Inputs } from '@/app/ui/components/LoginForm/schema/loginSchema';
 import { UserIcon, LockIcon, ArrowLeftIcon, EyeIcon, EyeOffIcon } from '@/app/ui/icons';
 
-import { mrGomaLogo } from '#public/assets/images/Logo';
+import { mrGomaLogoLight } from '#public/assets/images/Logo';
 
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -63,7 +63,7 @@ const LoginForm = () => {
             alt="MrGoma Tires logo"
             title="Go to the home page"
             aria-label="Go to the home page"
-            src={mrGomaLogo || '/placeholder.svg'}
+            src={mrGomaLogoLight || '/placeholder.svg'}
             className="w-64"
             priority
           />

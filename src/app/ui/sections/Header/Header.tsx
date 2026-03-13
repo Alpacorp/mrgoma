@@ -12,7 +12,7 @@ import { ShoppingCart } from '@/app/ui/icons';
 import { CartModal, MenuMobile } from '@/app/ui/sections';
 import { menuItems } from '@/app/ui/sections/Header/MenuItems';
 
-import { mrGomaLogo } from '#public/assets/images/Logo';
+import { mrGomaLogoLight } from '#public/assets/images/Logo';
 /**
  * Header component for the website
  * Contains the logo, navigation links, and shopping cart icon
@@ -65,7 +65,7 @@ const Header: FC = (): ReactNode => {
                 alt="MrGoma Tires logo"
                 title="Go to the home page"
                 aria-label="Go to the home page"
-                src={mrGomaLogo || '/placeholder.svg'}
+                src={mrGomaLogoLight || '/placeholder.svg'}
                 className="h-8 w-auto"
                 priority
               />
