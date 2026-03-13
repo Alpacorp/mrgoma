@@ -114,7 +114,7 @@ const DashboardTable = () => {
 
                 const columnName = d.columns[columnIndex].data;
 
-                result.records.sort((a: any, b: any) => {
+                result?.records?.sort((a: any, b: any) => {
                   if (a[columnName] < b[columnName]) return direction === 'asc' ? -1 : 1;
                   if (a[columnName] > b[columnName]) return direction === 'asc' ? 1 : -1;
                   return 0;
