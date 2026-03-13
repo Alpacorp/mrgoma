@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { LoginForm } from '@/app/ui/components';
 import { DocumentIcon, BoxIcon, DollyIcon } from '@/app/ui/icons';
 
-import { mrGomaLogo } from '#public/assets/images/Logo';
+import { mrGomaLogoLight } from '#public/assets/images/Logo';
 
 const Login = () => {
   return (
@@ -16,7 +16,7 @@ const Login = () => {
               alt="MrGoma Tires logo"
               title="Go to the home page"
               aria-label="Go to the home page"
-              src={mrGomaLogo || '/placeholder.svg'}
+              src={mrGomaLogoLight || '/placeholder.svg'}
               className="h-8 w-auto"
               priority
             />

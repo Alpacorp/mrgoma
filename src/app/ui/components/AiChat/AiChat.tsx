@@ -2,6 +2,10 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 
+import Image from 'next/image';
+
+import mrGomaAvatar from '#public/assets/images/mrgoma-avatar.svg';
+
 import { useAiChat } from './hooks/useAiChat';
 
 const DASHBOARD_EXAMPLE_QUERIES = [
@@ -234,29 +238,44 @@ export default function AiChat({
       )}
 
       {/* Floating Toggle Button */}
-      <button
-        type="button"
-        onClick={() => setIsOpen(prev => !prev)}
-        className={`fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 ${
-          isOpen ? 'bg-gray-500 hover:bg-gray-600' : 'bg-green-600 hover:bg-green-700'
-        }`}
-        aria-label={isOpen ? 'Close AI assistant' : 'Open AI assistant'}
-      >
+      <div className="fixed bottom-6 right-6 z-50">
         {isOpen ? (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2.5}
-            stroke="white"
-            className="w-6 h-6"
+          <button
+            type="button"
+            onClick={() => setIsOpen(false)}
+            className="w-12 h-12 rounded-full bg-gray-600 hover:bg-gray-700 shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95"
+            aria-label="Close AI assistant"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2.5}
+              stroke="white"
+              className="w-5 h-5"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         ) : (
-          <span className="text-2xl">✨</span>
+          <button
+            type="button"
+            onClick={() => setIsOpen(true)}
+            className="relative w-16 h-16 rounded-full overflow-hidden shadow-xl transition-all duration-200 hover:scale-110 active:scale-95 ring-[3px] ring-green-400 ring-offset-2 ring-offset-black/10"
+            aria-label="Open AI assistant"
+          >
+            <Image
+              alt="MrGoma AI Assistant"
+              src={mrGomaAvatar || '/placeholder.svg'}
+              fill
+              className="object-cover object-top"
+              priority
+            />
+            {/* Active indicator dot */}
+            <span className="absolute bottom-0.5 right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-white shadow-sm" />
+          </button>
         )}
-      </button>
+      </div>
     </>
   );
 }

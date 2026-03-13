@@ -22,13 +22,13 @@ export const MenuPanel: React.FC<MenuPanelProps> = ({
 }) => {
   return (
     <div
-      className={`fixed inset-y-0 left-0 z-[100] w-80 overflow-y-auto bg-[#111] px-6 py-6 sm:w-sm shadow-xl border-r border-[#333] transform transition-all ease-out ${
+      className={`fixed inset-y-0 left-0 z-100 w-80 overflow-y-auto bg-[#111] px-6 py-6 sm:w-sm shadow-xl border-r border-[#333] transform transition-all ease-out ${
         isAnimating ? 'translate-x-0' : '-translate-x-full'
       }`}
       style={{ transitionDuration: `${duration}ms` }}
     >
       {/* Background gradient */}
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-black via-[#1A1A1A] to-[#222] opacity-80" />
+      <div className="absolute inset-0 z-0 bg-linear-to-b from-black via-[#1A1A1A] to-[#222] opacity-80" />
 
       {/* Content */}
       <div className="relative z-10">

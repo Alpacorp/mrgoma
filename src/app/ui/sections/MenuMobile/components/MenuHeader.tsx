@@ -1,9 +1,11 @@
-import Image from 'next/image';
-import Link from 'next/link';
 import React from 'react';
 
-import { mrGomaLogo } from '#public/assets/images/Logo';
+import Image from 'next/image';
+import Link from 'next/link';
+
 import { XMarkIcon } from '@/app/ui/icons/XMarkIcon';
+
+import { mrGomaLogoLight } from '#public/assets/images/Logo';
 
 interface MenuHeaderProps {
   onClose: () => void;
@@ -26,7 +28,7 @@ export const MenuHeader: React.FC<MenuHeaderProps> = ({ onClose, animationStage 
           alt="MrGoma Tires logo"
           title="Go to the home page"
           aria-label="Go to the home page"
-          src={mrGomaLogo}
+          src={mrGomaLogoLight}
           className="h-8 w-auto"
           priority
         />
