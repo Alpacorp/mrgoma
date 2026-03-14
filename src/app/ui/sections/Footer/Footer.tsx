@@ -155,4 +155,92 @@ export const Footer = ({
   );
 };
 
+const dashboardSocialLinks: SocialLink[] = defaultSocialLinks;
+
+export const DashboardFooter = () => {
+  const copyrightYear = new Date().getFullYear();
+
+  return (
+    <footer className="bg-black relative overflow-hidden">
+      <div className="absolute inset-0" aria-hidden="true">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url('/assets/images/background-footer.png')`,
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover',
+          }}
+        />
+      </div>
+      <div className="relative">
+        <div className="container mx-auto px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            {/* Slogan */}
+            <div className="space-y-4">
+              <Image
+                alt="MrGoma Tires logo"
+                src={mrGomaLogoLight || '/placeholder.svg'}
+                className="h-8 w-auto mb-4"
+                priority
+              />
+              <p className="text-white text-xl font-semibold leading-snug">
+                Every Sale Matters.{' '}
+                <span className="text-[#9dfb40]">Every Customer Remembers.</span>
+              </p>
+              <p className="text-gray-400 text-sm tracking-widest font-medium">
+                Fast &bull; Value &bull; Trust
+              </p>
+            </div>
+
+            {/* Follow us */}
+            <div>
+              <h3 className="text-white text-lg font-semibold mb-4 flex items-center gap-2">
+                Follow us
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="text-[#9dfb40]"
+                >
+                  <path
+                    d="M9 5L15 12L9 19"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </h3>
+              <div className="flex gap-4">
+                {dashboardSocialLinks.map(social => (
+                  <a
+                    key={social.platform}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#9dfb40] hover:text-[#7bc42d] transition-colors duration-200 p-2 rounded-lg hover:bg-white hover:opacity-40"
+                    aria-label={`Follow us on ${social.platform}`}
+                  >
+                    <SocialIcon platform={social.icon} />
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t border-gray-600" />
+        <div className="container mx-auto px-6 lg:px-8 py-6">
+          <p className="text-gray-400 text-xs text-center">
+            <span className="text-[#9dfb40] font-semibold">MrGoma Tires®</span> — Internal Inventory
+            System. All rights reserved {copyrightYear}.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
 export default Footer;

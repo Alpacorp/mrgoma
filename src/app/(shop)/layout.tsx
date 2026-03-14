@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { Footer, Header, TopHeader } from '@/app/ui/sections';
+import { Header, TopHeader } from '@/app/ui/sections';
+import { FooterWrapper } from '@/app/ui/sections/Footer/FooterWrapper';
 
 export default function RootLayout({
   children,
@@ -14,7 +15,7 @@ export default function RootLayout({
         <Header />
       </div>
       {children}
-      <Footer />
+      <FooterWrapper />
     </div>
   );
 }

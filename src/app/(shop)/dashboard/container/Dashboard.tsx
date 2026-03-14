@@ -3,13 +3,13 @@ import { useContext } from 'react';
 
 import { useSession, signOut } from 'next-auth/react';
 
+import { ShowFilterContext } from '@/app/context/ShowFilterContext';
 import AiChat from '@/app/ui/components/AiChat/AiChat';
-import DashboardCartModal from '@/app/ui/sections/DashboardCartModal/DashboardCartModal';
 import { TireSelector } from '@/app/ui/components/CollapsibleSearchBar/components/TireSelector';
 import { useTireSearch } from '@/app/ui/components/CollapsibleSearchBar/hooks/useTireSearch';
 import { AdjustmentsHorizontalIcon } from '@/app/ui/components/Icons/Icons';
-import { ShowFilterContext } from '@/app/context/ShowFilterContext';
 import { FiltersMobile, TopFilters } from '@/app/ui/sections';
+import DashboardCartModal from '@/app/ui/sections/DashboardCartModal/DashboardCartModal';
 import DashboardTableContainer from '@/app/ui/sections/DashboardTableContainer/DashboardTableContainer';
 
 const Dashboard = () => {
@@ -100,13 +100,6 @@ const Dashboard = () => {
           <DashboardTableContainer />
         </div>
       </section>
-
-      {/* Dashboard Footer */}
-      <footer className="mt-6 text-center pb-4">
-        <p className="text-xs text-gray-400">
-          © {new Date().getFullYear()} Mr. Goma Tires - Internal Inventory System. Protected Page.
-        </p>
-      </footer>
 
       <AiChat />
       <DashboardCartModal />
