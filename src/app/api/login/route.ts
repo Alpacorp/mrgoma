@@ -39,7 +39,6 @@ export async function POST(req: NextRequest) {
       success: true,
       user: {
         id: user.UserName,
-        email: user.UserName,
         name: user.UserName,
         // Default roles for the seller portal
         code_role: 'user',

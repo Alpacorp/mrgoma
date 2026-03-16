@@ -57,7 +57,7 @@ const LoginForm = () => {
 
   return (
     <div className="w-full sm:max-w-lg px-8">
-      <div className="flex justify-center lg:hidden border mb-2">
+      <div className="flex justify-center lg:hidden mb-2">
         <Link href="/">
           <Image
             alt="MrGoma Tires logo"
@@ -74,23 +74,23 @@ const LoginForm = () => {
         <div className="flex justify-between items-start">
           <div className="mb-0">
             <h1 className="text-2xl font-medium text-white mb-1.5">Seller Portal</h1>
-            <h5 className="text-slate-400 font-light text-xs mb-8">
+            <h5 className="text-white font-light text-xs mb-8">
               Sign in with your employee account
             </h5>
           </div>
           <div>
             <Link
-              className="text-slate-400 flex text-[11px] items-center border border-slate-400 hover:border-[#9dfb40] rounded-xl px-2 py-0.5 hover:text-[#9dfb40]"
+              className="text-white flex text-[11px] items-center border border-white hover:border-[#9dfb40] rounded-xl px-2 py-0.5 hover:text-[#9dfb40]"
               href="/"
             >
-              <ArrowLeftIcon className="mr-2" size={14} />
+              <ArrowLeftIcon className="mr-2 text-white" size={14} />
               Mr Goma website
             </Link>
           </div>
         </div>
 
         <div className="mb-4 relative">
-          <label className="text-sm mb-2 block text-slate-400" htmlFor="username">
+          <label className="text-sm mb-2 block text-white" htmlFor="username">
             <span className="text-lime-400 mr-2">*</span>
             User
           </label>
@@ -107,7 +107,7 @@ const LoginForm = () => {
           <InputError message={errors?.username?.message} />
         </div>
         <div className="mb-4">
-          <label className="text-sm mb-2 block text-slate-400" htmlFor="password">
+          <label className="text-sm mb-2 block text-white" htmlFor="password">
             <span className="text-lime-400 mr-2">*</span>
             Password
           </label>

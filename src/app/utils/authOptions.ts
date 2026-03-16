@@ -71,10 +71,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: '/login',
     signOut: '/login',
   },
-  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async session({ session }) {
       return session;
     },
+    async jwt({ token, user }) {
+      if(user){
+        token.id = user.id;
+        token.name = user.name
+      }
+      return token;
+    }
   },
+  secret: process.env.NEXTAUTH_SECRET,
 });
