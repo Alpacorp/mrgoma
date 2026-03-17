@@ -102,7 +102,9 @@ const DashboardTable = () => {
               params.set('page', currentPage.toString());
               params.set('pageSize', d.length.toString());
 
-              const response = await fetch(`/api/dashboard/tires?${params.toString()}`);
+              const response = await fetch(`/api/dashboard/tires?${params.toString()}`, {
+                credentials: "include"
+              });
 
               const result = await response.json();
 

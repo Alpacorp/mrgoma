@@ -12,7 +12,7 @@ import { logger } from '@/utils/logger';
 import { getToken } from 'next-auth/jwt';
 
 export async function GET(req: NextRequest) {
-  const token = await getToken({ req: req, secret: process.env.NEXTAUTH_SECRET, raw: true });
+  const token = await getToken({ req: req, secret: process.env.NEXTAUTH_SECRET});
 
   if (!token) {
     logger.warn('Unauthorized access');
