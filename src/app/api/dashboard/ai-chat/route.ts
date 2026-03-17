@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import Anthropic from '@anthropic-ai/sdk';
 
+import { auth } from '@/app/utils/authOptions';
 import { logger } from '@/utils/logger';
 
 const client = new Anthropic({
@@ -104,6 +105,13 @@ interface ApiMessage {
 }
 
 export async function POST(req: NextRequest) {
+  const session = await auth();
+
+  if (!session) {
+    logger.warn('Unauthorized access');
+    return NextResponse.json({ message: 'Unauthorized user. Please log in.' }, { status: 401 });
+  }
+
   try {
     const body = await req.json();
     const { messages }: { messages: ApiMessage[] } = body;
