@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { auth } from '@/app/utils/authOptions';
 import { buildTireFilters } from '@/app/utils/filterUtils';
 import {
   DEFAULT_PAGE,
@@ -9,12 +10,11 @@ import {
 } from '@/app/utils/paginationUtils';
 import { fetchDashboardTires } from '@/repositories/tiresRepository';
 import { logger } from '@/utils/logger';
-import { getToken } from 'next-auth/jwt';
 
 export async function GET(req: NextRequest) {
-  const token = await getToken({ req: req, secret: process.env.NEXTAUTH_SECRET});
+  const session = await auth();
 
-  if (!token) {
+  if (!session) {
     logger.warn('Unauthorized access');
     return NextResponse.json({ message: 'Unauthorized user. Please log in.' }, { status: 401 });
   }
