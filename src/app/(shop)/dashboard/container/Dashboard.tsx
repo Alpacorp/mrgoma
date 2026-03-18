@@ -57,7 +57,7 @@ const Dashboard = () => {
       {/* Filters Section */}
       <section className="space-y-3">
         <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-100">
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2">
             <div className="h-5 w-1 bg-green-500 rounded-full"></div>
             <h2 className="text-base font-semibold text-gray-900">Search</h2>
           </div>
@@ -67,8 +67,7 @@ const Dashboard = () => {
             showPriceFilter={false}
             showStoreFilter={true}
           />
-
-          <div className="lg:hidden mt-2 border-t border-gray-50 pt-3 space-y-3">
+          <div className="lg:hidden border-t border-gray-50 pt-3 space-y-3">
             <TireSelector
               selectedFilters={mobileTireFilters}
               onFilterChangeAction={handleMobileTireChange}

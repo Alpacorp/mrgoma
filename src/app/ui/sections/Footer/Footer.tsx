@@ -183,7 +183,7 @@ export const DashboardFooter = () => {
                 className="h-8 w-auto mb-4"
                 priority
               />
-              <p className="text-white text-xl font-semibold leading-snug">
+              <p className="text-white text-sm font-semibold leading-snug">
                 Every Sale Matters.{' '}
                 <span className="text-[#9dfb40]">Every Customer Remembers.</span>
               </p>
@@ -194,7 +194,7 @@ export const DashboardFooter = () => {
 
             {/* Follow us */}
             <div>
-              <h3 className="text-white text-lg font-semibold mb-4 flex items-center gap-2">
+              <h3 className="text-white text-sm font-semibold mb-4 flex items-center gap-2">
                 Follow us
                 <svg
                   width="20"

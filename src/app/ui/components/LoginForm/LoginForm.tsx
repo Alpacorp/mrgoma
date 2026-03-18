@@ -69,7 +69,7 @@ const LoginForm = () => {
           />
         </Link>
       </div>
-      <BrandHeadline as="h2" size="sm" className="mb-8 lg:hidden" />
+      <BrandHeadline as="h2" size="sm" className="mb-8 lg:hidden" inline />
       <form className="w-full" onSubmit={handleSubmit(processForm)}>
         <div className="flex justify-between items-start">
           <div className="mb-0">
@@ -84,7 +84,7 @@ const LoginForm = () => {
               href="/"
             >
               <ArrowLeftIcon className="mr-2 text-white" size={14} />
-              Mr Goma website
+              MrGoma Website
             </Link>
           </div>
         </div>
