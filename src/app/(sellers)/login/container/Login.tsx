@@ -62,9 +62,6 @@ const Login = () => {
       <div className="col-span-12 lg:col-span-7 min-h-dvh flex items-center justify-center py-24 relative p y-8   bg-[url(/assets/images/tireLogin.png)] bg-cover lg:bg-none">
         <LoginForm />
       </div>
-      {/* <div className="col-span-12 lg:col-span-7 min-h-dvh flex items-center justify-center py-24 relative p y-8 ">
-        <LoginForm />
-      </div> */}
     </div>
   );
 };
