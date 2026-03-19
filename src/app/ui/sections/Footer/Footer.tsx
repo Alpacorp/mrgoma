@@ -184,8 +184,8 @@ export const DashboardFooter = () => {
                 priority
               />
               <p className="text-white text-sm font-semibold leading-snug">
-                Every Sale Matters.{' '}
-                <span className="text-[#9dfb40]">Every Customer Remembers.</span>
+                Every Sale <span className="text-[#9dfb40]">Matters</span>. Every Customer{' '}
+                <span className="text-[#9dfb40]">Remembers.</span>
               </p>
               <p className="text-gray-400 text-sm tracking-widest font-medium">
                 Fast &bull; Value &bull; Trust
