@@ -49,7 +49,7 @@ const Dashboard = () => {
 
       {/* Filters Section */}
       <section className="space-y-3">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100">
           {/* Accordion header */}
           <button
             type="button"
@@ -74,13 +74,14 @@ const Dashboard = () => {
 
           {/* Accordion body */}
           <div className={`grid transition-all duration-300 ease-in-out ${filtersOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
-            <div className="overflow-hidden">
+            <div className={filtersOpen ? 'overflow-visible' : 'overflow-hidden'}>
               <div className="px-3 pb-3 border-t border-gray-100">
                 <TopFilters
                   redirectBasePath={'dashboard'}
                   apiBasePath={'/api/dashboard'}
                   showPriceFilter={false}
                   showStoreFilter={true}
+                  inlineTireSize
                 />
                 <div className="lg:hidden border-t border-gray-50 pt-3 space-y-3">
                   <TireSelector

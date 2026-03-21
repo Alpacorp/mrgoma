@@ -1,17 +1,18 @@
 'use client';
 
-import { CarFront } from '@/app/ui/icons';
 import React from 'react';
 
-import { useTireDynamicOptions } from '../hooks/useTireDynamicOptions';
-import { TireFilters } from '../hooks/useTireSearch';
+import { CarFront } from '@/app/ui/icons';
 
 import { SelectDropdownAdapter } from './SelectDropdownAdapter';
+import { useTireDynamicOptions } from '../hooks/useTireDynamicOptions';
+import { TireFilters } from '../hooks/useTireSearch';
 
 interface TireSelectorProps {
   selectedFilters: TireFilters;
   onFilterChangeAction: (value: string, type: keyof TireFilters) => void;
   isCompact?: boolean;
+  flat?: boolean;
 }
 
 /**
@@ -21,6 +22,7 @@ export const TireSelector: React.FC<TireSelectorProps> = ({
   selectedFilters,
   onFilterChangeAction,
   isCompact = false,
+  flat = false,
 }) => {
   // Obtener las opciones dinámicas y estados de carga del hook
   const {
@@ -35,6 +37,50 @@ export const TireSelector: React.FC<TireSelectorProps> = ({
   // Determinar cuando los selectores deben estar deshabilitados
   const isSidewallDisabled = !selectedFilters.w || isLoadingSidewall;
   const isDiameterDisabled = !selectedFilters.w || !selectedFilters.s || isLoadingDiameter;
+
+  if (flat) {
+    return (
+      <div className="flex items-center gap-1.5">
+        <span className="text-xs font-medium text-gray-500 shrink-0">Size</span>
+        <div className="w-24">
+          <SelectDropdownAdapter
+            label="W"
+            options={widthOptions}
+            type="w"
+            selectedFilters={selectedFilters}
+            onFilterChangeAction={onFilterChangeAction}
+            isCollapsed
+            showDefaultText={false}
+            disabled={isLoadingWidth}
+          />
+        </div>
+        <div className="w-20">
+          <SelectDropdownAdapter
+            label="S"
+            options={sidewallOptions}
+            type="s"
+            selectedFilters={selectedFilters}
+            onFilterChangeAction={onFilterChangeAction}
+            isCollapsed
+            showDefaultText={false}
+            disabled={isSidewallDisabled}
+          />
+        </div>
+        <div className="w-20">
+          <SelectDropdownAdapter
+            label="D"
+            options={diameterOptions}
+            type="d"
+            selectedFilters={selectedFilters}
+            onFilterChangeAction={onFilterChangeAction}
+            isCollapsed
+            showDefaultText={false}
+            disabled={isDiameterDisabled}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-green-200 p-2 rounded-lg border border-gray-200">

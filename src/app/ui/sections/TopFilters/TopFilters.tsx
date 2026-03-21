@@ -13,11 +13,13 @@ export const TopFilters: FC<{
   apiBasePath?: string;
   showPriceFilter?: boolean;
   showStoreFilter?: boolean;
+  inlineTireSize?: boolean;
 }> = ({
   redirectBasePath,
   apiBasePath = '/api',
   showPriceFilter = true,
   showStoreFilter = false,
+  inlineTireSize = false,
 }) => {
   const {
     rangeInputs,
@@ -91,7 +93,8 @@ export const TopFilters: FC<{
 
   const isFilterActive = (id: string) => {
     if (id === 'price' || id === 'treadDepth' || id === 'remainingLife') return isRangeActive(id);
-    if (id === 'condition' || id === 'patched' || id === 'kindSale') return isCheckboxGroupActive(id);
+    if (id === 'condition' || id === 'patched' || id === 'kindSale')
+      return isCheckboxGroupActive(id);
     if (id === 'brands') return isBrandsActive();
     return false;
   };
@@ -107,62 +110,79 @@ export const TopFilters: FC<{
         </div>
         <div className="flex flex-wrap items-center gap-2 md:gap-3">
           {/* Tire Size filter */}
-          {(() => {
-            const isOpen = openMenu === 'tireSize';
-            const isActive = isTireSizeActive();
-            return (
-              <div className="relative">
+          {inlineTireSize ? (
+            <div className="flex items-center gap-2 border border-green-200 rounded-md px-3 py-1.5">
+              <TireSelector
+                selectedFilters={tireSelectedFilters}
+                onFilterChangeAction={handleTireFilterChange}
+                flat
+              />
+              {isTireSizeActive() && (
                 <button
                   type="button"
-                  onClick={() => setOpenMenu(prev => (prev === 'tireSize' ? null : 'tireSize'))}
-                  className={`px-3 py-2 text-sm rounded-md border cursor-pointer flex items-center gap-2 ${isOpen || isActive ? activeClass : defaultClass}`}
+                  onClick={() => resetTireFilters()}
+                  className="cursor-pointer text-xs border border-green-200 text-green-600 hover:bg-green-50 rounded px-1.5 py-0.5 shrink-0 transition-colors"
                 >
-                  <span>Tire Size</span>
-                  <svg
-                    className={`h-4 w-4 text-current transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                  Clear
                 </button>
-                {isOpen && (
-                  <div className="absolute left-0 mt-2 z-50 w-88 md:w-104 bg-white border border-gray-200 rounded-lg shadow-lg p-4">
-                    <div className="space-y-2">
-                      <TireSelector
-                        selectedFilters={tireSelectedFilters}
-                        onFilterChangeAction={handleTireFilterChange}
+              )}
+            </div>
+          ) : (
+            (() => {
+              const isOpen = openMenu === 'tireSize';
+              const isActive = isTireSizeActive();
+              return (
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setOpenMenu(prev => (prev === 'tireSize' ? null : 'tireSize'))}
+                    className={`px-3 py-2 text-sm rounded-md border cursor-pointer flex items-center gap-2 ${isOpen || isActive ? activeClass : defaultClass}`}
+                  >
+                    <span>Tire Size</span>
+                    <svg
+                      className={`h-4 w-4 text-current transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clipRule="evenodd"
                       />
-                      <div className="flex items-center justify-between gap-2 pt-1">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            resetTireFilters();
-                          }}
-                          className="px-3 py-1.5 cursor-pointer text-xs rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
-                        >
-                          Reset Selection
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setOpenMenu(null)}
-                          className="px-3 py-1.5 cursor-pointer text-xs rounded-md bg-green-600 text-white hover:bg-green-500"
-                        >
-                          Done
-                        </button>
+                    </svg>
+                  </button>
+                  {isOpen && (
+                    <div className="absolute left-0 mt-2 z-50 w-88 md:w-104 bg-white border border-gray-200 rounded-lg shadow-lg p-4">
+                      <div className="space-y-2">
+                        <TireSelector
+                          selectedFilters={tireSelectedFilters}
+                          onFilterChangeAction={handleTireFilterChange}
+                        />
+                        <div className="flex items-center justify-between gap-2 pt-1">
+                          <button
+                            type="button"
+                            onClick={() => resetTireFilters()}
+                            className="px-3 py-1.5 cursor-pointer text-xs rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
+                          >
+                            Reset Selection
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setOpenMenu(null)}
+                            className="px-3 py-1.5 cursor-pointer text-xs rounded-md bg-green-600 text-white hover:bg-green-500"
+                          >
+                            Done
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            );
-          })()}
+                  )}
+                </div>
+              );
+            })()
+          )}
           {topSections.map(item => {
             const isOpen = openMenu === item.id;
             const isActive = isFilterActive(item.id);
@@ -304,16 +324,16 @@ export const TopFilters: FC<{
           )}
         </div>
 
-        <div className="ml-auto pl-2">
+        <div className="ml-auto pl-2 self-center">
           <button
             type="button"
             onClick={() => {
-              // First reset tire filters without pushing a new URL to avoid race conditions
+              // First, reset tire filters without pushing a new URL to avoid race conditions
               resetTireFilters(false);
               // Then reset the rest of filters and perform a single URL update that removes all params
               resetFilters();
             }}
-            className="px-3 py-2 cursor-pointer text-sm rounded-md text-white bg-green-600 hover:bg-green-500"
+            className="px-3 py-2 cursor-pointer text-xs rounded-md text-white bg-green-600 hover:bg-green-500 whitespace-nowrap"
           >
             Reset Filters
           </button>
