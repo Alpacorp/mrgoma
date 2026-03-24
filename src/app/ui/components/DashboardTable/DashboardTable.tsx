@@ -148,7 +148,7 @@ const DashboardTable = () => {
             },
           ],
           columns: [
-            { data: 'TireId' },
+            { data: 'Code' },
             { data: 'Brand' },
             { data: 'VaultName' },
             { data: 'Model2' },
@@ -191,7 +191,7 @@ const DashboardTable = () => {
       >
         <thead>
           <tr>
-            <th data-order="1500">ID</th>
+            <th data-order="1500">Tire Code</th>
             <th data-order="1500">Brand</th>
             <th data-order="1500">Store</th>
             <th data-order="1500">Model</th>

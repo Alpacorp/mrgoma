@@ -76,7 +76,7 @@ export async function fetchDashboardTires(
   pageSize: number,
   filters: TireFilters = {}
 ): Promise<{ records: DocumentRecord[]; totalCount: number }> {
-  return fetchTiresInternal(offset, pageSize, filters, "Local = '0' AND Trash = 'false'");
+  return fetchTiresInternal(offset, pageSize, filters, "Trash = 'false'");
 }
 
 async function fetchTiresInternal(
@@ -247,7 +247,7 @@ export async function fetchTireRanges(): Promise<TireRangeResult> {
 }
 
 export async function fetchDashboardRanges(): Promise<TireRangeResult> {
-  return fetchTireRangesInternal("Local = '0' AND Trash = 'false'");
+  return fetchTireRangesInternal("Trash = 'false'");
 }
 
 async function fetchTireRangesInternal(baseWhereClause: string): Promise<TireRangeResult> {
@@ -276,7 +276,7 @@ export async function fetchBrands(filters: TireFilters = {}): Promise<string[]> 
 }
 
 export async function fetchDashboardBrands(filters: TireFilters = {}): Promise<string[]> {
-  return fetchBrandsInternal(filters, "Local = '0' AND Trash = 'false'");
+  return fetchBrandsInternal(filters, "Trash = 'false'");
 }
 
 async function fetchBrandsInternal(
@@ -382,7 +382,7 @@ export async function fetchDashboardStores(): Promise<string[]> {
   const pool = await getPool();
   const query = `SELECT DISTINCT VaultName
     FROM dbo.View_Tires
-    WHERE Local = '0' AND Trash = 'false' AND VaultName IS NOT NULL AND VaultName <> ''
+    WHERE Trash = 'false' AND VaultName IS NOT NULL AND VaultName <> ''
     ORDER BY VaultName DESC`;
   const result = await pool.request().query(query);
   return result.recordset.map(row => row.VaultName as string);
