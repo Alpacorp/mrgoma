@@ -36,7 +36,6 @@ const DashboardCartFooter: FC = () => {
         return `• ${item.name} (ID: ${item.id}) x${item.quantity}${price}${store}`;
       }),
       '',
-      'Please confirm availability and preferred payment method.',
     ];
 
     const url = `https://wa.me/?text=${encodeURIComponent(lines.join('\n'))}`;
@@ -47,7 +46,7 @@ const DashboardCartFooter: FC = () => {
   };
 
   return (
-    <div className="sticky bottom-0 z-10 border-t border-gray-200 p-4 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/75">
+    <div className="sticky bottom-0 z-10 border-t border-gray-200 p-4 bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/75">
       <button
         type="button"
         disabled={cartItems.length === 0}
