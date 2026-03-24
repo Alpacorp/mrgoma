@@ -243,7 +243,7 @@ export default function AiChat({
           <button
             type="button"
             onClick={() => setIsOpen(false)}
-            className="w-12 h-12 rounded-full bg-gray-600 hover:bg-gray-700 shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95"
+            className="w-12 h-12 rounded-full bg-gray-700 hover:bg-gray-800 shadow-2xl flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 ring-4 ring-white"
             aria-label="Close AI assistant"
           >
             <svg
@@ -261,7 +261,7 @@ export default function AiChat({
           <button
             type="button"
             onClick={() => setIsOpen(true)}
-            className="relative w-16 h-16 rounded-full overflow-hidden shadow-xl transition-all duration-200 hover:scale-110 active:scale-95 ring-[3px] ring-green-400 ring-offset-2 ring-offset-black/10"
+            className="relative w-16 h-16 rounded-full overflow-hidden transition-all duration-200 hover:scale-110 active:scale-95 ring-4 ring-white bg-white [box-shadow:0_6px_24px_rgba(0,0,0,0.4)]"
             aria-label="Open AI assistant"
           >
             <Image
@@ -272,7 +272,7 @@ export default function AiChat({
               priority
             />
             {/* Active indicator dot */}
-            <span className="absolute bottom-0.5 right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-white shadow-sm" />
+            <span className="absolute bottom-1 right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white shadow-md" />
           </button>
         )}
       </div>

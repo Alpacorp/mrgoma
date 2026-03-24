@@ -18,7 +18,7 @@ const Dashboard = () => {
   const { setShowFilter } = useContext(ShowFilterContext);
   const { selectedFilters: mobileTireFilters, handleFilterChange: handleMobileTireChange } =
     useTireSearch('dashboard');
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(true);
 
   return (
     <div className="min-h-screen">
@@ -73,7 +73,9 @@ const Dashboard = () => {
           </button>
 
           {/* Accordion body */}
-          <div className={`grid transition-all duration-300 ease-in-out ${filtersOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+          <div
+            className={`grid transition-all duration-300 ease-in-out ${filtersOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
+          >
             <div className={filtersOpen ? 'overflow-visible' : 'overflow-hidden'}>
               <div className="px-3 pb-3 border-t border-gray-100">
                 <TopFilters
