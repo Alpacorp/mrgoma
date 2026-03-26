@@ -145,6 +145,36 @@ export const FilterBody = (
     );
   }
 
+  if (id === 'local') {
+    const options = [
+      { value: 'yes', label: 'Yes' },
+      { value: 'no', label: 'No' },
+    ];
+    return (
+      <div className={`space-y-${isMobile ? '6' : '4'}`}>
+        {options.map((option, optionIdx) => (
+          <div key={option.value} className="flex items-center">
+            <input
+              id={`filter-${idPrefix}local-${optionIdx}`}
+              name="local[]"
+              value={option.value}
+              type="checkbox"
+              checked={isChecked('local', option.value)}
+              onChange={handleCheckboxChange}
+              className="h-4 w-4 rounded border-gray-300 text-green-primary focus:ring-green-primary"
+            />
+            <label
+              htmlFor={`filter-${idPrefix}local-${optionIdx}`}
+              className={`ml-3 ${isMobile ? 'flex-1 text-gray-500' : 'text-gray-600'} text-sm`}
+            >
+              {option.label}
+            </label>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   // filtersItems sections
   const section = filtersItems.find(s => s.id === id);
   if (section) {

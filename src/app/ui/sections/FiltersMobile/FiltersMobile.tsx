@@ -12,11 +12,13 @@ const FiltersMobile: FC<{
   apiBasePath?: string;
   showPriceFilter?: boolean;
   showStoreFilter?: boolean;
+  showLocalFilter?: boolean;
 }> = ({
   redirectBasePath,
   apiBasePath = '/api',
   showPriceFilter = true,
   showStoreFilter = false,
+  showLocalFilter = false,
 }) => {
   const { showFilter, setShowFilter } = useContext(ShowFilterContext);
   const { resetFilters } = useFilters(redirectBasePath, apiBasePath);
@@ -102,6 +104,7 @@ const FiltersMobile: FC<{
               apiBasePath={apiBasePath}
               showPriceFilter={showPriceFilter}
               showStoreFilter={showStoreFilter}
+              showLocalFilter={showLocalFilter}
             />
           </DialogPanel>
         </div>

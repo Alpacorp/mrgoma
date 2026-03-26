@@ -84,6 +84,7 @@ const Dashboard = () => {
                   showPriceFilter={false}
                   showStoreFilter={true}
                   inlineTireSize
+                  showLocalFilter
                 />
                 <div className="lg:hidden border-t border-gray-50 pt-3 space-y-3">
                   <TireSelector
@@ -104,6 +105,7 @@ const Dashboard = () => {
                     apiBasePath={'/api/dashboard'}
                     showPriceFilter={false}
                     showStoreFilter={true}
+                    showLocalFilter
                   />
                 </div>
               </div>
