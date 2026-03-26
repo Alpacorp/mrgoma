@@ -25,6 +25,7 @@ interface CheckboxInputs {
   kindSale: string[];
   brands: string[];
   stores: string[];
+  local: string[];
 }
 
 export const useFilters = (
@@ -70,6 +71,7 @@ export const useFilters = (
     kindSale: searchParams.get('kindSale')?.split(',').filter(Boolean) || [],
     brands: searchParams.get('brands')?.split(',').filter(Boolean) || [],
     stores: searchParams.get('stores')?.split(',').filter(Boolean) || [],
+    local: searchParams.get('local')?.split(',').filter(Boolean) || [],
   });
 
   // Función para cargar las marcas basada en los filtros actuales
@@ -261,6 +263,7 @@ export const useFilters = (
       kindSale: searchParams.get('kindSale')?.split(',').filter(Boolean) || [],
       brands: searchParams.get('brands')?.split(',').filter(Boolean) || [],
       stores: searchParams.get('stores')?.split(',').filter(Boolean) || [],
+      local: searchParams.get('local')?.split(',').filter(Boolean) || [],
     } as CheckboxInputs;
 
     setRangeInputs(newRangeInputs);
@@ -332,6 +335,7 @@ export const useFilters = (
     setOrDelete('kindSale', checkboxInputs.kindSale.length > 0, checkboxInputs.kindSale.join(','));
     setOrDelete('brands', checkboxInputs.brands.length > 0, checkboxInputs.brands.join(','));
     setOrDelete('stores', checkboxInputs.stores.length > 0, checkboxInputs.stores.join(','));
+    setOrDelete('local', checkboxInputs.local.length > 0, checkboxInputs.local.join(','));
 
     // Only reset pagination when filters actually changed
     if (filterChanged) {
@@ -362,6 +366,7 @@ export const useFilters = (
     checkboxInputs.kindSale.join(','),
     checkboxInputs.brands.join(','),
     checkboxInputs.stores.join(','),
+    checkboxInputs.local.join(','),
     redirectBasePath,
     router,
   ]);
@@ -439,6 +444,7 @@ export const useFilters = (
       kindSale: [],
       brands: [],
       stores: [],
+      local: [],
     };
     setCheckboxInputs(defaultCheckboxInputs);
 
@@ -459,6 +465,7 @@ export const useFilters = (
     params.delete('kindSale');
     params.delete('brands');
     params.delete('stores');
+    params.delete('local');
 
     // Also remove tire size parameters to ensure a full reset
     params.delete('w');

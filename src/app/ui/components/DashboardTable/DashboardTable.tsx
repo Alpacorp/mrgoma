@@ -59,7 +59,8 @@ const DashboardTable = () => {
         const data = res.ok ? await res.json() : null;
 
         const priceRaw = data?.price;
-        const price = typeof priceRaw === 'string' ? parseFloat(priceRaw) || 0 : Number(priceRaw) || 0;
+        const price =
+          typeof priceRaw === 'string' ? parseFloat(priceRaw) || 0 : Number(priceRaw) || 0;
 
         addToCartRef.current({
           id: tireId,
@@ -103,7 +104,7 @@ const DashboardTable = () => {
               params.set('pageSize', d.length.toString());
 
               const response = await fetch(`/api/dashboard/tires?${params.toString()}`, {
-                credentials: "include"
+                credentials: 'include',
               });
 
               const result = await response.json();
@@ -193,7 +194,7 @@ const DashboardTable = () => {
           <tr>
             <th data-order="1500">Tire Code</th>
             <th data-order="1500">Brand</th>
-            <th data-order="1500">Store</th>
+            <th data-order="1500">Location</th>
             <th data-order="1500">Model</th>
             <th data-order="1500">Width</th>
             <th data-order="1500">Sidewall</th>

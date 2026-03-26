@@ -15,12 +15,14 @@ export const FilterMobileContent: FC<{
   apiBasePath?: string;
   showPriceFilter?: boolean;
   showStoreFilter?: boolean;
+  showLocalFilter?: boolean;
 }> = ({
   isMobile = false,
   redirectBasePath,
   apiBasePath = '/api',
   showPriceFilter = true,
   showStoreFilter = false,
+  showLocalFilter = false,
 }) => {
   const {
     rangeInputs,
@@ -224,6 +226,33 @@ export const FilterMobileContent: FC<{
           </DisclosurePanel>
         </Disclosure>
       ))}
+
+      {/* Local Filter (dashboard only) */}
+      {showLocalFilter && (
+        <Disclosure
+          defaultOpen={true}
+          as="div"
+          className={`${borderClass} border-gray-200 py-6 ${paddingClass}`}
+        >
+          <h3 className={`${isMobile ? '-mx-2' : ''} -my-3 flow-root`}>
+            <DisclosureButton
+              className={`flex w-full items-center justify-between bg-gray-50 ${isMobile ? 'px-2' : ''} py-3 text-sm text-gray-400 hover:text-gray-500`}
+            >
+              <span className="font-medium text-gray-900">Local</span>
+              <span className="ml-6 flex items-center text-green-primary">
+                <DisclosureIcon />
+              </span>
+            </DisclosureButton>
+          </h3>
+          <DisclosurePanel className="pt-6">
+            {FilterBody(
+              'local',
+              { rangeInputs, rangeBounds, availableBrands, handleRangeChange, handleCheckboxChange, isLoadingRanges, isChecked, isLoadingBrands },
+              { isMobile, idPrefix: isMobile ? 'mobile-' : '' }
+            )}
+          </DisclosurePanel>
+        </Disclosure>
+      )}
 
       {(availableBrands.length > 0 || isLoadingBrands) && (
         <Disclosure

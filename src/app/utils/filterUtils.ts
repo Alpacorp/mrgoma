@@ -25,6 +25,7 @@ export function buildTireFilters(searchParams: URLSearchParams): TireFilters {
   const sort = searchParams.get('sort');
   const storesParam = searchParams.get('stores');
   const kindSaleParam = searchParams.get('kindSale');
+  const localParam = searchParams.get('local');
 
   // Tire dimensions
   const width = searchParams.get('w');
@@ -50,6 +51,7 @@ export function buildTireFilters(searchParams: URLSearchParams): TireFilters {
   if (sort) filters.sort = sort;
   if (storesParam) filters.stores = storesParam.split(',').filter(Boolean);
   if (kindSaleParam) filters.kindSale = kindSaleParam.split(',').filter(Boolean);
+  if (localParam) filters.local = localParam.split(',').filter(Boolean);
 
   // Add dimension parameters
   if (width) filters.width = width;

@@ -47,6 +47,7 @@ export type TireFilters = {
   diameter?: string; // Diámetro (d)
   stores?: string[];
   kindSale?: string[];
+  local?: string[];
 };
 
 export type TireRangeResult = {
@@ -172,6 +173,17 @@ async function fetchTiresInternal(
       whereClause += " AND KindSale = 'Yes'";
     } else if (!includeYes && includeNo) {
       whereClause += " AND KindSale = 'No'";
+    }
+  }
+
+  if (filters.local && filters.local.length > 0) {
+    const normalized = filters.local.map(l => l.toLowerCase());
+    const includeYes = normalized.includes('yes');
+    const includeNo = normalized.includes('no');
+    if (includeYes && !includeNo) {
+      whereClause += " AND Local = '1'";
+    } else if (!includeYes && includeNo) {
+      whereClause += " AND Local = '0'";
     }
   }
 

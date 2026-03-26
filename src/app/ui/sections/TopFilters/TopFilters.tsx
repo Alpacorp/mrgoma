@@ -14,12 +14,14 @@ export const TopFilters: FC<{
   showPriceFilter?: boolean;
   showStoreFilter?: boolean;
   inlineTireSize?: boolean;
+  showLocalFilter?: boolean;
 }> = ({
   redirectBasePath,
   apiBasePath = '/api',
   showPriceFilter = true,
   showStoreFilter = false,
   inlineTireSize = false,
+  showLocalFilter = false,
 }) => {
   const {
     rangeInputs,
@@ -64,6 +66,7 @@ export const TopFilters: FC<{
     { id: 'treadDepth', name: 'Tread Depth' },
     { id: 'remainingLife', name: 'Remaining Life' },
     ...filtersItems.map(item => ({ id: item.id, name: item.name })),
+    ...(showLocalFilter ? [{ id: 'local', name: 'Local' }] : []),
   ] as { id: string; name: string }[];
 
   // Shared renderer for filter panels to avoid duplication across mobile and desktop views
@@ -96,6 +99,7 @@ export const TopFilters: FC<{
     if (id === 'condition' || id === 'patched' || id === 'kindSale')
       return isCheckboxGroupActive(id);
     if (id === 'brands') return isBrandsActive();
+    if (id === 'local') return (checkboxInputs?.local || []).length > 0;
     return false;
   };
 
