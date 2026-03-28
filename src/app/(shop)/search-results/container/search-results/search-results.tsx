@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { useGenerateFixedPagination } from '@/app/hooks/useGeneratePagination';
-import { TiresData, TransformedTire } from '@/app/interfaces/tires';
+import { TiresData } from '@/app/interfaces/tires';
 import {
   CollapsibleSearchBar,
   ErrorDisplay,
@@ -27,16 +27,10 @@ import {
 } from '@/app/utils/paginationUtils';
 import { createPaginatedResponse } from '@/app/utils/transformTireData';
 
-interface PaginatedTiresResponse {
-  tires: TransformedTire[];
-  totalCount: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  error?: string;
-}
+import { PaginatedTiresResponse } from '../../utils/fetchTiresServer';
 
 interface SearchResultsProps {
+  initialData?: PaginatedTiresResponse;
   searchParams?: {
     page?: string;
     pageSize?: string;
@@ -53,20 +47,24 @@ interface SearchResultsProps {
  *
  * @returns The SearchResults component.
  */
-const SearchResults: FC<SearchResultsProps> = () => {
+const SearchResults: FC<SearchResultsProps> = ({ initialData }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [tiresData, setTiresData] = useState<PaginatedTiresResponse>({
-    tires: [],
-    totalCount: 0,
-    page: DEFAULT_PAGE,
-    pageSize: DEFAULT_PAGE_SIZE,
-    totalPages: 1,
-    error: '',
-  });
+  const [tiresData, setTiresData] = useState<PaginatedTiresResponse>(
+    initialData ?? {
+      tires: [],
+      totalCount: 0,
+      page: DEFAULT_PAGE,
+      pageSize: DEFAULT_PAGE_SIZE,
+      totalPages: 1,
+      error: '',
+    }
+  );
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [count, setCount] = useState(0);
+  // Skip the first client-side fetch when SSR data was already provided
+  const skipNextFetch = useRef(Boolean(initialData));
 
   // Pagination state
   const [page, setPage] = useState<number>(DEFAULT_PAGE);
@@ -250,6 +248,10 @@ const SearchResults: FC<SearchResultsProps> = () => {
   }, [updatePaginationParams, page, pageSize]);
 
   useEffect(() => {
+    if (skipNextFetch.current) {
+      skipNextFetch.current = false;
+      return;
+    }
     setCount(1);
   }, [searchParams]);
 

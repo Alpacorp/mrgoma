@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 
 import SearchResults from '@/app/(shop)/search-results/container/search-results/search-results';
+import { fetchTiresServer } from '@/app/(shop)/search-results/utils/fetchTiresServer';
 import { LoadingScreen } from '@/app/ui/components';
 import { canonical } from '@/app/utils/seo';
 
@@ -55,10 +56,17 @@ export async function generateMetadata({
   };
 }
 
-export default function TiresPage() {
+export default async function TiresPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const sp = await searchParams;
+  const initialData = await fetchTiresServer(sp);
+
   return (
     <Suspense fallback={<LoadingScreen message="Loading results ..." />}>
-      <SearchResults />
+      <SearchResults initialData={initialData} />
     </Suspense>
   );
 }
