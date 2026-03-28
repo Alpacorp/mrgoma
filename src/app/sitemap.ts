@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 
 import { absUrl, getSiteUrl } from '@/app/utils/seo';
+import { buildTireSlug } from '@/app/utils/tireSlug';
 import { fetchActiveTireIds } from '@/repositories/tiresRepository';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -16,14 +17,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let dynamicRoutes: MetadataRoute.Sitemap = [];
   try {
     const ids = await fetchActiveTireIds(2000);
-    dynamicRoutes = ids.map(i => ({
-      url: absUrl(`/detail?productId=${encodeURIComponent(i.id)}`),
-      lastModified: i.modified || now,
-      changeFrequency: 'weekly',
-      priority: 0.6,
-    }));
-  } catch (e) {
-    // In case DB is unavailable, fallback to static only
+    dynamicRoutes = ids.map(i => {
+      const slug = buildTireSlug(i.id, i.brand || '', i.size || '');
+      return {
+        url: absUrl(`/tires/${slug}`),
+        lastModified: i.modified || now,
+        changeFrequency: 'weekly',
+        priority: 0.6,
+      };
+    });
+  } catch {
     dynamicRoutes = [];
   }
 
