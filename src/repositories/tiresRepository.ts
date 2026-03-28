@@ -448,12 +448,12 @@ export async function markTiresSoldByIds(
 
 export async function fetchActiveTireIds(
   limit: number = 2000
-): Promise<Array<{ id: string; modified?: Date }>> {
+): Promise<Array<{ id: string; modified?: Date; brand?: string; size?: string }>> {
   const pool = await getPool();
   const request = pool.request();
   // SQL Server allows TOP (@limit) with a variable
   request.input('limit', Int, limit);
-  const query = `SELECT TOP (@limit) TireId, ModificationDate
+  const query = `SELECT TOP (@limit) TireId, ModificationDate, Brand, RealSize
                  FROM dbo.View_Tires
                  WHERE Local = '0' AND Trash = 'false' AND Condition != 'sold' AND Price != 0
                  ORDER BY ModificationDate DESC`;
@@ -461,6 +461,8 @@ export async function fetchActiveTireIds(
   return (result.recordset || []).map((row: any) => ({
     id: String(row.TireId),
     modified: row.ModificationDate,
+    brand: row.Brand || undefined,
+    size: row.RealSize || undefined,
   }));
 }
 

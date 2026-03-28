@@ -1,10 +1,14 @@
-import Link from 'next/link';
 import { FC, MouseEvent } from 'react';
+
+import Link from 'next/link';
+
+import { buildTireSlug } from '@/app/utils/tireSlug';
 
 interface CtaButtonProps {
   product: {
     name: string;
     id?: string | number;
+    brand?: string;
   };
   text: string;
   style?: 'primary' | 'secondary' | 'tertiary' | 'default' | 'filled' | 'filled-secondary';
@@ -23,24 +27,22 @@ const CtaButton: FC<CtaButtonProps> = ({
   disabled = false,
   isLink = true,
 }) => {
-  // Construct URL with parameters
-  let url = '/detail';
-  const queryParams = new URLSearchParams();
+  // Build SEO-friendly URL: /tires/{id}-{brand}-{size}
+  // Size is the last pipe-separated segment of the product name: "(CODE) | BRAND | SIZE"
+  const nameParts = (product.name || '').split(' | ');
+  const size = nameParts.length >= 2 ? nameParts[nameParts.length - 1] : '';
+  const slug = product.id
+    ? buildTireSlug(String(product.id), product.brand || '', size)
+    : '';
+  let url = slug ? `/tires/${slug}` : '/tires';
 
-  // Add product ID if available
-  if (product.id) {
-    queryParams.append('productId', product.id.toString());
-  }
-
-  // Add any additional URL parameters
-  Object.entries(urlParams).forEach(([key, value]) => {
-    queryParams.append(key, value.toString());
-  });
-
-  // Append query parameters to URL if any exist
-  const queryString = queryParams.toString();
-  if (queryString) {
-    url = `${url}?${queryString}`;
+  // Add any additional URL parameters if provided
+  if (Object.keys(urlParams).length > 0) {
+    const queryParams = new URLSearchParams();
+    Object.entries(urlParams).forEach(([key, value]) => {
+      queryParams.append(key, value.toString());
+    });
+    url = `${url}?${queryParams.toString()}`;
   }
 
   // Define styles based on the style prop

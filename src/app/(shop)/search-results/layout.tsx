@@ -1,10 +1,4 @@
-import { Metadata } from 'next';
 import React from 'react';
-
-export const metadata: Metadata = {
-  title: 'MrGoma Tires SearchResults',
-  description: 'MrGoma Tires is a tire shop in Miami, FL',
-};
 
 export default function SearchResultsLayout({
   children,
