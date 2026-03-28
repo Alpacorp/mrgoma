@@ -1,18 +1,25 @@
+import React from 'react';
+
+import { Inter } from 'next/font/google';
+
 import { Analytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import React from 'react';
+import { SessionProvider } from 'next-auth/react';
 
 import { CartProvider } from '@/app/context/CartContext';
 import { SelectedFiltersProvider } from '@/app/context/SelectedFilters';
 import { DetailModalProvider } from '@/app/context/ShowDetailModal';
 import { FiltersProvider } from '@/app/context/ShowFilterContext';
 import { MenuProvider } from '@/app/context/ShowMenuContext';
-import { SessionProvider } from 'next-auth/react';
 import { CookieConsent } from '@/app/ui/components';
 import GoogleAnalytics from '@/app/ui/components/GoogleAnalytics/GoogleAnalytics';
-import { Footer, Header, TopHeader } from '@/app/ui/sections';
-import { buildDefaultMetadata, organizationJsonLd, websiteJsonLd } from '@/app/utils/seo';
+import { locationsData } from '@/app/ui/sections/LocationsSlider/locationsData';
+import {
+  buildDefaultMetadata,
+  buildLocationsJsonLd,
+  organizationJsonLd,
+  websiteJsonLd,
+} from '@/app/utils/seo';
 
 import './globals.css';
 
@@ -31,6 +38,18 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.png" sizes="any" type="image/x-icon" />
         <script type="application/ld+json">{JSON.stringify(organizationJsonLd())}</script>
         <script type="application/ld+json">{JSON.stringify(websiteJsonLd())}</script>
+        {buildLocationsJsonLd(
+          locationsData.map(l => ({
+            name: l.name,
+            address: l.address,
+            phone: l.phone,
+            mapLink: l.link,
+          }))
+        ).map((schema, i) => (
+          <script key={i} type="application/ld+json">
+            {JSON.stringify(schema)}
+          </script>
+        ))}
       </head>
       <SessionProvider>
         <DetailModalProvider>
