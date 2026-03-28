@@ -10,7 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: site, lastModified: now, changeFrequency: 'daily', priority: 0.8 },
-    { url: absUrl('/search-results'), lastModified: now, changeFrequency: 'daily', priority: 0.7 },
+    { url: absUrl('/tires'), lastModified: now, changeFrequency: 'daily', priority: 0.7 },
     { url: absUrl('/legal-policies'), lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
   ];
 

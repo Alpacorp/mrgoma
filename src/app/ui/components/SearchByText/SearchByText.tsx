@@ -1,7 +1,8 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { ChangeEvent, FC, FormEvent, useContext, useState } from 'react';
+
+import { useRouter } from 'next/navigation';
 
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
 import { ButtonSearch, TireDisplay } from '@/app/ui/components';
@@ -33,7 +34,7 @@ const SearchByText: FC<SearchByTextProps> = ({ showButton = true, enableSubmit =
       if (aspectRatio) params.append('s', aspectRatio);
       if (diameter) params.append('d', diameter.replace(/[^0-9]/g, ''));
 
-      router.push(`/search-results?${params.toString()}`);
+      router.push(`/tires?${params.toString()}`);
     }
   };
 

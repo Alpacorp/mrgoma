@@ -1,5 +1,5 @@
 export const menuItems = [
-  { name: 'Store', href: '/search-results' },
+  { name: 'Store', href: '/tires' },
   { name: 'Services', href: '/#services' },
   { name: 'About us', href: '/#about' },
   { name: 'Locations', href: '/#locations' },

@@ -174,7 +174,7 @@ const Detail = ({ productId: propProductId }: { productId?: string }) => {
           ← Go back
         </button>
         <a
-          href="/search-results"
+          href="/tires"
           className="rounded-md border border-green-600 px-5 py-2 text-sm text-green-700 hover:bg-green-500 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
         >
           Browse tires
@@ -249,7 +249,7 @@ const Detail = ({ productId: propProductId }: { productId?: string }) => {
           </li>
           <li>
             <a
-              href="/search-results"
+              href="/tires"
               className="hover:text-green-600 transition-colors duration-150"
             >
               Tires

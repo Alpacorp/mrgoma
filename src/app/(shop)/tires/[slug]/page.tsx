@@ -191,7 +191,7 @@ async function TireJsonLd({ productId, slug }: { productId: string; slug: string
 
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     { name: 'Home', url: '/' },
-    { name: 'Tires', url: '/search-results' },
+    { name: 'Tires', url: '/tires' },
     { name: breadcrumbLabel, url: `/tires/${canonicalSlug}` },
   ]);
 

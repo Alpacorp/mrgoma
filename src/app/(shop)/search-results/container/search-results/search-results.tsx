@@ -281,11 +281,11 @@ const SearchResults: FC<SearchResultsProps> = () => {
             <section aria-labelledby="products-heading" className="pb-24">
               <div className="md:mt-10 space-y-6">
                 <div className="w-full">
-                  <FiltersMobile redirectBasePath={'search-results'} />
+                  <FiltersMobile redirectBasePath={'tires'} />
                 </div>
                 <div>
                   <div>
-                    <TopFilters redirectBasePath={'search-results'} />
+                    <TopFilters redirectBasePath={'tires'} />
                     <div className="bg-gray-50">
                       <div className="mx-auto">
                         <div className="flex-1">
@@ -444,11 +444,11 @@ const SearchResults: FC<SearchResultsProps> = () => {
           </main>
         </div>
         <div className="block lg:hidden">
-          <CollapsibleSearchBar redirectBasePath={'search-results'} />
+          <CollapsibleSearchBar redirectBasePath={'tires'} />
         </div>
         <AiChat
           apiEndpoint="/api/search-results/ai-chat"
-          redirectBasePath="search-results"
+          redirectBasePath="tires"
           exampleQueries={[
             '205/55/16 nuevas Michelin',
             'used Michelin aro 17',

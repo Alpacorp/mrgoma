@@ -16,7 +16,7 @@ export default async function LegacyDetailPage({
   const { productId } = await searchParams;
 
   if (!productId) {
-    redirect('/search-results');
+    redirect('/tires');
   }
 
   try {
@@ -30,5 +30,5 @@ export default async function LegacyDetailPage({
   }
 
   // Product isn't found — redirect to catalog instead of showing error
-  redirect('/search-results');
+  redirect('/tires');
 }

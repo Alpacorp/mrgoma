@@ -246,7 +246,7 @@ export function websiteJsonLd() {
     url: site,
     potentialAction: {
       '@type': 'SearchAction',
-      target: `${site}/search-results?w={w}&s={s}&d={d}`,
+      target: `${site}/tires?w={w}&s={s}&d={d}`,
       'query-input': 'required name=w,required name=s,required name=d',
     },
   };

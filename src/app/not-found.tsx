@@ -37,7 +37,7 @@ export default function NotFound() {
           {/* CTAs */}
           <div className="mt-8 flex flex-wrap gap-3 justify-center">
             <Link
-              href="/search-results"
+              href="/tires"
               className="inline-flex items-center justify-center rounded-md bg-green-600 px-6 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 transition-colors duration-150"
             >
               Browse Tires

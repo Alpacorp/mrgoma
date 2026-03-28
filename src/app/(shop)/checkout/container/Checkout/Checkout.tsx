@@ -446,7 +446,7 @@ export default function Checkout() {
 
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
               <Link
-                href="/search-results"
+                href="/tires"
                 className="inline-flex items-center justify-center rounded-md bg-green-600 px-5 py-2.5 text-base font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
               >
                 Continue shopping
@@ -494,7 +494,7 @@ export default function Checkout() {
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
             <Link
-              href="/search-results"
+              href="/tires"
               className="inline-flex items-center justify-center rounded-md bg-green-600 px-5 py-2.5 text-base font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
             >
               Continue shopping
@@ -553,7 +553,7 @@ export default function Checkout() {
             <p className="text-gray-600">Your cart is empty.</p>
             <div className="mt-4">
               <Link
-                href="/search-results"
+                href="/tires"
                 className="inline-flex items-center px-5 py-2.5 rounded-md bg-green-600 text-white font-semibold shadow-sm hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
               >
                 Browse products
@@ -823,7 +823,7 @@ export default function Checkout() {
                         : 'Send order via WhatsApp'}
                   </button>
                   <Link
-                    href="/search-results"
+                    href="/tires"
                     className="inline-flex w-full items-center justify-center rounded-md border border-green-200 px-5 py-2.5 text-sm font-semibold text-green-700 hover:bg-green-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
                   >
                     Continue shopping

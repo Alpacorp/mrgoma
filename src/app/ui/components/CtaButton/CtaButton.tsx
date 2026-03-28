@@ -34,7 +34,7 @@ const CtaButton: FC<CtaButtonProps> = ({
   const slug = product.id
     ? buildTireSlug(String(product.id), product.brand || '', size)
     : '';
-  let url = slug ? `/tires/${slug}` : '/search-results';
+  let url = slug ? `/tires/${slug}` : '/tires';
 
   // Add any additional URL parameters if provided
   if (Object.keys(urlParams).length > 0) {

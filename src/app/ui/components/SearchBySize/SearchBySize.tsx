@@ -1,7 +1,8 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { FC, useContext } from 'react';
+
+import { useRouter } from 'next/navigation';
 
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
 import { useTireDimensions } from '@/app/hooks/useTireDimensions';
@@ -45,7 +46,7 @@ const SearchBySize: FC = () => {
       }
     });
 
-    router.push(`/search-results?${params.toString()}`);
+    router.push(`/tires?${params.toString()}`);
   };
 
   // Manejador integrado para el cambio de dimensiones
