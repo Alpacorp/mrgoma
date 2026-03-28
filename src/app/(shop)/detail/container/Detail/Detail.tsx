@@ -13,10 +13,14 @@ import {
   Benefits,
 } from '@/app/ui/sections';
 
-const Detail = () => {
+const Detail = ({ productId: propProductId }: { productId?: string }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const productId = useMemo(() => searchParams.get('productId'), [searchParams]);
+  // propProductId takes precedence (new /tires/[slug] route); fallback to searchParams for legacy /detail route
+  const productId = useMemo(
+    () => propProductId ?? searchParams.get('productId') ?? undefined,
+    [propProductId, searchParams]
+  );
 
   const [data, setData] = useState<SingleTire | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -41,7 +45,7 @@ const Detail = () => {
         });
 
         if (!res.ok) {
-          // Distinguish didn't found VS other errors
+          // Distinguish didn't find VS other errors
           if (res.status === 404) {
             throw Object.assign(new Error('NOT_FOUND'), { code: 'NOT_FOUND' });
           }
@@ -165,7 +169,7 @@ const Detail = () => {
         <button
           type="button"
           onClick={() => router.back()}
-          className="rounded-md border !border-gray-300 px-5 py-2 text-sm text-gray-700 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+          className="rounded-md border border-gray-300! px-5 py-2 text-sm text-gray-700 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
         >
           ← Go back
         </button>
@@ -224,18 +228,61 @@ const Detail = () => {
     return null;
   };
 
+  // Build breadcrumb last item from loaded product
+  const nameParts = data?.name?.split(' | ') ?? [];
+  const productSize = nameParts.length >= 2 ? nameParts[nameParts.length - 1] : undefined;
+  const breadcrumbLabel = data
+    ? `${data.condition} ${data.brand}${productSize ? ` ${productSize}` : ''}`.trim()
+    : null;
+
   return (
     <div className="bg-white">
-      <div className="m-1">
-        <button
-          type="button"
-          onClick={() => router.push('/search-results')}
-          className="relative cursor-pointer flex items-center justify-center rounded-md border px-6 py-2 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 !border-gray-300 text-gray-700 hover:bg-gray-100"
-          title="Back to search results"
-        >
-          &larr; Back to search results
-        </button>
-      </div>
+      <nav aria-label="Breadcrumb" className="border-b border-gray-100">
+        <ol className="mx-auto max-w-7xl flex items-center flex-wrap gap-x-1.5 gap-y-1 px-4 sm:px-6 lg:px-8 py-3 text-sm text-gray-500">
+          <li>
+            <a href="/" className="hover:text-green-600 transition-colors duration-150">
+              Home
+            </a>
+          </li>
+          <li aria-hidden="true" className="select-none">
+            /
+          </li>
+          <li>
+            <a
+              href="/search-results"
+              className="hover:text-green-600 transition-colors duration-150"
+            >
+              Tires
+            </a>
+          </li>
+          {loading && (
+            <>
+              <li aria-hidden="true" className="select-none">
+                /
+              </li>
+              <li>
+                <span className="inline-block h-4 w-36 rounded bg-gray-100 animate-pulse align-middle" />
+              </li>
+            </>
+          )}
+          {breadcrumbLabel && (
+            <>
+              <li aria-hidden="true" className="select-none">
+                /
+              </li>
+              <li>
+                <span
+                  aria-current="page"
+                  className="font-medium text-gray-900 truncate max-w-[220px] sm:max-w-none inline-block align-bottom"
+                  title={breadcrumbLabel}
+                >
+                  {breadcrumbLabel}
+                </span>
+              </li>
+            </>
+          )}
+        </ol>
+      </nav>
       <div className="mx-auto max-w-2xl px-4 py-7 sm:px-6 lg:max-w-7xl lg:px-8 min-h-[60vh] sm:min-h-[65vh] lg:min-h-[70vh]">
         {renderContent()}
       </div>
