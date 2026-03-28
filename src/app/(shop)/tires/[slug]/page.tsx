@@ -1,7 +1,8 @@
 import { Suspense } from 'react';
 
-import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+
+import type { Metadata } from 'next';
 
 import Detail from '@/app/(shop)/detail/container/Detail/Detail';
 import { LoadingScreen } from '@/app/ui/components';
@@ -117,9 +118,7 @@ export async function generateMetadata({
   const priceText = hasValidPrice ? ` Price: $${priceNumber.toFixed(2)}.` : '';
   const description = `${descriptionBase}${priceText}`;
 
-  const images = Array.isArray(product.images)
-    ? product.images.map((i: any) => absUrl(i.src))
-    : [];
+  const images = Array.isArray(product.images) ? product.images.map((i: any) => absUrl(i.src)) : [];
 
   const keywords = [
     product.brand,
@@ -162,7 +161,8 @@ async function TireJsonLd({ productId, slug }: { productId: string; slug: string
 
   const canonicalSlug = buildTireSlug(product.id, product.brand, product.size || '');
   const url = canonical(`/tires/${canonicalSlug}`);
-  const breadcrumbLabel = `${product.condition} ${product.brand}${product.size ? ` ${product.size}` : ''}`.trim();
+  const breadcrumbLabel =
+    `${product.condition} ${product.brand}${product.size ? ` ${product.size}` : ''}`.trim();
 
   const jsonLdDescription = generateTireDescription({
     brand: product.brand,
@@ -203,11 +203,7 @@ async function TireJsonLd({ productId, slug }: { productId: string; slug: string
   );
 }
 
-export default async function TirePage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function TirePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const productId = extractIdFromSlug(slug);
 

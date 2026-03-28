@@ -13,6 +13,7 @@ import {
   FreeShippingBadge,
 } from '@/app/ui/components';
 import { ArrowsToRight } from '@/app/ui/icons';
+import { generateTireDescription } from '@/app/utils/tireDescription';
 
 const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
   const { addToCart, isInCart } = useCart();
@@ -22,6 +23,27 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
   const isSold =
     typeof (singleTire as any)?.status === 'string' &&
     ((singleTire as any).status as string).trim().toLowerCase() === 'sold';
+
+  // Extract tire size from name format: "(CODE) | BRAND | SIZE"
+  const nameParts = singleTire.name.split(' | ');
+  const size = nameParts.length >= 2 ? nameParts[nameParts.length - 1] : undefined;
+
+  // Extract technical specs from details items (e.g. "Load Index: 92")
+  const detailItems: string[] = (singleTire.details?.[0]?.items as string[]) || [];
+  const findDetail = (prefix: string) =>
+    detailItems.find(i => i.startsWith(prefix))?.split(': ')[1]?.trim();
+
+  const tireDescription = generateTireDescription({
+    brand: singleTire.brand,
+    model: singleTire.model2,
+    size,
+    condition: singleTire.condition,
+    remainingLife: singleTire.remainingLife,
+    treadDepth: singleTire.treadDepth,
+    patched: singleTire.patched,
+    loadIndex: findDetail('Load Index'),
+    speedIndex: findDetail('Speed Index'),
+  });
 
   const handleAddToCart = (event: SyntheticEvent, product: any) => {
     event.preventDefault();
@@ -99,9 +121,9 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
           </ul>
         </div>
       </div>
-      {/*<div className="my-6">*/}
-      {/*  <ProductDescription description={singleTire.description || ''} />*/}
-      {/*</div>*/}
+      <div className="my-6">
+        <ProductDescription description={tireDescription} />
+      </div>
     </section>
   );
 };
