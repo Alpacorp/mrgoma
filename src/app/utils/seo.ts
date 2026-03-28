@@ -92,13 +92,10 @@ export function productTitle(params: {
   size?: string;
   condition?: string; // New | Used
 }): string {
-  const parts: string[] = [];
-  if (params.brand) parts.push(params.brand);
-  if (params.model) parts.push(params.model);
-  if (params.size) parts.push(params.size);
-  const label = parts.join(' ');
   const condition = params.condition ? `${params.condition} ` : '';
-  return `${condition}Tire | ${label} in Miami`;
+  const brand = params.brand ? `${params.brand} ` : '';
+  const size = params.size ? `${params.size} ` : '';
+  return `${condition}${brand}${size}Tire in Miami`;
 }
 
 export function productDescription(params: {
@@ -163,6 +160,19 @@ export function buildProductJsonLd(params: {
   };
 }
 
+export function buildBreadcrumbJsonLd(items: { name: string; url: string }[]): Record<string, any> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, idx) => ({
+      '@type': 'ListItem',
+      position: idx + 1,
+      name: item.name,
+      item: absUrl(item.url),
+    })),
+  };
+}
+
 export function organizationJsonLd() {
   const site = getSiteUrl();
   return {
@@ -172,7 +182,10 @@ export function organizationJsonLd() {
     url: site,
     logo: absUrl('/favicon.png'),
     sameAs: [
-      // Add social profiles when available
+      'https://instagram.com/mrgomatires',
+      'https://www.facebook.com/profile.php?id=61573861890811',
+      'https://x.com/MrGomaTires',
+      'https://www.tiktok.com/@mrgomatires',
     ],
     address: {
       '@type': 'PostalAddress',
@@ -181,6 +194,47 @@ export function organizationJsonLd() {
       addressCountry: 'US',
     },
   };
+}
+
+export interface LocationSchemaInput {
+  name: string;
+  address: string;
+  phone: string;
+  mapLink?: string;
+}
+
+export function buildLocationsJsonLd(locations: LocationSchemaInput[]): Record<string, any>[] {
+  const site = getSiteUrl();
+  return locations.map(loc => {
+    // Parse "18200 S Dixie Hwy, Miami, FL 33157" → structured address
+    const parts = loc.address.split(', ');
+    const streetAddress = parts[0] || loc.address;
+    const addressLocality = parts[1] || 'Miami';
+    const stateZip = (parts[2] || 'FL 00000').split(' ');
+    const addressRegion = stateZip[0] || 'FL';
+    const postalCode = stateZip[1] || '';
+
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'AutoPartsStore',
+      name: `MrGoma Tires — ${loc.name}`,
+      url: site,
+      telephone: loc.phone,
+      ...(loc.mapLink ? { hasMap: loc.mapLink } : {}),
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress,
+        addressLocality,
+        addressRegion,
+        postalCode,
+        addressCountry: 'US',
+      },
+      parentOrganization: {
+        '@type': 'Organization',
+        name: SITE_NAME,
+      },
+    };
+  });
 }
 
 export function websiteJsonLd() {
