@@ -87,7 +87,7 @@ export const FilterMobileContent: FC<{
             <DisclosureButton
               className={`flex w-full items-center justify-between bg-gray-50 ${isMobile ? 'px-2' : ''} py-3 text-sm text-gray-400 hover:text-gray-500`}
             >
-              <span className="font-medium text-gray-900">Store</span>
+              <span className="font-medium text-gray-900">Location</span>
               <span className="ml-6 flex items-center text-green-primary">
                 <DisclosureIcon />
               </span>
@@ -238,7 +238,7 @@ export const FilterMobileContent: FC<{
             <DisclosureButton
               className={`flex w-full items-center justify-between bg-gray-50 ${isMobile ? 'px-2' : ''} py-3 text-sm text-gray-400 hover:text-gray-500`}
             >
-              <span className="font-medium text-gray-900">Local</span>
+              <span className="font-medium text-gray-900">Local Install Only</span>
               <span className="ml-6 flex items-center text-green-primary">
                 <DisclosureIcon />
               </span>

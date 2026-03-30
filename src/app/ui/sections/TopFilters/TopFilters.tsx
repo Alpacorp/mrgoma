@@ -66,7 +66,7 @@ export const TopFilters: FC<{
     { id: 'treadDepth', name: 'Tread Depth' },
     { id: 'remainingLife', name: 'Remaining Life' },
     ...filtersItems.map(item => ({ id: item.id, name: item.name })),
-    ...(showLocalFilter ? [{ id: 'local', name: 'Local' }] : []),
+    ...(showLocalFilter ? [{ id: 'local', name: 'Local Install Only' }] : []),
   ] as { id: string; name: string }[];
 
   // Shared renderer for filter panels to avoid duplication across mobile and desktop views
@@ -233,7 +233,7 @@ export const TopFilters: FC<{
                       onClick={() => setOpenMenu(prev => (prev === 'stores' ? null : 'stores'))}
                       className={`px-3 py-2 text-sm rounded-md border cursor-pointer flex items-center gap-2 ${isOpen || isActive ? activeClass : defaultClass}`}
                     >
-                      <span>Store</span>
+                      <span>Location</span>
                       <svg
                         className={`h-4 w-4 text-current transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
                         xmlns="http://www.w3.org/2000/svg"

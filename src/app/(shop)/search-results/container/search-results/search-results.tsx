@@ -269,7 +269,7 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData }) => {
             />
           </div>
           <div id="services" className="absolute z-30 -mt-25 left-0 w-full">
-            <TitleSection title="STORE" className="bg-gray-50!" />
+            <TitleSection title="SHOP TIRES" className="bg-gray-50!" />
           </div>
         </section>
         <div>

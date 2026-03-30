@@ -5,7 +5,7 @@ export const infoCardsData: InfoCardData[] = [
     id: 'guaranteed-tires',
     title: 'Guaranteed Tires',
     description:
-      'With us you get only high quality products plus honest professional service. We are the only tire shop that gives you up to 60 days warranty on used tires.',
+      'With us you get only high quality products plus honest professional service. We are the only tire shop that gives you up to 30 days warranty on used tires.',
     iconType: 'guarantee',
   },
   {
