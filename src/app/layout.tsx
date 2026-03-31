@@ -36,6 +36,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" href="/favicon.png" sizes="any" type="image/x-icon" />
+        <link rel="apple-touch-icon" href="/favicon.png" />
         <script type="application/ld+json">{JSON.stringify(organizationJsonLd())}</script>
         <script type="application/ld+json">{JSON.stringify(websiteJsonLd())}</script>
         {buildLocationsJsonLd(
