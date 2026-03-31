@@ -58,6 +58,7 @@ async function fetchProduct(productId: string) {
       loadIndex: (record.loadIndex as string) || undefined,
       speedIndex: record.speedIndex || undefined,
       model2: (record.Model2 as string) || undefined,
+      runFlat: record.KindSaleId === 1 ? 'Yes' : (record.KindSale || 'No'),
       images,
       details: [
         {

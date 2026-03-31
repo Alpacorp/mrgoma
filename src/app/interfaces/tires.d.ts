@@ -86,6 +86,7 @@ export interface SingleTire {
   patched: string;
   remainingLife: string;
   treadDepth: string;
+  runFlat?: string;
   images: singleProductImages[];
   description?: string;
   model2?: string;

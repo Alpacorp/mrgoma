@@ -29,6 +29,7 @@ export type DocumentRecord = {
   RealSize?: string;
   VaultName?: string;
   KindSale?: string;
+  KindSaleId?: number;
 };
 
 export type TireFilters = {
