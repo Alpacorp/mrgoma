@@ -50,6 +50,7 @@ export async function GET(req: NextRequest) {
       patched: record.Patched === '0' ? 'No' : 'Yes',
       remainingLife: (record.RemainingLife as string) || '-',
       treadDepth: (record.Tread as string) || '-',
+      runFlat: record.KindSaleId === 1 ? 'Yes' : (record.KindSale || 'No'),
       images,
       description: (record.Description as string) || undefined,
       model2: (record.Model2 as string) || undefined,

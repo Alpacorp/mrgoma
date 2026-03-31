@@ -118,6 +118,11 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
             <li className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
               Patched: {singleTire.patched}
             </li>
+            {singleTire.runFlat && (
+              <li className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
+                Run Flat: {singleTire.runFlat}
+              </li>
+            )}
           </ul>
         </div>
       </div>
