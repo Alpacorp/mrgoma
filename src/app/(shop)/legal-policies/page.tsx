@@ -127,7 +127,7 @@ export default function LegalPoliciesPage() {
             <div className="mt-4 space-y-1">
               <p>MrGoma Tires</p>
               <p>Serving Miami and Orlando, Florida</p>
-              <p>Phone: [Insert Business Phone]</p>
+              <p>Phone: (407) 364-4016</p>
               <p>Email: info@mrgomatires.com</p>
               <p>Website: www.mrgomatires.com</p>
             </div>
