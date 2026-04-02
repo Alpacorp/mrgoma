@@ -2,8 +2,8 @@ import { Suspense } from 'react';
 
 import type { Metadata } from 'next';
 
-import SearchResults from '@/app/(shop)/search-results/container/search-results/search-results';
-import { fetchTiresServer } from '@/app/(shop)/search-results/utils/fetchTiresServer';
+import SearchResults from '@/app/(shop)/tires/container/SearchResults';
+import { fetchTiresServer } from '@/app/(shop)/tires/utils/fetchTiresServer';
 import { LoadingScreen } from '@/app/ui/components';
 import { canonical } from '@/app/utils/seo';
 

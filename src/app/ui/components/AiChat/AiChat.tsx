@@ -4,6 +4,59 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import Image from 'next/image';
 
+/** Parses inline markdown tokens: **bold** and [text](url) */
+function parseInline(text: string): React.ReactNode[] {
+  const pattern = /(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = pattern.exec(text)) !== null) {
+    if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index));
+
+    const token = match[0];
+    if (token.startsWith('**')) {
+      parts.push(<strong key={match.index}>{token.slice(2, -2)}</strong>);
+    } else {
+      const m = token.match(/\[([^\]]+)\]\(([^)]+)\)/);
+      if (m) {
+        const [, label, href] = m;
+        const external = href.startsWith('http');
+        parts.push(
+          <a
+            key={match.index}
+            href={href}
+            target={external ? '_blank' : undefined}
+            rel={external ? 'noopener noreferrer' : undefined}
+            className="text-green-600 underline hover:text-green-700 break-all"
+          >
+            {label}
+          </a>
+        );
+      }
+    }
+    lastIndex = match.index + token.length;
+  }
+
+  if (lastIndex < text.length) parts.push(text.slice(lastIndex));
+  return parts;
+}
+
+/** Renders assistant message content with basic markdown support */
+function MessageContent({ content }: { content: string }) {
+  const lines = content.split('\n');
+  return (
+    <>
+      {lines.map((line, i) => (
+        <React.Fragment key={i}>
+          {parseInline(line)}
+          {i < lines.length - 1 && <br />}
+        </React.Fragment>
+      ))}
+    </>
+  );
+}
+
 import mrGomaAvatar from '#public/assets/images/mrgoma-avatar.svg';
 
 import { useAiChat } from './hooks/useAiChat';
@@ -159,7 +212,7 @@ export default function AiChat({
                     <div className="flex items-center gap-1.5 mb-0.5">
                       <span className="text-green-600 text-xs font-medium">✓ Filters applied</span>
                     </div>
-                    {msg.content}
+                    <MessageContent content={msg.content} />
                   </div>
                 ) : msg.role === 'user' ? (
                   <div className="max-w-[85%] px-3 py-2 rounded-xl bg-green-600 text-white text-sm">
@@ -167,7 +220,7 @@ export default function AiChat({
                   </div>
                 ) : (
                   <div className="max-w-[85%] px-3 py-2 rounded-xl bg-white border border-gray-200 text-gray-700 text-sm">
-                    {msg.content}
+                    <MessageContent content={msg.content} />
                   </div>
                 )}
               </div>

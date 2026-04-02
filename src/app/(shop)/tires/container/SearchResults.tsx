@@ -27,7 +27,7 @@ import {
 } from '@/app/utils/paginationUtils';
 import { createPaginatedResponse } from '@/app/utils/transformTireData';
 
-import { PaginatedTiresResponse } from '../../utils/fetchTiresServer';
+import { PaginatedTiresResponse } from '../utils/fetchTiresServer';
 
 interface SearchResultsProps {
   initialData?: PaginatedTiresResponse;
@@ -449,7 +449,7 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData }) => {
           <CollapsibleSearchBar redirectBasePath={'tires'} />
         </div>
         <AiChat
-          apiEndpoint="/api/search-results/ai-chat"
+          apiEndpoint="/api/tires/ai-chat"
           redirectBasePath="tires"
           exampleQueries={[
             '205/55/16 nuevas Michelin',

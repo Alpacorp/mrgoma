@@ -7,7 +7,10 @@
       "mcp__claude_ai_Vercel__get_project",
       "mcp__claude_ai_Vercel__get_runtime_logs",
       "mcp__claude_ai_Vercel__get_deployment",
-      "mcp__claude_ai_Vercel__list_deployments"
+      "mcp__claude_ai_Vercel__list_deployments",
+      "Bash(find:*)",
+      "Bash(find \"C:\\\\Users\\\\Alpacorp\\\\Documents\\\\mrgoma/src/app/\\(shop\\)/instant-quote\" -type f -name \"*.tsx\")",
+      "Bash(xargs grep:*)"
     ]
   }
 }
