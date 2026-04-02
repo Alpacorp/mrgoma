@@ -7,7 +7,7 @@ interface PaginatedTiresResponse {
   page: number;
   pageSize: number;
   totalPages: number;
-  error?: string; // Optional error message
+  error?: string;
 }
 
 /**
@@ -28,7 +28,7 @@ export async function getTires(
       : `${process.env.BASE_URL_PROD}/api/tires?page=${page}&pageSize=${pageSize}`;
 
     const response = await fetch(url, {
-      cache: 'no-store', // Disable caching to always get fresh data
+      cache: 'no-store',
     });
 
     if (!response.ok) {
@@ -39,10 +39,8 @@ export async function getTires(
     const tiresData = result.records;
     const totalCount = result.totalCount;
 
-    // Use the shared utility function to create a paginated response
     return createPaginatedResponse(tiresData, page, pageSize, totalCount) as PaginatedTiresResponse;
   } catch (error) {
-    // Only log the error, don't throw it
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('Error fetching tires:', errorMessage);
     return createPaginatedResponse([], page, pageSize, 0, errorMessage) as PaginatedTiresResponse;
