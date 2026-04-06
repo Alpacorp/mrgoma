@@ -1,4 +1,4 @@
-import { VarChar, Decimal, Int } from 'mssql';
+import { VarChar, Decimal, Int, NVarChar } from 'mssql';
 
 import { getPool } from '@/connection/db';
 import { logger } from '@/utils/logger';
@@ -10,11 +10,31 @@ export interface InsertOrderInput {
   customerIP?: string | null; // varchar(20)
   paymentMethodId?: number | null; // optional, unknown mapping
   paymentStatusId?: number | null; // optional, unknown mapping
+  stripeSessionId?: string | null; // Stripe Checkout Session ID for idempotency
 }
 
 export interface InsertOrderResult {
   orderId: number;
   orderGuid: string;
+}
+
+/**
+ * Returns the existing SC_Order for a given Stripe session ID, or null if not found.
+ */
+export async function getOrderByStripeSessionId(
+  stripeSessionId: string
+): Promise<InsertOrderResult | null> {
+  const pool = await getPool();
+  const request = pool.request();
+  request.input('StripeSessionId', NVarChar(255), stripeSessionId);
+  const result = await request.query(`
+    SELECT TOP 1 Id AS orderId, CAST(OrderGuid AS NVARCHAR(36)) AS orderGuid
+    FROM dbo.SC_Order
+    WHERE StripeSessionId = @StripeSessionId
+  `);
+  const row = result.recordset?.[0] as any;
+  if (!row) return null;
+  return { orderId: row.orderId as number, orderGuid: row.orderGuid as string };
 }
 
 /**
@@ -45,6 +65,11 @@ export async function insertOrder(input: InsertOrderInput): Promise<InsertOrderR
     const paymentStatusId =
       typeof input.paymentStatusId === 'number' ? input.paymentStatusId : 2; // default 2
 
+    const stripeSessionId =
+      typeof input.stripeSessionId === 'string' && input.stripeSessionId.trim()
+        ? input.stripeSessionId.trim().slice(0, 255)
+        : null;
+
     // Bind parameters (always bind, even if null)
     request.input('OrderSatusId', Int, input.orderSatusId);
     request.input('Store', VarChar(50), store);
@@ -52,6 +77,7 @@ export async function insertOrder(input: InsertOrderInput): Promise<InsertOrderR
     request.input('CustomerIP', VarChar(20), customerIP as any);
     request.input('PaymentMethodId', Int, paymentMethodId);
     request.input('PaymentStatusId', Int, paymentStatusId);
+    request.input('StripeSessionId', NVarChar(255), stripeSessionId as any);
 
     // Perform a concurrency-safe insert with a computed next OrdenNumber
     const sql = `
@@ -73,7 +99,8 @@ export async function insertOrder(input: InsertOrderInput): Promise<InsertOrderR
         ShippingAddressId,
         ShippingStatusId,
         OrderTotal,
-        CustomerIP
+        CustomerIP,
+        StripeSessionId
       )
       OUTPUT INSERTED.Id AS orderId, INSERTED.OrderGuid AS orderGuid
       VALUES (
@@ -89,7 +116,8 @@ export async function insertOrder(input: InsertOrderInput): Promise<InsertOrderR
         0,             -- ShippingAddressId
         1,             -- ShippingStatusId
         @OrderTotal,
-        @CustomerIP
+        @CustomerIP,
+        @StripeSessionId
       );`;
 
     const result = await request.query(sql);
