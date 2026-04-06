@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { insertOrderDetailsByOrderId } from '@/repositories/orderDetailsRepository';
-import { insertOrder } from '@/repositories/ordersRepository';
+import { getOrderByStripeSessionId, insertOrder } from '@/repositories/ordersRepository';
 import { fetchTireById, setTiresConditionIdToSoldByIds } from '@/repositories/tiresRepository';
 import { logger } from '@/utils/logger';
 
@@ -128,6 +128,13 @@ export async function GET(req: NextRequest) {
         if (checkoutTestMode) {
           logger.info('Checkout test mode is enabled: skipping DB writes (SC_Order, SC_OrderDetail, Tires updates).');
         } else {
+          // Idempotency check: avoid creating duplicate orders if the user revisits the success URL
+          const existing = await getOrderByStripeSessionId(sessionId as string);
+          if (existing) {
+            sc_order_id = existing.orderId;
+            sc_order_guid = existing.orderGuid;
+            logger.info(`SC_Order already exists for session ${sessionId} (id=${sc_order_id}), skipping insert`);
+          } else {
           // Compute order total in major currency units (decimal)
           const orderTotal = (session.amount_total || 0) / 100;
           const xff = req.headers.get('x-forwarded-for') || '';
@@ -138,6 +145,7 @@ export async function GET(req: NextRequest) {
             store,
             orderTotal,
             customerIP: clientIp,
+            stripeSessionId: sessionId as string,
           });
           sc_order_id = inserted.orderId;
           sc_order_guid = inserted.orderGuid;
@@ -189,6 +197,7 @@ export async function GET(req: NextRequest) {
           } catch (err) {
             logger.error('Failed to update dbo.Tires ConditionId after payment', err as any);
           }
+          } // end else (new order)
         }
       }
     } catch (err) {
