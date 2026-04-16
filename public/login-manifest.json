@@ -1,0 +1,16 @@
+{
+  "name": "MrGoma Staff Portal",
+  "short_name": "MrGoma Staff",
+  "description": "Portal de colaboradores – MrGoma Tires",
+  "start_url": "/login",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#16a34a",
+  "icons": [
+    {
+      "src": "/desk-logo.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}
