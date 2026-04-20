@@ -1,8 +1,6 @@
 'use client';
 import { useContext, useState } from 'react';
 
-import { useSession, signOut } from 'next-auth/react';
-
 import { ShowFilterContext } from '@/app/context/ShowFilterContext';
 import AiChat from '@/app/ui/components/AiChat/AiChat';
 import { TireSelector } from '@/app/ui/components/CollapsibleSearchBar/components/TireSelector';
@@ -13,8 +11,6 @@ import DashboardCartModal from '@/app/ui/sections/DashboardCartModal/DashboardCa
 import DashboardTableContainer from '@/app/ui/sections/DashboardTableContainer/DashboardTableContainer';
 
 const Dashboard = () => {
-  const { data: session } = useSession();
-  const userName = session?.user?.name || session?.user?.email?.split('@')[0] || 'Administrator';
   const { setShowFilter } = useContext(ShowFilterContext);
   const { selectedFilters: mobileTireFilters, handleFilterChange: handleMobileTireChange } =
     useTireSearch('dashboard');
@@ -22,31 +18,6 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Dashboard Header */}
-      <header className="mb-3 flex items-center justify-between bg-white px-4 py-2.5 rounded-xl shadow-sm border border-gray-100">
-        <h1 className="text-base font-semibold text-gray-900">Welcome, {userName}</h1>
-        <button
-          onClick={() => signOut()}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors font-medium text-xs cursor-pointer"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-            className="w-3.5 h-3.5"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"
-            />
-          </svg>
-          Sign Out
-        </button>
-      </header>
-
       {/* Filters Section */}
       <section className="space-y-3">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100">
