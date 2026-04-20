@@ -62,7 +62,7 @@ import mrGomaAvatar from '#public/assets/images/mrgoma-avatar.svg';
 import { useAiChat } from './hooks/useAiChat';
 
 const DASHBOARD_EXAMPLE_QUERIES = [
-  '205/55/16 Michelin',
+  '275/55/20',
   'used tires under $80',
   'new tires rim 17',
   'Bridgestone 195/65/15',

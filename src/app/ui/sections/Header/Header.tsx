@@ -110,7 +110,7 @@ const Header: FC = (): ReactNode => {
         </nav>
       </header>
       <MenuMobile />
-      {!pathname.startsWith('/dashboard') && <CartModal />}
+      <CartModal />
     </>
   );
 };

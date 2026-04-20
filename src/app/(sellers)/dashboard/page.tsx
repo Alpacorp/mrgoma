@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 
-import Dashboard from '@/app/(shop)/dashboard/container/Dashboard';
+import Dashboard from '@/app/(sellers)/dashboard/container/Dashboard';
 import { LoadingScreen } from '@/app/ui/components';
 
 const Page = () => {
