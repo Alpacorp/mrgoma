@@ -3,7 +3,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 
 import { auth } from '@/app/utils/authOptions';
+import { createRateLimiter } from '@/utils/rateLimit';
 import { logger } from '@/utils/logger';
+
+const isRateLimited = createRateLimiter('ai-chat', { windowMs: 60 * 1000, max: 20 });
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -110,6 +113,10 @@ interface ApiMessage {
 }
 
 export async function POST(req: NextRequest) {
+  if (isRateLimited(req)) {
+    return NextResponse.json({ message: 'Too many requests. Try again in a moment.' }, { status: 429 });
+  }
+
   const session = await auth();
 
   if (!session) {

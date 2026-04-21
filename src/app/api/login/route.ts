@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { findUserByUsername } from '@/repositories/userRepository';
+import { createRateLimiter } from '@/utils/rateLimit';
 import { logger } from '@/utils/logger';
+
+const isRateLimited = createRateLimiter('login', { windowMs: 5 * 60 * 1000, max: 10 });
 
 /**
  * Endpoint to validate user credentials.
  */
 export async function POST(req: NextRequest) {
+  if (isRateLimited(req)) {
+    logger.warn(`Login rate limit exceeded`);
+    return NextResponse.json({ message: 'Too many attempts. Try again later.' }, { status: 429 });
+  }
+
   try {
     const { username, password } = await req.json();
 
