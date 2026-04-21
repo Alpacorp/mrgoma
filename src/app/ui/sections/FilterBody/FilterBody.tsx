@@ -1,9 +1,23 @@
 import { RangeSlider } from '@/app/ui/components';
 import { filtersItems } from '@/app/ui/sections/FiltersMobile/FiltersItems';
 
+type RangeKey = 'price' | 'treadDepth' | 'remainingLife';
+type FilterKey = 'brands' | 'condition' | 'patched' | 'kindSale' | 'local';
+
+interface FilterDeps {
+  rangeInputs: Record<RangeKey, [number, number]>;
+  rangeBounds: Record<RangeKey, [number, number]>;
+  availableBrands: string[];
+  handleRangeChange: (key: RangeKey, value: [number, number]) => void;
+  handleCheckboxChange: React.ChangeEventHandler<HTMLInputElement>;
+  isLoadingRanges: boolean;
+  isChecked: (key: FilterKey, value: string) => boolean;
+  isLoadingBrands: boolean;
+}
+
 export const FilterBody = (
   id: string,
-  deps: any,
+  deps: FilterDeps,
   opts?: { isMobile?: boolean; idPrefix?: string; containerExtraClass?: string }
 ) => {
   const {
@@ -40,7 +54,7 @@ export const FilterBody = (
               max={rangeBounds.price[1]}
               step={1}
               value={rangeInputs.price}
-              onChange={(value: any) => handleRangeChange('price', value)}
+              onChange={(value) => handleRangeChange('price', value)}
             />
           </>
         )}
@@ -67,7 +81,7 @@ export const FilterBody = (
               max={rangeBounds.treadDepth[1]}
               step={1}
               value={rangeInputs.treadDepth}
-              onChange={(value: any) => handleRangeChange('treadDepth', value)}
+              onChange={(value) => handleRangeChange('treadDepth', value)}
             />
           </>
         )}
@@ -94,7 +108,7 @@ export const FilterBody = (
               max={rangeBounds.remainingLife[1]}
               step={1}
               value={rangeInputs.remainingLife}
-              onChange={(value: any) => handleRangeChange('remainingLife', value)}
+              onChange={(value) => handleRangeChange('remainingLife', value)}
             />
           </>
         )}
@@ -180,14 +194,14 @@ export const FilterBody = (
   if (section) {
     return (
       <div className={`space-y-${isMobile ? '6' : '4'}`}>
-        {section.options.map((option: any, optionIdx: number) => (
+        {section.options.map((option, optionIdx) => (
           <div key={option.value} className="flex items-center">
             <input
               id={`filter-${idPrefix}${section.id}-${optionIdx}`}
               name={`${section.id}[]`}
               value={option.value}
               type="checkbox"
-              checked={isChecked(section.id as any, option.value)}
+              checked={isChecked(section.id as FilterKey, option.value)}
               onChange={handleCheckboxChange}
               className="h-4 w-4 rounded border-gray-300 text-green-primary focus:ring-green-primary"
             />
