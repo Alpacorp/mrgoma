@@ -133,6 +133,9 @@ export type DocumentRecord = {
   VaultName?: string;
   KindSale?: string;
   KindSaleId?: number;
+  Height?: string | number;
+  Width?: string | number;
+  LoadIndexId?: string | number;
 };
 
 export type TireFilters = {
