@@ -33,7 +33,7 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
         return (
           <li
             key={product.id}
-            className="relative bg-white rounded-xl overflow-hidden p-5 border border-gray-100 shadow-sm hover:shadow-lg hover:transition-shadow w-full mb-8 items-center transition-transform duration-200 focus-within:ring-2 focus-within:ring-green-500 group"
+            className="isolate relative bg-white rounded-xl overflow-hidden p-5 border border-gray-100 shadow-sm hover:shadow-lg hover:transition-shadow w-full mb-8 items-center transition-transform duration-200 focus-within:ring-2 focus-within:ring-green-500 group"
           >
             {(() => {
               const statusVal = (product as any)?.status;
