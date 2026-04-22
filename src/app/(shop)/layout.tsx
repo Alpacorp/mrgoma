@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { Header, TopHeader } from '@/app/ui/sections';
 import { Footer } from '@/app/ui/sections/Footer/Footer';
+import StickyHeader from '@/app/ui/sections/StickyHeader/StickyHeader';
 
 export default function RootLayout({
   children,
@@ -10,10 +10,7 @@ export default function RootLayout({
 }>) {
   return (
     <div>
-      <div className="sticky top-0 z-50">
-        <TopHeader />
-        <Header />
-      </div>
+      <StickyHeader />
       {children}
       <Footer />
     </div>
