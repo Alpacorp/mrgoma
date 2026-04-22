@@ -15,6 +15,13 @@ import { useSearchParams } from 'next/navigation';
 import { useCart } from '@/app/context/CartContext';
 import { DocumentRecord } from '@/repositories/tiresRepository';
 
+declare module '@tanstack/react-table' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface ColumnMeta<TData, TValue> {
+    className?: string;
+  }
+}
+
 const PAGE_SIZE = 20;
 
 function AddToCartButton({ row }: { row: DocumentRecord }) {
@@ -36,7 +43,6 @@ function AddToCartButton({ row }: { row: DocumentRecord }) {
       const data = res.ok ? await res.json() : null;
       const priceRaw = data?.price;
       const price = typeof priceRaw === 'string' ? parseFloat(priceRaw) || 0 : Number(priceRaw) || 0;
-
       addToCart({
         id: tireId,
         name,
@@ -68,18 +74,55 @@ function AddToCartButton({ row }: { row: DocumentRecord }) {
   );
 }
 
+function ExpandedRow({ row }: { row: DocumentRecord }) {
+  const fields = [
+    { label: 'Tire Code',  value: row.Code },
+    { label: 'Location',   value: row.VaultName },
+    { label: 'Model',      value: row.Model2 },
+    { label: 'Load',       value: row.LoadIndexId },
+    { label: 'Patched',    value: row.Patched },
+    { label: 'Tread',      value: row.Tread },
+    { label: 'DOT',        value: row.DOT },
+  ];
+
+  return (
+    <div className="grid grid-cols-2 gap-x-4 gap-y-2 px-4 py-3 bg-gray-50 text-sm">
+      {fields.map(({ label, value }) => (
+        <div key={label}>
+          <span className="text-gray-400 text-xs uppercase tracking-wide">{label}</span>
+          <p className="text-gray-700 font-medium">{value ?? '—'}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 const columns: ColumnDef<DocumentRecord>[] = [
-  { accessorKey: 'Code',        header: 'Tire Code' },
+  {
+    id: 'expand',
+    header: '',
+    enableSorting: false,
+    meta: { className: 'md:hidden w-8' },
+    cell: () => null, // toggle rendered manually in the row
+  },
+  { accessorKey: 'Code',        header: 'Tire Code',  meta: { className: 'hidden md:table-cell' } },
   { accessorKey: 'Brand',       header: 'Brand' },
-  { accessorKey: 'VaultName',   header: 'Location' },
-  { accessorKey: 'Model2',      header: 'Model' },
-  { accessorKey: 'Height',      header: 'Width' },
-  { accessorKey: 'Width',       header: 'Sidewall' },
-  { accessorKey: 'Size',        header: 'Diameter' },
-  { accessorKey: 'LoadIndexId', header: 'Load' },
-  { accessorKey: 'Patched',     header: 'Patched' },
-  { accessorKey: 'Tread',       header: 'Tread' },
-  { accessorKey: 'DOT',         header: 'DOT' },
+  { accessorKey: 'VaultName',   header: 'Location',   meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'Model2',      header: 'Model',      meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'Height',      header: 'Width',      meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'Width',       header: 'Sidewall',   meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'Size',        header: 'Diameter',   meta: { className: 'hidden md:table-cell' } },
+  {
+    id: 'sizeFormatted',
+    header: 'Size',
+    enableSorting: false,
+    meta: { className: 'md:hidden' },
+    accessorFn: row => row.RealSize || `${row.Height ?? ''}/${row.Width ?? ''}R${row.Size ?? ''}`,
+  },
+  { accessorKey: 'LoadIndexId', header: 'Load',       meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'Patched',     header: 'Patched',    meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'Tread',       header: 'Tread',      meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'DOT',         header: 'DOT',        meta: { className: 'hidden md:table-cell' } },
   {
     accessorKey: 'Price',
     header: 'Price',
@@ -105,6 +148,14 @@ const DashboardTable = () => {
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [loading, setLoading] = useState(false);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+
+  const toggleRow = (id: string) =>
+    setExpandedRows(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
 
   const fetchData = useCallback(async (currentPage: number) => {
     setLoading(true);
@@ -113,9 +164,7 @@ const DashboardTable = () => {
       params.set('page', currentPage.toString());
       params.set('pageSize', PAGE_SIZE.toString());
 
-      const res = await fetch(`/api/dashboard/tires?${params.toString()}`, {
-        credentials: 'include',
-      });
+      const res = await fetch(`/api/dashboard/tires?${params.toString()}`, { credentials: 'include' });
       const result = await res.json();
       setData(result.records ?? []);
       setTotalCount(result.totalCount ?? 0);
@@ -158,7 +207,11 @@ const DashboardTable = () => {
                 <th
                   key={header.id}
                   onClick={header.column.getToggleSortingHandler()}
-                  className={`px-3 py-3 font-semibold text-gray-600 whitespace-nowrap select-none ${header.column.getCanSort() ? 'cursor-pointer hover:text-gray-900' : ''}`}
+                  className={[
+                    'px-3 py-3 font-semibold text-gray-600 whitespace-nowrap select-none',
+                    header.column.getCanSort() ? 'cursor-pointer hover:text-gray-900' : '',
+                    header.column.columnDef.meta?.className ?? '',
+                  ].join(' ')}
                 >
                   <div className="flex items-center gap-1">
                     {flexRender(header.column.columnDef.header, header.getContext())}
@@ -190,18 +243,64 @@ const DashboardTable = () => {
               </td>
             </tr>
           ) : (
-            table.getRowModel().rows.map((row, i) => (
-              <tr
-                key={row.id}
-                className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
-              >
-                {row.getVisibleCells().map(cell => (
-                  <td key={cell.id} className="px-3 py-2.5 text-gray-700 whitespace-nowrap">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))
+            table.getRowModel().rows.flatMap((row, i) => {
+              const rowId = row.id;
+              const isExpanded = expandedRows.has(rowId);
+
+              return [
+                <tr
+                  key={rowId}
+                  className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
+                >
+                  {row.getVisibleCells().map(cell => {
+                    if (cell.column.id === 'expand') {
+                      return (
+                        <td key={cell.id} className="md:hidden px-2 py-2.5">
+                          <button
+                            onClick={() => toggleRow(rowId)}
+                            className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+                            aria-label={isExpanded ? 'Collapse row' : 'Expand row'}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="14"
+                              height="14"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.5"
+                              className={`transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                            >
+                              <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                          </button>
+                        </td>
+                      );
+                    }
+                    return (
+                      <td
+                        key={cell.id}
+                        className={[
+                          'px-3 py-2.5 text-gray-700 whitespace-nowrap',
+                          cell.column.columnDef.meta?.className ?? '',
+                        ].join(' ')}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    );
+                  })}
+                </tr>,
+
+                // Expanded row — mobile only
+                isExpanded && (
+                  <tr key={`${rowId}-expanded`} className="md:hidden border-b border-gray-100">
+                    <td colSpan={columns.length} className="p-0">
+                      <ExpandedRow row={row.original} />
+                    </td>
+                  </tr>
+                ),
+              ].filter(Boolean);
+            })
           )}
         </tbody>
       </table>
@@ -214,37 +313,11 @@ const DashboardTable = () => {
             : 'No results'}
         </span>
         <div className="flex items-center gap-1">
-          <button
-            onClick={() => setPage(1)}
-            disabled={page === 1}
-            className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors"
-          >
-            «
-          </button>
-          <button
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors"
-          >
-            ‹
-          </button>
-          <span className="px-3 py-1 text-sm text-gray-600">
-            {page} / {totalPages || 1}
-          </span>
-          <button
-            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-            disabled={page >= totalPages}
-            className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors"
-          >
-            ›
-          </button>
-          <button
-            onClick={() => setPage(totalPages)}
-            disabled={page >= totalPages}
-            className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors"
-          >
-            »
-          </button>
+          <button onClick={() => setPage(1)} disabled={page === 1} className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors">«</button>
+          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors">‹</button>
+          <span className="px-3 py-1 text-sm text-gray-600">{page} / {totalPages || 1}</span>
+          <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages} className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors">›</button>
+          <button onClick={() => setPage(totalPages)} disabled={page >= totalPages} className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors">»</button>
         </div>
       </div>
     </div>
