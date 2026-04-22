@@ -19,7 +19,7 @@ import { mrGomaLogoLight } from '#public/assets/images/Logo';
  * The header is sticky and has a background with a gradient and an image
  * @returns {ReactNode} The rendered header component
  */
-const Header: FC = (): ReactNode => {
+const Header: FC<{ compact?: boolean }> = ({ compact = false }): ReactNode => {
   const pathname = usePathname();
   const { cartCount, setShowCartModal } = useCart();
   const [isMounted, setIsMounted] = useState(false);
@@ -56,9 +56,9 @@ const Header: FC = (): ReactNode => {
 
         <nav
           aria-label="Global"
-          className="relative z-10 mx-auto flex max-w-7xl items-center justify-between p-4"
+          className={`relative z-10 mx-auto flex max-w-7xl items-center justify-between transition-all duration-300 ${compact ? 'p-2' : 'p-4'}`}
         >
-          <div className="w-full flex items-center justify-between gap-4 rounded-2xl bg-black/40 border border-white/10 px-4 py-2 shadow-sm backdrop-blur-md">
+          <div className={`w-full flex items-center justify-between gap-4 rounded-2xl bg-black/40 border border-white/10 px-4 shadow-sm backdrop-blur-md transition-all duration-300 ${compact ? 'py-1' : 'py-2'}`}>
             <HamburgerMenu />
             <Link href="/" className="-m-1.5 p-1.5">
               <Image
@@ -66,7 +66,7 @@ const Header: FC = (): ReactNode => {
                 title="Go to the home page"
                 aria-label="Go to the home page"
                 src={mrGomaLogoLight || '/placeholder.svg'}
-                className="h-8 w-auto"
+                className={`w-auto transition-all duration-300 ${compact ? 'h-6' : 'h-8'}`}
                 priority
               />
             </Link>
