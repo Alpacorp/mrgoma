@@ -75,8 +75,12 @@ function AddToCartButton({ row }: { row: DocumentRecord }) {
 }
 
 function ExpandedRow({ row }: { row: DocumentRecord }) {
+  const price = row.Price == null || row.Price === '' || row.Price === 0
+    ? '—'
+    : (() => { const n = parseFloat(String(row.Price)); return isNaN(n) ? '—' : `$${n.toFixed(2)}`; })();
+
   const fields = [
-    { label: 'Tire Code',  value: row.Code },
+    { label: 'Price',      value: price },
     { label: 'Location',   value: row.VaultName },
     { label: 'Model',      value: row.Model2 },
     { label: 'Load',       value: row.LoadIndexId },
@@ -105,7 +109,7 @@ const columns: ColumnDef<DocumentRecord>[] = [
     meta: { className: 'md:hidden w-8' },
     cell: () => null, // toggle rendered manually in the row
   },
-  { accessorKey: 'Code',        header: 'Tire Code',  meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'Code',        header: 'Tire Code' },
   { accessorKey: 'Brand',       header: 'Brand' },
   { accessorKey: 'VaultName',   header: 'Location',   meta: { className: 'hidden md:table-cell' } },
   { accessorKey: 'Model2',      header: 'Model',      meta: { className: 'hidden md:table-cell' } },
@@ -126,6 +130,7 @@ const columns: ColumnDef<DocumentRecord>[] = [
   {
     accessorKey: 'Price',
     header: 'Price',
+    meta: { className: 'hidden md:table-cell' },
     cell: ({ getValue }) => {
       const val = getValue<string | number | null>();
       if (val == null || val === '' || val === 0) return '-';
