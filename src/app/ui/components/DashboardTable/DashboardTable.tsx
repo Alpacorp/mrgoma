@@ -1,213 +1,330 @@
 'use client';
-import { useRef, useEffect } from 'react';
 
+import { useEffect, useState, useCallback } from 'react';
+
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
 import { useSearchParams } from 'next/navigation';
 
-import DT, { AjaxData, AjaxResponse } from 'datatables.net-dt';
-import DataTable, { DataTableRef } from 'datatables.net-react';
-import Responsive from 'datatables.net-responsive-dt';
-
 import { useCart } from '@/app/context/CartContext';
+import { DocumentRecord } from '@/repositories/tiresRepository';
 
-if (typeof window !== 'undefined') {
-  DataTable.use(DT);
-  DataTable.use(Responsive);
+declare module '@tanstack/react-table' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface ColumnMeta<TData, TValue> {
+    className?: string;
+  }
 }
 
-const esc = (s: string) =>
-  String(s ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+const PAGE_SIZE = 20;
+
+function AddToCartButton({ row }: { row: DocumentRecord }) {
+  const { addToCart } = useCart();
+  const [loading, setLoading] = useState(false);
+
+  const handleClick = async () => {
+    if (loading) return;
+    setLoading(true);
+
+    const tireId = String(row.TireId ?? '');
+    const brand = String(row.Brand ?? '');
+    const model = String(row.Model2 ?? '');
+    const size = `${row.Height ?? ''}/${row.Width ?? ''}R${row.Size ?? ''}`;
+    const name = [brand, model, size].filter(Boolean).join(' | ') || `Tire #${tireId}`;
+
+    try {
+      const res = await fetch(`/api/tire?productId=${encodeURIComponent(tireId)}`);
+      const data = res.ok ? await res.json() : null;
+      const priceRaw = data?.price;
+      const price = typeof priceRaw === 'string' ? parseFloat(priceRaw) || 0 : Number(priceRaw) || 0;
+      addToCart({
+        id: tireId,
+        name,
+        price,
+        brand,
+        condition: row.VaultName ? `Store: ${row.VaultName}` : undefined,
+        images: data?.images,
+      });
+    } catch {
+      addToCart({ id: tireId, name, price: 0, brand });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={loading}
+      title="Add to cart"
+      className="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 active:bg-green-800 disabled:opacity-50 text-white p-1.5 rounded-md cursor-pointer transition-colors"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="9" cy="21" r="1" />
+        <circle cx="20" cy="21" r="1" />
+        <polyline points="1 1 5 1 7.68 14.39 4.4 16.5 15.66 16.5 17.5 7 7 7" />
+      </svg>
+    </button>
+  );
+}
+
+function ExpandedRow({ row }: { row: DocumentRecord }) {
+  const price = row.Price == null || row.Price === '' || row.Price === 0
+    ? '—'
+    : (() => { const n = parseFloat(String(row.Price)); return isNaN(n) ? '—' : `$${n.toFixed(2)}`; })();
+
+  const fields = [
+    { label: 'Price',      value: price },
+    { label: 'Location',   value: row.VaultName },
+    { label: 'Model',      value: row.Model2 },
+    { label: 'Load',       value: row.LoadIndexId },
+    { label: 'Patched',    value: row.Patched },
+    { label: 'Tread',      value: row.Tread },
+    { label: 'DOT',        value: row.DOT },
+  ];
+
+  return (
+    <div className="grid grid-cols-2 gap-x-4 gap-y-2 px-4 py-3 bg-gray-50 text-sm">
+      {fields.map(({ label, value }) => (
+        <div key={label}>
+          <span className="text-gray-400 text-xs uppercase tracking-wide">{label}</span>
+          <p className="text-gray-700 font-medium">{value ?? '—'}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const columns: ColumnDef<DocumentRecord>[] = [
+  {
+    id: 'expand',
+    header: '',
+    enableSorting: false,
+    meta: { className: 'md:hidden w-8' },
+    cell: () => null, // toggle rendered manually in the row
+  },
+  { accessorKey: 'Code',        header: 'Tire Code' },
+  { accessorKey: 'Brand',       header: 'Brand' },
+  { accessorKey: 'VaultName',   header: 'Location',   meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'Model2',      header: 'Model',      meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'Height',      header: 'Width',      meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'Width',       header: 'Sidewall',   meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'Size',        header: 'Diameter',   meta: { className: 'hidden md:table-cell' } },
+  {
+    id: 'sizeFormatted',
+    header: 'Size',
+    enableSorting: false,
+    meta: { className: 'md:hidden' },
+    accessorFn: row => row.RealSize || `${row.Height ?? ''}/${row.Width ?? ''}R${row.Size ?? ''}`,
+  },
+  { accessorKey: 'LoadIndexId', header: 'Load',       meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'Patched',     header: 'Patched',    meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'Tread',       header: 'Tread',      meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'DOT',         header: 'DOT',        meta: { className: 'hidden md:table-cell' } },
+  {
+    accessorKey: 'Price',
+    header: 'Price',
+    meta: { className: 'hidden md:table-cell' },
+    cell: ({ getValue }) => {
+      const val = getValue<string | number | null>();
+      if (val == null || val === '' || val === 0) return '-';
+      const n = parseFloat(String(val));
+      return isNaN(n) ? '-' : `$${n.toFixed(2)}`;
+    },
+  },
+  {
+    id: 'actions',
+    header: '',
+    enableSorting: false,
+    cell: ({ row }) => <AddToCartButton row={row.original} />,
+  },
+];
 
 const DashboardTable = () => {
-  const tableRef = useRef<DataTableRef>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
+  const [data, setData] = useState<DocumentRecord[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [page, setPage] = useState(1);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [loading, setLoading] = useState(false);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
-  const { addToCart } = useCart();
-  const addToCartRef = useRef(addToCart);
+  const toggleRow = (id: string) =>
+    setExpandedRows(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
 
-  useEffect(() => {
-    addToCartRef.current = addToCart;
-  });
+  const fetchData = useCallback(async (currentPage: number) => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams(window.location.search);
+      params.set('page', currentPage.toString());
+      params.set('pageSize', PAGE_SIZE.toString());
 
-  // Event delegation: handle clicks on add-to-cart buttons rendered inside DataTables
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const handleClick = async (e: MouseEvent) => {
-      const btn = (e.target as HTMLElement).closest('[data-add-cart]') as HTMLButtonElement | null;
-      if (!btn || btn.disabled) return;
-
-      const tireId = btn.dataset.tireId ?? '';
-      const brand = btn.dataset.brand ?? '';
-      const model = btn.dataset.model ?? '';
-      const size = btn.dataset.size ?? '';
-      const store = btn.dataset.store ?? '';
-
-      const nameParts = [brand, model, size].filter(Boolean);
-      const name = nameParts.join(' | ') || `Tire #${tireId}`;
-
-      btn.disabled = true;
-      btn.style.opacity = '0.5';
-
-      try {
-        const res = await fetch(`/api/tire?productId=${encodeURIComponent(tireId)}`);
-        const data = res.ok ? await res.json() : null;
-
-        const priceRaw = data?.price;
-        const price =
-          typeof priceRaw === 'string' ? parseFloat(priceRaw) || 0 : Number(priceRaw) || 0;
-
-        addToCartRef.current({
-          id: tireId,
-          name,
-          price,
-          brand,
-          condition: store ? `Store: ${store}` : undefined,
-          images: data?.images,
-        });
-      } catch {
-        addToCartRef.current({ id: tireId, name, price: 0, brand });
-      }
-
-      btn.disabled = false;
-      btn.style.opacity = '';
-    };
-
-    container.addEventListener('click', handleClick);
-    return () => container.removeEventListener('click', handleClick);
+      const res = await fetch(`/api/dashboard/tires?${params.toString()}`, { credentials: 'include' });
+      const result = await res.json();
+      setData(result.records ?? []);
+      setTotalCount(result.totalCount ?? 0);
+    } catch (err) {
+      console.error('Failed to fetch dashboard tires', err);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
-    if (tableRef.current) {
-      tableRef.current.dt()?.ajax.reload();
-    }
-  }, [searchParams]);
+    setPage(1);
+    fetchData(1);
+  }, [searchParams, fetchData]);
+
+  useEffect(() => {
+    fetchData(page);
+  }, [page, fetchData]);
+
+  const table = useReactTable({
+    data,
+    columns,
+    state: { sorting },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    manualPagination: true,
+    pageCount: Math.ceil(totalCount / PAGE_SIZE),
+  });
+
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   return (
-    <div ref={containerRef}>
-      <DataTable
-        ref={tableRef}
-        ajax={(data: any, callback: any) => {
-          const d = data as AjaxData;
-          const cb = callback as (response: AjaxResponse) => void;
-          (async () => {
-            try {
-              const params = new URLSearchParams(window.location.search);
-              const currentPage = Math.floor(d.start / d.length) + 1;
-
-              params.set('page', currentPage.toString());
-              params.set('pageSize', d.length.toString());
-
-              const response = await fetch(`/api/dashboard/tires?${params.toString()}`, {
-                credentials: 'include',
-              });
-
-              const result = await response.json();
-
-              const order = d.order?.[0];
-
-              if (order) {
-                const columnIndex = order.column;
-                const direction = order.dir;
-
-                const columnName = d.columns[columnIndex].data;
-
-                result?.records?.sort((a: any, b: any) => {
-                  if (a[columnName] < b[columnName]) return direction === 'asc' ? -1 : 1;
-                  if (a[columnName] > b[columnName]) return direction === 'asc' ? 1 : -1;
-                  return 0;
-                });
-              }
-
-              cb({
-                draw: d.draw,
-                data: result.records || [],
-                recordsTotal: result.totalCount || 0,
-                recordsFiltered: result.totalCount || 0,
-              });
-            } catch (error) {
-              console.error('Error en fetch:', error);
-            }
-          })();
-        }}
-        className="display"
-        options={{
-          responsive: true,
-          processing: true,
-          searching: false,
-          serverSide: true,
-          autoWidth: true,
-          columnDefs: [
-            {
-              targets: '_all',
-              className: 'dt-left',
-            },
-          ],
-          columns: [
-            { data: 'Code' },
-            { data: 'Brand' },
-            { data: 'VaultName' },
-            { data: 'Model2' },
-            { data: 'Height' },
-            { data: 'Width' },
-            { data: 'Size' },
-            { data: 'LoadIndexId' },
-            { data: 'Patched' },
-            { data: 'Tread' },
-            { data: 'DOT' },
-            {
-              data: 'Price',
-              orderable: true,
-              render: (data: any) => {
-                if (data == null || data === '' || data === 0) return '-';
-                const n = parseFloat(data);
-                return isNaN(n) ? '-' : `$${n.toFixed(2)}`;
-              },
-            },
-            {
-              data: null,
-              orderable: false,
-              searchable: false,
-              render: (_: any, __: any, row: any) => {
-                const size = `${row.Height ?? ''}/${row.Width ?? ''}R${row.Size ?? ''}`;
-                return `<button
-                  title="Add to cart"
-                  data-add-cart
-                  data-tire-id="${esc(String(row.TireId ?? ''))}"
-                  data-brand="${esc(String(row.Brand ?? ''))}"
-                  data-model="${esc(String(row.Model2 ?? ''))}"
-                  data-size="${esc(size)}"
-                  data-store="${esc(String(row.VaultName ?? ''))}"
-                  class="add-to-cart-btn inline-flex items-center justify-center bg-green-600 hover:bg-green-700 active:bg-green-800 text-white p-1.5 rounded-md cursor-pointer transition-colors"
-                ><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><polyline points="1 1 5 1 7.68 14.39 4.4 16.5 15.66 16.5 17.5 7 7 7"/></svg></button>`;
-              },
-            },
-          ],
-        }}
-      >
-        <thead>
-          <tr>
-            <th data-order="1500">Tire Code</th>
-            <th data-order="1500">Brand</th>
-            <th data-order="1500">Location</th>
-            <th data-order="1500">Model</th>
-            <th data-order="1500">Width</th>
-            <th data-order="1500">Sidewall</th>
-            <th data-order="1500">Diameter</th>
-            <th data-order="1500">Load</th>
-            <th data-order="1500">Patched</th>
-            <th data-order="1500">Tread</th>
-            <th data-order="1500">DOT</th>
-            <th data-order="1500">Price</th>
-            <th></th>
-          </tr>
+    <div className="w-full overflow-x-auto">
+      <table className="w-full text-sm text-left border-collapse">
+        <thead className="bg-gray-50 border-b border-gray-200">
+          {table.getHeaderGroups().map(headerGroup => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map(header => (
+                <th
+                  key={header.id}
+                  onClick={header.column.getToggleSortingHandler()}
+                  className={[
+                    'px-3 py-3 font-semibold text-gray-600 whitespace-nowrap select-none',
+                    header.column.getCanSort() ? 'cursor-pointer hover:text-gray-900' : '',
+                    header.column.columnDef.meta?.className ?? '',
+                  ].join(' ')}
+                >
+                  <div className="flex items-center gap-1">
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.column.getCanSort() && (
+                      <span className="text-gray-400 text-xs">
+                        {{ asc: '↑', desc: '↓' }[header.column.getIsSorted() as string] ?? '↕'}
+                      </span>
+                    )}
+                  </div>
+                </th>
+              ))}
+            </tr>
+          ))}
         </thead>
-      </DataTable>
+        <tbody>
+          {loading ? (
+            <tr>
+              <td colSpan={columns.length} className="text-center py-12 text-gray-400">
+                <div className="flex items-center justify-center gap-2">
+                  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-green-600" />
+                  Loading...
+                </div>
+              </td>
+            </tr>
+          ) : table.getRowModel().rows.length === 0 ? (
+            <tr>
+              <td colSpan={columns.length} className="text-center py-12 text-gray-400">
+                No tires found for the current filters.
+              </td>
+            </tr>
+          ) : (
+            table.getRowModel().rows.flatMap((row, i) => {
+              const rowId = row.id;
+              const isExpanded = expandedRows.has(rowId);
+
+              return [
+                <tr
+                  key={rowId}
+                  className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
+                >
+                  {row.getVisibleCells().map(cell => {
+                    if (cell.column.id === 'expand') {
+                      return (
+                        <td key={cell.id} className="md:hidden px-2 py-2.5">
+                          <button
+                            onClick={() => toggleRow(rowId)}
+                            className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+                            aria-label={isExpanded ? 'Collapse row' : 'Expand row'}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="14"
+                              height="14"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.5"
+                              className={`transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                            >
+                              <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                          </button>
+                        </td>
+                      );
+                    }
+                    return (
+                      <td
+                        key={cell.id}
+                        className={[
+                          'px-3 py-2.5 text-gray-700 whitespace-nowrap',
+                          cell.column.columnDef.meta?.className ?? '',
+                        ].join(' ')}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    );
+                  })}
+                </tr>,
+
+                // Expanded row — mobile only
+                isExpanded && (
+                  <tr key={`${rowId}-expanded`} className="md:hidden border-b border-gray-100">
+                    <td colSpan={columns.length} className="p-0">
+                      <ExpandedRow row={row.original} />
+                    </td>
+                  </tr>
+                ),
+              ].filter(Boolean);
+            })
+          )}
+        </tbody>
+      </table>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between px-3 py-3 border-t border-gray-200">
+        <span className="text-sm text-gray-500">
+          {totalCount > 0
+            ? `${(page - 1) * PAGE_SIZE + 1}–${Math.min(page * PAGE_SIZE, totalCount)} of ${totalCount} tires`
+            : 'No results'}
+        </span>
+        <div className="flex items-center gap-1">
+          <button onClick={() => setPage(1)} disabled={page === 1} className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors">«</button>
+          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors">‹</button>
+          <span className="px-3 py-1 text-sm text-gray-600">{page} / {totalPages || 1}</span>
+          <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages} className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors">›</button>
+          <button onClick={() => setPage(totalPages)} disabled={page >= totalPages} className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors">»</button>
+        </div>
+      </div>
     </div>
   );
 };

@@ -133,6 +133,9 @@ export type DocumentRecord = {
   VaultName?: string;
   KindSale?: string;
   KindSaleId?: number;
+  Height?: string | number;
+  Width?: string | number;
+  LoadIndexId?: string | number;
 };
 
 export type TireFilters = {
@@ -332,38 +335,6 @@ export async function fetchTiresByIds(tireIds: string[]): Promise<DocumentRecord
     `SELECT * FROM dbo.View_Tires WHERE TireId IN (${params.join(',')})`
   );
   return (result.recordset as DocumentRecord[]) ?? [];
-}
-
-/**
- * Marks the provided tires as sold by updating their Condition to 'sold'.
- * Idempotent: running it multiple times has no adverse effect.
- */
-export async function markTiresSoldByIds(
-  tireIds: Array<string | number>
-): Promise<{ updated: number }> {
-  if (!Array.isArray(tireIds) || tireIds.length === 0) return { updated: 0 };
-
-  const unique = Array.from(new Set(tireIds.map(id => String(id).trim()).filter(Boolean)));
-  if (unique.length === 0) return { updated: 0 };
-
-  const pool = await getPool();
-  const request = pool.request();
-
-  // Build parameterized IN clause
-  const params: string[] = [];
-  unique.forEach((id, idx) => {
-    const param = `id${idx}`;
-    params.push(`@${param}`);
-    request.input(param, VarChar, id);
-  });
-
-  const query = `UPDATE dbo.View_Tires SET Condition = 'sold' WHERE TireId IN (${params.join(', ')})`;
-
-  const result = await request.query(query);
-  // mssql rowsAffected is number[]; sum them
-  const rows = result.rowsAffected.reduce((acc, n) => acc + n, 0);
-
-  return { updated: rows || 0 };
 }
 
 export async function fetchActiveTireIds(
