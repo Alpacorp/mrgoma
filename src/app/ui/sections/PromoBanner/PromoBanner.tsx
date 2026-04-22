@@ -2,6 +2,7 @@
 
 import React, { FC, useEffect, useMemo, useState } from 'react';
 
+import Image from 'next/image';
 import Link from 'next/link';
 
 export interface PromoContent {
@@ -142,11 +143,14 @@ const PromoBanner: FC<PromoBannerProps> = ({ content, className = '', storageKey
           </div>
           {imageUrl && (
             <div className="hidden sm:block shrink-0">
-              <img
+              <Image
                 src={imageUrl}
                 alt="Promotional banner image"
-                className="h-20 w-auto object-contain drop-shadow"
-                loading="eager"
+                width={80}
+                height={80}
+                className="w-auto object-contain drop-shadow"
+                priority
+                unoptimized
               />
             </div>
           )}
