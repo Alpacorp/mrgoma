@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { buildTireFilters } from '@/app/utils/filterUtils';
@@ -7,11 +8,16 @@ import {
   MAX_PAGE_SIZE,
   validatePageSize,
 } from '@/app/utils/paginationUtils';
-import { fetchTires } from '@/repositories/tiresRepository';
+import { TireFilters, fetchTires } from '@/repositories/tiresRepository';
 import { logger } from '@/utils/logger';
 
-export async function GET(req: NextRequest) {
+const getCachedTires = unstable_cache(
+  (offset: number, pageSize: number, filters: TireFilters) => fetchTires(offset, pageSize, filters),
+  ['tires'],
+  { revalidate: 120, tags: ['tires'] }
+);
 
+export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
 
   // Get and validate pagination parameters
@@ -33,7 +39,7 @@ export async function GET(req: NextRequest) {
   const filters = buildTireFilters(searchParams);
 
   try {
-    const result = await fetchTires(offset, pageSize, filters);
+    const result = await getCachedTires(offset, pageSize, filters);
     return NextResponse.json(result);
   } catch (err: unknown) {
     logger.error('Failed to fetch tires', err);

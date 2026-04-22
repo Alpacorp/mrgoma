@@ -1,8 +1,10 @@
-/**
- * Utilities for handling API filter parameters
- */
-
 import { TireFilters } from '@/repositories/tiresRepository';
+
+function safeInt(value: string | null): number | undefined {
+  if (!value) return undefined;
+  const n = parseInt(value, 10);
+  return isNaN(n) ? undefined : n;
+}
 
 /**
  * Extract and build a filters' object from search parameters
@@ -42,12 +44,19 @@ export function buildTireFilters(searchParams: URLSearchParams): TireFilters {
   if (brandParam) {
     filters.brands = brandParam.split(',').filter(Boolean);
   }
-  if (minPrice) filters.minPrice = parseInt(minPrice, 10);
-  if (maxPrice) filters.maxPrice = parseInt(maxPrice, 10);
-  if (minTreadDepth) filters.minTreadDepth = parseInt(minTreadDepth, 10);
-  if (maxTreadDepth) filters.maxTreadDepth = parseInt(maxTreadDepth, 10);
-  if (minRemainingLife) filters.minRemainingLife = parseInt(minRemainingLife, 10);
-  if (maxRemainingLife) filters.maxRemainingLife = parseInt(maxRemainingLife, 10);
+  const minPriceVal = safeInt(minPrice);
+  const maxPriceVal = safeInt(maxPrice);
+  const minTreadVal = safeInt(minTreadDepth);
+  const maxTreadVal = safeInt(maxTreadDepth);
+  const minLifeVal = safeInt(minRemainingLife);
+  const maxLifeVal = safeInt(maxRemainingLife);
+
+  if (minPriceVal !== undefined) filters.minPrice = minPriceVal;
+  if (maxPriceVal !== undefined) filters.maxPrice = maxPriceVal;
+  if (minTreadVal !== undefined) filters.minTreadDepth = minTreadVal;
+  if (maxTreadVal !== undefined) filters.maxTreadDepth = maxTreadVal;
+  if (minLifeVal !== undefined) filters.minRemainingLife = minLifeVal;
+  if (maxLifeVal !== undefined) filters.maxRemainingLife = maxLifeVal;
   if (sort) filters.sort = sort;
   if (storesParam) filters.stores = storesParam.split(',').filter(Boolean);
   if (kindSaleParam) filters.kindSale = kindSaleParam.split(',').filter(Boolean);

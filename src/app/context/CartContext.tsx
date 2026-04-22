@@ -23,9 +23,20 @@ export interface CartItem {
 }
 
 // Define the cart context type
+export interface AddToCartProduct {
+  id: string | number;
+  name: string;
+  price: number | string;
+  condition?: string;
+  imageSrc?: string;
+  images?: Array<{ src: string }>;
+  brand?: string;
+  brandId?: string | number;
+}
+
 interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (product: any) => void;
+  addToCart: (product: AddToCartProduct) => void;
   removeFromCart: (productId: string | number) => void;
   clearCart: () => void;
   isInCart: (productId: string | number) => boolean;
@@ -72,7 +83,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, [cartItems]);
 
   // Add a product to the cart
-  const addToCart = (product: any) => {
+  const addToCart = (product: AddToCartProduct) => {
     setCartItems(prevItems => {
       const prodId = String(product.id);
       // Check if the product is already in the cart (normalize id comparison)

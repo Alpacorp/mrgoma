@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { insertOrderDetailsByOrderId } from '@/repositories/orderDetailsRepository';
 import { getOrderByStripeSessionId, insertOrder } from '@/repositories/ordersRepository';
-import { fetchTireById, setTiresConditionIdToSoldByIds } from '@/repositories/tiresRepository';
+import { fetchTiresByIds, setTiresConditionIdToSoldByIds } from '@/repositories/tiresRepository';
 import { logger } from '@/utils/logger';
 
 function badRequest(message: string) {
@@ -107,18 +107,10 @@ export async function GET(req: NextRequest) {
         if (fulfillmentMethod === 'pickup' && pickupStoreId) {
           store = pickupStoreId;
         } else if (productIds.length > 0) {
-          const vaults: string[] = [];
-          for (const pid of productIds) {
-            try {
-              const rec: any = await fetchTireById(String(pid));
-              if (rec && (rec as any).VaultId != null) {
-                vaults.push(String((rec as any).VaultId));
-              }
-            } catch (e) {
-              // ignore individual fetch errors and continue
-            }
-          }
-          const uniqueVaults = Array.from(new Set(vaults.filter(Boolean)));
+          const tires = await fetchTiresByIds(productIds);
+          const uniqueVaults = Array.from(
+            new Set(tires.map((t: any) => t.VaultId).filter(Boolean).map(String))
+          );
           if (uniqueVaults.length === 1) store = uniqueVaults[0];
           else if (uniqueVaults.length > 1) store = 'MIXED';
         }

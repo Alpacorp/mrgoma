@@ -2,6 +2,109 @@ import { Float, Int, VarChar } from 'mssql';
 
 import { getPool } from '@/connection/db';
 
+type MssqlType = typeof VarChar | typeof Int | typeof Float;
+type SqlParam = { name: string; type: MssqlType; value: unknown };
+
+function buildFiltersClause(filters: TireFilters): { clause: string; params: SqlParam[] } {
+  let clause = '';
+  const params: SqlParam[] = [];
+
+  if (filters.width || filters.sidewall || filters.diameter) {
+    if (filters.width && filters.sidewall && filters.diameter) {
+      clause += ' AND RealSize = @realSize';
+      params.push({ name: 'realSize', type: VarChar, value: `${filters.width}/${filters.sidewall}/${filters.diameter}` });
+    } else {
+      if (filters.width) {
+        clause += ' AND RealSize LIKE @widthPattern';
+        params.push({ name: 'widthPattern', type: VarChar, value: `${filters.width}/%` });
+      }
+      if (filters.sidewall) {
+        clause += ' AND RealSize LIKE @sidewallPattern';
+        params.push({ name: 'sidewallPattern', type: VarChar, value: `%/${filters.sidewall}/%` });
+      }
+      if (filters.diameter) {
+        clause += ' AND RealSize LIKE @diameterPattern';
+        params.push({ name: 'diameterPattern', type: VarChar, value: `%/${filters.diameter}` });
+      }
+    }
+  }
+
+  if (filters.condition && filters.condition.length > 0) {
+    const normalized = filters.condition.map(c => c.toLowerCase());
+    if (normalized.includes('new') && !normalized.includes('used')) {
+      clause += ' AND ProductTypeId = 1';
+    } else if (!normalized.includes('new') && normalized.includes('used')) {
+      clause += ' AND ProductTypeId <> 1';
+    }
+  }
+
+  if (filters.patched && filters.patched.length > 0) {
+    const normalized = filters.patched.map(p => p.toLowerCase());
+    if (normalized.includes('yes') && !normalized.includes('no')) {
+      clause += " AND Patched <> '0'";
+    } else if (!normalized.includes('yes') && normalized.includes('no')) {
+      clause += " AND Patched = '0'";
+    }
+  }
+
+  if (filters.brands && filters.brands.length > 0) {
+    const brandParams = filters.brands.map((_, i) => `@brand${i}`).join(',');
+    clause += ` AND Brand IN (${brandParams})`;
+    filters.brands.forEach((brand, i) => params.push({ name: `brand${i}`, type: VarChar, value: brand }));
+  }
+
+  if (filters.stores && filters.stores.length > 0) {
+    const storeParams = filters.stores.map((_, i) => `@store${i}`).join(',');
+    clause += ` AND VaultName IN (${storeParams})`;
+    filters.stores.forEach((store, i) => params.push({ name: `store${i}`, type: VarChar, value: store }));
+  }
+
+  if (filters.kindSale && filters.kindSale.length > 0) {
+    const normalized = filters.kindSale.map(k => k.toLowerCase());
+    if (normalized.includes('yes') && !normalized.includes('no')) {
+      clause += " AND KindSale = 'Yes'";
+    } else if (!normalized.includes('yes') && normalized.includes('no')) {
+      clause += " AND KindSale = 'No'";
+    }
+  }
+
+  if (filters.local && filters.local.length > 0) {
+    const normalized = filters.local.map(l => l.toLowerCase());
+    if (normalized.includes('yes') && !normalized.includes('no')) {
+      clause += " AND Local = '1'";
+    } else if (!normalized.includes('yes') && normalized.includes('no')) {
+      clause += " AND Local = '0'";
+    }
+  }
+
+  if (typeof filters.minPrice === 'number') {
+    clause += ' AND Price >= @minPrice';
+    params.push({ name: 'minPrice', type: Int, value: filters.minPrice });
+  }
+  if (typeof filters.maxPrice === 'number') {
+    clause += ' AND Price <= @maxPrice';
+    params.push({ name: 'maxPrice', type: Int, value: filters.maxPrice });
+  }
+  if (typeof filters.minTreadDepth === 'number') {
+    clause += ' AND Tread >= @minTreadDepth';
+    params.push({ name: 'minTreadDepth', type: Float, value: filters.minTreadDepth });
+  }
+  if (typeof filters.maxTreadDepth === 'number') {
+    clause += ' AND Tread <= @maxTreadDepth';
+    params.push({ name: 'maxTreadDepth', type: Float, value: filters.maxTreadDepth });
+  }
+  if (typeof filters.minRemainingLife === 'number') {
+    clause += " AND TRY_CAST(REPLACE(RemainingLife, '%', '') AS int) >= @minRemainingLife";
+    params.push({ name: 'minRemainingLife', type: Int, value: filters.minRemainingLife });
+  }
+  if (typeof filters.maxRemainingLife === 'number') {
+    clause += " AND TRY_CAST(REPLACE(RemainingLife, '%', '') AS int) <= @maxRemainingLife";
+    params.push({ name: 'maxRemainingLife', type: Int, value: filters.maxRemainingLife });
+  }
+
+  return { clause, params };
+}
+
 export type DocumentRecord = {
   id?: number;
   ProductTypeId?: number;
@@ -92,136 +195,13 @@ async function fetchTiresInternal(
   const countRequest = pool.request();
 
   request.input('offset', Int, offset).input('pageSize', Int, pageSize);
-
   countRequest.input('offset', Int, offset).input('pageSize', Int, pageSize);
-  let whereClause = baseWhereClause;
 
-  if (filters.width || filters.sidewall || filters.diameter) {
-    if (filters.width && filters.sidewall && filters.diameter) {
-      const realSize = `${filters.width}/${filters.sidewall}/${filters.diameter}`;
-      whereClause += ' AND RealSize = @realSize';
-      request.input('realSize', VarChar, realSize);
-      countRequest.input('realSize', VarChar, realSize);
-    } else {
-      if (filters.width) {
-        whereClause += ' AND RealSize LIKE @widthPattern';
-        request.input('widthPattern', VarChar, `${filters.width}/%`);
-        countRequest.input('widthPattern', VarChar, `${filters.width}/%`);
-      }
-
-      if (filters.sidewall) {
-        whereClause += ' AND RealSize LIKE @sidewallPattern';
-        request.input('sidewallPattern', VarChar, `%/${filters.sidewall}/%`);
-        countRequest.input('sidewallPattern', VarChar, `%/${filters.sidewall}/%`);
-      }
-
-      if (filters.diameter) {
-        whereClause += ' AND RealSize LIKE @diameterPattern';
-        request.input('diameterPattern', VarChar, `%/${filters.diameter}`);
-        countRequest.input('diameterPattern', VarChar, `%/${filters.diameter}`);
-      }
-    }
-  }
-
-  if (filters.condition && filters.condition.length > 0) {
-    const normalized = filters.condition.map(c => c.toLowerCase());
-    const includeNew = normalized.includes('new');
-    const includeUsed = normalized.includes('used');
-
-    if (includeNew && !includeUsed) {
-      whereClause += ' AND ProductTypeId = 1';
-    } else if (!includeNew && includeUsed) {
-      whereClause += ' AND ProductTypeId <> 1';
-    }
-  }
-
-  if (filters.patched && filters.patched.length > 0) {
-    const normalized = filters.patched.map(p => p.toLowerCase());
-    const isPatched = normalized.includes('yes');
-    const isNotPatched = normalized.includes('no');
-
-    if (isPatched && !isNotPatched) {
-      whereClause += " AND Patched <> '0'";
-    } else if (!isPatched && isNotPatched) {
-      whereClause += " AND Patched = '0'";
-    }
-  }
-
-  if (filters.brands && filters.brands.length > 0) {
-    const brandParams = filters.brands.map((_, idx) => `@brand${idx}`).join(',');
-    whereClause += ` AND Brand IN (${brandParams})`;
-    filters.brands.forEach((brand, idx) => {
-      request.input(`brand${idx}`, VarChar, brand);
-      countRequest.input(`brand${idx}`, VarChar, brand);
-    });
-  }
-
-  if (filters.stores && filters.stores.length > 0) {
-    const storeParams = filters.stores.map((_, idx) => `@store${idx}`).join(',');
-    whereClause += ` AND VaultName IN (${storeParams})`;
-    filters.stores.forEach((store, idx) => {
-      request.input(`store${idx}`, VarChar, store);
-      countRequest.input(`store${idx}`, VarChar, store);
-    });
-  }
-
-  if (filters.kindSale && filters.kindSale.length > 0) {
-    const normalized = filters.kindSale.map(k => k.toLowerCase());
-    const includeYes = normalized.includes('yes');
-    const includeNo = normalized.includes('no');
-
-    if (includeYes && !includeNo) {
-      whereClause += " AND KindSale = 'Yes'";
-    } else if (!includeYes && includeNo) {
-      whereClause += " AND KindSale = 'No'";
-    }
-  }
-
-  if (filters.local && filters.local.length > 0) {
-    const normalized = filters.local.map(l => l.toLowerCase());
-    const includeYes = normalized.includes('yes');
-    const includeNo = normalized.includes('no');
-    if (includeYes && !includeNo) {
-      whereClause += " AND Local = '1'";
-    } else if (!includeYes && includeNo) {
-      whereClause += " AND Local = '0'";
-    }
-  }
-
-  if (typeof filters.minPrice === 'number') {
-    whereClause += ' AND Price >= @minPrice';
-    request.input('minPrice', Int, filters.minPrice);
-    countRequest.input('minPrice', Int, filters.minPrice);
-  }
-
-  if (typeof filters.maxPrice === 'number') {
-    whereClause += ' AND Price <= @maxPrice';
-    request.input('maxPrice', Int, filters.maxPrice);
-    countRequest.input('maxPrice', Int, filters.maxPrice);
-  }
-
-  if (typeof filters.minTreadDepth === 'number') {
-    whereClause += ' AND Tread >= @minTreadDepth';
-    request.input('minTreadDepth', Float, filters.minTreadDepth);
-    countRequest.input('minTreadDepth', Float, filters.minTreadDepth);
-  }
-
-  if (typeof filters.maxTreadDepth === 'number') {
-    whereClause += ' AND Tread <= @maxTreadDepth';
-    request.input('maxTreadDepth', Float, filters.maxTreadDepth);
-    countRequest.input('maxTreadDepth', Float, filters.maxTreadDepth);
-  }
-
-  if (typeof filters.minRemainingLife === 'number') {
-    whereClause += " AND TRY_CAST(REPLACE(RemainingLife, '%', '') AS int) >= @minRemainingLife";
-    request.input('minRemainingLife', Int, filters.minRemainingLife);
-    countRequest.input('minRemainingLife', Int, filters.minRemainingLife);
-  }
-
-  if (typeof filters.maxRemainingLife === 'number') {
-    whereClause += " AND TRY_CAST(REPLACE(RemainingLife, '%', '') AS int) <= @maxRemainingLife";
-    request.input('maxRemainingLife', Int, filters.maxRemainingLife);
-    countRequest.input('maxRemainingLife', Int, filters.maxRemainingLife);
+  const { clause, params } = buildFiltersClause(filters);
+  const whereClause = baseWhereClause + clause;
+  for (const p of params) {
+    request.input(p.name, p.type, p.value);
+    countRequest.input(p.name, p.type, p.value);
   }
 
   const baseQuery = `FROM dbo.View_Tires WHERE ${whereClause}`;
@@ -299,87 +279,10 @@ async function fetchBrandsInternal(
   const pool = await getPool();
   const request = pool.request();
 
-  let whereClause = baseWhereClause;
-
-  // Filtro por dimensiones de neumático usando RealSize
-  if (filters.width || filters.sidewall || filters.diameter) {
-    // Si tenemos todas las dimensiones, buscamos una coincidencia exacta
-    if (filters.width && filters.sidewall && filters.diameter) {
-      const realSize = `${filters.width}/${filters.sidewall}/${filters.diameter}`;
-      whereClause += ' AND RealSize = @realSize';
-      request.input('realSize', VarChar, realSize);
-    }
-    // Si solo tenemos algunas dimensiones, usamos LIKE para búsquedas parciales
-    else {
-      if (filters.width) {
-        whereClause += ' AND RealSize LIKE @widthPattern';
-        request.input('widthPattern', VarChar, `${filters.width}/%`);
-      }
-
-      if (filters.sidewall) {
-        whereClause += ' AND RealSize LIKE @sidewallPattern';
-        request.input('sidewallPattern', VarChar, `%/${filters.sidewall}/%`);
-      }
-
-      if (filters.diameter) {
-        whereClause += ' AND RealSize LIKE @diameterPattern';
-        request.input('diameterPattern', VarChar, `%/${filters.diameter}`);
-      }
-    }
-  }
-
-  if (filters.condition && filters.condition.length > 0) {
-    const normalized = filters.condition.map(c => c.toLowerCase());
-    const includeNew = normalized.includes('new');
-    const includeUsed = normalized.includes('used');
-
-    if (includeNew && !includeUsed) {
-      whereClause += ' AND ProductTypeId = 1';
-    } else if (!includeNew && includeUsed) {
-      whereClause += ' AND ProductTypeId <> 1';
-    }
-  }
-
-  if (filters.patched && filters.patched.length > 0) {
-    const normalized = filters.patched.map(p => p.toLowerCase());
-    const isPatched = normalized.includes('yes');
-    const isNotPatched = normalized.includes('no');
-
-    if (isPatched && !isNotPatched) {
-      whereClause += " AND Patched <> '0'";
-    } else if (!isPatched && isNotPatched) {
-      whereClause += " AND Patched = '0'";
-    }
-  }
-
-  if (typeof filters.minPrice === 'number') {
-    whereClause += ' AND Price >= @minPrice';
-    request.input('minPrice', Int, filters.minPrice);
-  }
-
-  if (typeof filters.maxPrice === 'number') {
-    whereClause += ' AND Price <= @maxPrice';
-    request.input('maxPrice', Int, filters.maxPrice);
-  }
-
-  if (typeof filters.minTreadDepth === 'number') {
-    whereClause += ' AND Tread >= @minTreadDepth';
-    request.input('minTreadDepth', Float, filters.minTreadDepth);
-  }
-
-  if (typeof filters.maxTreadDepth === 'number') {
-    whereClause += ' AND Tread <= @maxTreadDepth';
-    request.input('maxTreadDepth', Float, filters.maxTreadDepth);
-  }
-
-  if (typeof filters.minRemainingLife === 'number') {
-    whereClause += " AND TRY_CAST(REPLACE(RemainingLife, '%', '') AS int) >= @minRemainingLife";
-    request.input('minRemainingLife', Int, filters.minRemainingLife);
-  }
-
-  if (typeof filters.maxRemainingLife === 'number') {
-    whereClause += " AND TRY_CAST(REPLACE(RemainingLife, '%', '') AS int) <= @maxRemainingLife";
-    request.input('maxRemainingLife', Int, filters.maxRemainingLife);
+  const { clause, params } = buildFiltersClause(filters);
+  const whereClause = baseWhereClause + clause;
+  for (const p of params) {
+    request.input(p.name, p.type, p.value);
   }
 
   const query = `SELECT DISTINCT Brand
@@ -413,6 +316,24 @@ export async function fetchTireById(tireId: string): Promise<DocumentRecord | nu
   return record || null;
 }
 
+export async function fetchTiresByIds(tireIds: string[]): Promise<DocumentRecord[]> {
+  if (tireIds.length === 0) return [];
+
+  const unique = Array.from(new Set(tireIds.map(id => id.trim()).filter(Boolean)));
+  const pool = await getPool();
+  const request = pool.request();
+
+  const params = unique.map((id, idx) => {
+    request.input(`tid${idx}`, VarChar, id);
+    return `@tid${idx}`;
+  });
+
+  const result = await request.query(
+    `SELECT * FROM dbo.View_Tires WHERE TireId IN (${params.join(',')})`
+  );
+  return (result.recordset as DocumentRecord[]) ?? [];
+}
+
 /**
  * Marks the provided tires as sold by updating their Condition to 'sold'.
  * Idempotent: running it multiple times has no adverse effect.
@@ -440,9 +361,7 @@ export async function markTiresSoldByIds(
 
   const result = await request.query(query);
   // mssql rowsAffected is number[]; sum them
-  const rows = Array.isArray(result.rowsAffected)
-    ? result.rowsAffected.reduce((acc, n) => acc + (typeof n === 'number' ? n : 0), 0)
-    : (result as any).rowsAffected || 0;
+  const rows = result.rowsAffected.reduce((acc, n) => acc + n, 0);
 
   return { updated: rows || 0 };
 }
@@ -459,7 +378,7 @@ export async function fetchActiveTireIds(
                  WHERE Local = '0' AND Trash = 'false' AND Condition != 'sold' AND Price != 0
                  ORDER BY ModificationDate DESC`;
   const result = await request.query(query);
-  return (result.recordset || []).map((row: any) => ({
+  return (result.recordset || []).map((row: { TireId: string; ModificationDate?: Date; Brand?: string; RealSize?: string }) => ({
     id: String(row.TireId),
     modified: row.ModificationDate,
     brand: row.Brand || undefined,
@@ -492,9 +411,7 @@ export async function setTiresConditionIdToSoldByIds(
   const sql = `UPDATE dbo.Tires SET ConditionId = @condId, Trash = 1 WHERE TireId IN (${params.join(', ')})`;
   const result = await request.query(sql);
 
-  const rows = Array.isArray(result.rowsAffected)
-    ? result.rowsAffected.reduce((acc, n) => acc + (typeof n === 'number' ? n : 0), 0)
-    : (result as any).rowsAffected || 0;
+  const rows = result.rowsAffected.reduce((acc, n) => acc + n, 0);
 
   return { updated: rows || 0 };
 }
