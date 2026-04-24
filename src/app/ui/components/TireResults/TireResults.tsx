@@ -10,7 +10,7 @@ interface TireResultsProps {
 
 const TireResults: FC<TireResultsProps> = ({ products }) => {
   return (
-    <div className="mx-auto">
+    <div className="mx-auto max-w-3xl px-3 sm:px-0">
       {products && products.length > 0 ? (
         <TireCard products={products} />
       ) : (
