@@ -31,7 +31,10 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
   // Extract technical specs from details items (e.g. "Load Index: 92")
   const detailItems: string[] = (singleTire.details?.[0]?.items as string[]) || [];
   const findDetail = (prefix: string) =>
-    detailItems.find(i => i.startsWith(prefix))?.split(': ')[1]?.trim();
+    detailItems
+      .find(i => i.startsWith(prefix))
+      ?.split(': ')[1]
+      ?.trim();
 
   const tireDescription = generateTireDescription({
     brand: singleTire.brand,
@@ -106,8 +109,14 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
             )}
           </div>
           <ul aria-label="Key specifications" className="mt-4 flex flex-wrap gap-2">
-            <li className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
-              Condition: {singleTire.condition}
+            <li
+              className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-bold tracking-wide border ${
+                singleTire.condition?.toLowerCase() === 'new'
+                  ? 'bg-green-100 text-green-700 border-green-300'
+                  : 'bg-amber-100 text-amber-700 border-amber-300'
+              }`}
+            >
+              {singleTire.condition?.toLowerCase() === 'new' ? 'New' : 'Used'}
             </li>
             <li className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
               Remaining life: {singleTire.remainingLife}

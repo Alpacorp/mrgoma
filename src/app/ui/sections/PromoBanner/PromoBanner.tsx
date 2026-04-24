@@ -100,7 +100,7 @@ const PromoBanner: FC<PromoBannerProps> = ({ content, className = '', storageKey
     >
       {/* Attention accent bar */}
       <div className="relative h-1 w-full bg-linear-to-r from-lime-400 via-emerald-400 to-lime-400 animate-[pulse_3s_ease-in-out_infinite] opacity-80" />
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="relative px-4 sm:px-5">
         <div className="relative flex items-stretch gap-4 py-4 sm:py-5">
           <div className="flex-1 min-w-0 pr-12 sm:pr-0">
             <div className="flex items-center gap-2 flex-wrap">

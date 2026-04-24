@@ -1,7 +1,8 @@
 'use client';
 
-import Image from 'next/image';
 import React, { FC, useCallback, useMemo, useState } from 'react';
+
+import Image from 'next/image';
 
 import { TireInformationProps } from '@/app/interfaces/tires';
 import { ProductCondition, ProductCarouselMiniature, StockBadge } from '@/app/ui/components';
@@ -102,14 +103,15 @@ const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
               priority={false}
             />
-            <div className="pointer-events-none absolute top-0 left-0 z-30 text-lg font-semibold text-white">
+            <div className="pointer-events-none absolute top-2 left-2 z-30">
               <ProductCondition condition={singleTire.condition} />
             </div>
             {(() => {
               const statusVal = (singleTire as any)?.status;
-              const isSold = typeof statusVal === 'string' && statusVal.trim().toLowerCase() === 'sold';
+              const isSold =
+                typeof statusVal === 'string' && statusVal.trim().toLowerCase() === 'sold';
               return !isSold ? (
-                <div className="pointer-events-none absolute right-2 top-3 sm:top-2 z-[60]">
+                <div className="pointer-events-none absolute top-2 right-2 z-[60]">
                   <StockBadge />
                 </div>
               ) : null;

@@ -6,69 +6,75 @@ interface SkeletonProps {
 }
 
 const TireCardSkeleton: FC = () => (
-  <li className="bg-white rounded-lg overflow-hidden p-5 shadow-[0px_1px_10px_rgba(0,0,0,0.1)] w-full mb-8 animate-pulse">
-    <div className="grid grid-cols-12 gap-4">
-      {/* Image skeleton - left side - Matches ProductImage placement */}
-      <div className="relative col-span-12 md:col-span-4">
-        <div className="w-full h-52 bg-gray-200 rounded-lg shadow-sm" />
-        {/* Condition badge skeleton */}
-        <div className="absolute top-0 left-0 z-30">
-          <div className="h-6 w-20 bg-gray-300 rounded-br-lg" />
-        </div>
-        {/* Stock badge skeleton (top-right) */}
-        <div className="absolute top-2 right-2 z-30">
-          <div className="h-6 w-24 bg-gray-200/80 rounded-full shadow-sm" />
-        </div>
+  <li
+    className="isolate bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden animate-pulse"
+    style={{ borderLeftWidth: 4, borderLeftColor: '#d1d5db' }}
+  >
+    <div className="flex flex-col sm:flex-row">
+      {/* Mobile top bar: condition badge + stock badge */}
+      <div className="sm:hidden flex items-center justify-between px-4 py-2.5">
+        <div className="h-6 w-14 bg-gray-200 rounded-full" />
+        <div className="h-6 w-24 bg-gray-200 rounded-full" />
       </div>
 
-      {/* Content - right side */}
-      <div className="col-span-12 md:col-span-8 content-center">
-        {/* Product name skeleton - Matches ProductName */}
-        <div className="h-7 bg-gray-200 rounded w-3/4" />
+      {/* Image */}
+      <div className="bg-gray-200 h-48 sm:h-auto sm:min-h-[180px] sm:w-52 md:w-64 sm:shrink-0" />
 
-        {/* Price and brand section - Matches the flex layout in TireCard */}
-        <div className="flex flex-wrap mb-4 mt-4 gap-5 items-center justify-between">
-          {/* Price and brand area */}
-          <div className="flex gap-2 items-center justify-center">
-            {/* Price skeleton */}
-            <div className="h-8 bg-gray-200 rounded-full w-24" />
-            {/* Brand skeleton */}
-            <div className="h-10 w-10 bg-gray-200 rounded-full" />
-          </div>
-
-          {/* Buttons area */}
-          <div className="flex items-center gap-2 justify-center w-full md:w-auto">
-            {/* View details button skeleton */}
-            <div className="h-10 bg-gray-200 rounded-full w-28" />
-            {/* Add to cart button skeleton */}
-            <div className="h-10 bg-gray-300 rounded-full w-28" />
-          </div>
+      {/* Content */}
+      <div className="flex-1 min-w-0 flex flex-col px-4 pt-4 pb-5 sm:px-6 sm:py-5 gap-3 sm:gap-2">
+        {/* Desktop: meta + CTA button */}
+        <div className="hidden sm:flex items-start justify-between gap-3">
+          <div className="h-3.5 w-36 bg-gray-200 rounded mt-0.5" />
+          <div className="h-9 w-32 bg-gray-200 rounded-full shrink-0" />
         </div>
 
-        {/* Features section - Matches the feature box in TireCard */}
-        <div className="flex flex-wrap gap-3 justify-between bg-gray-100 py-2 px-2 xs:px-4 rounded-xl xs:rounded-2xl border-gray-500">
-          {/* Feature items - Create 4 placeholders to match the layout */}
-          {Array.from({ length: 4 }).map((_, index) => (
-            <div key={index} className="flex flex-col items-center justify-center p-1">
-              <div className="h-4 bg-gray-200 rounded w-16 mb-1" />
-              <div className="h-4 bg-gray-300 rounded w-12" />
-            </div>
-          ))}
+        {/* Condition badge (desktop) + size pill */}
+        <div className="flex items-center gap-2">
+          <div className="hidden sm:block h-6 w-14 bg-gray-200 rounded-full" />
+          <div className="h-5 w-24 bg-gray-300 rounded-full" />
+        </div>
+
+        {/* Title — two lines */}
+        <div className="flex flex-col gap-2">
+          <div className="h-5 bg-gray-200 rounded w-full" />
+          <div className="h-5 bg-gray-200 rounded w-4/5" />
+        </div>
+
+        {/* Price + free shipping badge + brand logo */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="h-8 w-20 bg-gray-200 rounded" />
+          <div className="h-6 w-28 bg-gray-200 rounded-full" />
+          <div className="hidden sm:block h-8 w-20 bg-gray-200 rounded ml-1" />
+        </div>
+
+        {/* Mobile CTA button */}
+        <div className="sm:hidden mt-1 mb-2">
+          <div className="h-11 bg-gray-200 rounded-full w-full" />
         </div>
       </div>
+    </div>
+
+    {/* Spec strip */}
+    <div className="grid grid-cols-4 divide-x divide-gray-200 border-t border-gray-200 bg-gray-100">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div key={i} className="flex flex-col gap-1 px-3 py-2.5">
+          <div className="h-2 w-10 bg-gray-300 rounded" />
+          <div className="h-4 w-8 bg-gray-200 rounded" />
+        </div>
+      ))}
     </div>
   </li>
 );
 
-export const ResultsSkeleton: FC<SkeletonProps> = ({ count = 6, className = '' }) => {
-  return (
-    <ul className={`mt-3 ${className}`} role="status" aria-label="Loading results">
+export const ResultsSkeleton: FC<SkeletonProps> = ({ count = 6, className = '' }) => (
+  <div className="mx-auto max-w-3xl px-3 sm:px-0">
+    <ul className={`mt-3 space-y-6 ${className}`} role="status" aria-label="Loading results">
       {Array.from({ length: count }).map((_, index) => (
         <TireCardSkeleton key={index} />
       ))}
       <span className="sr-only">Loading...</span>
     </ul>
-  );
-};
+  </div>
+);
 
 export default ResultsSkeleton;

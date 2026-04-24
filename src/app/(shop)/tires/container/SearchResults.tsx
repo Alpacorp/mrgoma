@@ -298,7 +298,9 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData }) => {
                               totalCount={tiresData.totalCount}
                             />
                           </div>
-                          <PromoBanner content={promoBannerConfig.home} className="mb-6" />
+                          <div className="mx-auto max-w-3xl px-3 sm:px-0 mb-6">
+                            <PromoBanner content={promoBannerConfig.home} />
+                          </div>
                           {error ? (
                             <ErrorDisplay
                               title="Error Loading Tires"
