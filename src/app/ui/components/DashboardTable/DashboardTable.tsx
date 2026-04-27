@@ -45,6 +45,7 @@ function AddToCartButton({ row }: { row: DocumentRecord }) {
       const price = typeof priceRaw === 'string' ? parseFloat(priceRaw) || 0 : Number(priceRaw) || 0;
       addToCart({
         id: tireId,
+        code: String(row.Code ?? ''),
         name,
         price,
         brand,
@@ -52,7 +53,7 @@ function AddToCartButton({ row }: { row: DocumentRecord }) {
         images: data?.images,
       });
     } catch {
-      addToCart({ id: tireId, name, price: 0, brand });
+      addToCart({ id: tireId, code: String(row.Code ?? ''), name, price: 0, brand });
     } finally {
       setLoading(false);
     }

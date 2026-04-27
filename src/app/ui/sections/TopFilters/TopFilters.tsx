@@ -2,11 +2,81 @@
 
 import { FC, useState, useRef, useEffect } from 'react';
 
+import { useRouter, useSearchParams } from 'next/navigation';
+
 import { TireSelector } from '@/app/ui/components/CollapsibleSearchBar/components/TireSelector';
 import { useTireSearch } from '@/app/ui/components/CollapsibleSearchBar/hooks/useTireSearch';
 import { FilterBody } from '@/app/ui/sections/';
 import { filtersItems } from '@/app/ui/sections/FiltersMobile/FiltersItems';
 import { useFilters } from '@/app/ui/sections/FiltersMobile/hooks/useFilters';
+
+export const CodeFilterInput: FC<{ redirectBasePath: string; fullWidth?: boolean }> = ({
+  redirectBasePath,
+  fullWidth = false,
+}) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [value, setValue] = useState(searchParams.get('code') ?? '');
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isActive = value.length > 0;
+
+  const pushCode = (code: string) => {
+    const params = new URLSearchParams(window.location.search);
+    if (code) {
+      params.set('code', code);
+    } else {
+      params.delete('code');
+    }
+    params.set('page', '1');
+    router.push(`/${redirectBasePath}?${params.toString()}`, { scroll: false });
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, '');
+    setValue(digits);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => pushCode(digits), 400);
+  };
+
+  const handleClear = () => {
+    setValue('');
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    pushCode('');
+  };
+
+  return (
+    <div
+      className={`flex items-center gap-2 rounded-md border px-3 ${
+        fullWidth ? 'w-full py-2.5' : 'py-1'
+      } ${isActive ? 'border-green-500 bg-green-50' : 'border-gray-300 bg-white'}`}
+    >
+      <input
+        type="text"
+        inputMode="numeric"
+        pattern="[0-9]*"
+        enterKeyHint="search"
+        placeholder="Tire Code"
+        value={value}
+        onChange={handleChange}
+        maxLength={20}
+        style={{ fontSize: '16px' }}
+        className={`${fullWidth ? 'flex-1' : 'w-24'} bg-transparent outline-none placeholder-gray-400 leading-none ${
+          isActive ? 'text-green-700' : 'text-gray-700'
+        }`}
+      />
+      {isActive && (
+        <button
+          type="button"
+          onClick={handleClear}
+          className="text-green-600 hover:text-green-800 font-bold leading-none cursor-pointer text-base"
+          aria-label="Clear tire code filter"
+        >
+          ×
+        </button>
+      )}
+    </div>
+  );
+};
 
 export const TopFilters: FC<{
   redirectBasePath: string;
@@ -15,6 +85,7 @@ export const TopFilters: FC<{
   showStoreFilter?: boolean;
   inlineTireSize?: boolean;
   showLocalFilter?: boolean;
+  showCodeFilter?: boolean;
 }> = ({
   redirectBasePath,
   apiBasePath = '/api',
@@ -22,6 +93,7 @@ export const TopFilters: FC<{
   showStoreFilter = false,
   inlineTireSize = false,
   showLocalFilter = false,
+  showCodeFilter = false,
 }) => {
   const {
     rangeInputs,
@@ -328,7 +400,8 @@ export const TopFilters: FC<{
           )}
         </div>
 
-        <div className="ml-auto pl-2 self-center">
+        <div className="ml-auto pl-2 self-center flex items-center gap-2">
+          {showCodeFilter && <CodeFilterInput redirectBasePath={redirectBasePath} />}
           <button
             type="button"
             onClick={() => {

@@ -102,6 +102,11 @@ function buildFiltersClause(filters: TireFilters): { clause: string; params: Sql
     params.push({ name: 'maxRemainingLife', type: Int, value: filters.maxRemainingLife });
   }
 
+  if (filters.tireCode) {
+    clause += ' AND Code = @tireCode';
+    params.push({ name: 'tireCode', type: VarChar, value: filters.tireCode });
+  }
+
   return { clause, params };
 }
 
@@ -155,6 +160,7 @@ export type TireFilters = {
   stores?: string[];
   kindSale?: string[];
   local?: string[];
+  tireCode?: string;
 };
 
 export type TireRangeResult = {

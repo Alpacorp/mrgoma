@@ -7,6 +7,7 @@ import { TireSelector } from '@/app/ui/components/CollapsibleSearchBar/component
 import { useTireSearch } from '@/app/ui/components/CollapsibleSearchBar/hooks/useTireSearch';
 import { AdjustmentsHorizontalIcon } from '@/app/ui/components/Icons/Icons';
 import { FiltersMobile, TopFilters } from '@/app/ui/sections';
+import { CodeFilterInput } from '@/app/ui/sections/TopFilters/TopFilters';
 import DashboardCartModal from '@/app/ui/sections/DashboardCartModal/DashboardCartModal';
 import DashboardTableContainer from '@/app/ui/sections/DashboardTableContainer/DashboardTableContainer';
 
@@ -56,8 +57,10 @@ const Dashboard = () => {
                   showStoreFilter={true}
                   inlineTireSize
                   showLocalFilter
+                  showCodeFilter
                 />
                 <div className="lg:hidden border-t border-gray-50 pt-3 space-y-3">
+                  <CodeFilterInput redirectBasePath="dashboard" fullWidth />
                   <TireSelector
                     selectedFilters={mobileTireFilters}
                     onFilterChangeAction={handleMobileTireChange}
