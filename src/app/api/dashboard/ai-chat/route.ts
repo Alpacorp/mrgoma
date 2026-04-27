@@ -24,6 +24,7 @@ Tire size format in Colombia: width/profile/diameter (e.g., "205/55/16" means wi
 Common abbreviations: "llantas" = tires, "usadas" = used, "nuevas" = new, "parcheadas" = patched, "kindSale" / "kind sale" = KindSale filter (yes/no), "local" / "locales" = Local filter (yes = local tires, no = non-local tires)
 Store/branch: tires belong to a store (called "sucursal" or "tienda" in Spanish). Use the stores filter with the exact store name the user mentions (e.g., "sucursal norte" → stores="sucursal norte").
 Price context: prices in the database are in USD. Apply price filters directly using the USD amounts the user mentions.
+Tire code: each tire has a unique numeric code (called "código" or "code"). When the user mentions a specific code number, use the code filter (e.g., "busca el código 12345" → code="12345").
 
 When the user refines a previous search (e.g., "only new ones", "just Michelin"), combine with the existing context from the conversation.`;
 
@@ -96,6 +97,10 @@ const APPLY_FILTERS_TOOL: Anthropic.Tool = {
         type: 'string',
         enum: ['yes', 'no'],
         description: 'Filter by Local field: "yes" to show only local tires, "no" to show only non-local tires.',
+      },
+      code: {
+        type: 'string',
+        description: 'Exact numeric tire code to search for (e.g., "12345"). Only digits are valid.',
       },
       confirmationMessage: {
         type: 'string',
