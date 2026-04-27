@@ -471,6 +471,7 @@ export const useFilters = (
     params.delete('w');
     params.delete('s');
     params.delete('d');
+    params.delete('code');
 
     params.set('page', '1');
 

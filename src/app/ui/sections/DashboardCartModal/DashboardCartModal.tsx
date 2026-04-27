@@ -33,7 +33,8 @@ const DashboardCartFooter: FC = () => {
       ...cartItems.map(item => {
         const price = item.price > 0 ? ` — $${item.price.toFixed(2)}` : '';
         const store = item.condition ? ` | ${item.condition}` : '';
-        return `• ${item.name} (ID: ${item.id}) x${item.quantity}${price}${store}`;
+        const ref = item.code ? `Code: ${item.code}` : `ID: ${item.id}`;
+        return `• ${item.name} (${ref}) x${item.quantity}${price}${store}`;
       }),
       '',
     ];

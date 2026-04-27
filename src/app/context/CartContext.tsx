@@ -13,6 +13,7 @@ import {
 // Define the cart item type
 export interface CartItem {
   id: string | number;
+  code?: string;
   name: string;
   price: number;
   condition?: string;
@@ -25,6 +26,7 @@ export interface CartItem {
 // Define the cart context type
 export interface AddToCartProduct {
   id: string | number;
+  code?: string;
   name: string;
   price: number | string;
   condition?: string;
@@ -103,6 +105,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           ...prevItems,
           {
             brand: product.brand,
+            code: product.code,
             condition: product.condition,
             brandId: product.brandId,
             id: prodId,
