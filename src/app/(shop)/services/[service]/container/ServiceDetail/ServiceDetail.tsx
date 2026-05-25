@@ -1,5 +1,17 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { ServiceConfig } from '@/app/(shop)/services/servicesConfig';
+
+const SERVICE_IMAGES: Record<string, string> = {
+  tire: '/assets/images/bg-service-card.jpg',
+  alignment: '/assets/images/align.jpg',
+  oil: '/assets/images/oil.jpg',
+  brakes: '/assets/images/brake.webp',
+  repair: '/assets/images/service.jpg',
+  rotation: '/assets/images/rotation.jpg',
+  nitrogen: '/assets/images/nitro.webp',
+  tpms: '/assets/images/tpms.webp',
+};
 
 const locationNames = [
   'Miami – South (US-1)',
@@ -43,6 +55,8 @@ function WhatsAppIcon() {
 }
 
 export default function ServiceDetail({ service }: Props) {
+  const heroImage = SERVICE_IMAGES[service.icon];
+
   return (
     <main className="bg-[#0a0a0a] text-white min-h-screen">
 
@@ -61,10 +75,19 @@ export default function ServiceDetail({ service }: Props) {
 
       {/* Hero */}
       <section className="relative border-b border-white/8 overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full opacity-[0.04]"
-            style={{ background: 'radial-gradient(circle, #9dfb40 0%, transparent 70%)' }} />
-        </div>
+        {heroImage && (
+          <div className="hidden lg:block absolute inset-y-0 right-0 w-[45%] pointer-events-none" aria-hidden="true">
+            <Image
+              src={heroImage}
+              alt=""
+              fill
+              className="object-cover brightness-[0.25]"
+              sizes="45vw"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent" />
+          </div>
+        )}
         <div className="relative max-w-6xl mx-auto px-6 lg:px-8 pt-16 pb-14">
           <div className="flex items-center gap-3 mb-6">
             <span className="w-8 h-px bg-[#9dfb40] inline-block" />
