@@ -233,62 +233,107 @@ const Detail = ({ productId: propProductId }: { productId?: string }) => {
   const breadcrumbLabel = data
     ? `${data.condition} ${data.brand}${productSize ? ` ${productSize}` : ''}`.trim()
     : null;
+  const isNewTire = data?.condition?.toLowerCase() === 'new';
 
   return (
-    <div className="bg-white">
-      <nav aria-label="Breadcrumb" className="border-b border-gray-100">
-        <ol className="mx-auto max-w-7xl flex items-center flex-wrap gap-x-1.5 gap-y-1 px-4 sm:px-6 lg:px-8 py-3 text-sm text-gray-500">
-          <li>
-            <a href="/" className="hover:text-green-600 transition-colors duration-150">
-              Home
-            </a>
-          </li>
-          <li aria-hidden="true" className="select-none">
-            /
-          </li>
-          <li>
-            <a
-              href="/tires"
-              className="hover:text-green-600 transition-colors duration-150"
-            >
-              Tires
-            </a>
-          </li>
-          {loading && (
-            <>
-              <li aria-hidden="true" className="select-none">
-                /
-              </li>
+    <>
+      {/* ── Dark hero ── */}
+      <div className="bg-[#0a0a0a] relative overflow-hidden">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage:
+              'linear-gradient(#9dfb40 1px,transparent 1px),linear-gradient(90deg,#9dfb40 1px,transparent 1px)',
+            backgroundSize: '40px 40px',
+          }}
+        />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-5 pb-7 sm:pb-10">
+          {/* Breadcrumb */}
+          <nav aria-label="Breadcrumb">
+            <ol className="flex items-center flex-wrap gap-x-1.5 gap-y-1 text-sm text-white/50">
               <li>
-                <span className="inline-block h-4 w-36 rounded bg-gray-100 animate-pulse align-middle" />
+                <a href="/" className="hover:text-[#9dfb40] transition-colors duration-150">Home</a>
               </li>
-            </>
-          )}
-          {breadcrumbLabel && (
-            <>
-              <li aria-hidden="true" className="select-none">
-                /
-              </li>
+              <li aria-hidden="true" className="select-none">/</li>
               <li>
+                <a href="/tires" className="hover:text-[#9dfb40] transition-colors duration-150">Tires</a>
+              </li>
+              {loading && (
+                <>
+                  <li aria-hidden="true" className="select-none">/</li>
+                  <li>
+                    <span className="inline-block h-4 w-36 rounded bg-white/10 animate-pulse align-middle" />
+                  </li>
+                </>
+              )}
+              {breadcrumbLabel && (
+                <>
+                  <li aria-hidden="true" className="select-none">/</li>
+                  <li>
+                    <span
+                      aria-current="page"
+                      className="text-white/80 font-medium truncate max-w-[220px] sm:max-w-none inline-block align-bottom"
+                      title={breadcrumbLabel}
+                    >
+                      {breadcrumbLabel}
+                    </span>
+                  </li>
+                </>
+              )}
+            </ol>
+          </nav>
+
+          {/* Headline — after data loads */}
+          {data && (
+            <div className="mt-5">
+              <div className="flex items-center gap-2 flex-wrap mb-3">
                 <span
-                  aria-current="page"
-                  className="font-medium text-gray-900 truncate max-w-[220px] sm:max-w-none inline-block align-bottom"
-                  title={breadcrumbLabel}
+                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold tracking-wide ${
+                    isNewTire
+                      ? 'bg-green-100 text-green-700 border border-green-300'
+                      : 'bg-amber-100 text-amber-700 border border-amber-300'
+                  }`}
                 >
-                  {breadcrumbLabel}
+                  {isNewTire ? 'New' : 'Used'}
                 </span>
-              </li>
-            </>
+                {productSize && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-[#9dfb40] text-[#0a0a0a] text-xs font-black tracking-wider">
+                    {productSize}
+                  </span>
+                )}
+              </div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight">
+                <span className="text-[#9dfb40]">{data.brand}</span>
+                {(data as any).model2 && <> {(data as any).model2}</>}
+              </h1>
+            </div>
           )}
-        </ol>
-      </nav>
-      <div className="mx-auto max-w-2xl px-4 py-7 sm:px-6 lg:max-w-7xl lg:px-8 min-h-[60vh] sm:min-h-[65vh] lg:min-h-[70vh]">
-        {renderContent()}
+
+          {/* Headline skeleton while loading */}
+          {loading && (
+            <div className="mt-5 space-y-3">
+              <div className="flex gap-2">
+                <div className="h-6 w-16 rounded-full bg-white/10 animate-pulse" />
+                <div className="h-6 w-20 rounded-full bg-white/10 animate-pulse" />
+              </div>
+              <div className="h-9 w-72 bg-white/10 rounded animate-pulse" />
+            </div>
+          )}
+        </div>
+        <div className="h-[3px] bg-gradient-to-r from-[#9dfb40] via-[#9dfb40]/40 to-transparent" />
       </div>
-      <section className="mt-8 mb-8">
-        <Benefits />
-      </section>
-    </div>
+
+      {/* ── White product content ── */}
+      <div className="bg-white">
+        <div className="mx-auto max-w-2xl px-4 py-7 sm:px-6 lg:max-w-7xl lg:px-8 min-h-[60vh] sm:min-h-[65vh] lg:min-h-[70vh]">
+          {renderContent()}
+        </div>
+        <section className="mt-8 mb-8">
+          <Benefits />
+        </section>
+      </div>
+    </>
   );
 };
 

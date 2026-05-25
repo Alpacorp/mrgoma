@@ -12,7 +12,6 @@ import {
   CtaButton,
   FreeShippingBadge,
 } from '@/app/ui/components';
-import { ArrowsToRight } from '@/app/ui/icons';
 import { generateTireDescription } from '@/app/utils/tireDescription';
 
 const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
@@ -58,10 +57,7 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
       <div role="group" aria-label="Product header">
         <div>
           <div className="mb-3">
-            <span aria-hidden="true" role="presentation">
-              <ArrowsToRight className="w-20 h-6" />
-            </span>
-            <div className="my-4">
+            <div className="mb-4">
               <BrandImage
                 product={{
                   brand: singleTire.brand,
@@ -71,7 +67,7 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
             </div>
             <ProductName
               id={`product-name-${singleTire.id}`}
-              type={1}
+              type={2}
               size="3xl"
               weight="bold"
               name={singleTire.name}
