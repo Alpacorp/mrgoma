@@ -9,7 +9,6 @@ import {
   ProductCarousel,
   TireInformation,
   TireFeatures,
-  Terminology,
   Benefits,
 } from '@/app/ui/sections';
 
@@ -286,9 +285,6 @@ const Detail = ({ productId: propProductId }: { productId?: string }) => {
       <div className="mx-auto max-w-2xl px-4 py-7 sm:px-6 lg:max-w-7xl lg:px-8 min-h-[60vh] sm:min-h-[65vh] lg:min-h-[70vh]">
         {renderContent()}
       </div>
-      <section className="bg-[#111828] text-white py-16">
-        <Terminology />
-      </section>
       <section className="mt-8 mb-8">
         <Benefits />
       </section>
