@@ -9,7 +9,7 @@ interface InfoCardsSectionProps {
 
 export const InfoCardsSection = ({
   cards = infoCardsData,
-  className = '',
+  className = 'py-16',
 }: InfoCardsSectionProps) => {
   if (!cards.length) {
     return (
@@ -20,7 +20,7 @@ export const InfoCardsSection = ({
   }
 
   return (
-    <section className={`py-16 ${className}`}>
+    <section className={className}>
       <div className="container mx-auto px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {cards.map(card => (
