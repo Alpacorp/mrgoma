@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 import { TireGrid } from '@/app/(shop)/tires/container/TireGrid/TireGrid';
 import { TiresData } from '@/app/interfaces/tires';
+import { BrandImage } from '@/app/ui/components';
 import { transformTireData } from '@/app/utils/transformTireData';
 import { buildBreadcrumbJsonLd, canonical } from '@/app/utils/seo';
 import { slugify } from '@/app/utils/tireSlug';
@@ -60,6 +61,7 @@ export default async function BrandCategoryPage({
   const [result] = await Promise.all([fetchTires(0, 24, { brands: [brandName] })]);
   const tires = (result.records as TiresData[]).map(transformTireData);
   const totalCount = result.totalCount;
+  const brandId = result.records.length > 0 ? ((result.records[0] as any).BrandId as number) : undefined;
 
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     { name: 'Home', url: '/' },
@@ -93,23 +95,35 @@ export default async function BrandCategoryPage({
               backgroundSize: '60px 60px',
             }}
           />
-          <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-14 sm:py-20">
-            <div className="flex items-center gap-3 mb-5">
-              <span className="w-8 h-px bg-[#9dfb40]" />
-              <span className="text-[#9dfb40] text-xs font-bold tracking-[0.2em] uppercase">
-                Brand
-              </span>
+          <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-14 sm:py-20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-8">
+            {/* Text */}
+            <div>
+              <div className="flex items-center gap-3 mb-5">
+                <span className="w-8 h-px bg-[#9dfb40]" />
+                <span className="text-[#9dfb40] text-xs font-bold tracking-[0.2em] uppercase">
+                  Brand
+                </span>
+              </div>
+              <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-none mb-4">
+                {brandName}
+                <br />
+                <span className="text-[#9dfb40]">Tires</span>
+              </h1>
+              <p className="text-gray-400 text-lg">
+                {totalCount > 0
+                  ? `${totalCount} tire${totalCount !== 1 ? 's' : ''} available · Free shipping nationwide`
+                  : 'Free shipping nationwide · 7 locations in Miami & Orlando'}
+              </p>
             </div>
-            <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-none mb-4">
-              {brandName}
-              <br />
-              <span className="text-[#9dfb40]">Tires</span>
-            </h1>
-            <p className="text-gray-400 text-lg">
-              {totalCount > 0
-                ? `${totalCount} tire${totalCount !== 1 ? 's' : ''} available · Free shipping nationwide`
-                : 'Free shipping nationwide · 7 locations in Miami & Orlando'}
-            </p>
+
+            {/* Brand logo card */}
+            {brandId && (
+              <div className="shrink-0 self-start sm:self-auto">
+                <div className="bg-white rounded-2xl px-8 py-5 shadow-2xl flex items-center justify-center h-24 w-52">
+                  <BrandImage product={{ brand: brandName!, brandId }} />
+                </div>
+              </div>
+            )}
           </div>
         </section>
 
