@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation';
+import { permanentRedirect, redirect } from 'next/navigation';
 
 import { buildTireSlug } from '@/app/utils/tireSlug';
 import { fetchTireById } from '@/repositories/tiresRepository';
@@ -23,7 +23,7 @@ export default async function LegacyDetailPage({
     const record = await fetchTireById(productId);
     if (record) {
       const slug = buildTireSlug(String(record.TireId), record.Brand || '', record.RealSize || '');
-      redirect(`/tires/${slug}`);
+      permanentRedirect(`/tires/${slug}`);
     }
   } catch {
     // fall through to generic redirect

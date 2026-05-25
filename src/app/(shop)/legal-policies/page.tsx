@@ -2,10 +2,13 @@ import React from 'react';
 
 import type { Metadata } from 'next';
 
+import { canonical } from '@/app/utils/seo';
+
 export const metadata: Metadata = {
   title: 'Website Legal Policies – MrGoma Tires',
   description:
     'Read the Terms & Conditions, Privacy Policy, Refund & Warranty Policy, Disclaimer, Accessibility Statement, and Contact Information for MrGoma Tires.',
+  alternates: { canonical: canonical('/legal-policies') },
 };
 
 export default function LegalPoliciesPage() {

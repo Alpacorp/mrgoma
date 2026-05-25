@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation';
+import { permanentRedirect } from 'next/navigation';
 
 /**
  * Legacy route: /search-results
@@ -17,5 +17,5 @@ export default async function LegacySearchResultsPage({
   });
 
   const query = params.toString();
-  redirect(query ? `/tires?${query}` : '/tires');
+  permanentRedirect(query ? `/tires?${query}` : '/tires');
 }

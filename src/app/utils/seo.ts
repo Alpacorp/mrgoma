@@ -66,10 +66,10 @@ export function buildDefaultMetadata(): Metadata {
       locale: 'en_US',
       images: [
         {
-          url: absUrl('/assets/images/og-default.jpg'),
+          url: absUrl('/opengraph-image'),
           width: 1200,
           height: 630,
-          alt: `${SITE_NAME} – Tires in Miami`,
+          alt: `${SITE_NAME} – New & Used Tires in Miami & Orlando, FL`,
         },
       ],
     },
@@ -77,7 +77,7 @@ export function buildDefaultMetadata(): Metadata {
       card: 'summary_large_image',
       title: `${SITE_NAME} | Miami, FL`,
       description: DEFAULT_DESCRIPTION,
-      images: [absUrl('/assets/images/og-default.jpg')],
+      images: [absUrl('/opengraph-image')],
     },
     alternates: {
       canonical: site,
@@ -91,11 +91,16 @@ export function productTitle(params: {
   model?: string;
   size?: string;
   condition?: string; // New | Used
+  price?: number | string;
 }): string {
   const condition = params.condition ? `${params.condition} ` : '';
   const brand = params.brand ? `${params.brand} ` : '';
+  const model = params.model ? `${params.model} ` : '';
   const size = params.size ? `${params.size} ` : '';
-  return `${condition}${brand}${size}Tire in Miami`;
+  const priceNum = typeof params.price === 'string' ? Number(params.price) : params.price;
+  const hasPrice = typeof priceNum === 'number' && isFinite(priceNum) && priceNum > 0;
+  const priceStr = hasPrice ? ` | $${priceNum!.toFixed(0)}` : '';
+  return `${condition}${brand}${model}${size}Tire in Miami${priceStr} | Free Shipping`;
 }
 
 export function productDescription(params: {
