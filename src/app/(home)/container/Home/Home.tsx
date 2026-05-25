@@ -2,10 +2,10 @@ import React, { FC } from 'react';
 
 import Link from 'next/link';
 
+import { servicesConfig } from '@/app/(shop)/services/servicesConfig';
 import {
   InfoCardsSection,
   SearchContainer,
-  ServicesGrid,
 } from '@/app/ui/sections';
 import { LocationsSlider } from '@/app/ui/sections/LocationsSlider/LocationsSlider';
 
@@ -36,6 +36,52 @@ const STATS = [
   { n: '180-day', label: 'Warranty on used tires' },
   { n: 'Free', label: 'Shipping on every order' },
 ];
+
+const SERVICE_ICONS: Record<string, React.ReactNode> = {
+  tire: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="4" />
+      <line x1="12" y1="2" x2="12" y2="8" /><line x1="12" y1="16" x2="12" y2="22" />
+      <line x1="2" y1="12" x2="8" y2="12" /><line x1="16" y1="12" x2="22" y2="12" />
+    </svg>
+  ),
+  alignment: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5" aria-hidden="true">
+      <path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" />
+    </svg>
+  ),
+  oil: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5" aria-hidden="true">
+      <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+    </svg>
+  ),
+  brakes: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />
+    </svg>
+  ),
+  repair: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5" aria-hidden="true">
+      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+    </svg>
+  ),
+  rotation: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5" aria-hidden="true">
+      <polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" />
+      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+    </svg>
+  ),
+  nitrogen: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5" aria-hidden="true">
+      <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+    </svg>
+  ),
+  tpms: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5" aria-hidden="true">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  ),
+};
 
 const Home: FC = () => {
   return (
@@ -76,13 +122,47 @@ const Home: FC = () => {
       </section>
 
       {/* ── Services ── */}
-      <div id="services" className="bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-4">
-          <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">What we offer</p>
-          <h2 className="text-3xl sm:text-4xl font-black text-gray-900">Our Services</h2>
+      <section id="services" className="bg-gray-50 py-16 sm:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-10">
+            <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">What we offer</p>
+            <h2 className="text-3xl sm:text-4xl font-black text-gray-900">Our Services</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {servicesConfig.map(service => (
+              <Link
+                key={service.slug}
+                href={`/services/${service.slug}`}
+                className="group bg-white border border-gray-200 rounded-2xl p-6 hover:border-[#9dfb40]/60 hover:shadow-sm transition-all duration-200 flex flex-col gap-4"
+              >
+                <div className="w-10 h-10 rounded-xl bg-[#0a0a0a] flex items-center justify-center shrink-0 text-[#9dfb40] group-hover:bg-[#9dfb40] group-hover:text-[#0a0a0a] transition-colors duration-200">
+                  {SERVICE_ICONS[service.icon] ?? SERVICE_ICONS.tire}
+                </div>
+                <div className="flex flex-col gap-1.5 flex-1">
+                  <h3 className="text-sm font-bold text-gray-900 leading-snug group-hover:text-green-700 transition-colors duration-200">
+                    {service.title}
+                  </h3>
+                  <p className="text-gray-500 text-xs leading-relaxed">{service.shortDescription}</p>
+                </div>
+                <div className="flex items-center gap-1 text-xs font-semibold text-green-600 mt-auto">
+                  Learn more
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" aria-hidden="true">
+                    <line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" />
+                  </svg>
+                </div>
+              </Link>
+            ))}
+          </div>
+          <div className="mt-8 text-center">
+            <Link
+              href="/services"
+              className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-green-600 transition-colors"
+            >
+              See all services & pricing →
+            </Link>
+          </div>
         </div>
-        <ServicesGrid />
-      </div>
+      </section>
 
       {/* ── Why MrGoma ── */}
       <section id="about" className="bg-[#0a0a0a]">
@@ -93,8 +173,45 @@ const Home: FC = () => {
         <InfoCardsSection className="bg-[#0a0a0a] pb-20" />
       </section>
 
+      {/* ── Featured Guides ── */}
+      <section className="bg-white py-16 sm:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-end justify-between mb-10">
+            <div>
+              <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">Learn & save</p>
+              <h2 className="text-3xl sm:text-4xl font-black text-gray-900">From our guides</h2>
+            </div>
+            <Link
+              href="/guides"
+              className="hidden sm:inline-flex items-center text-sm font-bold text-gray-400 hover:text-green-600 transition-colors"
+            >
+              All guides →
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {FEATURED_GUIDES.map(guide => (
+              <Link
+                key={guide.slug}
+                href={`/guides/${guide.slug}`}
+                className="group block rounded-xl border border-gray-200 p-6 hover:border-green-500 hover:shadow-md transition-all duration-200"
+              >
+                <p className="text-green-600 text-xs font-bold tracking-widest uppercase mb-3">{guide.readTime}</p>
+                <h3 className="text-base font-bold text-gray-900 mb-2 group-hover:text-green-700 transition-colors leading-snug">{guide.title}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">{guide.intro}</p>
+                <span className="mt-4 inline-flex items-center text-green-600 text-sm font-bold">Read guide →</span>
+              </Link>
+            ))}
+          </div>
+          <div className="mt-8 text-center sm:hidden">
+            <Link href="/guides" className="text-sm font-bold text-gray-500 hover:text-green-600 transition-colors">
+              See all guides →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ── Shop by Category ── */}
-      <section className="bg-[#0a0a0a] border-t border-white/10 py-16 sm:py-20">
+      <section className="bg-[#0a0a0a] py-16 sm:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-10">
             <p className="text-[#9dfb40] text-xs font-bold tracking-[0.2em] uppercase mb-2">Ready to shop?</p>
@@ -132,45 +249,8 @@ const Home: FC = () => {
         </div>
       </section>
 
-      {/* ── Featured Guides ── */}
-      <section className="bg-white py-16 sm:py-20 border-t border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-end justify-between mb-10">
-            <div>
-              <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">Learn & save</p>
-              <h2 className="text-3xl sm:text-4xl font-black text-gray-900">From our guides</h2>
-            </div>
-            <Link
-              href="/guides"
-              className="hidden sm:inline-flex items-center text-sm font-bold text-gray-400 hover:text-green-600 transition-colors"
-            >
-              All guides →
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {FEATURED_GUIDES.map(guide => (
-              <Link
-                key={guide.slug}
-                href={`/guides/${guide.slug}`}
-                className="group block rounded-xl border border-gray-200 p-6 hover:border-green-500 hover:shadow-md transition-all duration-200"
-              >
-                <p className="text-green-600 text-xs font-bold tracking-widest uppercase mb-3">{guide.readTime}</p>
-                <h3 className="text-base font-bold text-gray-900 mb-2 group-hover:text-green-700 transition-colors leading-snug">{guide.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">{guide.intro}</p>
-                <span className="mt-4 inline-flex items-center text-green-600 text-sm font-bold">Read guide →</span>
-              </Link>
-            ))}
-          </div>
-          <div className="mt-8 text-center sm:hidden">
-            <Link href="/guides" className="text-sm font-bold text-gray-500 hover:text-green-600 transition-colors">
-              See all guides →
-            </Link>
-          </div>
-        </div>
-      </section>
-
       {/* ── Locations ── */}
-      <section id="locations" className="bg-white border-t border-gray-100">
+      <section id="locations" className="bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-2">
           <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">Find us near you</p>
           <h2 className="text-3xl sm:text-4xl font-black text-gray-900">Our Locations</h2>
