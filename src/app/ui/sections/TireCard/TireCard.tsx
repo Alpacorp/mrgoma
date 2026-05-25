@@ -85,8 +85,8 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
         const accentColor = isNew ? '#22c55e' : '#f59e0b';
 
         const condBadgeClass = isNew
-          ? 'bg-green-100 text-green-700 border border-green-300'
-          : 'bg-amber-100 text-amber-700 border border-amber-300';
+          ? 'bg-green-100 text-green-700 border border-green-300 hover:bg-green-600 hover:text-white hover:border-green-600 transition-colors duration-150'
+          : 'bg-amber-100 text-amber-700 border border-amber-300 hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-colors duration-150';
         const condLabel = isNew ? 'New' : 'Used';
 
         const titleText = [product.brand, displayName].filter(Boolean).join(' ');
@@ -152,7 +152,7 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
                     <Link
                       href={`/tires/size/${sizeSlug}`}
                       onClick={e => e.stopPropagation()}
-                      className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-[#0a0a0a] text-[#9dfb40] text-xs font-black tracking-wider hover:bg-[#1a1a1a] transition-colors"
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-[#0a0a0a] text-[#9dfb40] text-xs font-black tracking-wider hover:bg-[#9dfb40] hover:text-[#0a0a0a] transition-colors duration-150"
                     >
                       {tireSize}
                     </Link>
