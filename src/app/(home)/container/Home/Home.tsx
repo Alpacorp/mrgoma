@@ -39,45 +39,45 @@ const STATS = [
 
 const SERVICE_ICONS: Record<string, React.ReactNode> = {
   tire: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-7 h-7" aria-hidden="true">
       <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="4" />
       <line x1="12" y1="2" x2="12" y2="8" /><line x1="12" y1="16" x2="12" y2="22" />
       <line x1="2" y1="12" x2="8" y2="12" /><line x1="16" y1="12" x2="22" y2="12" />
     </svg>
   ),
   alignment: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-7 h-7" aria-hidden="true">
       <path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" />
     </svg>
   ),
   oil: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-7 h-7" aria-hidden="true">
       <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
     </svg>
   ),
   brakes: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-7 h-7" aria-hidden="true">
       <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />
     </svg>
   ),
   repair: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-7 h-7" aria-hidden="true">
       <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
     </svg>
   ),
   rotation: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-7 h-7" aria-hidden="true">
       <polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" />
       <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
     </svg>
   ),
   nitrogen: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-7 h-7" aria-hidden="true">
       <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
     </svg>
   ),
   tpms: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-7 h-7" aria-hidden="true">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
     </svg>
   ),
@@ -133,30 +133,31 @@ const Home: FC = () => {
               <Link
                 key={service.slug}
                 href={`/services/${service.slug}`}
-                className="group bg-white border border-gray-200 rounded-2xl p-6 hover:border-[#9dfb40]/60 hover:shadow-sm transition-all duration-200 flex flex-col gap-4"
+                className="group bg-[#0a0a0a] border border-white/10 rounded-2xl p-7 hover:border-[#9dfb40]/40 transition-all duration-300 flex flex-col gap-5 relative overflow-hidden"
               >
-                <div className="w-10 h-10 rounded-xl bg-[#0a0a0a] flex items-center justify-center shrink-0 text-[#9dfb40] group-hover:bg-[#9dfb40] group-hover:text-[#0a0a0a] transition-colors duration-200">
+                <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-0 group-hover:opacity-[0.06] transition-opacity duration-500 blur-2xl bg-[#9dfb40]" aria-hidden="true" />
+                <div className="text-[#9dfb40] shrink-0">
                   {SERVICE_ICONS[service.icon] ?? SERVICE_ICONS.tire}
                 </div>
-                <div className="flex flex-col gap-1.5 flex-1">
-                  <h3 className="text-sm font-bold text-gray-900 leading-snug group-hover:text-green-700 transition-colors duration-200">
+                <div className="flex flex-col gap-2 flex-1">
+                  <h3 className="text-base font-bold text-white leading-snug group-hover:text-[#9dfb40] transition-colors duration-200">
                     {service.title}
                   </h3>
-                  <p className="text-gray-500 text-xs leading-relaxed">{service.shortDescription}</p>
+                  <p className="text-gray-500 text-sm leading-relaxed">{service.shortDescription}</p>
                 </div>
-                <div className="flex items-center gap-1 text-xs font-semibold text-green-600 mt-auto">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#9dfb40] mt-auto">
                   Learn more
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" aria-hidden="true">
                     <line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" />
                   </svg>
                 </div>
               </Link>
             ))}
           </div>
-          <div className="mt-8 text-center">
+          <div className="mt-10 text-center">
             <Link
               href="/services"
-              className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-green-600 transition-colors"
+              className="inline-flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-gray-900 transition-colors"
             >
               See all services & pricing →
             </Link>
