@@ -20,6 +20,7 @@ const defaultSections: FooterSectionType[] = [
       { label: 'Home', href: '/' },
       { label: 'Services', href: '/services' },
       { label: 'About Us', href: '/about-us' },
+      { label: 'Guides', href: '/guides' },
     ],
   },
   {
