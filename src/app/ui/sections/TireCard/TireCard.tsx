@@ -166,7 +166,7 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
                     <Link
                       href={`/tires/brands/${brandSlug}`}
                       onClick={e => e.stopPropagation()}
-                      className="hidden sm:flex h-8 overflow-hidden items-center opacity-70 ml-1 hover:opacity-100 transition-opacity"
+                      className="flex h-8 overflow-hidden items-center opacity-70 ml-1 hover:opacity-100 transition-opacity"
                     >
                       <BrandImage product={{ brand: product.brand, brandId: product.brandId }} />
                     </Link>
