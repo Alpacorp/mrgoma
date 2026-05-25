@@ -53,12 +53,12 @@ export default function NotFound() {
           {/* Subtle help text */}
           <p className="mt-8 text-xs text-gray-400">
             If you followed a link and ended up here, please{' '}
-            <a
-              href="mailto:info@mrgomatires.com"
+            <Link
+              href="/contact"
               className="underline hover:text-green-600 transition-colors"
             >
               let us know
-            </a>
+            </Link>
             .
           </p>
         </div>

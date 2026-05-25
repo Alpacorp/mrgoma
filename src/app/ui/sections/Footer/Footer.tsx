@@ -25,7 +25,7 @@ const defaultSections: FooterSectionType[] = [
   {
     title: 'Customer Service',
     links: [
-      { label: 'Contact', href: 'mailto:info@mrgomatires.com' },
+      { label: 'Contact', href: '/contact' },
       { label: 'Locations', href: '/#locations' },
       { label: 'Store', href: '/tires' },
     ],
