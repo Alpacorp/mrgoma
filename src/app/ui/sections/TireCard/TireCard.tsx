@@ -101,9 +101,13 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
             <div className="flex flex-col sm:flex-row">
               {/* ── Mobile top bar ── */}
               <div className="sm:hidden flex items-center justify-between px-4 py-2.5">
-                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold tracking-wide ${condBadgeClass}`}>
+                <Link
+                  href={isNew ? '/tires/new' : '/tires/used'}
+                  onClick={e => e.stopPropagation()}
+                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold tracking-wide ${condBadgeClass}`}
+                >
                   {condLabel}
-                </span>
+                </Link>
                 {!isSold && <StockBadge />}
               </div>
 
@@ -137,9 +141,13 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
 
                 {/* Condition + size */}
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className={`hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-bold tracking-wide ${condBadgeClass}`}>
+                  <Link
+                    href={isNew ? '/tires/new' : '/tires/used'}
+                    onClick={e => e.stopPropagation()}
+                    className={`hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-bold tracking-wide ${condBadgeClass}`}
+                  >
                     {condLabel}
-                  </span>
+                  </Link>
                   {tireSize && sizeSlug && (
                     <Link
                       href={`/tires/size/${sizeSlug}`}
