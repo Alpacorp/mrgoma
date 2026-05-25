@@ -17,6 +17,7 @@ import {
 } from '@/app/ui/components';
 import AiChat from '@/app/ui/components/AiChat/AiChat';
 import { FiltersMobile, TopFilters, PromoBanner } from '@/app/ui/sections';
+import { slugify } from '@/app/utils/tireSlug';
 import { promoBannerConfig } from '@/app/ui/sections/PromoBanner/config/promoBanner';
 import {
   DEFAULT_PAGE,
@@ -30,6 +31,7 @@ import { PaginatedTiresResponse } from '../utils/fetchTiresServer';
 
 interface SearchResultsProps {
   initialData?: PaginatedTiresResponse;
+  brands?: string[];
   searchParams?: {
     page?: string;
     pageSize?: string;
@@ -46,7 +48,7 @@ interface SearchResultsProps {
  *
  * @returns The SearchResults component.
  */
-const SearchResults: FC<SearchResultsProps> = ({ initialData }) => {
+const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [tiresData, setTiresData] = useState<PaginatedTiresResponse>(
@@ -316,6 +318,58 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData }) => {
             </div>
           </div>
         </section>
+
+        {/* ── Browse by Brand / Rim Size ── */}
+        {brands.length > 0 && (
+          <section className="bg-white border-b border-gray-100 py-5">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-4">
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.18em] mb-2.5">
+                  Browse by brand
+                </p>
+                <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+                  {brands.map(brand => (
+                    <a
+                      key={brand}
+                      href={`/tires/brands/${slugify(brand)}`}
+                      className="shrink-0 inline-flex items-center px-3 py-1.5 rounded-full border border-gray-200 text-xs font-semibold text-gray-700 hover:border-green-600 hover:text-green-700 hover:bg-green-50 transition-colors duration-150 whitespace-nowrap"
+                    >
+                      {brand}
+                    </a>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.18em] mb-2.5">
+                  Browse by rim size
+                </p>
+                <div className="flex gap-2 flex-wrap">
+                  {[13, 14, 15, 16, 17, 18, 19, 20, 21, 22].map(d => (
+                    <a
+                      key={d}
+                      href={`/tires?d=${d}`}
+                      className="inline-flex items-center px-3 py-1.5 rounded-full border border-gray-200 text-xs font-semibold text-gray-700 hover:border-green-600 hover:text-green-700 hover:bg-green-50 transition-colors duration-150"
+                    >
+                      {d}&quot;
+                    </a>
+                  ))}
+                  <a
+                    href="/tires/new"
+                    className="inline-flex items-center px-3 py-1.5 rounded-full border border-green-200 text-xs font-semibold text-green-700 bg-green-50 hover:bg-green-600 hover:text-white hover:border-green-600 transition-colors duration-150"
+                  >
+                    Shop New
+                  </a>
+                  <a
+                    href="/tires/used"
+                    className="inline-flex items-center px-3 py-1.5 rounded-full border border-amber-200 text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-colors duration-150"
+                  >
+                    Shop Used
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
 
         <div>
           <main className="bg-gray-50 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative h-full">
