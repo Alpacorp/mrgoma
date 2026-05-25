@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 import { useCart } from '@/app/context/CartContext';
 import { BrandImage, FreeShippingBadge, ProductImage, StockBadge } from '@/app/ui/components';
-import { buildTireSlug } from '@/app/utils/tireSlug';
+import { buildTireSlug, slugify } from '@/app/utils/tireSlug';
 
 interface TireCardProps {
   products: any;
@@ -67,6 +67,8 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
           ? buildTireSlug(String(product.id), product.brand || '', tireSize)
           : '';
         const detailUrl = slug ? `/tires/${slug}` : '/tires';
+        const brandSlug = product.brand ? slugify(product.brand) : '';
+        const sizeSlug = tireSize ? slugify(tireSize) : '';
 
         const specMap: Partial<Record<SpecKey, string>> = {};
         if (Array.isArray(product?.features)) {
@@ -138,10 +140,14 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
                   <span className={`hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-bold tracking-wide ${condBadgeClass}`}>
                     {condLabel}
                   </span>
-                  {tireSize && (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-[#0a0a0a] text-[#9dfb40] text-xs font-black tracking-wider">
+                  {tireSize && sizeSlug && (
+                    <Link
+                      href={`/tires/size/${sizeSlug}`}
+                      onClick={e => e.stopPropagation()}
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-[#0a0a0a] text-[#9dfb40] text-xs font-black tracking-wider hover:bg-[#1a1a1a] transition-colors"
+                    >
                       {tireSize}
-                    </span>
+                    </Link>
                   )}
                 </div>
 
@@ -158,10 +164,14 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
                     <span className="text-green-600">$</span>{product.price}
                   </span>
                   <FreeShippingBadge />
-                  {product.brandId && (
-                    <div className="hidden sm:flex h-8 overflow-hidden items-center opacity-70 ml-1">
+                  {product.brandId && brandSlug && (
+                    <Link
+                      href={`/tires/brands/${brandSlug}`}
+                      onClick={e => e.stopPropagation()}
+                      className="hidden sm:flex h-8 overflow-hidden items-center opacity-70 ml-1 hover:opacity-100 transition-opacity"
+                    >
                       <BrandImage product={{ brand: product.brand, brandId: product.brandId }} />
-                    </div>
+                    </Link>
                   )}
                 </div>
 
