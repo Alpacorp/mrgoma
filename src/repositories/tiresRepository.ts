@@ -303,6 +303,17 @@ async function fetchBrandsInternal(
   return result.recordset.map(row => row.Brand as string);
 }
 
+export async function fetchSizes(): Promise<string[]> {
+  const pool = await getPool();
+  const baseWhere = "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND RemainingLife >= '50%' AND Price != 0";
+  const query = `SELECT DISTINCT RealSize
+    FROM dbo.View_Tires
+    WHERE ${baseWhere} AND RealSize IS NOT NULL AND RealSize <> ''
+    ORDER BY RealSize`;
+  const result = await pool.request().query(query);
+  return result.recordset.map(row => row.RealSize as string);
+}
+
 export async function fetchDashboardStores(): Promise<string[]> {
   const pool = await getPool();
   const query = `SELECT DISTINCT VaultName
