@@ -119,7 +119,7 @@ export default async function BrandCategoryPage({
             {/* Brand logo card */}
             {brandId && (
               <div className="shrink-0 self-start sm:self-auto">
-                <div className="bg-white rounded-2xl px-8 py-5 shadow-2xl flex items-center justify-center h-24 w-52">
+                <div className="bg-white rounded-2xl px-6 py-3 shadow-2xl flex items-center justify-center h-20 w-48">
                   <BrandImage product={{ brand: brandName!, brandId }} />
                 </div>
               </div>
