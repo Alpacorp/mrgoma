@@ -110,11 +110,10 @@ export default function AboutUs() {
             and one standard: quality you can count on.
           </p>
 
-          {/* Accent bar */}
-          <div className="mt-12 flex items-center gap-4">
-            <div className="h-1 w-16 bg-[#9dfb40] rounded-full" />
-            <div className="h-1 w-8 bg-white/20 rounded-full" />
-            <div className="h-1 w-4 bg-white/10 rounded-full" />
+          {/* Scroll cue */}
+          <div className="mt-12 flex items-center gap-3 text-gray-600">
+            <div className="w-px h-10 bg-gradient-to-b from-[#9dfb40]/60 to-transparent" />
+            <span className="text-xs uppercase tracking-widest font-medium">Scroll to explore</span>
           </div>
         </div>
       </section>
