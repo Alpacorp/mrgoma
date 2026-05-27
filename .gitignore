@@ -44,3 +44,5 @@ next-env.d.ts
 
 # IA
 .claude
+.agents
+skills-lock.json

@@ -2,7 +2,6 @@
 
 import React, { FC, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 
-import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { useGenerateFixedPagination } from '@/app/hooks/useGeneratePagination';
@@ -17,7 +16,8 @@ import {
   TireResults,
 } from '@/app/ui/components';
 import AiChat from '@/app/ui/components/AiChat/AiChat';
-import { FiltersMobile, TitleSection, TopFilters, PromoBanner } from '@/app/ui/sections';
+import { FiltersMobile, TopFilters, PromoBanner } from '@/app/ui/sections';
+import { BrowseFilters } from '@/app/(shop)/tires/container/BrowseFilters/BrowseFilters';
 import { promoBannerConfig } from '@/app/ui/sections/PromoBanner/config/promoBanner';
 import {
   DEFAULT_PAGE,
@@ -31,6 +31,7 @@ import { PaginatedTiresResponse } from '../utils/fetchTiresServer';
 
 interface SearchResultsProps {
   initialData?: PaginatedTiresResponse;
+  brands?: string[];
   searchParams?: {
     page?: string;
     pageSize?: string;
@@ -47,7 +48,7 @@ interface SearchResultsProps {
  *
  * @returns The SearchResults component.
  */
-const SearchResults: FC<SearchResultsProps> = ({ initialData }) => {
+const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [tiresData, setTiresData] = useState<PaginatedTiresResponse>(
@@ -258,20 +259,69 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData }) => {
   return (
     <Suspense fallback={<LoadingScreen message="Preparing your tire selection..." />}>
       <main className="bg-gray-50">
-        <section aria-labelledby="products-heading" className="relative">
-          <div className="h-64 sm:h-80 lg:h-64">
-            <Image
-              src="/assets/images/banner-tires-search.webp"
-              alt=""
-              fill
-              className="object-cover"
-              priority
-            />
-          </div>
-          <div id="services" className="absolute z-30 -mt-25 left-0 w-full">
-            <TitleSection title="SHOP TIRES" className="bg-gray-50!" />
+
+        {/* ── Hero ── */}
+        <section className="bg-[#0a0a0a] text-white relative overflow-hidden border-b border-white/8">
+          <div
+            className="absolute inset-0 opacity-[0.03] pointer-events-none"
+            style={{
+              backgroundImage:
+                'linear-gradient(#9dfb40 1px, transparent 1px), linear-gradient(90deg, #9dfb40 1px, transparent 1px)',
+              backgroundSize: '60px 60px',
+            }}
+          />
+          <span
+            className="absolute right-0 top-1/2 -translate-y-1/2 text-[clamp(80px,14vw,180px)] font-black leading-none select-none pointer-events-none"
+            style={{ color: 'rgba(157,251,64,0.04)', letterSpacing: '-4px' }}
+            aria-hidden="true"
+          >
+            TIRES
+          </span>
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="w-8 h-px bg-[#9dfb40]" />
+              <span className="text-[#9dfb40] text-xs font-bold tracking-[0.2em] uppercase">
+                Miami & Orlando, FL
+              </span>
+            </div>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-none mb-5">
+              {getTireSize() ? (
+                <>
+                  Size{' '}
+                  <span className="text-[#9dfb40]">{getTireSize()}</span>
+                  <br />
+                  <span className="text-3xl sm:text-4xl text-gray-400 font-bold">Tires in Miami</span>
+                </>
+              ) : (
+                <>
+                  New & Used
+                  <br />
+                  <span className="text-[#9dfb40]">Tires in Miami</span>
+                </>
+              )}
+            </h1>
+            <div className="flex flex-wrap gap-3 mt-6">
+              {[
+                tiresData.totalCount > 0 ? `${tiresData.totalCount.toLocaleString()} tires in stock` : '3,600+ tires in stock',
+                'Free shipping nationwide',
+                '7 locations Miami & Orlando',
+                '180-Day warranty',
+              ].map(item => (
+                <span
+                  key={item}
+                  className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 bg-white/5 border border-white/10 rounded-full px-3 py-1.5"
+                >
+                  <span className="text-[#9dfb40] text-[10px]">✦</span>
+                  {item}
+                </span>
+              ))}
+            </div>
           </div>
         </section>
+
+        {/* ── Browse by Brand / Rim Size ── */}
+        <BrowseFilters brands={brands} />
+
         <div>
           <main className="bg-gray-50 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative h-full">
             {/* Primary page heading for SEO and accessibility */}

@@ -18,15 +18,16 @@ const defaultSections: FooterSectionType[] = [
     title: 'Quick Links',
     links: [
       { label: 'Home', href: '/' },
-      { label: 'Services', href: '/#services' },
-      { label: 'About Us', href: '/#about' },
+      { label: 'Services', href: '/services' },
+      { label: 'About Us', href: '/about-us' },
+      { label: 'Guides', href: '/guides' },
     ],
   },
   {
     title: 'Customer Service',
     links: [
-      { label: 'Contact', href: 'mailto:info@mrgomatires.com' },
-      { label: 'Locations', href: '/#locations' },
+      { label: 'Contact', href: '/contact' },
+      { label: 'Locations', href: '/locations' },
       { label: 'Store', href: '/tires' },
     ],
   },

@@ -102,6 +102,7 @@ export async function generateMetadata({
     model: product.model2,
     size: product.size,
     condition: product.condition,
+    price: product.price,
   });
 
   const descriptionBase = productDescription({

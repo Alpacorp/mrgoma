@@ -12,7 +12,6 @@ import {
   CtaButton,
   FreeShippingBadge,
 } from '@/app/ui/components';
-import { ArrowsToRight } from '@/app/ui/icons';
 import { generateTireDescription } from '@/app/utils/tireDescription';
 
 const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
@@ -36,6 +35,10 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
       ?.split(': ')[1]
       ?.trim();
 
+  const isNew = singleTire.condition?.toLowerCase() === 'new';
+  const lifePct = parseInt((singleTire.remainingLife || '').replace('%', ''), 10) || 0;
+  const lifeColor = lifePct >= 70 ? 'bg-[#9dfb40]' : lifePct >= 40 ? 'bg-amber-400' : 'bg-red-500';
+
   const tireDescription = generateTireDescription({
     brand: singleTire.brand,
     model: singleTire.model2,
@@ -58,10 +61,7 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
       <div role="group" aria-label="Product header">
         <div>
           <div className="mb-3">
-            <span aria-hidden="true" role="presentation">
-              <ArrowsToRight className="w-20 h-6" />
-            </span>
-            <div className="my-4">
+            <div className="mb-4">
               <BrandImage
                 product={{
                   brand: singleTire.brand,
@@ -71,7 +71,7 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
             </div>
             <ProductName
               id={`product-name-${singleTire.id}`}
-              type={1}
+              type={2}
               size="3xl"
               weight="bold"
               name={singleTire.name}
@@ -108,31 +108,41 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
               </div>
             )}
           </div>
-          <ul aria-label="Key specifications" className="mt-4 flex flex-wrap gap-2">
-            <li
-              className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-bold tracking-wide border ${
-                singleTire.condition?.toLowerCase() === 'new'
-                  ? 'bg-green-100 text-green-700 border-green-300'
-                  : 'bg-amber-100 text-amber-700 border-amber-300'
-              }`}
-            >
-              {singleTire.condition?.toLowerCase() === 'new' ? 'New' : 'Used'}
-            </li>
-            <li className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
-              Remaining life: {singleTire.remainingLife}
-            </li>
-            <li className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
-              Tread depth: {singleTire.treadDepth}
-            </li>
-            <li className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
-              Patched: {singleTire.patched}
-            </li>
-            {singleTire.runFlat && (
-              <li className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
-                Run Flat: {singleTire.runFlat}
-              </li>
-            )}
-          </ul>
+          <div
+            aria-label="Key specifications"
+            className="mt-4 grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-gray-100 border border-gray-200 rounded-xl overflow-hidden"
+          >
+            <div className="px-3 py-3 bg-gray-50">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Condition</p>
+              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${isNew ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                {isNew ? 'New' : 'Used'}
+              </span>
+            </div>
+            <div className="px-3 py-3 bg-gray-50">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Life</p>
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm font-bold text-gray-900">{singleTire.remainingLife || '—'}</span>
+                {lifePct > 0 && (
+                  <div className="flex-1 h-1.5 rounded-full bg-gray-200 overflow-hidden max-w-[36px]">
+                    <div className={`h-full rounded-full ${lifeColor}`} style={{ width: `${lifePct}%` }} />
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="px-3 py-3 bg-gray-50">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Tread</p>
+              <span className="text-sm font-bold text-gray-900">{singleTire.treadDepth || '—'}</span>
+            </div>
+            <div className="px-3 py-3 bg-gray-50">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Patched</p>
+              <span className="text-sm font-bold text-gray-900">{singleTire.patched || '—'}</span>
+            </div>
+          </div>
+          {singleTire.runFlat && singleTire.runFlat !== 'No' && (
+            <p className="mt-2 text-xs text-gray-500">
+              <span className="font-semibold text-gray-700">Run Flat:</span> {singleTire.runFlat}
+            </p>
+          )}
         </div>
       </div>
       <div className="my-6">

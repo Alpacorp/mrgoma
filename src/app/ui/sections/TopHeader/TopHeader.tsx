@@ -23,11 +23,9 @@ const TopHeader: React.FC = () => {
         </Link>
         {/* Right: Contact Us mailto */}
         <Link
-          href="mailto:info@mrgomatires.com"
-          target="_blank"
-          rel="noopener noreferrer"
+          href="/contact"
           className="inline-flex items-center gap-2 text-white/90 hover:text-[#65D01E] underline underline-offset-4 decoration-white/20 hover:decoration-[#65D01E] transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
-          aria-label="Contact Us via email"
+          aria-label="Contact Us"
         >
           <EnvelopeIcon className="h-4 w-4 text-[#65D01E]" />
           <span>Contact Us</span>

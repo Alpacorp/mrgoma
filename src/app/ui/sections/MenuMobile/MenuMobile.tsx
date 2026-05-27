@@ -3,6 +3,7 @@
 import { FC, useContext } from 'react';
 
 import { ShowMenuContext } from '@/app/context/ShowMenuContext';
+import { menuItems } from '@/app/ui/sections/Header/MenuItems';
 
 import { MenuBackdrop, MenuPanel } from './components';
 import { useMenuAnimation } from './hooks';
@@ -17,7 +18,7 @@ const MenuMobile: FC = () => {
   // Use custom hook for animation logic
   const { isVisible, isAnimating, animationStage, pointerEvents } = useMenuAnimation({
     isOpen: showMenu,
-    itemCount: 4, // Number of menu items
+    itemCount: menuItems.length,
   });
 
   // Close menu handler

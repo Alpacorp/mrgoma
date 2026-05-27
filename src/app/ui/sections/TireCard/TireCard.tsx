@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 import { useCart } from '@/app/context/CartContext';
 import { BrandImage, FreeShippingBadge, ProductImage, StockBadge } from '@/app/ui/components';
-import { buildTireSlug } from '@/app/utils/tireSlug';
+import { buildTireSlug, slugify } from '@/app/utils/tireSlug';
 
 interface TireCardProps {
   products: any;
@@ -67,6 +67,8 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
           ? buildTireSlug(String(product.id), product.brand || '', tireSize)
           : '';
         const detailUrl = slug ? `/tires/${slug}` : '/tires';
+        const brandSlug = product.brand ? slugify(product.brand) : '';
+        const sizeSlug = tireSize ? slugify(tireSize) : '';
 
         const specMap: Partial<Record<SpecKey, string>> = {};
         if (Array.isArray(product?.features)) {
@@ -78,81 +80,73 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
 
         const lifePct = parseInt((specMap['Remaining life'] || '').replace('%', ''), 10) || 0;
         const lifeColor =
-          lifePct >= 70 ? 'bg-green-500' : lifePct >= 40 ? 'bg-amber-400' : 'bg-red-400';
+          lifePct >= 70 ? 'bg-[#9dfb40]' : lifePct >= 40 ? 'bg-amber-400' : 'bg-red-500';
 
-        // Left border accent: green = new, amber = used
         const accentColor = isNew ? '#22c55e' : '#f59e0b';
 
         const condBadgeClass = isNew
-          ? 'bg-green-100 text-green-700 border border-green-300'
-          : 'bg-amber-100 text-amber-700 border border-amber-300';
+          ? 'bg-green-100 text-green-700 border border-green-300 hover:bg-green-600 hover:text-white hover:border-green-600 transition-colors duration-150'
+          : 'bg-amber-100 text-amber-700 border border-amber-300 hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-colors duration-150';
         const condLabel = isNew ? 'New' : 'Used';
 
-        // Title: brand + model only — size shown separately as pill
         const titleText = [product.brand, displayName].filter(Boolean).join(' ');
 
         return (
           <li
             key={product.id}
-            className="isolate bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
+            className="isolate bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-gray-300 transition-all duration-200 overflow-hidden group"
             style={{ borderLeftWidth: 4, borderLeftColor: accentColor }}
           >
             {/* ── Mobile: flex-col  /  Desktop: flex-row ── */}
             <div className="flex flex-col sm:flex-row">
-              {/* ── Mobile top bar: condition badge (left) · stock badge (right) ── */}
-              <div className="sm:hidden flex items-center justify-between px-4 py-2.5">
-                <span
-                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold tracking-wide ${condBadgeClass}`}
-                >
-                  {condLabel}
-                </span>
-                {!isSold && <StockBadge />}
-              </div>
-
               {/* ── Image ── */}
-              <Link
-                href={detailUrl}
-                className="block bg-gray-50 sm:w-52 md:w-64 sm:shrink-0"
-                tabIndex={-1}
-              >
-                <div className="relative h-48 sm:h-full sm:min-h-[180px]">
+              <Link href={detailUrl} className="block bg-gray-50 sm:w-52 md:w-64 shrink-0 overflow-hidden" tabIndex={-1}>
+                <div className="relative h-48 sm:h-full sm:min-h-[180px] group-hover:scale-105 transition-transform duration-300 origin-center">
                   <ProductImage product={product} />
                 </div>
               </Link>
 
               {/* ── Content ── */}
-              <div className="flex-1 min-w-0 flex flex-col px-4 pt-4 pb-5 sm:px-6 sm:py-5 gap-3 sm:gap-2">
+              <div className="flex-1 min-w-0 flex flex-col px-4 pt-3 pb-4 sm:px-6 sm:py-5 gap-2.5 sm:gap-2">
                 {/* Desktop: meta row + CTA */}
                 <div className="hidden sm:flex items-start justify-between gap-3">
                   <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider pt-0.5">
                     Single · Free Shipping
                   </span>
-                  <div className="flex flex-col items-end gap-1.5 shrink-0">
+                  <div className="shrink-0">
                     <button
                       type="button"
                       onClick={e => handleAddToCart(e, product)}
                       disabled={productInCart}
-                      className="flex items-center gap-2 pl-3 pr-4 py-2 bg-green-600 text-white text-sm font-bold rounded-full hover:bg-green-700 disabled:bg-green-400 transition-colors whitespace-nowrap"
+                      className="flex items-center gap-2 pl-3 pr-4 py-2 bg-green-600 text-white text-sm font-black rounded-full hover:bg-green-700 disabled:opacity-50 transition-colors whitespace-nowrap"
                     >
                       <CartIcon />
                       {productInCart ? '✓ In Cart' : 'Add to Cart'}
                     </button>
-                    {!isSold && <StockBadge />}
                   </div>
                 </div>
 
-                {/* Condition badge (desktop only) + size pill (always) */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span
-                    className={`hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-bold tracking-wide ${condBadgeClass}`}
-                  >
-                    {condLabel}
-                  </span>
-                  {tireSize && (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-gray-900 text-white text-xs font-bold tracking-wider">
-                      {tireSize}
-                    </span>
-                  )}
+                {/* Condition + size + stock — all screen sizes */}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Link
+                      href={isNew ? '/tires/new' : '/tires/used'}
+                      onClick={e => e.stopPropagation()}
+                      className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold tracking-wide ${condBadgeClass}`}
+                    >
+                      {condLabel}
+                    </Link>
+                    {tireSize && sizeSlug && (
+                      <Link
+                        href={`/tires/size/${sizeSlug}`}
+                        onClick={e => e.stopPropagation()}
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-[#0a0a0a] text-[#9dfb40] text-xs font-black tracking-wider hover:bg-[#9dfb40] hover:text-[#0a0a0a] transition-colors duration-150"
+                      >
+                        {tireSize}
+                      </Link>
+                    )}
+                  </div>
+                  {!isSold && <StockBadge />}
                 </div>
 
                 {/* Title */}
@@ -164,24 +158,28 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
 
                 {/* Price + brand logo */}
                 <div className="flex items-center gap-3 flex-wrap">
-                  <span className="text-2xl sm:text-3xl font-bold text-green-600 leading-none">
-                    ${product.price}
+                  <span className="text-2xl sm:text-3xl font-black text-gray-900 leading-none">
+                    <span className="text-green-600">$</span>{product.price}
                   </span>
                   <FreeShippingBadge />
-                  {product.brandId && (
-                    <div className="hidden sm:flex h-8 overflow-hidden items-center opacity-80 ml-1">
+                  {product.brandId && brandSlug && (
+                    <Link
+                      href={`/tires/brands/${brandSlug}`}
+                      onClick={e => e.stopPropagation()}
+                      className="flex h-8 overflow-hidden items-center opacity-70 ml-1 hover:opacity-100 transition-opacity"
+                    >
                       <BrandImage product={{ brand: product.brand, brandId: product.brandId }} />
-                    </div>
+                    </Link>
                   )}
                 </div>
 
-                {/* Mobile only: full-width CTA */}
-                <div className="sm:hidden mt-1 mb-2">
+                {/* Mobile CTA */}
+                <div className="sm:hidden mt-0.5">
                   <button
                     type="button"
                     onClick={e => handleAddToCart(e, product)}
                     disabled={productInCart}
-                    className="w-full flex items-center justify-center gap-2 py-3 bg-green-600 text-white text-sm font-bold rounded-full hover:bg-green-700 disabled:bg-green-400 transition-colors"
+                    className="w-full flex items-center justify-center gap-2 py-3 bg-green-600 text-white text-sm font-black rounded-full hover:bg-green-700 disabled:opacity-50 transition-colors"
                   >
                     <CartIcon />
                     {productInCart ? '✓ IN CART' : 'ADD TO CART'}
@@ -190,19 +188,19 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
               </div>
             </div>
 
-            {/* ── Spec strip ── */}
-            <div className="grid grid-cols-4 divide-x divide-gray-200 border-t border-gray-200 bg-gray-100">
+            {/* ── Spec strip — dark ── */}
+            <div className="grid grid-cols-4 divide-x divide-white/10 border-t border-white/10 bg-[#0a0a0a]">
               {SPEC_KEYS.map(key => {
                 const value = specMap[key] ?? '—';
                 return (
-                  <div key={key} className="flex flex-col gap-0.5 px-3 py-2.5">
-                    <span className="text-[9px] font-semibold text-gray-400 uppercase tracking-wider">
+                  <div key={key} className="flex flex-col gap-0.5 px-2 py-2 sm:px-3 sm:py-2.5">
+                    <span className="text-[10px] font-bold text-[#9dfb40]/60 uppercase tracking-wider">
                       {SPEC_LABELS[key]}
                     </span>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-sm font-bold text-gray-800 leading-none">{value}</span>
+                      <span className="text-sm font-bold text-white leading-none">{value}</span>
                       {key === 'Remaining life' && lifePct > 0 && (
-                        <div className="flex-1 h-1.5 rounded-full bg-gray-200 overflow-hidden max-w-[48px]">
+                        <div className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden max-w-[48px]">
                           <div
                             className={`h-full rounded-full ${lifeColor}`}
                             style={{ width: `${lifePct}%` }}

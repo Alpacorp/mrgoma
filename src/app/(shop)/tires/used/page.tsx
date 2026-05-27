@@ -1,0 +1,202 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+
+import { BrowseFilters } from '@/app/(shop)/tires/container/BrowseFilters/BrowseFilters';
+import { TireGrid } from '@/app/(shop)/tires/container/TireGrid/TireGrid';
+import { TiresData } from '@/app/interfaces/tires';
+import { transformTireData } from '@/app/utils/transformTireData';
+import { buildBreadcrumbJsonLd, canonical } from '@/app/utils/seo';
+import { fetchBrands, fetchTires } from '@/repositories/tiresRepository';
+
+export const revalidate = 3600;
+
+export const metadata: Metadata = {
+  title: 'Used Tires in Miami & Orlando',
+  description:
+    'Buy quality used tires at MrGoma Tires. Every tire is ASE-inspected before sale with a 180-day warranty — 6x the industry standard. 7 locations in Miami and Orlando, FL. Free shipping.',
+  alternates: { canonical: canonical('/tires/used') },
+  openGraph: {
+    type: 'website',
+    siteName: 'MrGoma Tires',
+    url: canonical('/tires/used'),
+    title: 'Used Tires in Miami & Orlando | MrGoma Tires',
+    description:
+      'Quality used tires with ASE inspection, 180-day warranty, and free shipping. 7 locations in Miami and Orlando, FL.',
+  },
+};
+
+const reasons = [
+  {
+    title: '180-Day Warranty',
+    body: '6x the industry standard of 30 days. Every used tire comes with our full warranty — because we stand behind what we sell.',
+  },
+  {
+    title: 'ASE-Inspected',
+    body: 'Every tire goes through inspection by ASE-certified technicians before it reaches you. No guesswork, no surprises.',
+  },
+  {
+    title: 'Save Up to 70%',
+    body: 'Quality used tires cost a fraction of new — without sacrificing safety. Same free shipping, same expert installation.',
+  },
+  {
+    title: 'Rideshare Rates',
+    body: 'Special pricing for Uber and Lyft drivers who depend on their vehicle. Ask about our rideshare discount at checkout.',
+  },
+];
+
+export default async function UsedTiresPage() {
+  const [result, brands] = await Promise.all([
+    fetchTires(0, 24, { condition: ['used'] }),
+    fetchBrands().catch(() => [] as string[]),
+  ]);
+  const tires = (result.records as TiresData[]).map(transformTireData);
+  const totalCount = result.totalCount;
+
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Tires', url: '/tires' },
+    { name: 'Used Tires', url: '/tires/used' },
+  ]);
+
+  return (
+    <>
+      <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
+
+      <main className="min-h-screen bg-white">
+        {/* Breadcrumb */}
+        <nav className="bg-gray-50 border-b border-gray-200" aria-label="Breadcrumb">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-2 text-sm text-gray-500 flex-wrap">
+            <Link href="/" className="hover:text-green-600 transition-colors">Home</Link>
+            <span>/</span>
+            <Link href="/tires" className="hover:text-green-600 transition-colors">Tires</Link>
+            <span>/</span>
+            <span className="text-gray-900 font-medium">Used Tires</span>
+          </div>
+        </nav>
+
+        {/* Hero */}
+        <section className="bg-[#0a0a0a] text-white relative overflow-hidden">
+          <div
+            className="absolute inset-0 opacity-[0.03] pointer-events-none"
+            style={{
+              backgroundImage:
+                'linear-gradient(#f59e0b 1px, transparent 1px), linear-gradient(90deg, #f59e0b 1px, transparent 1px)',
+              backgroundSize: '60px 60px',
+            }}
+          />
+          <span
+            className="absolute right-0 top-1/2 -translate-y-1/2 text-[clamp(80px,15vw,180px)] font-black leading-none select-none pointer-events-none"
+            style={{ color: 'rgba(245,158,11,0.06)', letterSpacing: '-4px' }}
+            aria-hidden="true"
+          >
+            USED
+          </span>
+          <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+            <div className="flex items-center gap-3 mb-5">
+              <span className="w-8 h-px bg-amber-400" />
+              <span className="text-amber-400 text-xs font-bold tracking-[0.2em] uppercase">
+                Pre-owned
+              </span>
+            </div>
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-none mb-5 text-white">
+              <span style={{ color: '#fbbf24' }}>Used</span> Tires
+              <br />
+              <span style={{ color: '#9dfb40' }}>Miami & Orlando</span>
+            </h1>
+            <p className="text-gray-400 text-lg max-w-lg leading-relaxed">
+              Every used tire in our inventory is ASE-inspected and backed by our 180-day warranty —
+              the longest in Florida. Quality you can trust at a price that makes sense.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <span className="bg-white/10 border border-white/20 rounded-full px-4 py-2 text-sm font-semibold">
+                {totalCount > 0 ? `${totalCount}+ tires in stock` : 'In stock now'}
+              </span>
+              <span
+                className="border rounded-full px-4 py-2 text-sm font-semibold"
+                style={{ color: '#fbbf24', borderColor: 'rgba(251,191,36,0.3)', background: 'rgba(251,191,36,0.1)' }}
+              >
+                180-Day Warranty
+              </span>
+              <span className="bg-white/10 border border-white/20 rounded-full px-4 py-2 text-sm font-semibold">
+                Free Shipping
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <BrowseFilters brands={brands} variant="used" />
+
+        {/* Why used tires */}
+        <section className="py-16 border-b border-gray-100">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6">
+            <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">Why choose used</p>
+            <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-10">
+              Smart savings, zero compromise
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {reasons.map(reason => (
+                <div
+                  key={reason.title}
+                  className="border border-gray-200 rounded-2xl p-7 hover:border-green-300 hover:shadow-sm transition-all duration-200"
+                >
+                  <h3 className="font-bold text-gray-900 text-lg mb-2">{reason.title}</h3>
+                  <p className="text-gray-500 leading-relaxed text-sm">{reason.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Tire grid */}
+        <section className="py-10">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 mb-6">
+            <h2 className="text-2xl font-black text-gray-900 tracking-tight">
+              Used tires available now
+            </h2>
+            <p className="text-gray-500 text-sm mt-1">Inventory updated daily</p>
+          </div>
+          <TireGrid
+            tires={tires}
+            totalCount={totalCount}
+            viewAllHref="/tires?condition=used"
+            viewAllLabel={`View all ${totalCount} used tires`}
+          />
+        </section>
+
+        {/* Bottom CTA */}
+        <section className="bg-[#9dfb40] relative overflow-hidden">
+          <div
+            className="absolute inset-0 opacity-[0.04] pointer-events-none"
+            style={{
+              backgroundImage:
+                'repeating-linear-gradient(45deg, #000 0, #000 1px, transparent 0, transparent 50%)',
+              backgroundSize: '12px 12px',
+            }}
+          />
+          <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-16 flex flex-col items-center text-center gap-6">
+            <h2 className="text-black text-3xl sm:text-4xl font-black tracking-tight">
+              Need help finding the right size?
+            </h2>
+            <p className="text-black/60 max-w-md">
+              Use our tire search or contact our ASE-certified team — they know tires inside and out.
+            </p>
+            <div className="flex flex-wrap gap-4 justify-center">
+              <Link
+                href="/tires"
+                className="bg-black text-[#9dfb40] font-bold px-10 py-4 rounded-full hover:bg-zinc-900 transition-colors duration-200"
+              >
+                Search by Size
+              </Link>
+              <Link
+                href="/contact"
+                className="border-2 border-black text-black font-bold px-10 py-4 rounded-full hover:bg-black hover:text-[#9dfb40] transition-colors duration-200"
+              >
+                Contact Us
+              </Link>
+            </div>
+          </div>
+        </section>
+      </main>
+    </>
+  );
+}

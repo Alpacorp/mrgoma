@@ -28,6 +28,7 @@ export const MenuItems: React.FC<MenuItemsProps> = ({
               index={index}
               animationStage={animationStage}
               onClick={onItemClick}
+              submenu={item.children}
             />
           ))}
         </div>
