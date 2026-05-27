@@ -58,33 +58,34 @@ export default function LocationsPage() {
         </div>
       </section>
 
-      {/* Miami locations */}
-      <section className="max-w-6xl mx-auto px-6 lg:px-8 py-16">
-        <div className="flex items-center gap-4 mb-10">
-          <MapPinIcon />
-          <h2 className="text-2xl font-black tracking-tight">Miami, FL</h2>
-          <span className="text-gray-600 text-sm font-medium">{miamis.length} locations</span>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/8 border border-white/8 rounded-2xl overflow-hidden mb-4">
-          {miamis.map(loc => (
-            <LocationCard key={loc.slug} loc={loc} />
-          ))}
-        </div>
-      </section>
+      {/* Miami + Orlando locations */}
+      <div className="bg-[#111]">
+        <section className="max-w-6xl mx-auto px-6 lg:px-8 py-16">
+          <div className="flex items-center gap-4 mb-10">
+            <MapPinIcon />
+            <h2 className="text-2xl font-black tracking-tight">Miami, FL</h2>
+            <span className="text-gray-600 text-sm font-medium">{miamis.length} locations</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/8 border border-white/8 rounded-2xl overflow-hidden mb-4">
+            {miamis.map(loc => (
+              <LocationCard key={loc.slug} loc={loc} />
+            ))}
+          </div>
+        </section>
 
-      {/* Orlando locations */}
-      <section className="max-w-6xl mx-auto px-6 lg:px-8 pb-20">
-        <div className="flex items-center gap-4 mb-10">
-          <MapPinIcon />
-          <h2 className="text-2xl font-black tracking-tight">Orlando, FL</h2>
-          <span className="text-gray-600 text-sm font-medium">{orlandos.length} locations</span>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/8 border border-white/8 rounded-2xl overflow-hidden">
-          {orlandos.map(loc => (
-            <LocationCard key={loc.slug} loc={loc} />
-          ))}
-        </div>
-      </section>
+        <section className="max-w-6xl mx-auto px-6 lg:px-8 pb-20">
+          <div className="flex items-center gap-4 mb-10">
+            <MapPinIcon />
+            <h2 className="text-2xl font-black tracking-tight">Orlando, FL</h2>
+            <span className="text-gray-600 text-sm font-medium">{orlandos.length} locations</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/8 border border-white/8 rounded-2xl overflow-hidden">
+            {orlandos.map(loc => (
+              <LocationCard key={loc.slug} loc={loc} />
+            ))}
+          </div>
+        </section>
+      </div>
 
       {/* Trust bar */}
       <section className="border-t border-white/8 bg-white/[0.02]">
@@ -104,7 +105,7 @@ export default function LocationsPage() {
 
 function LocationCard({ loc }: { loc: (typeof locationsConfig)[0] }) {
   return (
-    <article className="bg-[#0a0a0a] p-6 flex flex-col gap-4 group hover:bg-white/[0.03] transition-colors duration-200">
+    <article className="bg-[#0a0a0a] p-6 flex flex-col gap-4 group hover:bg-white/[0.04] transition-colors duration-200">
       <div className="flex items-start justify-between gap-2">
         <h3 className="font-bold text-base text-white leading-tight">{loc.name}</h3>
         <span className="text-[10px] text-white/30 font-semibold uppercase tracking-widest shrink-0 mt-0.5">

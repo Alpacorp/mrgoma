@@ -78,7 +78,8 @@ export default function LocationDetail({ location }: Props) {
         </div>
       </section>
 
-      <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16 grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <div className="bg-[#111]">
+       <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16 grid grid-cols-1 lg:grid-cols-3 gap-12">
 
         {/* Main column */}
         <div className="lg:col-span-2 space-y-12">
@@ -193,6 +194,7 @@ export default function LocationDetail({ location }: Props) {
           </div>
 
         </aside>
+       </div>
       </div>
 
     </main>

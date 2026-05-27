@@ -89,13 +89,13 @@ export default function ServicesPage() {
       </section>
 
       {/* Services grid */}
-      <section className="max-w-6xl mx-auto px-6 lg:px-8 py-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <section className="bg-[#111]">
+        <div className="max-w-6xl mx-auto px-6 lg:px-8 py-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {servicesConfig.map((service, i) => (
             <Link
               key={service.slug}
               href={`/services/${service.slug}`}
-              className="group border border-white/8 rounded-2xl p-8 hover:border-[#9dfb40]/40 transition-all duration-300 flex flex-col gap-5 relative overflow-hidden"
+              className="group border border-white/8 rounded-2xl p-8 bg-[#0a0a0a] hover:border-[#9dfb40]/40 transition-all duration-300 flex flex-col gap-5 relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-0 group-hover:opacity-5 transition-opacity duration-500 blur-2xl" style={{ background: '#9dfb40' }} />
               <div className="text-[#9dfb40] shrink-0">
@@ -119,7 +119,7 @@ export default function ServicesPage() {
       </section>
 
       {/* Trust bar */}
-      <section className="border-t border-white/8 bg-white/[0.02]">
+      <section className="border-t border-white/8 bg-[#0a0a0a]">
         <div className="max-w-6xl mx-auto px-6 lg:px-8 py-12 flex flex-wrap justify-center gap-x-12 gap-y-6 text-center">
           {['ASE-Certified Technicians', '7 Locations', '180-Day Warranty', 'No Appointment Needed'].map(item => (
             <div key={item} className="flex flex-col gap-1">

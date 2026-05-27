@@ -119,7 +119,7 @@ export default function AboutUs() {
       </section>
 
       {/* ── OUR STORY ── */}
-      <section className="relative py-24 border-b border-white/8">
+      <section className="relative py-24 border-b border-white/8 bg-[#111]">
         <div className="max-w-6xl mx-auto px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
             <p className="text-[#9dfb40] text-xs font-bold tracking-[0.25em] uppercase mb-4">
@@ -231,7 +231,7 @@ export default function AboutUs() {
       </section>
 
       {/* ── WHY MRGOMA ── */}
-      <section className="relative py-24 border-b border-white/8">
+      <section className="relative py-24 border-b border-white/8 bg-[#111]">
         <div className="max-w-6xl mx-auto px-6 lg:px-8">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-px bg-[#9dfb40]" />

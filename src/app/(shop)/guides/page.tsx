@@ -54,7 +54,8 @@ export default function GuidesPage() {
       </section>
 
       {/* Guides sections */}
-      <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16 space-y-20">
+      <div className="bg-[#111] max-w-none">
+       <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16 space-y-20">
         {/* Buying guides */}
         {buyingGuides.length > 0 && (
           <section>
@@ -103,6 +104,7 @@ export default function GuidesPage() {
             </div>
           </section>
         )}
+       </div>
       </div>
 
       {/* CTA */}

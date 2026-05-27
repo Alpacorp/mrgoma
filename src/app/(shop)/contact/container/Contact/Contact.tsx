@@ -242,7 +242,8 @@ export default function Contact() {
       </section>
 
       {/* ── Locations ── */}
-      <section className="max-w-6xl mx-auto px-6 lg:px-8 py-20">
+      <section className="bg-[#111]">
+       <div className="max-w-6xl mx-auto px-6 lg:px-8 py-20">
         <div className="flex items-center justify-between mb-12">
           <div>
             <p className="text-[#9dfb40] text-xs font-bold tracking-widest uppercase mb-2">
@@ -303,6 +304,7 @@ export default function Contact() {
             </article>
           ))}
         </div>
+       </div>
       </section>
 
       {/* ── Hours + Email ── */}

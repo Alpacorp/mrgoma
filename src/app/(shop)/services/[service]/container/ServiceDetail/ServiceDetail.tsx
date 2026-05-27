@@ -102,7 +102,8 @@ export default function ServiceDetail({ service }: Props) {
         </div>
       </section>
 
-      <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16 grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <div className="bg-[#111]">
+       <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16 grid grid-cols-1 lg:grid-cols-3 gap-12">
 
         {/* Main content */}
         <div className="lg:col-span-2 space-y-14">
@@ -207,10 +208,11 @@ export default function ServiceDetail({ service }: Props) {
           )}
 
         </aside>
+       </div>
       </div>
 
       {/* Bottom CTA */}
-      <section className="border-t border-white/8 bg-white/[0.02]">
+      <section className="border-t border-white/8 bg-[#0a0a0a]">
         <div className="max-w-6xl mx-auto px-6 lg:px-8 py-12 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div>
             <p className="font-black text-xl">Need {service.title}?</p>

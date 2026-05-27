@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { servicesConfig } from '@/app/(shop)/services/servicesConfig';
@@ -8,6 +9,17 @@ import {
   SearchContainer,
 } from '@/app/ui/sections';
 import { LocationsSlider } from '@/app/ui/sections/LocationsSlider/LocationsSlider';
+
+const SERVICE_IMAGES: Record<string, string> = {
+  tire: '/assets/images/bg-service-card.jpg',
+  alignment: '/assets/images/align.jpg',
+  oil: '/assets/images/oil.jpg',
+  brakes: '/assets/images/brake.webp',
+  repair: '/assets/images/service.jpg',
+  rotation: '/assets/images/rotation.jpg',
+  nitrogen: '/assets/images/nitro.webp',
+  tpms: '/assets/images/tpms.webp',
+};
 
 const FEATURED_GUIDES = [
   {
@@ -129,30 +141,44 @@ const Home: FC = () => {
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900">Our Services</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {servicesConfig.map(service => (
-              <Link
-                key={service.slug}
-                href={`/services/${service.slug}`}
-                className="group bg-[#0a0a0a] border border-white/10 rounded-2xl p-7 hover:border-[#9dfb40]/40 transition-all duration-300 flex flex-col gap-5 relative overflow-hidden"
-              >
-                <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-0 group-hover:opacity-[0.06] transition-opacity duration-500 blur-2xl bg-[#9dfb40]" aria-hidden="true" />
-                <div className="text-[#9dfb40] shrink-0">
-                  {SERVICE_ICONS[service.icon] ?? SERVICE_ICONS.tire}
-                </div>
-                <div className="flex flex-col gap-2 flex-1">
-                  <h3 className="text-base font-bold text-white leading-snug group-hover:text-[#9dfb40] transition-colors duration-200">
-                    {service.title}
-                  </h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{service.shortDescription}</p>
-                </div>
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#9dfb40] mt-auto">
-                  Learn more
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" aria-hidden="true">
-                    <line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" />
-                  </svg>
-                </div>
-              </Link>
-            ))}
+            {servicesConfig.map(service => {
+              const img = SERVICE_IMAGES[service.icon];
+              return (
+                <Link
+                  key={service.slug}
+                  href={`/services/${service.slug}`}
+                  className="group relative isolate border border-white/10 rounded-2xl p-7 hover:border-[#9dfb40]/50 transition-all duration-300 flex flex-col gap-5 overflow-hidden bg-[#0a0a0a] min-h-[260px]"
+                >
+                  {img && (
+                    <>
+                      <Image
+                        src={img}
+                        alt=""
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        className="object-cover -z-10 opacity-30 group-hover:opacity-40 group-hover:scale-105 transition-all duration-500"
+                      />
+                      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/85 to-[#0a0a0a]/60" aria-hidden="true" />
+                    </>
+                  )}
+                  <div className="text-[#9dfb40] shrink-0">
+                    {SERVICE_ICONS[service.icon] ?? SERVICE_ICONS.tire}
+                  </div>
+                  <div className="flex flex-col gap-2 flex-1">
+                    <h3 className="text-base font-bold text-white leading-snug group-hover:text-[#9dfb40] transition-colors duration-200 drop-shadow-md">
+                      {service.title}
+                    </h3>
+                    <p className="text-gray-300 text-sm leading-relaxed drop-shadow">{service.shortDescription}</p>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-[#9dfb40] mt-auto">
+                    Learn more
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" aria-hidden="true">
+                      <line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" />
+                    </svg>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
           <div className="mt-10 text-center">
             <Link
