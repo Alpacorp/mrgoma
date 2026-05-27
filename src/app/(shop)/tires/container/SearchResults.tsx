@@ -334,15 +334,30 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
                   Browse by rim size
                 </p>
                 <div className="flex gap-2 flex-wrap">
-                  {[13, 14, 15, 16, 17, 18, 19, 20, 21, 22].map(d => (
-                    <a
-                      key={d}
-                      href={`/tires?d=${d}`}
-                      className="inline-flex items-center px-3 py-1.5 rounded-full border border-gray-200 text-xs font-semibold text-gray-700 hover:border-green-600 hover:text-green-700 hover:bg-green-50 transition-colors duration-150"
-                    >
-                      {d}&quot;
-                    </a>
-                  ))}
+                  {[13, 14, 15, 16, 17, 18, 19, 20, 21, 22].map(d => {
+                    const isActive = diameter === String(d);
+                    return (
+                      <a
+                        key={d}
+                        href={isActive ? '/tires' : `/tires?d=${d}`}
+                        aria-pressed={isActive}
+                        aria-label={isActive ? `Clear rim size ${d}" filter` : `Filter by rim size ${d}"`}
+                        className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs font-semibold transition-colors duration-150 ${
+                          isActive
+                            ? 'border-green-600 bg-green-600 text-white hover:bg-green-700 hover:border-green-700'
+                            : 'border-gray-200 text-gray-700 hover:border-green-600 hover:text-green-700 hover:bg-green-50'
+                        }`}
+                      >
+                        {d}&quot;
+                        {isActive && (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3 h-3" aria-hidden="true">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                          </svg>
+                        )}
+                      </a>
+                    );
+                  })}
                   <a
                     href="/tires/new"
                     className="inline-flex items-center px-3 py-1.5 rounded-full border border-green-200 text-xs font-semibold text-green-700 bg-green-50 hover:bg-green-600 hover:text-white hover:border-green-600 transition-colors duration-150"
