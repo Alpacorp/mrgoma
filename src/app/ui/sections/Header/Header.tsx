@@ -74,7 +74,73 @@ const Header: FC<{ compact?: boolean }> = ({ compact = false }): ReactNode => {
               {menuItems.map(item => {
                 const isActive =
                   pathname === item.href ||
+                  pathname?.startsWith(item.href + '/') ||
                   (pathname === '/' && activeHash === item.href.replace('/', ''));
+
+                if (item.children?.length) {
+                  const miamiKids = item.children.filter(c => c.name.startsWith('Miami'));
+                  const orlandoKids = item.children.filter(c => c.name.startsWith('Orlando'));
+                  return (
+                    <div key={item.name} className="relative group">
+                      <Link
+                        href={item.href}
+                        className={`inline-flex items-center gap-1 text-sm font-semibold leading-6 transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
+                          isActive ? 'text-[#65D01E]' : 'text-white hover:text-[#65D01E]'
+                        }`}
+                        aria-haspopup="true"
+                      >
+                        {item.name}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3 h-3 transition-transform duration-200 group-hover:rotate-180" aria-hidden="true">
+                          <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                      </Link>
+                      <div
+                        className="absolute left-1/2 -translate-x-1/2 top-full pt-3 w-[480px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
+                        role="menu"
+                      >
+                        <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl p-6 grid grid-cols-2 gap-6">
+                          <div>
+                            <p className="text-[#9dfb40] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">Miami, FL</p>
+                            <ul className="space-y-1.5">
+                              {miamiKids.map(kid => (
+                                <li key={kid.href}>
+                                  <Link
+                                    href={kid.href}
+                                    className="block text-sm text-gray-300 hover:text-[#9dfb40] hover:translate-x-0.5 transition-all duration-150"
+                                  >
+                                    {kid.name.replace('Miami – ', '')}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div>
+                            <p className="text-[#9dfb40] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">Orlando, FL</p>
+                            <ul className="space-y-1.5">
+                              {orlandoKids.map(kid => (
+                                <li key={kid.href}>
+                                  <Link
+                                    href={kid.href}
+                                    className="block text-sm text-gray-300 hover:text-[#9dfb40] hover:translate-x-0.5 transition-all duration-150"
+                                  >
+                                    {kid.name.replace('Orlando – ', '')}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                          <Link
+                            href={item.href}
+                            className="col-span-2 mt-2 pt-3 border-t border-white/10 text-xs font-bold text-[#9dfb40] hover:underline"
+                          >
+                            View all 7 locations →
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+
                 return (
                   <Link
                     key={item.name}

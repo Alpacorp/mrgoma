@@ -6,9 +6,11 @@ import Link from 'next/link';
 import { servicesConfig } from '@/app/(shop)/services/servicesConfig';
 import {
   InfoCardsSection,
+  PromoBanner,
   SearchContainer,
 } from '@/app/ui/sections';
 import { LocationsSlider } from '@/app/ui/sections/LocationsSlider/LocationsSlider';
+import { promoBannerConfig } from '@/app/ui/sections/PromoBanner/config/promoBanner';
 
 const SERVICE_IMAGES: Record<string, string> = {
   tire: '/assets/images/bg-service-card.jpg',
@@ -136,6 +138,7 @@ const Home: FC = () => {
       {/* ── Services ── */}
       <section id="services" className="bg-gray-50 py-16 sm:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <PromoBanner content={promoBannerConfig.home} className="mb-10" storageKey="home" />
           <div className="mb-10">
             <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">What we offer</p>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900">Our Services</h2>
@@ -156,9 +159,9 @@ const Home: FC = () => {
                         alt=""
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                        className="object-cover -z-10 opacity-30 group-hover:opacity-40 group-hover:scale-105 transition-all duration-500"
+                        className="object-cover -z-10 opacity-70 group-hover:opacity-90 group-hover:scale-105 transition-all duration-500"
                       />
-                      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/85 to-[#0a0a0a]/60" aria-hidden="true" />
+                      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/70 to-[#0a0a0a]/20" aria-hidden="true" />
                     </>
                   )}
                   <div className="text-[#9dfb40] shrink-0">

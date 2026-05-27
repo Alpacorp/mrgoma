@@ -1,5 +1,16 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { LocationConfig } from '@/app/(shop)/locations/locationsConfig';
+
+const LOCATION_IMAGES: Record<string, string> = {
+  'miami-south-us1': '/assets/images/Locations/18200.jpg',
+  'miami-airport': '/assets/images/Locations/3251.webp',
+  'miami-north-441': '/assets/images/Locations/20282.jpg',
+  'miami-coral-gables': '/assets/images/Locations/900.jpg',
+  'miami-hialeah': '/assets/images/Locations/4040.webp',
+  'orlando-west-colonial': '/assets/images/Locations/4400.jpg',
+  'orlando-semoran': '/assets/images/Locations/575.jpg',
+};
 
 const services = [
   { label: 'Tire Mounting & Balancing', slug: 'tire-mounting-balancing' },
@@ -44,6 +55,8 @@ interface Props {
 }
 
 export default function LocationDetail({ location }: Props) {
+  const heroImage = LOCATION_IMAGES[location.slug];
+
   return (
     <main className="bg-[#0a0a0a] text-white min-h-screen">
 
@@ -62,19 +75,48 @@ export default function LocationDetail({ location }: Props) {
 
       {/* Hero */}
       <section className="relative border-b border-white/8 overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full opacity-[0.04]"
-            style={{ background: 'radial-gradient(circle, #9dfb40 0%, transparent 70%)' }} />
-        </div>
+        {heroImage && (
+          <div className="hidden lg:block absolute inset-y-0 right-0 w-[50%] pointer-events-none" aria-hidden="true">
+            <Image
+              src={heroImage}
+              alt=""
+              fill
+              className="object-cover brightness-[0.35]"
+              sizes="50vw"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/70 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/80 via-transparent to-transparent" />
+          </div>
+        )}
+        {heroImage && (
+          <div className="lg:hidden absolute inset-0 pointer-events-none" aria-hidden="true">
+            <Image
+              src={heroImage}
+              alt=""
+              fill
+              className="object-cover brightness-[0.25]"
+              sizes="100vw"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/85 to-[#0a0a0a]/70" />
+          </div>
+        )}
+        {!heroImage && (
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full opacity-[0.04]"
+              style={{ background: 'radial-gradient(circle, #9dfb40 0%, transparent 70%)' }} />
+          </div>
+        )}
         <div className="relative max-w-6xl mx-auto px-6 lg:px-8 pt-16 pb-14">
           <div className="flex items-center gap-3 mb-6">
             <span className="w-8 h-px bg-[#9dfb40] inline-block" />
             <span className="text-[#9dfb40] text-xs font-bold tracking-[0.2em] uppercase">{location.city}, FL</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight mb-4">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight mb-4 drop-shadow-lg">
             {location.h1}
           </h1>
-          <p className="text-gray-400 text-lg max-w-2xl leading-relaxed">{location.description}</p>
+          <p className="text-gray-300 text-lg max-w-2xl leading-relaxed drop-shadow-md">{location.description}</p>
         </div>
       </section>
 
@@ -156,7 +198,7 @@ export default function LocationDetail({ location }: Props) {
 
           {/* WhatsApp */}
           <div className="bg-[#9dfb40] rounded-2xl p-6 relative overflow-hidden">
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+            <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
               style={{ backgroundImage: 'repeating-linear-gradient(45deg,#000 0,#000 1px,transparent 0,transparent 50%)', backgroundSize: '10px 10px' }} />
             <div className="relative">
               <p className="text-black font-black text-lg mb-1">Contact This Location</p>

@@ -159,7 +159,7 @@ export default function ServiceDetail({ service }: Props) {
 
           {/* WhatsApp CTA */}
           <div className="bg-[#9dfb40] rounded-2xl p-6 relative overflow-hidden">
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
+            <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
               style={{ backgroundImage: 'repeating-linear-gradient(45deg,#000 0,#000 1px,transparent 0,transparent 50%)', backgroundSize: '10px 10px' }} />
             <div className="relative">
               <p className="text-black font-black text-lg mb-1">Book via WhatsApp</p>

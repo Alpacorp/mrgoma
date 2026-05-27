@@ -291,7 +291,7 @@ export default function AboutUs() {
       {/* ── CTA BANNER ── */}
       <section className="bg-[#9dfb40] relative overflow-hidden">
         <div
-          className="absolute inset-0 opacity-10 pointer-events-none"
+          className="absolute inset-0 opacity-[0.04] pointer-events-none"
           style={{
             backgroundImage:
               'repeating-linear-gradient(45deg, #000 0, #000 1px, transparent 0, transparent 50%)',

@@ -108,35 +108,35 @@ function LocationCard({ loc }: { loc: (typeof locationsConfig)[0] }) {
     <article className="bg-[#0a0a0a] p-6 flex flex-col gap-4 group hover:bg-white/[0.04] transition-colors duration-200">
       <div className="flex items-start justify-between gap-2">
         <h3 className="font-bold text-base text-white leading-tight">{loc.name}</h3>
-        <span className="text-[10px] text-white/30 font-semibold uppercase tracking-widest shrink-0 mt-0.5">
+        <span className="text-[10px] text-white/50 font-semibold uppercase tracking-widest shrink-0 mt-0.5">
           {loc.city}
         </span>
       </div>
 
-      <p className="text-gray-500 text-sm leading-relaxed">{loc.address}</p>
+      <p className="text-gray-300 text-sm leading-relaxed">{loc.address}</p>
 
       <div className="flex flex-wrap gap-1.5">
         {loc.neighborhoods.slice(0, 3).map(n => (
-          <span key={n} className="text-[10px] text-gray-600 bg-white/5 px-2 py-0.5 rounded-full border border-white/8">
+          <span key={n} className="text-[11px] font-medium text-gray-200 bg-white/10 px-2.5 py-1 rounded-full border border-white/15">
             {n}
           </span>
         ))}
       </div>
 
       <a href={loc.tel}
-        className="flex items-center gap-2 text-sm text-gray-400 hover:text-[#9dfb40] transition-colors w-fit">
+        className="flex items-center gap-2 text-sm text-gray-200 hover:text-[#9dfb40] transition-colors w-fit">
         <PhoneIcon />
         {loc.phone}
       </a>
 
-      <div className="flex items-center gap-3 mt-auto pt-2 border-t border-white/6">
+      <div className="flex items-center gap-3 mt-auto pt-3 border-t border-white/10">
         <Link href={`/locations/${loc.slug}`}
-          className="text-xs font-semibold text-[#9dfb40] hover:underline">
+          className="text-xs font-bold text-[#9dfb40] hover:underline">
           View details →
         </Link>
         <a href={loc.mapLink} target="_blank" rel="noopener noreferrer"
-          className="text-xs text-gray-500 hover:text-white transition-colors">
-          Get directions
+          className="text-xs font-medium text-gray-300 hover:text-white transition-colors">
+          Get directions →
         </a>
       </div>
     </article>

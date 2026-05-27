@@ -1,6 +1,10 @@
+'use client';
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+
+import type { MenuChild } from '@/app/ui/sections/Header/MenuItems';
 
 interface MenuItemProps {
   name: string;
@@ -8,6 +12,7 @@ interface MenuItemProps {
   index: number;
   animationStage: number;
   onClick: () => void;
+  submenu?: MenuChild[];
 }
 
 /**
@@ -20,9 +25,11 @@ export const MenuItem: React.FC<MenuItemProps> = ({
   index,
   animationStage,
   onClick,
+  submenu,
 }) => {
   const pathname = usePathname();
   const [activeHash, setActiveHash] = useState('');
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     setActiveHash(window.location.hash);
@@ -32,7 +39,101 @@ export const MenuItem: React.FC<MenuItemProps> = ({
   }, []);
 
   const isActive =
-    pathname === href || (pathname === '/' && activeHash === href.replace('/', ''));
+    pathname === href ||
+    pathname?.startsWith(href + '/') ||
+    (pathname === '/' && activeHash === href.replace('/', ''));
+
+  const animClass =
+    animationStage >= index + 2 ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4';
+
+  if (submenu?.length) {
+    const miamiKids = submenu.filter(c => c.name.startsWith('Miami'));
+    const orlandoKids = submenu.filter(c => c.name.startsWith('Orlando'));
+    return (
+      <div className={`transition-all duration-300 ${animClass}`}>
+        <div
+          className={`flex items-stretch rounded-lg overflow-hidden border ${
+            isActive ? 'bg-[#222] border-[#65D01E]/50' : 'border-[#333]'
+          }`}
+        >
+          <Link
+            href={href}
+            onClick={onClick}
+            className={`flex-1 px-4 py-3 text-base font-semibold transition-colors ${
+              isActive ? 'text-[#65D01E]' : 'text-white hover:text-[#65D01E]'
+            }`}
+          >
+            {name}
+          </Link>
+          <button
+            type="button"
+            onClick={() => setExpanded(v => !v)}
+            aria-expanded={expanded}
+            aria-label={`${expanded ? 'Hide' : 'Show'} ${name} list`}
+            className={`px-4 border-l border-[#333] text-white hover:text-[#65D01E] transition-colors`}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2.5}
+              className={`w-4 h-4 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
+              aria-hidden="true"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+        </div>
+
+        <div
+          className={`grid transition-all duration-300 ${
+            expanded ? 'grid-rows-[1fr] opacity-100 mt-2' : 'grid-rows-[0fr] opacity-0'
+          }`}
+        >
+          <div className="overflow-hidden">
+            <div className="px-3 py-3 bg-black/30 rounded-lg border border-[#333] space-y-4">
+              <div>
+                <p className="text-[#9dfb40] text-[10px] font-bold tracking-[0.2em] uppercase mb-2 px-2">
+                  Miami, FL
+                </p>
+                <ul className="space-y-0.5">
+                  {miamiKids.map(kid => (
+                    <li key={kid.href}>
+                      <Link
+                        href={kid.href}
+                        onClick={onClick}
+                        className="block px-2 py-1.5 text-sm text-gray-300 hover:text-[#9dfb40] hover:bg-white/5 rounded transition-colors"
+                      >
+                        {kid.name.replace('Miami – ', '')}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <p className="text-[#9dfb40] text-[10px] font-bold tracking-[0.2em] uppercase mb-2 px-2">
+                  Orlando, FL
+                </p>
+                <ul className="space-y-0.5">
+                  {orlandoKids.map(kid => (
+                    <li key={kid.href}>
+                      <Link
+                        href={kid.href}
+                        onClick={onClick}
+                        className="block px-2 py-1.5 text-sm text-gray-300 hover:text-[#9dfb40] hover:bg-white/5 rounded transition-colors"
+                      >
+                        {kid.name.replace('Orlando – ', '')}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Link
@@ -42,9 +143,7 @@ export const MenuItem: React.FC<MenuItemProps> = ({
         isActive
           ? 'bg-[#222] text-[#65D01E] border-[#65D01E]/50'
           : 'text-white hover:bg-[#222] hover:text-[#65D01E] border-[#333] hover:border-[#65D01E]/50'
-      } ${
-        animationStage >= index + 2 ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
-      }`}
+      } ${animClass}`}
     >
       {name}
     </Link>
