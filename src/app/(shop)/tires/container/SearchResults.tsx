@@ -17,7 +17,7 @@ import {
 } from '@/app/ui/components';
 import AiChat from '@/app/ui/components/AiChat/AiChat';
 import { FiltersMobile, TopFilters, PromoBanner } from '@/app/ui/sections';
-import { slugify } from '@/app/utils/tireSlug';
+import { BrowseFilters } from '@/app/(shop)/tires/container/BrowseFilters/BrowseFilters';
 import { promoBannerConfig } from '@/app/ui/sections/PromoBanner/config/promoBanner';
 import {
   DEFAULT_PAGE,
@@ -320,61 +320,7 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
         </section>
 
         {/* ── Browse by Brand / Rim Size ── */}
-        {brands.length > 0 && (
-          <section className="bg-white border-b border-gray-100 py-5">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-4">
-              <div>
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.18em] mb-2.5">
-                  Browse by brand
-                </p>
-                <BrandScroller brands={brands} />
-              </div>
-              <div>
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.18em] mb-2.5">
-                  Browse by rim size
-                </p>
-                <div className="flex gap-2 flex-wrap">
-                  {[13, 14, 15, 16, 17, 18, 19, 20, 21, 22].map(d => {
-                    const isActive = diameter === String(d);
-                    return (
-                      <a
-                        key={d}
-                        href={isActive ? '/tires' : `/tires?d=${d}`}
-                        aria-pressed={isActive}
-                        aria-label={isActive ? `Clear rim size ${d}" filter` : `Filter by rim size ${d}"`}
-                        className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs font-semibold transition-colors duration-150 ${
-                          isActive
-                            ? 'border-green-600 bg-green-600 text-white hover:bg-green-700 hover:border-green-700'
-                            : 'border-gray-200 text-gray-700 hover:border-green-600 hover:text-green-700 hover:bg-green-50'
-                        }`}
-                      >
-                        {d}&quot;
-                        {isActive && (
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3 h-3" aria-hidden="true">
-                            <line x1="18" y1="6" x2="6" y2="18" />
-                            <line x1="6" y1="6" x2="18" y2="18" />
-                          </svg>
-                        )}
-                      </a>
-                    );
-                  })}
-                  <a
-                    href="/tires/new"
-                    className="inline-flex items-center px-3 py-1.5 rounded-full border border-green-200 text-xs font-semibold text-green-700 bg-green-50 hover:bg-green-600 hover:text-white hover:border-green-600 transition-colors duration-150"
-                  >
-                    Shop New
-                  </a>
-                  <a
-                    href="/tires/used"
-                    className="inline-flex items-center px-3 py-1.5 rounded-full border border-amber-200 text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-colors duration-150"
-                  >
-                    Shop Used
-                  </a>
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
+        <BrowseFilters brands={brands} />
 
         <div>
           <main className="bg-gray-50 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative h-full">
@@ -573,66 +519,3 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
 };
 
 export default SearchResults;
-
-const BrandScroller: FC<{ brands: string[] }> = ({ brands }) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [progress, setProgress] = useState(0);
-  const [hasOverflow, setHasOverflow] = useState(false);
-
-  const updateProgress = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const max = el.scrollWidth - el.clientWidth;
-    setHasOverflow(max > 4);
-    setProgress(max > 0 ? Math.min(1, el.scrollLeft / max) : 0);
-  }, []);
-
-  useEffect(() => {
-    updateProgress();
-    const el = scrollRef.current;
-    if (!el) return;
-    el.addEventListener('scroll', updateProgress, { passive: true });
-    window.addEventListener('resize', updateProgress);
-    return () => {
-      el.removeEventListener('scroll', updateProgress);
-      window.removeEventListener('resize', updateProgress);
-    };
-  }, [updateProgress, brands.length]);
-
-  // Track width = 28% of container; thumb position interpolated across (100% - 28%)
-  const thumbLeft = progress * 72;
-
-  return (
-    <div className="relative">
-      <div
-        ref={scrollRef}
-        className="flex gap-2 overflow-x-auto pb-3 sm:pb-2 [scrollbar-width:thin] [scrollbar-color:#d1d5db_#f3f4f6] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-400"
-      >
-        {brands.map(brand => (
-          <a
-            key={brand}
-            href={`/tires/brands/${slugify(brand)}`}
-            className="shrink-0 inline-flex items-center px-3 py-1.5 rounded-full border border-gray-200 text-xs font-semibold text-gray-700 hover:border-green-600 hover:text-green-700 hover:bg-green-50 transition-colors duration-150 whitespace-nowrap"
-          >
-            {brand}
-          </a>
-        ))}
-      </div>
-
-      {/* Mobile progress bar — webkit scrollbars auto-hide on touch devices */}
-      {hasOverflow && (
-        <div className="sm:hidden mt-1.5 h-1 rounded-full bg-gray-100 overflow-hidden" aria-hidden="true">
-          <div
-            className="h-full w-[28%] rounded-full bg-gray-400 transition-transform duration-100 ease-out"
-            style={{ transform: `translateX(${thumbLeft}%)` }}
-          />
-        </div>
-      )}
-
-      {/* Right-edge fade to hint at more content */}
-      {hasOverflow && progress < 0.98 && (
-        <div className="sm:hidden pointer-events-none absolute right-0 top-0 bottom-3 w-8 bg-gradient-to-l from-white to-transparent" aria-hidden="true" />
-      )}
-    </div>
-  );
-};

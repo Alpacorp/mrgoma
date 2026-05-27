@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { BrowseFilters } from '@/app/(shop)/tires/container/BrowseFilters/BrowseFilters';
 import { TireGrid } from '@/app/(shop)/tires/container/TireGrid/TireGrid';
 import { TiresData } from '@/app/interfaces/tires';
 import { transformTireData } from '@/app/utils/transformTireData';
 import { buildBreadcrumbJsonLd, canonical } from '@/app/utils/seo';
-import { fetchTires } from '@/repositories/tiresRepository';
+import { fetchBrands, fetchTires } from '@/repositories/tiresRepository';
 
 export const revalidate = 3600;
 
@@ -44,7 +45,10 @@ const reasons = [
 ];
 
 export default async function UsedTiresPage() {
-  const result = await fetchTires(0, 24, { condition: ['used'] });
+  const [result, brands] = await Promise.all([
+    fetchTires(0, 24, { condition: ['used'] }),
+    fetchBrands().catch(() => [] as string[]),
+  ]);
   const tires = (result.records as TiresData[]).map(transformTireData);
   const totalCount = result.totalCount;
 
@@ -76,28 +80,28 @@ export default async function UsedTiresPage() {
             className="absolute inset-0 opacity-[0.03] pointer-events-none"
             style={{
               backgroundImage:
-                'linear-gradient(#9dfb40 1px, transparent 1px), linear-gradient(90deg, #9dfb40 1px, transparent 1px)',
+                'linear-gradient(#f59e0b 1px, transparent 1px), linear-gradient(90deg, #f59e0b 1px, transparent 1px)',
               backgroundSize: '60px 60px',
             }}
           />
           <span
             className="absolute right-0 top-1/2 -translate-y-1/2 text-[clamp(80px,15vw,180px)] font-black leading-none select-none pointer-events-none"
-            style={{ color: 'rgba(157,251,64,0.04)', letterSpacing: '-4px' }}
+            style={{ color: 'rgba(245,158,11,0.06)', letterSpacing: '-4px' }}
             aria-hidden="true"
           >
             USED
           </span>
           <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
             <div className="flex items-center gap-3 mb-5">
-              <span className="w-8 h-px bg-[#9dfb40]" />
-              <span className="text-[#9dfb40] text-xs font-bold tracking-[0.2em] uppercase">
+              <span className="w-8 h-px bg-amber-400" />
+              <span className="text-amber-400 text-xs font-bold tracking-[0.2em] uppercase">
                 Pre-owned
               </span>
             </div>
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-none mb-5">
-              Used Tires
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-none mb-5 text-white">
+              <span style={{ color: '#fbbf24' }}>Used</span> Tires
               <br />
-              <span className="text-[#9dfb40]">Miami & Orlando</span>
+              <span style={{ color: '#9dfb40' }}>Miami & Orlando</span>
             </h1>
             <p className="text-gray-400 text-lg max-w-lg leading-relaxed">
               Every used tire in our inventory is ASE-inspected and backed by our 180-day warranty —
@@ -107,7 +111,10 @@ export default async function UsedTiresPage() {
               <span className="bg-white/10 border border-white/20 rounded-full px-4 py-2 text-sm font-semibold">
                 {totalCount > 0 ? `${totalCount}+ tires in stock` : 'In stock now'}
               </span>
-              <span className="bg-[#9dfb40]/10 border border-[#9dfb40]/30 text-[#9dfb40] rounded-full px-4 py-2 text-sm font-semibold">
+              <span
+                className="border rounded-full px-4 py-2 text-sm font-semibold"
+                style={{ color: '#fbbf24', borderColor: 'rgba(251,191,36,0.3)', background: 'rgba(251,191,36,0.1)' }}
+              >
                 180-Day Warranty
               </span>
               <span className="bg-white/10 border border-white/20 rounded-full px-4 py-2 text-sm font-semibold">
@@ -116,6 +123,8 @@ export default async function UsedTiresPage() {
             </div>
           </div>
         </section>
+
+        <BrowseFilters brands={brands} variant="used" />
 
         {/* Why used tires */}
         <section className="py-16 border-b border-gray-100">
