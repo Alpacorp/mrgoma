@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
@@ -124,7 +126,9 @@ export default async function NewTiresPage() {
           </div>
         </section>
 
-        <BrowseFilters brands={brands} variant="new" />
+        <Suspense fallback={null}>
+          <BrowseFilters brands={brands} variant="new" />
+        </Suspense>
 
         {/* Why new tires */}
         <section className="py-16 border-b border-gray-100">

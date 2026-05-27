@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
@@ -124,7 +126,9 @@ export default async function UsedTiresPage() {
           </div>
         </section>
 
-        <BrowseFilters brands={brands} variant="used" />
+        <Suspense fallback={null}>
+          <BrowseFilters brands={brands} variant="used" />
+        </Suspense>
 
         {/* Why used tires */}
         <section className="py-16 border-b border-gray-100">
