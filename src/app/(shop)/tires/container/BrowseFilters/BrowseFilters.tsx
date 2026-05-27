@@ -11,12 +11,14 @@ type RouteVariant = 'browse' | 'new' | 'used';
 interface BrowseFiltersProps {
   brands: string[];
   variant?: RouteVariant;
+  activeBrand?: string;
   className?: string;
 }
 
 export const BrowseFilters: FC<BrowseFiltersProps> = ({
   brands,
   variant = 'browse',
+  activeBrand,
   className = '',
 }) => {
   const isNew = variant === 'new';
@@ -31,7 +33,11 @@ export const BrowseFilters: FC<BrowseFiltersProps> = ({
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.18em] mb-2.5">
               Browse by brand
             </p>
-            <BrandScroller brands={brands} />
+            {isBrowse && !activeBrand ? (
+              <BrandScrollerWithSearchParam brands={brands} />
+            ) : (
+              <BrandScroller brands={brands} activeBrand={activeBrand} />
+            )}
           </div>
         )}
         <div>
@@ -127,10 +133,25 @@ const ClearIcon = () => (
   </svg>
 );
 
-const BrandScroller: FC<{ brands: string[] }> = ({ brands }) => {
+interface BrandScrollerProps {
+  brands: string[];
+  activeBrand?: string;
+}
+
+// Variant that reads ?brand= from URL — only used inside variant='browse' (route /tires)
+const BrandScrollerWithSearchParam: FC<BrandScrollerProps> = ({ brands, activeBrand }) => {
+  const searchParams = useSearchParams();
+  const fromParam = searchParams?.get('brand') || '';
+  return <BrandScroller brands={brands} activeBrand={activeBrand || fromParam} />;
+};
+
+const BrandScroller: FC<BrandScrollerProps> = ({ brands, activeBrand }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const activeChipRef = useRef<HTMLAnchorElement | null>(null);
   const [progress, setProgress] = useState(0);
   const [hasOverflow, setHasOverflow] = useState(false);
+
+  const active = (activeBrand || '').toLowerCase();
 
   const updateProgress = useCallback(() => {
     const el = scrollRef.current;
@@ -152,6 +173,23 @@ const BrandScroller: FC<{ brands: string[] }> = ({ brands }) => {
     };
   }, [updateProgress, brands.length]);
 
+  // Auto-scroll active chip into view on mount
+  useEffect(() => {
+    const chip = activeChipRef.current;
+    const container = scrollRef.current;
+    if (!chip || !container) return;
+    const chipLeft = chip.offsetLeft;
+    const chipRight = chipLeft + chip.offsetWidth;
+    const viewLeft = container.scrollLeft;
+    const viewRight = viewLeft + container.clientWidth;
+    if (chipLeft < viewLeft || chipRight > viewRight) {
+      container.scrollTo({
+        left: Math.max(0, chipLeft - container.clientWidth / 2 + chip.offsetWidth / 2),
+        behavior: 'smooth',
+      });
+    }
+  }, [active]);
+
   const thumbLeft = progress * 72;
 
   return (
@@ -160,15 +198,26 @@ const BrandScroller: FC<{ brands: string[] }> = ({ brands }) => {
         ref={scrollRef}
         className="flex gap-2 overflow-x-auto pb-3 sm:pb-2 [scrollbar-width:thin] [scrollbar-color:#d1d5db_#f3f4f6] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-400"
       >
-        {brands.map(brand => (
-          <a
-            key={brand}
-            href={`/tires/brands/${slugify(brand)}`}
-            className="shrink-0 inline-flex items-center px-3 py-1.5 rounded-full border border-gray-200 text-xs font-semibold text-gray-700 hover:border-green-600 hover:text-green-700 hover:bg-green-50 transition-colors duration-150 whitespace-nowrap"
-          >
-            {brand}
-          </a>
-        ))}
+        {brands.map(brand => {
+          const isActive = brand.toLowerCase() === active;
+          return (
+            <a
+              key={brand}
+              ref={isActive ? activeChipRef : undefined}
+              href={isActive ? '/tires' : `/tires/brands/${slugify(brand)}`}
+              aria-pressed={isActive}
+              aria-label={isActive ? `Clear ${brand} filter` : `Browse ${brand} tires`}
+              className={`shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs font-semibold transition-colors duration-150 whitespace-nowrap ${
+                isActive
+                  ? 'border-green-600 bg-green-600 text-white hover:bg-green-700 hover:border-green-700'
+                  : 'border-gray-200 text-gray-700 hover:border-green-600 hover:text-green-700 hover:bg-green-50'
+              }`}
+            >
+              {brand}
+              {isActive && <ClearIcon />}
+            </a>
+          );
+        })}
       </div>
 
       {hasOverflow && (

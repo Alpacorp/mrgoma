@@ -1,8 +1,11 @@
+import { Suspense } from 'react';
+
 import { notFound } from 'next/navigation';
 
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { BrowseFilters } from '@/app/(shop)/tires/container/BrowseFilters/BrowseFilters';
 import { TireGrid } from '@/app/(shop)/tires/container/TireGrid/TireGrid';
 import { TiresData } from '@/app/interfaces/tires';
 import { BrandImage } from '@/app/ui/components';
@@ -58,7 +61,10 @@ export default async function BrandCategoryPage({
   const brandName = await getBrandName(brandSlug);
   if (!brandName) notFound();
 
-  const [result] = await Promise.all([fetchTires(0, 24, { brands: [brandName] })]);
+  const [result, allBrands] = await Promise.all([
+    fetchTires(0, 24, { brands: [brandName] }),
+    fetchBrands().catch(() => [] as string[]),
+  ]);
   const tires = (result.records as TiresData[]).map(transformTireData);
   const totalCount = result.totalCount;
   const brandId = result.records.length > 0 ? ((result.records[0] as any).BrandId as number) : undefined;
@@ -138,6 +144,10 @@ export default async function BrandCategoryPage({
             ))}
           </div>
         </div>
+
+        <Suspense fallback={null}>
+          <BrowseFilters brands={allBrands} activeBrand={brandName} />
+        </Suspense>
 
         {/* Tire grid */}
         <section className="py-10">
