@@ -327,7 +327,9 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.18em] mb-2.5">
                   Browse by brand
                 </p>
-                <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+                <div
+                  className="flex gap-2 overflow-x-auto pb-3 [scrollbar-width:thin] [scrollbar-color:#d1d5db_#f3f4f6] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-gray-400"
+                >
                   {brands.map(brand => (
                     <a
                       key={brand}
