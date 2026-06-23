@@ -61,6 +61,9 @@ import mrGomaAvatar from '#public/assets/images/mrgoma-avatar.svg';
 
 import { useAiChat } from './hooks/useAiChat';
 
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 const DASHBOARD_EXAMPLE_QUERIES = [
   '275/55/20',
   'used tires under $80',
@@ -86,13 +89,18 @@ export default function AiChat({
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const previouslyFocused = useRef<HTMLElement | null>(null);
   const { messages, isLoading, sendMessage, clearChat } = useAiChat({
     apiEndpoint,
     redirectBasePath,
   });
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const prefersReduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    messagesEndRef.current?.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth' });
   }, [messages, isLoading]);
 
   // Auto-close the panel 1.5s after filters are applied so the user
@@ -112,6 +120,49 @@ export default function AiChat({
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
+  }, [isOpen]);
+
+  // Focus management: move focus into the panel on open, trap Tab inside it,
+  // and restore focus to the trigger on close. We focus the panel container
+  // (not the input) so the mobile keyboard doesn't pop up unprompted.
+  useEffect(() => {
+    if (!isOpen) return;
+    const root = panelRef.current;
+    if (!root) return;
+
+    previouslyFocused.current = document.activeElement as HTMLElement | null;
+    root.focus({ preventScroll: true });
+
+    const getFocusable = () =>
+      Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
+        el => el.offsetParent !== null || el === document.activeElement
+      );
+
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      const items = getFocusable();
+      if (items.length === 0) {
+        e.preventDefault();
+        root.focus({ preventScroll: true });
+        return;
+      }
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || active === root)) {
+        e.preventDefault();
+        last.focus({ preventScroll: true });
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus({ preventScroll: true });
+      }
+    };
+
+    document.addEventListener('keydown', handleTab);
+    return () => {
+      document.removeEventListener('keydown', handleTab);
+      previouslyFocused.current?.focus?.({ preventScroll: true });
+    };
   }, [isOpen]);
 
   const handleSend = () => {
@@ -144,15 +195,18 @@ export default function AiChat({
       {/* Chat Panel */}
       {isOpen && (
         <div
+          ref={panelRef}
           role="dialog"
           aria-modal="true"
-          aria-label="AI Inventory Assistant"
-          className="fixed z-50 flex flex-col rounded-xl shadow-2xl border border-gray-200 bg-white overflow-hidden"
+          aria-labelledby="aichat-title"
+          tabIndex={-1}
+          className="fixed z-50 flex flex-col rounded-xl shadow-2xl border border-gray-200 bg-white overflow-hidden focus:outline-none"
           style={{
             bottom: '5rem',
             left: '0.5rem',
             right: '0.5rem',
             height: '520px',
+            maxHeight: 'calc(100dvh - 7rem)',
             maxWidth: '420px',
             marginLeft: 'auto',
           }}
@@ -162,9 +216,11 @@ export default function AiChat({
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-green-600 text-white shrink-0">
             <div className="flex items-center gap-2">
-              <span className="text-lg">✨</span>
+              <span className="text-lg" aria-hidden="true">✨</span>
               <div>
-                <p className="font-semibold text-sm">AI Inventory Assistant</p>
+                <p id="aichat-title" className="font-semibold text-sm">
+                  AI Inventory Assistant
+                </p>
                 <p className="text-xs text-green-100">Spanish or English</p>
               </div>
             </div>
@@ -173,7 +229,7 @@ export default function AiChat({
                 <button
                   type="button"
                   onClick={clearChat}
-                  className="p-1.5 rounded-lg hover:bg-green-700 transition-colors text-xs text-green-100 hover:text-white"
+                  className="cursor-pointer p-1.5 rounded-lg hover:bg-green-700 transition-colors text-xs text-green-100 hover:text-white"
                 >
                   Clear
                 </button>
@@ -181,7 +237,7 @@ export default function AiChat({
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 rounded-lg hover:bg-green-700 transition-colors"
+                className="cursor-pointer p-1.5 rounded-lg hover:bg-green-700 transition-colors"
                 aria-label="Close chat"
               >
                 <svg
@@ -191,6 +247,7 @@ export default function AiChat({
                   strokeWidth={2}
                   stroke="currentColor"
                   className="w-4 h-4"
+                  aria-hidden="true"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -199,7 +256,12 @@ export default function AiChat({
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+          <div
+            className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50"
+            role="log"
+            aria-live="polite"
+            aria-relevant="additions"
+          >
             {messages.length === 0 && (
               <div className="flex flex-col items-center justify-center h-full text-center space-y-3">
                 <span className="text-4xl">✨</span>
@@ -210,7 +272,7 @@ export default function AiChat({
                       key={q}
                       type="button"
                       onClick={() => setInputValue(q)}
-                      className="block w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-600 hover:border-green-600 hover:text-green-600 transition-colors"
+                      className="cursor-pointer block w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-600 hover:border-green-600 hover:text-green-600 transition-colors"
                     >
                       {q}
                     </button>
@@ -246,7 +308,8 @@ export default function AiChat({
             {isLoading && (
               <div className="flex justify-start">
                 <div className="px-4 py-3 rounded-xl bg-white border border-gray-200">
-                  <div className="flex gap-1">
+                  <span className="sr-only">Assistant is typing…</span>
+                  <div className="flex gap-1" aria-hidden="true">
                     <span
                       className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
                       style={{ animationDelay: '0ms' }}
@@ -286,7 +349,7 @@ export default function AiChat({
             <button
               type="submit"
               disabled={isLoading || !inputValue.trim()}
-              className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+              className="cursor-pointer p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
               aria-label="Send"
             >
               <svg
@@ -296,6 +359,7 @@ export default function AiChat({
                 strokeWidth={2}
                 stroke="currentColor"
                 className="w-5 h-5"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -314,7 +378,7 @@ export default function AiChat({
           <button
             type="button"
             onClick={() => setIsOpen(false)}
-            className="w-12 h-12 rounded-full bg-gray-700 hover:bg-gray-800 shadow-2xl flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 ring-4 ring-white"
+            className="cursor-pointer w-12 h-12 rounded-full bg-gray-700 hover:bg-gray-800 shadow-2xl flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 ring-4 ring-white"
             aria-label="Close AI assistant"
           >
             <svg
@@ -324,6 +388,7 @@ export default function AiChat({
               strokeWidth={2.5}
               stroke="white"
               className="w-5 h-5"
+              aria-hidden="true"
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -332,7 +397,7 @@ export default function AiChat({
           <button
             type="button"
             onClick={() => setIsOpen(true)}
-            className="relative w-16 h-16 rounded-full overflow-hidden transition-all duration-200 hover:scale-110 active:scale-95 ring-4 ring-white bg-white [box-shadow:0_6px_24px_rgba(0,0,0,0.4)]"
+            className="cursor-pointer relative w-16 h-16 rounded-full overflow-hidden transition-all duration-200 hover:scale-110 active:scale-95 ring-4 ring-white bg-white [box-shadow:0_6px_24px_rgba(0,0,0,0.4)]"
             aria-label="Open AI assistant"
           >
             <Image
