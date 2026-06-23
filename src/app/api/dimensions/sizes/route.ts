@@ -1,7 +1,14 @@
+import { unstable_cache } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { fetchTireSizes } from '@/repositories/dimensionsRepository';
 import { logger } from '@/utils/logger';
+
+const getCachedSizes = unstable_cache(
+  (height?: number, width?: number) => fetchTireSizes(height, width),
+  ['dimensions-sizes'],
+  { revalidate: 3600, tags: ['dimensions'] }
+);
 
 /**
  * API route to get all unique tire sizes (displayed as Diameter in the UI)
@@ -17,7 +24,7 @@ export async function GET(req: NextRequest) {
     const heightNum = height ? parseFloat(height) : undefined;
     const widthNum = width ? parseFloat(width) : undefined;
 
-    const sizes = await fetchTireSizes(heightNum, widthNum);
+    const sizes = await getCachedSizes(heightNum, widthNum);
 
     return NextResponse.json(sizes);
   } catch (err: unknown) {

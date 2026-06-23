@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { Suspense, cache } from 'react';
 
 import { notFound } from 'next/navigation';
 
@@ -18,7 +18,9 @@ import { generateTireDescription } from '@/app/utils/tireDescription';
 import { buildTireSlug, extractIdFromSlug } from '@/app/utils/tireSlug';
 import { fetchTireById } from '@/repositories/tiresRepository';
 
-async function fetchProduct(productId: string) {
+// Wrapped in React cache() so generateMetadata and the JSON-LD render
+// share a single DB read per request instead of querying twice.
+const fetchProduct = cache(async (productId: string) => {
   try {
     const record = await fetchTireById(productId);
     if (!record) return null;
@@ -74,7 +76,7 @@ async function fetchProduct(productId: string) {
   } catch {
     return null;
   }
-}
+});
 
 export async function generateMetadata({
   params,
