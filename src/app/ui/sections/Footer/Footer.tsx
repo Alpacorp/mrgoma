@@ -51,7 +51,7 @@ const defaultSocialLinks: SocialLink[] = [
   },
   {
     platform: 'tiktok',
-    href: 'https://www.tiktok.com/@mrgomatires',
+    href: 'https://www.tiktok.com/@mrgomatiresofficial',
     icon: 'tiktok',
   },
 ];
