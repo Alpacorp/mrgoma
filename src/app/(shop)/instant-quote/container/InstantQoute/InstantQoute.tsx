@@ -362,6 +362,7 @@ const InstantQuote: React.FC = () => {
                   id="name"
                   name="name"
                   type="text"
+                  autoComplete="name"
                   value={lead.name}
                   onChange={handleChange}
                   placeholder="Your name"
@@ -378,10 +379,13 @@ const InstantQuote: React.FC = () => {
                   id="email"
                   name="email"
                   type="email"
+                  autoComplete="email"
+                  inputMode="email"
                   value={lead.email}
                   onChange={handleChange}
                   placeholder="you@email.com"
                   aria-describedby="emailError"
+                  aria-invalid={!!lead.email && !isEmailValid(lead.email)}
                   className="w-full bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white text-sm"
                 />
                 {lead.email && !isEmailValid(lead.email) && (
@@ -398,10 +402,13 @@ const InstantQuote: React.FC = () => {
                   id="phone"
                   name="phone"
                   type="tel"
+                  autoComplete="tel"
+                  inputMode="tel"
                   value={lead.phone}
                   onChange={handleChange}
                   placeholder="(555) 555-5555"
                   aria-describedby="phoneError"
+                  aria-invalid={!!lead.phone && !isPhoneValid(lead.phone)}
                   className="w-full bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white text-sm"
                 />
                 {lead.phone && !isPhoneValid(lead.phone) && (

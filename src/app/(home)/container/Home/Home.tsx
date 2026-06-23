@@ -102,7 +102,7 @@ const Home: FC = () => {
     <main className="bg-white">
 
       {/* ── Hero ── */}
-      <section aria-labelledby="search-heading" className="px-4 sm:px-6 lg:px-8 relative">
+      <section aria-label="Tire search" className="px-4 sm:px-6 lg:px-8 relative">
         <div className="absolute inset-0 overflow-hidden">
           <video
             className="absolute inset-0 h-full w-full object-cover"
@@ -111,6 +111,9 @@ const Home: FC = () => {
             loop
             playsInline
             controls={false}
+            poster="/assets/images/banner-hero.webp"
+            preload="metadata"
+            aria-hidden="true"
           >
             <source src="/assets/images/banner-hero.mp4" type="video/mp4" />
             Your browser does not support the video tag.

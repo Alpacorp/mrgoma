@@ -1,10 +1,20 @@
 @import "tailwindcss";
 
-:root {
-  scroll-behavior: smooth;
+@media (prefers-reduced-motion: no-preference) {
+  :root {
+    scroll-behavior: smooth;
+  }
 }
 
-body {
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 @layer utilities {
@@ -38,15 +48,17 @@ input[type='range']::-webkit-slider-thumb {
   appearance: none;
   margin-top: -6px;
   background-color: #20e96b;
-  height: 1.2rem;
-  width: 0.7rem;
-  border-radius: 3px;
+  border: 2px solid #15803d;
+  height: 1.25rem;
+  width: 1.1rem;
+  border-radius: 4px;
 }
 
 input[type='range']::-moz-range-thumb {
   background-color: #20e96b;
-  height: 1.2rem;
-  width: 0.7rem;
-  border-radius: 3px;
+  border: 2px solid #15803d;
+  height: 1.25rem;
+  width: 1.1rem;
+  border-radius: 4px;
 }
 

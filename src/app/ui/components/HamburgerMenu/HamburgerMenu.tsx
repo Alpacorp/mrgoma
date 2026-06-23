@@ -10,13 +10,16 @@ import { ShowMenuContext } from '@/app/context/ShowMenuContext';
  * @returns {ReactNode} The rendered hamburger menu button.
  */
 const HamburgerMenu: FC = (): ReactNode => {
-  const { setShowMenu } = useContext(ShowMenuContext);
+  const { showMenu, setShowMenu } = useContext(ShowMenuContext);
 
   return (
     <div className="flex lg:hidden">
       <button
         type="button"
         onClick={() => setShowMenu(true)}
+        aria-label="Abrir menú de navegación"
+        aria-haspopup="menu"
+        aria-expanded={showMenu}
         className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-white"
       >
         <svg

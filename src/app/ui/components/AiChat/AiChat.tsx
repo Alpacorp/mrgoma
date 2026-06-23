@@ -104,6 +104,16 @@ export default function AiChat({
     return () => clearTimeout(timer);
   }, [messages]);
 
+  // Close the panel with the Escape key (desktop keyboard users).
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsOpen(false);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [isOpen]);
+
   const handleSend = () => {
     const text = inputValue.trim();
     if (!text || isLoading) return;
@@ -124,12 +134,19 @@ export default function AiChat({
     <>
       {/* Backdrop — only onClick needed; touch is blocked by the panel */}
       {isOpen && (
-        <div className="fixed inset-0 z-40 bg-black/20" onClick={() => setIsOpen(false)} />
+        <div
+          className="fixed inset-0 z-40 bg-black/20"
+          onClick={() => setIsOpen(false)}
+          aria-hidden="true"
+        />
       )}
 
       {/* Chat Panel */}
       {isOpen && (
         <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="AI Inventory Assistant"
           className="fixed z-50 flex flex-col rounded-xl shadow-2xl border border-gray-200 bg-white overflow-hidden"
           style={{
             bottom: '5rem',
@@ -260,6 +277,7 @@ export default function AiChat({
               value={inputValue}
               onChange={e => setInputValue(e.target.value)}
               enterKeyHint="send"
+              aria-label="Ask about tires"
               placeholder="Ask about tires..."
               disabled={isLoading}
               style={{ fontSize: '16px' }}
