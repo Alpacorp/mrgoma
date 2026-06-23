@@ -19,14 +19,21 @@ export default async function LegacyDetailPage({
     redirect('/tires');
   }
 
+  // NOTE: redirect()/permanentRedirect() work by throwing a NEXT_REDIRECT error.
+  // They must be called OUTSIDE try/catch, otherwise the catch swallows the
+  // redirect and execution falls through to the catalog redirect below.
+  let slug: string | null = null;
   try {
     const record = await fetchTireById(productId);
     if (record) {
-      const slug = buildTireSlug(String(record.TireId), record.Brand || '', record.RealSize || '');
-      permanentRedirect(`/tires/${slug}`);
+      slug = buildTireSlug(String(record.TireId), record.Brand || '', record.RealSize || '');
     }
   } catch {
-    // fall through to generic redirect
+    // DB/lookup failed — fall through to the generic catalog redirect.
+  }
+
+  if (slug) {
+    permanentRedirect(`/tires/${slug}`);
   }
 
   // Product isn't found — redirect to catalog instead of showing error

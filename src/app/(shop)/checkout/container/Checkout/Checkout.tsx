@@ -11,6 +11,7 @@ import { LoadingScreen } from '@/app/ui/components';
 import ProductMeta from '@/app/ui/components/ProductMeta/ProductMeta';
 import ShippingStateGate from '@/app/ui/components/ShippingStateGate/ShippingStateGate';
 import { locationsData } from '@/app/ui/sections/LocationsSlider/locationsData';
+import { buildTireSlug } from '@/app/utils/tireSlug';
 
 const TAX_RATE = (() => {
   if (typeof process !== 'undefined') {
@@ -613,6 +614,16 @@ export default function Checkout() {
                     <tbody className="divide-y divide-gray-100 bg-white">
                       {cartItems.map(item => {
                         const lineTotal = item.price * item.quantity;
+                        // Build the canonical product URL directly (no /detail redirect hop).
+                        // Size is the last "|"-separated segment of the stored item name.
+                        const nameParts = (item.name || '').split(' | ');
+                        const itemSize =
+                          nameParts.length > 1 ? nameParts[nameParts.length - 1].trim() : '';
+                        const detailHref = `/tires/${buildTireSlug(
+                          String(item.id),
+                          item.brand || '',
+                          itemSize
+                        )}`;
                         return (
                           <tr key={item.id} className="hover:bg-gray-50">
                             <td className="px-4 py-4">
@@ -634,7 +645,7 @@ export default function Checkout() {
                                 </div>
                                 <div>
                                   <Link
-                                    href={`/detail?productId=${encodeURIComponent(String(item.id))}`}
+                                    href={detailHref}
                                     className="font-medium text-gray-900 hover:text-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
                                   >
                                     {item.name}
