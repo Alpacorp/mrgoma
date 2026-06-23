@@ -190,7 +190,7 @@ export function organizationJsonLd() {
       'https://instagram.com/mrgomatires',
       'https://www.facebook.com/profile.php?id=61573861890811',
       'https://x.com/MrGomaTires',
-      'https://www.tiktok.com/@mrgomatires',
+      'https://www.tiktok.com/@mrgomatiresofficial',
     ],
     address: {
       '@type': 'PostalAddress',
