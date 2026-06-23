@@ -131,13 +131,14 @@ export default function AboutUs() {
               <span className="text-gray-500">Driven by trust.</span>
             </h2>
             <div className="space-y-5 text-gray-400 leading-relaxed text-lg">
+              {/* Hidden until confirmed — founding year & founder name. Restore once confirmed:
               <p>
-                Founded in{' '}
-                <span className="text-yellow-400 font-semibold">[YEAR]</span> by{' '}
+                Founded in <span className="text-yellow-400 font-semibold">[YEAR]</span> by{' '}
                 <span className="text-yellow-400 font-semibold">[FOUNDER NAME]</span>,
                 MrGoma Tires started with a single location and a simple mission:
                 give Miami drivers access to quality tires at honest prices.
               </p>
+              */}
               <p>
                 Today we operate 7 locations across Miami and Orlando, FL — all under
                 the same commitment to quality, transparency, and service that built
@@ -167,7 +168,9 @@ export default function AboutUs() {
                   { label: 'Markets', value: 'Miami & Orlando, FL' },
                   { label: 'Coverage', value: 'Continental United States' },
                   { label: 'Certifications', value: 'ASE National Automotive' },
-                ].map(item => (
+                ]
+                  .filter(item => !item.value.startsWith('[')) // hide pending-confirmation rows
+                  .map(item => (
                   <div key={item.label} className="flex justify-between items-baseline border-b border-white/6 pb-4 last:border-0 last:pb-0">
                     <span className="text-gray-500 text-sm">{item.label}</span>
                     <span className={`font-semibold text-sm ${item.value.startsWith('[') ? 'text-yellow-400' : 'text-white'}`}>
@@ -206,7 +209,9 @@ export default function AboutUs() {
           </h2>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-px bg-white/8 border border-white/8 rounded-2xl overflow-hidden">
-            {stats.map((stat, i) => (
+            {stats
+              .filter(stat => !stat.value.includes('[')) // hide pending-confirmation stats
+              .map((stat, i) => (
               <div
                 key={stat.label}
                 className="bg-[#0a0a0a] px-8 py-10 group hover:bg-white/[0.03] transition-colors duration-300"
@@ -276,7 +281,9 @@ export default function AboutUs() {
               { label: 'Jomah Trading Inc.', detail: 'Registered trademark holder' },
               { label: 'Miami, FL', detail: 'Headquartered & founded here' },
               { label: 'Since [YEAR]', detail: 'Serving Florida drivers' },
-            ].map(cert => (
+            ]
+              .filter(cert => !cert.label.includes('[')) // hide pending-confirmation certs
+              .map(cert => (
               <div key={cert.label} className="flex flex-col items-center gap-1 text-center">
                 <span className={`font-black text-lg ${cert.label.includes('[') ? 'text-yellow-400' : 'text-white'}`}>
                   {cert.label}
