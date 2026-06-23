@@ -13,6 +13,7 @@ import { FiltersProvider } from '@/app/context/ShowFilterContext';
 import { MenuProvider } from '@/app/context/ShowMenuContext';
 import { CookieConsent } from '@/app/ui/components';
 import GoogleAnalytics from '@/app/ui/components/GoogleAnalytics/GoogleAnalytics';
+import WhatsAppButton from '@/app/ui/components/WhatsAppButton/WhatsAppButton';
 import { locationsData } from '@/app/ui/sections/LocationsSlider/locationsData';
 import {
   buildDefaultMetadata,
@@ -63,6 +64,7 @@ export default function RootLayout({
                       <GoogleAnalytics />
                     </React.Suspense>
                     {children}
+                    <WhatsAppButton />
                     <CookieConsent />
                     <Analytics />
                   </body>
