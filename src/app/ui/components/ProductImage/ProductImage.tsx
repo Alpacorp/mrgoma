@@ -9,6 +9,8 @@ interface ProductImageProps {
     imageSrc: string;
     brand: string;
   };
+  /** Only set on the first 1-2 above-the-fold cards to help LCP. */
+  priority?: boolean;
 }
 
 // URL de imagen por defecto cuando la URL original no es válida
@@ -31,7 +33,7 @@ const isValidUrl = (url: string): boolean => {
   }
 };
 
-const ProductImage: FC<ProductImageProps> = ({ product }) => {
+const ProductImage: FC<ProductImageProps> = ({ product, priority = false }) => {
   const [imgSrc, setImgSrc] = useState<string>(() => {
     return isValidUrl(product.imageSrc) ? product.imageSrc : DEFAULT_IMAGE_URL;
   });
@@ -52,10 +54,10 @@ const ProductImage: FC<ProductImageProps> = ({ product }) => {
         className={`w-full object-contain object-center transition ease-in-out hover:scale-105 duration-300`}
         alt={product.imageAlt || product.brand || 'Tire image'}
         src={imgSrc}
-        title={product.imageAlt || product.brand || 'Tire image'}
-        aria-label={product.imageAlt || product.brand || 'Tire image'}
         onError={handleImageError}
-        priority
+        priority={priority}
+        loading={priority ? undefined : 'lazy'}
+        sizes="(min-width: 768px) 256px, (min-width: 640px) 208px, 100vw"
         width={500}
         height={500}
       />

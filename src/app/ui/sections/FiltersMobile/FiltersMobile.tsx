@@ -60,6 +60,7 @@ const FiltersMobile: FC<{
       <Dialog
         open={showFilter}
         onCloseAction={() => setShowFilter(false)}
+        ariaLabelledby="filters-mobile-title"
         className="relative z-40 lg:hidden"
       >
         <DialogBackdrop
@@ -80,13 +81,16 @@ const FiltersMobile: FC<{
             className="relative mr-auto flex h-full w-full max-w-xs transform flex-col overflow-y-auto bg-gray-50 py-4 pb-12 shadow-xl transition duration-300 ease-in-out"
           >
             <div className="flex items-center justify-between px-4">
-              <h2 className="text-lg font-medium text-gray-900">Additional Filters</h2>
+              <h2 id="filters-mobile-title" className="text-lg font-medium text-gray-900">
+                Additional Filters
+              </h2>
               <button
                 type="button"
                 onClick={() => setShowFilter(false)}
+                aria-label="Close filters"
                 className="-mr-2 flex h-10 w-10 items-center justify-center rounded-md bg-white p-2 text-green-primary"
               >
-                <XMarkIcon className="h-6 w-6" />
+                <XMarkIcon className="h-6 w-6" aria-hidden />
               </button>
             </div>
             <div className="px-4 mt-2 mb-2">

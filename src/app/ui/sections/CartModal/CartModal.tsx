@@ -21,6 +21,7 @@ const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
     <Dialog
       open={showCartModal}
       onCloseAction={closeModal}
+      ariaLabelledby="cart-modal-title"
       className="fixed inset-0 z-50 overflow-y-auto animate-slide-in-right"
     >
       <DialogBackdrop
@@ -35,7 +36,9 @@ const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
           <div className="flex flex-col h-full animate-slide-in-right">
             {/* Header */}
             <div className="sticky top-0 z-10 flex items-center justify-between p-4 border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/75">
-              <h2 className="text-lg font-semibold text-gray-900">Your Cart</h2>
+              <h2 id="cart-modal-title" className="text-lg font-semibold text-gray-900">
+                Your Cart
+              </h2>
               <button
                 type="button"
                 className="text-gray-400 hover:text-gray-600 cursor-pointer rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
@@ -95,7 +98,7 @@ const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
                             <p className="text-gray-500">Qty {item.quantity}</p>
                             <button
                               type="button"
-                              className="font-medium text-gray-500 hover:text-red-600 transition-colors cursor-pointer"
+                              className="font-medium text-gray-500 hover:text-red-600 transition-colors cursor-pointer inline-flex items-center min-h-[44px] py-2 -my-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
                               onClick={() => removeFromCart(item.id)}
                               aria-label={`Remove ${item.name} from cart`}
                             >

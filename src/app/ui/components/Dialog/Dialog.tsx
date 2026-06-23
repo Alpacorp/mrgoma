@@ -25,14 +25,26 @@ interface DialogProps {
   open: boolean;
   onCloseAction: () => void;
   className?: string;
+  /** id of the visible heading that labels the dialog (preferred). */
+  ariaLabelledby?: string;
+  /** Fallback accessible name when there is no visible heading to reference. */
+  ariaLabel?: string;
 }
+
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export const Dialog: React.FC<DialogProps> = ({
   children,
   open,
   onCloseAction,
   className = '',
+  ariaLabelledby,
+  ariaLabel,
 }) => {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previouslyFocused = useRef<HTMLElement | null>(null);
+
   // Handle an ESC key to close a dialog
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -63,11 +75,64 @@ export const Dialog: React.FC<DialogProps> = ({
     };
   }, [open]);
 
+  // Move focus into the dialog on open, trap Tab inside it, and restore focus on close.
+  useEffect(() => {
+    if (!open) return;
+
+    const root = dialogRef.current;
+    if (!root) return;
+
+    previouslyFocused.current = document.activeElement as HTMLElement | null;
+
+    const getFocusable = () =>
+      Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
+        el => el.offsetParent !== null || el === document.activeElement
+      );
+
+    // Initial focus: first focusable element, falling back to the dialog itself.
+    const focusables = getFocusable();
+    (focusables[0] ?? root).focus({ preventScroll: true });
+
+    const handleTab = (event: KeyboardEvent) => {
+      if (event.key !== 'Tab') return;
+      const items = getFocusable();
+      if (items.length === 0) {
+        event.preventDefault();
+        root.focus({ preventScroll: true });
+        return;
+      }
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      if (event.shiftKey && (active === first || active === root)) {
+        event.preventDefault();
+        last.focus({ preventScroll: true });
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus({ preventScroll: true });
+      }
+    };
+
+    document.addEventListener('keydown', handleTab);
+    return () => {
+      document.removeEventListener('keydown', handleTab);
+      previouslyFocused.current?.focus?.({ preventScroll: true });
+    };
+  }, [open]);
+
   if (!open) return null;
 
   return (
     <DialogContext.Provider value={{ isOpen: open, close: onCloseAction }}>
-      <div className={className} role="dialog" aria-modal="true">
+      <div
+        ref={dialogRef}
+        className={className}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={ariaLabelledby}
+        aria-label={ariaLabelledby ? undefined : ariaLabel}
+        tabIndex={-1}
+      >
         {children}
       </div>
     </DialogContext.Provider>
@@ -103,6 +168,7 @@ export const DialogBackdrop: React.FC<DialogBackdropProps> = ({
       className={`${className} ${!transition ? 'opacity-0' : 'opacity-40'} transition-opacity duration-300`}
       onClick={handleClick}
       data-closed={!transition}
+      aria-hidden="true"
     />
   );
 };

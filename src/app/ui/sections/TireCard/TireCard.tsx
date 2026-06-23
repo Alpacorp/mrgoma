@@ -56,7 +56,7 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
 
   return (
     <ul className="mt-3 space-y-6">
-      {products.map((product: any) => {
+      {products.map((product: any, index: number) => {
         const productInCart = isInCart(product.id);
         const isSold =
           typeof product?.status === 'string' && product.status.trim().toLowerCase() === 'sold';
@@ -102,7 +102,7 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
               {/* ── Image ── */}
               <Link href={detailUrl} className="block bg-gray-50 sm:w-52 md:w-64 shrink-0 overflow-hidden" tabIndex={-1}>
                 <div className="relative h-48 sm:h-full sm:min-h-[180px] group-hover:scale-105 transition-transform duration-300 origin-center">
-                  <ProductImage product={product} />
+                  <ProductImage product={product} priority={index < 2} />
                 </div>
               </Link>
 
@@ -110,7 +110,7 @@ const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) 
               <div className="flex-1 min-w-0 flex flex-col px-4 pt-3 pb-4 sm:px-6 sm:py-5 gap-2.5 sm:gap-2">
                 {/* Desktop: meta row + CTA */}
                 <div className="hidden sm:flex items-start justify-between gap-3">
-                  <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider pt-0.5">
+                  <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider pt-0.5">
                     Single · Free Shipping
                   </span>
                   <div className="shrink-0">

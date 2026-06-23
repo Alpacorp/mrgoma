@@ -2,6 +2,7 @@
 
 import React, { FC, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 
+import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { useGenerateFixedPagination } from '@/app/hooks/useGeneratePagination';
@@ -15,7 +16,6 @@ import {
   ResultsSkeleton,
   TireResults,
 } from '@/app/ui/components';
-import AiChat from '@/app/ui/components/AiChat/AiChat';
 import { FiltersMobile, TopFilters, PromoBanner } from '@/app/ui/sections';
 import { BrowseFilters } from '@/app/(shop)/tires/container/BrowseFilters/BrowseFilters';
 import { promoBannerConfig } from '@/app/ui/sections/PromoBanner/config/promoBanner';
@@ -28,6 +28,9 @@ import {
 import { createPaginatedResponse } from '@/app/utils/transformTireData';
 
 import { PaginatedTiresResponse } from '../utils/fetchTiresServer';
+
+// Lazy-loaded: keeps the AI chat bundle out of the initial tires-page payload.
+const AiChat = dynamic(() => import('@/app/ui/components/AiChat/AiChat'), { ssr: false });
 
 interface SearchResultsProps {
   initialData?: PaginatedTiresResponse;
@@ -165,6 +168,12 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
 
   const handleUpScroll = useCallback(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Move screen-reader focus back to the results heading so context isn't lost.
+    const heading = document.getElementById('products-heading');
+    if (heading) {
+      heading.setAttribute('tabindex', '-1');
+      heading.focus({ preventScroll: true });
+    }
   }, []);
 
   const handleNextPage = useCallback(() => {
@@ -323,9 +332,9 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
         <BrowseFilters brands={brands} />
 
         <div>
-          <main className="bg-gray-50 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative h-full">
+          <div className="bg-gray-50 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative h-full">
             {/* Primary page heading for SEO and accessibility */}
-            <h1 className="sr-only">
+            <h1 id="products-heading" className="sr-only">
               {getTireSize()
                 ? `Used & New Tires in Miami – Size ${getTireSize()}`
                 : 'Used & New Tires in Miami'}
@@ -386,7 +395,7 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
                                               aria-label="First page"
                                               title="First page"
                                               aria-disabled={page === 1}
-                                              className={`${page === 1 ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200' : 'cursor-pointer bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'} px-3 py-1.5 h-min rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`}
+                                              className={`${page === 1 ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200' : 'cursor-pointer bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'} px-3 py-2 h-min min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`}
                                             >
                                               &lt;&lt;
                                             </button>
@@ -396,7 +405,7 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
                                               aria-label="Previous page"
                                               title="Previous page"
                                               aria-disabled={page === 1}
-                                              className={`${page === 1 ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200' : 'cursor-pointer bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'} px-3 py-1.5 h-min rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`}
+                                              className={`${page === 1 ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200' : 'cursor-pointer bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'} px-3 py-2 h-min min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`}
                                             >
                                               &lt;
                                             </button>
@@ -409,7 +418,7 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
                                                 aria-current={
                                                   pageNumber === page ? 'page' : undefined
                                                 }
-                                                className={`px-3 py-1.5 cursor-pointer h-min rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
+                                                className={`px-3 py-2 cursor-pointer h-min min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
                                                   pageNumber === page
                                                     ? 'bg-green-600 text-white border-green-600'
                                                     : 'bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'
@@ -433,7 +442,7 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
                                               aria-label="Next page"
                                               title="Next page"
                                               aria-disabled={page === totalPages}
-                                              className={`${page === totalPages ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200' : 'cursor-pointer bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'} px-3 py-1.5 h-min rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`}
+                                              className={`${page === totalPages ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200' : 'cursor-pointer bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'} px-3 py-2 h-min min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`}
                                             >
                                               &gt;
                                             </button>
@@ -443,7 +452,7 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
                                               aria-label="Last page"
                                               title="Last page"
                                               aria-disabled={page === totalPages}
-                                              className={`${page === totalPages ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200' : 'cursor-pointer bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'} px-3 py-1.5 h-min rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`}
+                                              className={`${page === totalPages ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200' : 'cursor-pointer bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'} px-3 py-2 h-min min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`}
                                             >
                                               &gt;&gt;
                                             </button>
@@ -495,7 +504,7 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
                 </div>
               </div>
             </section>
-          </main>
+          </div>
         </div>
         <div className="block lg:hidden">
           <CollapsibleSearchBar redirectBasePath={'tires'} />

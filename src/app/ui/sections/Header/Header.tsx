@@ -94,10 +94,7 @@ const Header: FC<{ compact?: boolean }> = ({ compact = false }): ReactNode => {
                           <polyline points="6 9 12 15 18 9" />
                         </svg>
                       </Link>
-                      <div
-                        className="absolute left-1/2 -translate-x-1/2 top-full pt-3 w-[480px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
-                        role="menu"
-                      >
+                      <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 w-[480px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                         <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl p-6 grid grid-cols-2 gap-6">
                           <div>
                             <p className="text-[#9dfb40] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">Miami, FL</p>
