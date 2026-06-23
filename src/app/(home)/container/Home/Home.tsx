@@ -162,7 +162,7 @@ const Home: FC = () => {
                         alt=""
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                        className="object-cover -z-10 opacity-70 group-hover:opacity-90 group-hover:scale-105 transition-all duration-500"
+                        className="object-cover -z-10 opacity-70 transform-gpu transition-[scale,opacity] duration-500 ease-out group-hover:opacity-90 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/70 to-[#0a0a0a]/20" aria-hidden="true" />
                     </>

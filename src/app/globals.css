@@ -7,13 +7,17 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  :root {
+    scroll-behavior: auto;
+  }
+
+  /* Tame decorative / looping animations (ping, bounce, etc.) but keep
+     short hover transitions (color/scale) so the UI still feels smooth. */
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
 }
 
