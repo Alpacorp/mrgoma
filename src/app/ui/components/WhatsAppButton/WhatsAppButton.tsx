@@ -2,9 +2,10 @@
 
 import { usePathname } from 'next/navigation';
 
-// Reuse the same number used across the site (Contact, Services, AI chat).
-// Overridable via NEXT_PUBLIC_WHATSAPP_NUMBER (digits only, with country code).
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '14073644016';
+// Public contact line: +1 (407) 364-4016 — the same number used across the site
+// (Contact, Services, AI chat). Hardcoded on purpose: NEXT_PUBLIC_WHATSAPP_NUMBER
+// drives the checkout order flow and may point to a different number.
+const WHATSAPP_NUMBER = '14073644016';
 const PREFILLED_MESSAGE = 'Hi! I have a question about tires.';
 
 // Internal admin areas where the public WhatsApp button must NOT appear.
