@@ -17,6 +17,7 @@ export default defineConfig({
         'src/app/hooks/**',
         'src/app/api/tire/**',
         'src/app/api/ranges/**',
+        'src/app/**/instant-quote/**',
         'src/app/ui/components/BrandHeadline/**',
         'src/app/ui/components/Dialog/**',
         'src/app/ui/components/HamburgerMenu/**',
