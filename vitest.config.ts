@@ -15,6 +15,8 @@ export default defineConfig({
       include: [
         'src/app/utils/**',
         'src/app/hooks/**',
+        'src/app/api/tire/**',
+        'src/app/api/ranges/**',
         'src/app/ui/components/BrandHeadline/**',
         'src/app/ui/components/Dialog/**',
         'src/app/ui/components/HamburgerMenu/**',
