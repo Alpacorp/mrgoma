@@ -15,7 +15,7 @@ async function getOrdenNumberByOrderId(orderId: number): Promise<number | null> 
   request.input('orderId', Int, orderId);
   const sql = `SELECT TOP 1 OrdenNumber FROM dbo.SC_Order WHERE Id = @orderId`;
   const result = await request.query(sql);
-  const row = result.recordset?.[0] as any;
+  const row = result.recordset?.[0] as { OrdenNumber?: number | string } | undefined;
   const ordenNumber = row?.OrdenNumber;
   const parsed =
     typeof ordenNumber === 'number' ? ordenNumber : parseInt(String(ordenNumber ?? ''), 10);
@@ -93,7 +93,7 @@ export async function insertOrderDetailsByOrderId(
     return { inserted: rows.length, orderNumber };
   } catch (err) {
     await transaction.rollback();
-    logger.error('Failed to insert SC_OrderDetail rows', err as any);
+    logger.error('Failed to insert SC_OrderDetail rows', err);
     throw err;
   }
 }

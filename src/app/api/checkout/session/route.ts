@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import type Stripe from 'stripe';
+
 import { insertOrderDetailsByOrderId } from '@/repositories/orderDetailsRepository';
 import { getOrderByStripeSessionId, insertOrder } from '@/repositories/ordersRepository';
 import { fetchTiresByIds, setTiresConditionIdToSoldByIds } from '@/repositories/tiresRepository';
@@ -30,8 +32,10 @@ export async function GET(req: NextRequest) {
     const StripeMod = await import('stripe');
     const Stripe = StripeMod.default;
     const stripe = new Stripe(secretKey, {
+      // Pinned intentionally; cast through unknown since the SDK type only
+      // accepts its own latest apiVersion literal.
       apiVersion: '2024-11-20.acacia',
-    } as any);
+    } as unknown as Stripe.StripeConfig);
 
     const checkoutTestMode = ['true','1','yes','on'].includes(
       String(process.env.CHECKOUT_TEST_MODE || process.env.TEST_MODE || '').toLowerCase()
@@ -58,12 +62,12 @@ export async function GET(req: NextRequest) {
         expand: ['latest_charge'],
       });
 
-      const latestCharge: any = (paymentIntent as any).latest_charge;
+      const latestCharge = paymentIntent.latest_charge;
       if (latestCharge && typeof latestCharge === 'object') {
         receiptUrl = latestCharge.receipt_url || null;
         if (latestCharge.payment_method_details) {
           // Try to infer a user-friendly payment method label
-          const pmd = latestCharge.payment_method_details as any;
+          const pmd = latestCharge.payment_method_details;
           paymentMethodType = pmd.type || (pmd.card ? 'card' : null);
         }
       }
@@ -71,16 +75,19 @@ export async function GET(req: NextRequest) {
 
     // Build a safe response object
     const currency = (session.currency || 'usd').toUpperCase();
-    const items = (lineItems.data || []).map((li: any) => ({
-      id: li.id,
-      productId: li.price?.product?.metadata?.productId || li.price?.product?.id || null,
-      condition: li.price?.product?.metadata?.condition || null,
-      description: li.description || li.price?.product?.name || 'Item',
-      quantity: li.quantity || 1,
-      amount_subtotal: li.amount_subtotal || 0,
-      amount_total: li.amount_total || 0,
-      currency: (li.currency || currency).toUpperCase(),
-    }));
+    const items = (lineItems.data || []).map(li => {
+      const product = li.price?.product as Stripe.Product | undefined;
+      return {
+        id: li.id,
+        productId: product?.metadata?.productId || product?.id || null,
+        condition: product?.metadata?.condition || null,
+        description: li.description || product?.name || 'Item',
+        quantity: li.quantity || 1,
+        amount_subtotal: li.amount_subtotal || 0,
+        amount_total: li.amount_total || 0,
+        currency: (li.currency || currency).toUpperCase(),
+      };
+    });
 
     // If payment is completed, register an order in SC_Order (do not write to views)
     let updated_sold = 0; // updated to reflect the number of tires updated in dbo.Tires
@@ -108,7 +115,12 @@ export async function GET(req: NextRequest) {
         } else if (productIds.length > 0) {
           const tires = await fetchTiresByIds(productIds);
           const uniqueVaults = Array.from(
-            new Set(tires.map((t: any) => t.VaultId).filter(Boolean).map(String))
+            new Set(
+              tires
+                .map(t => (t as { VaultId?: string | number }).VaultId)
+                .filter(Boolean)
+                .map(String)
+            )
           );
           if (uniqueVaults.length === 1) store = uniqueVaults[0];
           else if (uniqueVaults.length > 1) store = 'MIXED';
@@ -145,13 +157,13 @@ export async function GET(req: NextRequest) {
           // Insert SC_OrderDetail rows: one per tire unit purchased
           try {
             const detailItems = (lineItems.data || [])
-              .map((li: any) => {
-                const productId =
-                  li.price?.product?.metadata?.productId || li.price?.product?.id || null;
+              .map(li => {
+                const product = li.price?.product as Stripe.Product | undefined;
+                const productId = product?.metadata?.productId || product?.id || null;
                 const quantity = li.quantity || 1;
                 const unitAmountCents =
-                  li.price && (li.price as any).unit_amount != null
-                    ? Number((li.price as any).unit_amount)
+                  li.price && li.price.unit_amount != null
+                    ? Number(li.price.unit_amount)
                     : li.amount_total && quantity
                       ? Math.round(Number(li.amount_total) / Number(quantity))
                       : null;
@@ -175,7 +187,7 @@ export async function GET(req: NextRequest) {
               logger.warn('No valid line items to insert into SC_OrderDetail');
             }
           } catch (err) {
-            logger.error('Failed to insert SC_OrderDetail after payment', err as any);
+            logger.error('Failed to insert SC_OrderDetail after payment', err);
           }
 
           // Update Tires.ConditionId to 7 for purchased TireIds
@@ -186,26 +198,24 @@ export async function GET(req: NextRequest) {
               logger.info(`Updated dbo.Tires ConditionId=7 for ${updated_sold} tire(s)`);
             }
           } catch (err) {
-            logger.error('Failed to update dbo.Tires ConditionId after payment', err as any);
+            logger.error('Failed to update dbo.Tires ConditionId after payment', err);
           }
           } // end else (new order)
         }
       }
     } catch (err) {
-      logger.error('Failed to insert SC_Order after payment', err as any);
+      logger.error('Failed to insert SC_Order after payment', err);
       // Do not fail the endpoint; still return the session details
     }
 
     // Determine shipping total (in cents) from session fields
     const shipping_total_cents =
-      (session as any)?.shipping_cost?.amount_total ??
-      (session as any)?.total_details?.amount_shipping ??
-      0;
+      session.shipping_cost?.amount_total ?? session.total_details?.amount_shipping ?? 0;
 
     const payload = {
       id: session.id,
       created: session.created ? new Date(session.created * 1000).toISOString() : null,
-      customer_email: (session.customer_details as any)?.email || session.customer_email || null,
+      customer_email: session.customer_details?.email || session.customer_email || null,
       payment_status: session.payment_status,
       amount_total: session.amount_total || 0,
       currency,
@@ -220,9 +230,9 @@ export async function GET(req: NextRequest) {
     } as const;
 
     return NextResponse.json(payload, { status: 200 });
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Error fetching Stripe session details:', e);
-    const message = e?.message || 'Unexpected server error';
+    const message = e instanceof Error ? e.message : 'Unexpected server error';
     return NextResponse.json({ message }, { status: 500 });
   }
 }
