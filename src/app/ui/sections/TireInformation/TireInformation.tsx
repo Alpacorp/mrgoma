@@ -20,8 +20,7 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
 
   // Determine availability from DB Condition (exposed as status)
   const isSold =
-    typeof (singleTire as any)?.status === 'string' &&
-    ((singleTire as any).status as string).trim().toLowerCase() === 'sold';
+    typeof singleTire.status === 'string' && singleTire.status.trim().toLowerCase() === 'sold';
 
   // Extract tire size from name format: "(CODE) | BRAND | SIZE"
   const nameParts = singleTire.name.split(' | ');
@@ -51,9 +50,9 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
     speedIndex: findDetail('Speed Index'),
   });
 
-  const handleAddToCart = (event: SyntheticEvent, product: any) => {
+  const handleAddToCart = (event: SyntheticEvent) => {
     event.preventDefault();
-    addToCart(product);
+    addToCart(singleTire);
   };
 
   return (

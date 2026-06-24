@@ -11,7 +11,7 @@ interface ProductImageProps {
   isHovered?: boolean;
 }
 
-const isValidNextImageSrc = (src: any): src is string => {
+const isValidNextImageSrc = (src: unknown): src is string => {
   if (typeof src !== 'string') return false;
   const trimmed = src.trim();
   if (!trimmed || trimmed.toUpperCase() === 'N/A') return false;

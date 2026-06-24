@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 
+import { TransformedTire } from '@/app/interfaces/tires';
 import { TireCard } from '@/app/ui/sections';
 
 interface TireGridProps {
-  tires: any[];
+  tires: TransformedTire[];
   totalCount: number;
   viewAllHref: string;
   viewAllLabel?: string;

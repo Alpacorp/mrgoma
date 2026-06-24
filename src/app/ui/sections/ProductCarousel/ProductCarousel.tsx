@@ -107,7 +107,7 @@ const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
               <ProductCondition condition={singleTire.condition} />
             </div>
             {(() => {
-              const statusVal = (singleTire as any)?.status;
+              const statusVal = singleTire.status;
               const isSold =
                 typeof statusVal === 'string' && statusVal.trim().toLowerCase() === 'sold';
               return !isSold ? (

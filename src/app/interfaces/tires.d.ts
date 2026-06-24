@@ -96,7 +96,7 @@ export interface SingleTire {
 export interface TireFeature {
   name: string;
   value: string;
-  icon: null | React.ReactNode;
+  icon?: null | React.ReactNode;
 }
 
 export interface TransformedTire {
@@ -110,6 +110,7 @@ export interface TransformedTire {
   brand: string;
   brandId: number;
   condition: string;
+  status?: string;
   features: TireFeature[];
 }
 

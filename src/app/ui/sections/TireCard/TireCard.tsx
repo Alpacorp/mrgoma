@@ -3,11 +3,12 @@ import { FC, SyntheticEvent } from 'react';
 import Link from 'next/link';
 
 import { useCart } from '@/app/context/CartContext';
+import { TransformedTire } from '@/app/interfaces/tires';
 import { BrandImage, FreeShippingBadge, ProductImage, StockBadge } from '@/app/ui/components';
 import { buildTireSlug, slugify } from '@/app/utils/tireSlug';
 
 interface TireCardProps {
-  products: any;
+  products: TransformedTire[];
 }
 
 const SPEC_KEYS = ['Remaining life', 'Tread depth', 'Patched', 'Run Flat'] as const;
@@ -46,17 +47,17 @@ const CartIcon = () => (
   </svg>
 );
 
-const TireCard: FC<TireCardProps> = ({ products }: Readonly<{ products: any }>) => {
+const TireCard: FC<TireCardProps> = ({ products }) => {
   const { addToCart, isInCart } = useCart();
 
-  const handleAddToCart = (event: SyntheticEvent, product: any) => {
+  const handleAddToCart = (event: SyntheticEvent, product: TransformedTire) => {
     event.preventDefault();
     addToCart(product);
   };
 
   return (
     <ul className="mt-3 space-y-6">
-      {products.map((product: any, index: number) => {
+      {products.map((product: TransformedTire, index: number) => {
         const productInCart = isInCart(product.id);
         const isSold =
           typeof product?.status === 'string' && product.status.trim().toLowerCase() === 'sold';
