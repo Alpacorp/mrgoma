@@ -101,7 +101,7 @@ export const locationsConfig: LocationConfig[] = [
     phone: '(407)-203-3912',
     tel: 'tel:+14072033912',
     mapLink: 'https://maps.app.goo.gl/n32Upo4RiH9PWJVA7',
-    neighborhoods: ['Midtown Orlando', 'Wintergarden', 'West Orlando', 'Pine Hills'],
+    neighborhoods: ['Winter Garden', 'Metrowest', 'West Orlando'],
     city: 'Orlando',
     metaTitle: 'MrGoma Tires Orlando West Colonial | Used & New Tires on W Colonial Dr',
     metaDescription:
