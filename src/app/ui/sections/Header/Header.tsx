@@ -78,8 +78,12 @@ const Header: FC<{ compact?: boolean }> = ({ compact = false }): ReactNode => {
                   (pathname === '/' && activeHash === item.href.replace('/', ''));
 
                 if (item.children?.length) {
-                  const miamiKids = item.children.filter(c => c.name.startsWith('Miami'));
-                  const orlandoKids = item.children.filter(c => c.name.startsWith('Orlando'));
+                  const miamiKids = item.children.filter(c =>
+                    c.href.includes('/locations/miami-')
+                  );
+                  const orlandoKids = item.children.filter(c =>
+                    c.href.includes('/locations/orlando-')
+                  );
                   return (
                     <div key={item.name} className="relative group">
                       <Link
@@ -105,7 +109,7 @@ const Header: FC<{ compact?: boolean }> = ({ compact = false }): ReactNode => {
                                     href={kid.href}
                                     className="block text-sm text-gray-300 hover:text-[#9dfb40] hover:translate-x-0.5 transition-all duration-150"
                                   >
-                                    {kid.name.replace('Miami – ', '')}
+                                    {kid.name}
                                   </Link>
                                 </li>
                               ))}
@@ -120,7 +124,7 @@ const Header: FC<{ compact?: boolean }> = ({ compact = false }): ReactNode => {
                                     href={kid.href}
                                     className="block text-sm text-gray-300 hover:text-[#9dfb40] hover:translate-x-0.5 transition-all duration-150"
                                   >
-                                    {kid.name.replace('Orlando – ', '')}
+                                    {kid.name}
                                   </Link>
                                 </li>
                               ))}

@@ -14,13 +14,13 @@ const SERVICE_IMAGES: Record<string, string> = {
 };
 
 const locationNames = [
-  'Miami – South (US-1)',
-  'Miami – Airport',
-  'Miami – North (441)',
-  'Miami – Coral Gables',
-  'Miami – Hialeah',
-  'Orlando – West Colonial',
-  'Orlando – Semoran',
+  'Cutler Bay',
+  'Miami Airport',
+  'Miami Gardens',
+  'Coral Gables',
+  'Hialeah',
+  'Orlando West Colonial',
+  'East Orlando',
 ];
 
 interface Props {

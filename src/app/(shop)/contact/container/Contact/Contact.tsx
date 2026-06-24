@@ -3,7 +3,7 @@
 const locations = [
   {
     id: '01',
-    name: 'Miami – South (US-1)',
+    name: 'Cutler Bay',
     address: '18200 S Dixie Hwy, Miami, FL 33157',
     phone: '(305)-278-4632',
     tel: 'tel:+13052784632',
@@ -12,7 +12,7 @@ const locations = [
   },
   {
     id: '02',
-    name: 'Miami – Airport',
+    name: 'Miami Airport',
     address: '3251 NW 27th Ave, Miami, FL 33142',
     phone: '(305)-456-9588',
     tel: 'tel:+13054569588',
@@ -21,7 +21,7 @@ const locations = [
   },
   {
     id: '03',
-    name: 'Miami – North (441)',
+    name: 'Miami Gardens',
     address: '20282 NW 2nd Ave, Miami, FL 33169',
     phone: '(305)-770-1154',
     tel: 'tel:+13057701154',
@@ -30,7 +30,7 @@ const locations = [
   },
   {
     id: '04',
-    name: 'Miami – Coral Gables',
+    name: 'Coral Gables',
     address: '900 South Le Jeune Rd, Miami, FL 33134',
     phone: '(305)-713-1258',
     tel: 'tel:+13057131258',
@@ -39,7 +39,7 @@ const locations = [
   },
   {
     id: '05',
-    name: 'Miami – Hialeah',
+    name: 'Hialeah',
     address: '4040 E 10th Ct, Hialeah, FL 33013',
     phone: '(305)-836-4200',
     tel: 'tel:+13058364200',
@@ -48,16 +48,16 @@ const locations = [
   },
   {
     id: '06',
-    name: 'Orlando – West Colonial',
+    name: 'Orlando West Colonial',
     address: '4400 W Colonial Dr, Orlando, FL 32808',
     phone: '(407)-203-3912',
     tel: 'tel:+14072033912',
     map: 'https://maps.app.goo.gl/n32Upo4RiH9PWJVA7',
-    area: 'Midtown · Wintergarden · West Orlando',
+    area: 'Winter Garden · Metrowest · West Orlando',
   },
   {
     id: '07',
-    name: 'Orlando – Semoran',
+    name: 'East Orlando',
     address: '575 N Semoran Blvd, Orlando, FL 32807',
     phone: '(407)-282-3100',
     tel: 'tel:+14072823100',
