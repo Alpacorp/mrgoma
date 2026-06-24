@@ -24,13 +24,14 @@ jobs:
           node-version: 22
           cache: npm
 
-      # The lockfile is generated with npm 11; match it so `npm ci` doesn't
-      # report a (false) out-of-sync error with the npm bundled in Node.
-      - name: Pin npm to v11
-        run: npm install -g npm@11
-
+      # Use `npm install`, not `npm ci`: a known npm bug makes `npm ci` strict
+      # lockfile validation fail on Linux for wasm bundled deps (@emnapi/* via
+      # @napi-rs/wasm-runtime) when the lockfile was generated on Windows. It
+      # reports a different @emnapi/* package as "Missing" on each run. `npm
+      # install` resolves the tree correctly per-platform while still honoring
+      # the committed lockfile, and the build stays reproducible enough for CI.
       - name: Install dependencies
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       - name: Lint
         run: npx eslint "src/**/*.{ts,tsx}"
