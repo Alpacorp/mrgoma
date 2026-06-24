@@ -5,6 +5,7 @@ import React, { FC, Suspense, useCallback, useEffect, useRef, useState } from 'r
 import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+import { BrowseFilters } from '@/app/(shop)/tires/container/BrowseFilters/BrowseFilters';
 import { useGenerateFixedPagination } from '@/app/hooks/useGeneratePagination';
 import { TiresData } from '@/app/interfaces/tires';
 import {
@@ -17,7 +18,6 @@ import {
   TireResults,
 } from '@/app/ui/components';
 import { FiltersMobile, TopFilters, PromoBanner } from '@/app/ui/sections';
-import { BrowseFilters } from '@/app/(shop)/tires/container/BrowseFilters/BrowseFilters';
 import { promoBannerConfig } from '@/app/ui/sections/PromoBanner/config/promoBanner';
 import {
   DEFAULT_PAGE,

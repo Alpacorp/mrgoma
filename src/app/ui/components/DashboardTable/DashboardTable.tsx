@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useCallback } from 'react';
 
+import { useSearchParams } from 'next/navigation';
+
 import {
   ColumnDef,
   flexRender,
@@ -10,7 +12,6 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
-import { useSearchParams } from 'next/navigation';
 
 import { useCart } from '@/app/context/CartContext';
 import { DocumentRecord } from '@/repositories/tiresRepository';

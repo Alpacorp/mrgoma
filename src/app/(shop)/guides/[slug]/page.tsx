@@ -1,7 +1,7 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import type { Metadata } from 'next';
-import Link from 'next/link';
 
 import { getGuideBySlug, guides, type GuideSection } from '@/app/(shop)/guides/guidesConfig';
 import { buildBreadcrumbJsonLd, canonical } from '@/app/utils/seo';

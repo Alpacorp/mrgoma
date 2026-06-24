@@ -1,8 +1,9 @@
-import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { canonical } from '@/app/utils/seo';
+import type { Metadata } from 'next';
+
 import { locationsConfig } from '@/app/(shop)/locations/locationsConfig';
+import { canonical } from '@/app/utils/seo';
 
 export const metadata: Metadata = {
   title: 'Tire Shop Locations | Miami & Orlando, FL | MrGoma Tires',

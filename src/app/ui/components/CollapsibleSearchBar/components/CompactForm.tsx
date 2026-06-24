@@ -4,9 +4,9 @@ import React from 'react';
 
 import { EditIcon, XMarkIcon } from '@/app/ui/components/Icons/Icons';
 
+import { TireSelector } from './TireSelector';
 import { TireFilters } from '../hooks/useTireSearch';
 
-import { TireSelector } from './TireSelector';
 
 interface CompactFormProps {
   selectedFilters: TireFilters;

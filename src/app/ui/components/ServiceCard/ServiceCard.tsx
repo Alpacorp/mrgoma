@@ -1,8 +1,9 @@
 'use client';
 
+import { useState } from 'react';
+
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
 
 import { ServiceCardProps } from '@/app/ui/components/ServiceCard/service';
 import { ServiceIcon } from '@/app/ui/components/ServiceCard/ServiceIcon';

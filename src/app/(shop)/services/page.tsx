@@ -1,9 +1,11 @@
-import type { Metadata } from 'next';
 import type { ReactElement } from 'react';
+
 import Link from 'next/link';
 
-import { canonical } from '@/app/utils/seo';
+import type { Metadata } from 'next';
+
 import { servicesConfig } from '@/app/(shop)/services/servicesConfig';
+import { canonical } from '@/app/utils/seo';
 
 export const metadata: Metadata = {
   title: 'Auto Services in Miami & Orlando | MrGoma Tires',

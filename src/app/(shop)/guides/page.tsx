@@ -1,8 +1,9 @@
-import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { canonical } from '@/app/utils/seo';
+import type { Metadata } from 'next';
+
 import { guides } from '@/app/(shop)/guides/guidesConfig';
+import { canonical } from '@/app/utils/seo';
 
 export const metadata: Metadata = {
   title: 'Tire Guides & Tips | MrGoma Tires',

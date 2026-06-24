@@ -1,12 +1,14 @@
 'use client';
 
-import Image from 'next/image';
 import React, { FC, useContext, useEffect, useRef } from 'react';
+
+import Image from 'next/image';
+
+import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
+import { ArrowsToRight } from '@/app/ui/icons';
 
 import shadow from '#public/assets/images/shadow.webp';
 import tireImage from '#public/assets/images/tireSize.webp';
-import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
-import { ArrowsToRight } from '@/app/ui/icons';
 
 const TireDisplay: FC = () => {
   const imageRef = useRef<HTMLDivElement>(null);
