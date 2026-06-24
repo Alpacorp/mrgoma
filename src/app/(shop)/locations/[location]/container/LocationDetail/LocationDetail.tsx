@@ -2,16 +2,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { LocationConfig } from '@/app/(shop)/locations/locationsConfig';
 
-const LOCATION_IMAGES: Record<string, string> = {
-  'cutler-bay': '/assets/images/Locations/18200.jpg',
-  'miami-airport': '/assets/images/Locations/3251.webp',
-  'miami-gardens': '/assets/images/Locations/20282.jpg',
-  'coral-gables': '/assets/images/Locations/900.jpg',
-  'hialeah': '/assets/images/Locations/4040.webp',
-  'orlando-west-colonial': '/assets/images/Locations/4400.jpg',
-  'east-orlando': '/assets/images/Locations/575.jpg',
-};
-
 const services = [
   { label: 'Tire Mounting & Balancing', slug: 'tire-mounting-balancing' },
   { label: 'Wheel Alignment', slug: 'wheel-alignment' },
@@ -55,7 +45,7 @@ interface Props {
 }
 
 export default function LocationDetail({ location }: Props) {
-  const heroImage = LOCATION_IMAGES[location.slug];
+  const heroImage = location.image;
 
   return (
     <main className="bg-[#0a0a0a] text-white min-h-screen">

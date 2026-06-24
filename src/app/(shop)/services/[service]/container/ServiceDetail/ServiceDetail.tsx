@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ServiceConfig } from '@/app/(shop)/services/servicesConfig';
+import { locationsConfig } from '@/app/(shop)/locations/locationsConfig';
 
 const SERVICE_IMAGES: Record<string, string> = {
   tire: '/assets/images/bg-service-card.jpg',
@@ -13,15 +14,7 @@ const SERVICE_IMAGES: Record<string, string> = {
   tpms: '/assets/images/tpms.webp',
 };
 
-const locationNames = [
-  'Cutler Bay',
-  'Miami Airport',
-  'Miami Gardens',
-  'Coral Gables',
-  'Hialeah',
-  'Orlando West Colonial',
-  'East Orlando',
-];
+const locationLinks = locationsConfig.map(l => ({ name: l.name, slug: l.slug }));
 
 interface Props {
   service: ServiceConfig;
@@ -176,10 +169,15 @@ export default function ServiceDetail({ service }: Props) {
           <div className="border border-white/8 rounded-2xl p-6">
             <h3 className="font-bold text-white mb-4 text-sm uppercase tracking-widest">Available at</h3>
             <ul className="space-y-2.5">
-              {locationNames.map(loc => (
-                <li key={loc} className="flex items-center gap-2 text-sm text-gray-400">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#9dfb40] shrink-0" />
-                  {loc}
+              {locationLinks.map(loc => (
+                <li key={loc.slug}>
+                  <Link
+                    href={`/locations/${loc.slug}`}
+                    className="flex items-center gap-2 text-sm text-gray-400 hover:text-[#9dfb40] transition-colors"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#9dfb40] shrink-0" />
+                    {loc.name}
+                  </Link>
                 </li>
               ))}
             </ul>

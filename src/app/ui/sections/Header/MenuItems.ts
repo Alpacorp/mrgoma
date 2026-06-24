@@ -1,3 +1,5 @@
+import { locationsConfig } from '@/app/(shop)/locations/locationsConfig';
+
 export interface MenuChild {
   name: string;
   href: string;
@@ -16,15 +18,11 @@ export const menuItems: MenuItem[] = [
   {
     name: 'Locations',
     href: '/locations',
-    children: [
-      { name: 'Cutler Bay', href: '/locations/cutler-bay', city: 'Miami' },
-      { name: 'Miami Airport', href: '/locations/miami-airport', city: 'Miami' },
-      { name: 'Miami Gardens', href: '/locations/miami-gardens', city: 'Miami' },
-      { name: 'Coral Gables', href: '/locations/coral-gables', city: 'Miami' },
-      { name: 'Hialeah', href: '/locations/hialeah', city: 'Miami' },
-      { name: 'Orlando West Colonial', href: '/locations/orlando-west-colonial', city: 'Orlando' },
-      { name: 'East Orlando', href: '/locations/east-orlando', city: 'Orlando' },
-    ],
+    children: locationsConfig.map(l => ({
+      name: l.name,
+      href: `/locations/${l.slug}`,
+      city: l.city,
+    })),
   },
   { name: 'About us', href: '/about-us' },
   { name: 'Guides', href: '/guides' },

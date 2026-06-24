@@ -5,6 +5,10 @@ export interface LocationConfig {
   phone: string;
   tel: string;
   mapLink: string;
+  /** Background image for the home slider card and the location hero. */
+  image: string;
+  /** Short "areas served" tagline shown on the home slider card. */
+  serving: string;
   neighborhoods: string[];
   city: 'Miami' | 'Orlando';
   metaTitle: string;
@@ -21,6 +25,8 @@ export const locationsConfig: LocationConfig[] = [
     phone: '(305)-278-4632',
     tel: 'tel:+13052784632',
     mapLink: 'https://maps.app.goo.gl/RTpygmaN6vMcPxmX8',
+    image: '/assets/images/Locations/18200.jpg',
+    serving: 'Cutler Bay • Palmetto Bay • South Miami • Kendall • Pinecrest',
     neighborhoods: ['Cutler Bay', 'Palmetto Bay', 'South Miami', 'Kendall', 'Pinecrest'],
     city: 'Miami',
     metaTitle: 'MrGoma Tires Cutler Bay | Used & New Tires on S Dixie Hwy',
@@ -37,6 +43,8 @@ export const locationsConfig: LocationConfig[] = [
     phone: '(305)-456-9588',
     tel: 'tel:+13054569588',
     mapLink: 'https://maps.app.goo.gl/1gpRJFveeqs3hM7G9',
+    image: '/assets/images/Locations/3251.webp',
+    serving: 'Allapattah • Midtown • Near Miami Int’l Airport',
     neighborhoods: ['Allapattah', 'Midtown Miami', 'Wynwood', 'Near Miami International Airport'],
     city: 'Miami',
     metaTitle: 'MrGoma Tires Miami Airport | Used & New Tires near MIA',
@@ -53,6 +61,8 @@ export const locationsConfig: LocationConfig[] = [
     phone: '(305)-770-1154',
     tel: 'tel:+13057701154',
     mapLink: 'https://maps.app.goo.gl/G79tY9zNu7ETtru8A',
+    image: '/assets/images/Locations/20282.jpg',
+    serving: 'Miami Gardens • Hollywood • Aventura',
     neighborhoods: ['Miami Gardens', 'Hollywood', 'Aventura', 'Opa-locka', 'North Miami'],
     city: 'Miami',
     metaTitle: 'MrGoma Tires Miami Gardens | Used & New Tires on NW 2nd Ave',
@@ -69,6 +79,8 @@ export const locationsConfig: LocationConfig[] = [
     phone: '(305)-713-1258',
     tel: 'tel:+13057131258',
     mapLink: 'https://maps.app.goo.gl/99HuCuuroqTVZRdz8',
+    image: '/assets/images/Locations/900.jpg',
+    serving: 'Coral Gables • Westchester • Near MIA Airport',
     neighborhoods: ['Coral Gables', 'Westchester', 'West Miami', 'Near Miami International Airport'],
     city: 'Miami',
     metaTitle: 'MrGoma Tires Coral Gables | Used & New Tires on Le Jeune Rd',
@@ -85,6 +97,8 @@ export const locationsConfig: LocationConfig[] = [
     phone: '(305)-836-4200',
     tel: 'tel:+13058364200',
     mapLink: 'https://maps.app.goo.gl/oF6vhCsS7MdikcYX8',
+    image: '/assets/images/Locations/4040.webp',
+    serving: 'Hialeah • Miami Springs • East Hialeah',
     neighborhoods: ['Hialeah', 'Miami Springs', 'East Hialeah', 'Medley'],
     city: 'Miami',
     metaTitle: 'MrGoma Tires Hialeah | Used & New Tires on E 10th Ct',
@@ -101,6 +115,8 @@ export const locationsConfig: LocationConfig[] = [
     phone: '(407)-203-3912',
     tel: 'tel:+14072033912',
     mapLink: 'https://maps.app.goo.gl/n32Upo4RiH9PWJVA7',
+    image: '/assets/images/Locations/4400.jpg',
+    serving: 'Winter Garden • Metrowest • West Orlando',
     neighborhoods: ['Winter Garden', 'Metrowest', 'West Orlando'],
     city: 'Orlando',
     metaTitle: 'MrGoma Tires Orlando West Colonial | Used & New Tires on W Colonial Dr',
@@ -117,6 +133,8 @@ export const locationsConfig: LocationConfig[] = [
     phone: '(407)-282-3100',
     tel: 'tel:+14072823100',
     mapLink: 'https://maps.app.goo.gl/fuDXk1EAKZ5ZAvpu6',
+    image: '/assets/images/Locations/575.jpg',
+    serving: "Azalea Park • Winter Park • East Orlando • Near Orlando Int'l Airport",
     neighborhoods: ['Azalea Park', 'Winter Park', 'East Orlando', 'Near Orlando International Airport'],
     city: 'Orlando',
     metaTitle: 'MrGoma Tires East Orlando | Used & New Tires on N Semoran Blvd',
