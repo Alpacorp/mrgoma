@@ -10,7 +10,7 @@ const locations = locationsConfig.map((l, i) => ({
   phone: l.phone,
   tel: l.tel,
   map: l.mapLink,
-  area: l.serving,
+  area: l.serving.replace(/•/g, '·'),
 }));
 
 const hours = [
