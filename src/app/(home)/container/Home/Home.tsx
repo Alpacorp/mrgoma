@@ -46,8 +46,8 @@ const FEATURED_GUIDES = [
 
 const STATS = [
   { n: '7', label: 'Locations in Miami & Orlando' },
-  { n: '3,600+', label: 'Tires in stock' },
-  { n: '180-day', label: 'Warranty on used tires' },
+  { n: '15,000+', label: 'Tires in stock' },
+  { n: '30-day', label: 'Warranty on used tires' },
   { n: 'Free', label: 'Shipping on every order' },
 ];
 
@@ -257,7 +257,7 @@ const Home: FC = () => {
             >
               <span className="text-amber-400 text-xs font-bold tracking-widest uppercase block mb-3">Used Tires</span>
               <h3 className="text-2xl font-black text-white mb-2 group-hover:text-amber-400 transition-colors">Quality Pre-Owned</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">Inspected by ASE-certified techs. 180-day warranty included.</p>
+              <p className="text-gray-500 text-sm leading-relaxed">Inspected by ASE-certified techs. 30-day warranty included.</p>
               <span className="mt-6 inline-flex items-center text-amber-400 text-sm font-bold gap-1">Shop Used →</span>
             </Link>
             <Link
@@ -275,7 +275,7 @@ const Home: FC = () => {
             >
               <span className="text-[#9dfb40] text-xs font-bold tracking-widest uppercase block mb-3">All Tires</span>
               <h3 className="text-2xl font-black text-white mb-2 group-hover:text-[#9dfb40] transition-colors">Browse Catalog</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">3,600+ tires across 7 Miami & Orlando locations.</p>
+              <p className="text-gray-500 text-sm leading-relaxed">15,000+ tires across 7 Miami & Orlando locations.</p>
               <span className="mt-6 inline-flex items-center text-[#9dfb40] text-sm font-bold gap-1">Browse All →</span>
             </Link>
           </div>
