@@ -32,9 +32,9 @@ export async function getOrderByStripeSessionId(
     FROM dbo.SC_Order
     WHERE StripeSessionId = @StripeSessionId
   `);
-  const row = result.recordset?.[0] as any;
+  const row = result.recordset?.[0] as { orderId: number; orderGuid: string } | undefined;
   if (!row) return null;
-  return { orderId: row.orderId as number, orderGuid: row.orderGuid as string };
+  return { orderId: row.orderId, orderGuid: row.orderGuid };
 }
 
 /**
@@ -73,11 +73,11 @@ export async function insertOrder(input: InsertOrderInput): Promise<InsertOrderR
     // Bind parameters (always bind, even if null)
     request.input('OrderSatusId', Int, input.orderSatusId);
     request.input('Store', VarChar(50), store);
-    request.input('OrderTotal', Decimal(18, 2), orderTotal as any);
-    request.input('CustomerIP', VarChar(20), customerIP as any);
+    request.input('OrderTotal', Decimal(18, 2), orderTotal);
+    request.input('CustomerIP', VarChar(20), customerIP);
     request.input('PaymentMethodId', Int, paymentMethodId);
     request.input('PaymentStatusId', Int, paymentStatusId);
-    request.input('StripeSessionId', NVarChar(255), stripeSessionId as any);
+    request.input('StripeSessionId', NVarChar(255), stripeSessionId);
 
     // Perform a concurrency-safe insert with a computed next OrdenNumber
     const sql = `
@@ -123,9 +123,11 @@ export async function insertOrder(input: InsertOrderInput): Promise<InsertOrderR
     const result = await request.query(sql);
     await transaction.commit();
 
-    const row = (result.recordset && result.recordset[0]) as any;
-    const orderId = row?.orderId as number;
-    const orderGuid = row?.orderGuid as string;
+    const row = (result.recordset && result.recordset[0]) as
+      | { orderId?: number; orderGuid?: string }
+      | undefined;
+    const orderId = row?.orderId;
+    const orderGuid = row?.orderGuid;
 
     if (!orderId || !orderGuid) {
       throw new Error('Failed to retrieve inserted order identifiers');
@@ -135,7 +137,7 @@ export async function insertOrder(input: InsertOrderInput): Promise<InsertOrderR
     return { orderId, orderGuid };
   } catch (err) {
     await transaction.rollback();
-    logger.error('Failed to insert SC_Order', err as any);
+    logger.error('Failed to insert SC_Order', err);
     throw err;
   }
 }

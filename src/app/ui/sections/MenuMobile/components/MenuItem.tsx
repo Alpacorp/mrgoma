@@ -1,8 +1,9 @@
 'use client';
 
+import React, { useEffect, useState } from 'react';
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
 
 import type { MenuChild } from '@/app/ui/sections/Header/MenuItems';
 

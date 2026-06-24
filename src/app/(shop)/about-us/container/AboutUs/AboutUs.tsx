@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+
 import Link from 'next/link';
 
 const stats = [
@@ -106,7 +107,7 @@ export default function AboutUs() {
           </h1>
 
           <p className="text-gray-400 text-xl max-w-lg leading-relaxed">
-            Miami's most trusted tire shop — 7 locations, thousands of tires,
+            Miami&apos;s most trusted tire shop — 7 locations, thousands of tires,
             and one standard: quality you can count on.
           </p>
 
@@ -145,7 +146,7 @@ export default function AboutUs() {
                 our reputation from the ground up.
               </p>
               <p>
-                We're a registered brand of{' '}
+                We&apos;re a registered brand of{' '}
                 <span className="text-white font-medium">Jomah Trading Inc.</span>,
                 serving thousands of Florida drivers every year — from daily commuters
                 to Uber and Lyft professionals who depend on their vehicle for their income.

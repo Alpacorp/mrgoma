@@ -2,10 +2,11 @@
 
 import React, { FC } from 'react';
 
+import { TransformedTire } from '@/app/interfaces/tires';
 import { TireCard } from '@/app/ui/sections';
 
 interface TireResultsProps {
-  products: any[];
+  products: TransformedTire[];
 }
 
 const TireResults: FC<TireResultsProps> = ({ products }) => {

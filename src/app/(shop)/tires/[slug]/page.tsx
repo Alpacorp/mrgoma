@@ -72,7 +72,7 @@ const fetchProduct = cache(async (productId: string) => {
           ],
         },
       ],
-    } as any;
+    };
   } catch {
     return null;
   }
@@ -116,13 +116,12 @@ export async function generateMetadata({
     remainingLife: product.remainingLife,
   });
 
-  const priceNumber =
-    typeof product.price === 'string' ? Number(product.price) : (product.price as any);
+  const priceNumber = Number(product.price);
   const hasValidPrice = typeof priceNumber === 'number' && isFinite(priceNumber) && priceNumber > 0;
   const priceText = hasValidPrice ? ` Price: $${priceNumber.toFixed(2)}.` : '';
   const description = `${descriptionBase}${priceText}`;
 
-  const images = Array.isArray(product.images) ? product.images.map((i: any) => absUrl(i.src)) : [];
+  const images = Array.isArray(product.images) ? product.images.map(i => absUrl(i.src)) : [];
 
   const keywords = [
     product.brand,
@@ -147,7 +146,7 @@ export async function generateMetadata({
       title,
       description,
       images: images.length
-        ? images.map((u: any) => ({ url: u }))
+        ? images.map(u => ({ url: u }))
         : [{ url: absUrl('/assets/images/og-default.jpg') }],
     },
     twitter: {
@@ -185,7 +184,7 @@ async function TireJsonLd({ productId }: { productId: string }) {
     name: product.name,
     brand: product.brand,
     description: jsonLdDescription,
-    images: (product.images || []).map((i: any) => i.src),
+    images: (product.images || []).map(i => i.src),
     price: product.price,
     currency: 'USD',
     condition: product.condition,

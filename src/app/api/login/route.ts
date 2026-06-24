@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { findUserByUsername } from '@/repositories/userRepository';
-import { createRateLimiter } from '@/utils/rateLimit';
 import { logger } from '@/utils/logger';
+import { createRateLimiter } from '@/utils/rateLimit';
 
 const isRateLimited = createRateLimiter('login', { windowMs: 5 * 60 * 1000, max: 10 });
 

@@ -1,4 +1,6 @@
-import {NextRequest, NextResponse} from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+
+import type Stripe from 'stripe';
 
 // Helper to build the application's origin from the request URL
 function getOrigin(req: NextRequest) {
@@ -159,7 +161,7 @@ export async function POST(req: NextRequest) {
       }
 
       // The tire detail returns a JSON with fields compatible with SingleTire
-      const data: any = await res.json().catch(() => null);
+      const data = await res.json().catch(() => null);
 
       if (!data) {
         unavailable.push({ id: it.id, reason: 'Invalid product data' });
@@ -320,8 +322,10 @@ export async function POST(req: NextRequest) {
     const Stripe = StripeMod.default;
     const stripe = new Stripe(secretKey, {
       // Pin to a recent API version; update as needed
+      // Pinned intentionally; cast through unknown since the SDK type only
+      // accepts its own latest apiVersion literal.
       apiVersion: '2024-11-20.acacia',
-    } as any);
+    } as unknown as Stripe.StripeConfig);
 
     // Build line items with authoritative data
     const currency = (process.env.NEXT_PUBLIC_STRIPE_CURRENCY || 'usd').toLowerCase();
@@ -345,7 +349,7 @@ export async function POST(req: NextRequest) {
     // If pickup in store, do NOT collect the address and add a 7% tax line item
     const line_items = [...productLineItems];
     if (fulfillmentMethod === 'pickup') {
-      const subtotalCents = productLineItems.reduce((sum, li: any) => {
+      const subtotalCents = productLineItems.reduce((sum, li) => {
         const unit = Number(li?.price_data?.unit_amount) || 0;
         const qty = Number(li?.quantity) || 0;
         return sum + unit * qty;
@@ -371,7 +375,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Build session params conditionally based on a fulfillment method
-    const sessionParams: any = {
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       mode: 'payment',
       payment_method_types: ['card'],
       phone_number_collection: { enabled: true },
@@ -419,8 +423,9 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ url: session.url }, { status: 200 });
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Error creating checkout session:', e);
-    return NextResponse.json({ message: e?.message || 'Unexpected server error' }, { status: 500 });
+    const message = e instanceof Error ? e.message : 'Unexpected server error';
+    return NextResponse.json({ message }, { status: 500 });
   }
 }

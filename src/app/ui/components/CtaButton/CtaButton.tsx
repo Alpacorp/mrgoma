@@ -13,7 +13,10 @@ interface CtaButtonProps {
   text: string;
   style?: 'primary' | 'secondary' | 'tertiary' | 'default' | 'filled' | 'filled-secondary';
   urlParams?: Record<string, string | number>;
-  onClick?: (e: MouseEvent<HTMLButtonElement | HTMLAnchorElement>, product: any) => void;
+  onClick?: (
+    e: MouseEvent<HTMLButtonElement | HTMLAnchorElement>,
+    product: { name: string; id?: string | number; brand?: string }
+  ) => void;
   disabled?: boolean;
   isLink?: boolean;
 }

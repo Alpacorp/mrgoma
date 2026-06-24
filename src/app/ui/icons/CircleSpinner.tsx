@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { IconProps } from '@/app/ui/interfaces/icons';
 
 const CircleSpinner: React.FC<IconProps> = ({ className = '', size = 20 }) => {

@@ -8,9 +8,9 @@ import { TireSelector } from '@/app/ui/components/CollapsibleSearchBar/component
 import { useTireSearch } from '@/app/ui/components/CollapsibleSearchBar/hooks/useTireSearch';
 import { AdjustmentsHorizontalIcon } from '@/app/ui/components/Icons/Icons';
 import { FiltersMobile, TopFilters } from '@/app/ui/sections';
-import { CodeFilterInput } from '@/app/ui/sections/TopFilters/TopFilters';
 import DashboardCartModal from '@/app/ui/sections/DashboardCartModal/DashboardCartModal';
 import DashboardTableContainer from '@/app/ui/sections/DashboardTableContainer/DashboardTableContainer';
+import { CodeFilterInput } from '@/app/ui/sections/TopFilters/TopFilters';
 
 // Lazy-loaded: keeps the AI chat bundle out of the initial dashboard payload.
 const AiChat = dynamic(() => import('@/app/ui/components/AiChat/AiChat'), { ssr: false });

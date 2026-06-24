@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 
 import { auth } from '@/app/utils/authOptions';
-import { createRateLimiter } from '@/utils/rateLimit';
 import { logger } from '@/utils/logger';
+import { createRateLimiter } from '@/utils/rateLimit';
 
 const isRateLimited = createRateLimiter('ai-chat', { windowMs: 60 * 1000, max: 20 });
 

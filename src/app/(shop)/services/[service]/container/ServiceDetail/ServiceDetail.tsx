@@ -1,7 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ServiceConfig } from '@/app/(shop)/services/servicesConfig';
+
 import { locationsConfig } from '@/app/(shop)/locations/locationsConfig';
+import { ServiceConfig } from '@/app/(shop)/services/servicesConfig';
 
 const SERVICE_IMAGES: Record<string, string> = {
   tire: '/assets/images/bg-service-card.jpg',

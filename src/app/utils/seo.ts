@@ -46,8 +46,8 @@ export function buildDefaultMetadata(): Metadata {
   return {
     metadataBase: new URL(site),
     title: {
-      default: `${SITE_NAME} | Miami, FL` as any,
-      template: `%s | ${SITE_NAME}` as any,
+      default: `${SITE_NAME} | Miami, FL`,
+      template: `%s | ${SITE_NAME}`,
     },
     description: DEFAULT_DESCRIPTION,
     robots: {
@@ -139,7 +139,7 @@ export function buildProductJsonLd(params: {
   availability?: 'InStock' | 'OutOfStock' | string;
   sku?: string;
   gtin?: string;
-}): Record<string, any> {
+}): Record<string, unknown> {
   const priceValue = typeof params.price === 'string' ? Number(params.price) : params.price;
   const isNew = (params.condition || '').toLowerCase() === 'new';
   return {
@@ -165,7 +165,7 @@ export function buildProductJsonLd(params: {
   };
 }
 
-export function buildBreadcrumbJsonLd(items: { name: string; url: string }[]): Record<string, any> {
+export function buildBreadcrumbJsonLd(items: { name: string; url: string }[]): Record<string, unknown> {
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -208,7 +208,7 @@ export interface LocationSchemaInput {
   mapLink?: string;
 }
 
-export function buildLocationsJsonLd(locations: LocationSchemaInput[]): Record<string, any>[] {
+export function buildLocationsJsonLd(locations: LocationSchemaInput[]): Record<string, unknown>[] {
   const site = getSiteUrl();
   return locations.map(loc => {
     // Parse "18200 S Dixie Hwy, Miami, FL 33157" → structured address

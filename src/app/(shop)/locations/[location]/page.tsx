@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+
 import type { Metadata } from 'next';
 
 import LocationDetail from '@/app/(shop)/locations/[location]/container/LocationDetail/LocationDetail';

@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+
 import type { Metadata } from 'next';
 
 import ServiceDetail from '@/app/(shop)/services/[service]/container/ServiceDetail/ServiceDetail';

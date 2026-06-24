@@ -1,7 +1,8 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useState } from 'react';
+
+import { useRouter, useSearchParams } from 'next/navigation';
 
 // Define types for the tire filters - simplified without rear tire parameters
 export interface TireFilters {

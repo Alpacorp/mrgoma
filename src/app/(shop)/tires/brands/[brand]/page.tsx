@@ -1,17 +1,17 @@
 import { Suspense } from 'react';
 
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import type { Metadata } from 'next';
-import Link from 'next/link';
 
 import { BrowseFilters } from '@/app/(shop)/tires/container/BrowseFilters/BrowseFilters';
 import { TireGrid } from '@/app/(shop)/tires/container/TireGrid/TireGrid';
 import { TiresData } from '@/app/interfaces/tires';
 import { BrandImage } from '@/app/ui/components';
-import { transformTireData } from '@/app/utils/transformTireData';
 import { buildBreadcrumbJsonLd, canonical } from '@/app/utils/seo';
 import { slugify } from '@/app/utils/tireSlug';
+import { transformTireData } from '@/app/utils/transformTireData';
 import { fetchBrands, fetchTires } from '@/repositories/tiresRepository';
 
 export const revalidate = 3600;
@@ -67,7 +67,8 @@ export default async function BrandCategoryPage({
   ]);
   const tires = (result.records as TiresData[]).map(transformTireData);
   const totalCount = result.totalCount;
-  const brandId = result.records.length > 0 ? ((result.records[0] as any).BrandId as number) : undefined;
+  const brandId =
+    result.records.length > 0 ? (result.records[0] as TiresData).BrandId : undefined;
 
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     { name: 'Home', url: '/' },

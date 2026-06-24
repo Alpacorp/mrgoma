@@ -1,13 +1,13 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import type { Metadata } from 'next';
-import Link from 'next/link';
 
 import { TireGrid } from '@/app/(shop)/tires/container/TireGrid/TireGrid';
 import { TiresData } from '@/app/interfaces/tires';
-import { transformTireData } from '@/app/utils/transformTireData';
 import { buildBreadcrumbJsonLd, canonical } from '@/app/utils/seo';
 import { slugify } from '@/app/utils/tireSlug';
+import { transformTireData } from '@/app/utils/transformTireData';
 import { fetchSizes, fetchTires } from '@/repositories/tiresRepository';
 
 export const revalidate = 3600;
