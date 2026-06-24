@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { IconProps } from '@/app/ui/interfaces/icons';
 
 export const EyeIcon: React.FC<IconProps> = ({ className = '', size = 20 }) => {

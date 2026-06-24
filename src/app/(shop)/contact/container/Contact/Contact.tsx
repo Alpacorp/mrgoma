@@ -264,7 +264,7 @@ export default function Contact() {
               Store Hours
             </p>
             <h2 className="text-3xl font-black tracking-tight mb-8">
-              When we're open
+              When we&apos;re open
             </h2>
 
             <ul className="divide-y divide-white/8">
