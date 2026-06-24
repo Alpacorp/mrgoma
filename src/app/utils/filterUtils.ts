@@ -1,4 +1,4 @@
-import { TireFilters } from '@/repositories/tiresRepository';
+import type { TireFilters } from '@/repositories/tiresRepository';
 
 function safeInt(value: string | null): number | undefined {
   if (!value) return undefined;
