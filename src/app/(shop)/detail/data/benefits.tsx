@@ -4,7 +4,7 @@ export const benefits = [
     icon: <span aria-hidden="true" className="text-3xl mx-auto">🛡️</span>,
     title: 'Guaranteed tires',
     description:
-      'High-quality tires with up to 180 days warranty on used tires. Specializing in luxury brands.',
+      'High-quality tires with up to 30 days warranty on used tires. Specializing in luxury brands.',
   },
   {
     id: 2,

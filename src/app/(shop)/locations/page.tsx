@@ -90,7 +90,7 @@ export default function LocationsPage() {
       {/* Trust bar */}
       <section className="border-t border-white/8 bg-white/[0.02]">
         <div className="max-w-6xl mx-auto px-6 lg:px-8 py-10 flex flex-wrap justify-center gap-x-12 gap-y-4">
-          {['Walk-ins Welcome', 'ASE-Certified Technicians', '3,600+ Tires in Stock', '180-Day Warranty'].map(item => (
+          {['Walk-ins Welcome', 'ASE-Certified Technicians', '15,000+ Tires in Stock', '30-Day Warranty'].map(item => (
             <div key={item} className="flex items-center gap-2">
               <span className="text-[#9dfb40] text-xs">✦</span>
               <span className="text-white/70 font-medium text-sm">{item}</span>

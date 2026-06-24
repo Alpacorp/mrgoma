@@ -5,7 +5,7 @@ export const infoCardsData: InfoCardData[] = [
     id: 'guaranteed-tires',
     title: 'Guaranteed Tires',
     description:
-      'With us you get only high quality products plus honest professional service. The only tire shop in Florida that gives you a 180-day warranty on used tires — 6x the industry standard.',
+      'With us you get only high quality products plus honest professional service. Every used tire is backed by a 30-day warranty — because we stand behind what we sell.',
     iconType: 'guarantee',
   },
   {

@@ -2,16 +2,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { LocationConfig } from '@/app/(shop)/locations/locationsConfig';
 
-const LOCATION_IMAGES: Record<string, string> = {
-  'miami-south-us1': '/assets/images/Locations/18200.jpg',
-  'miami-airport': '/assets/images/Locations/3251.webp',
-  'miami-north-441': '/assets/images/Locations/20282.jpg',
-  'miami-coral-gables': '/assets/images/Locations/900.jpg',
-  'miami-hialeah': '/assets/images/Locations/4040.webp',
-  'orlando-west-colonial': '/assets/images/Locations/4400.jpg',
-  'orlando-semoran': '/assets/images/Locations/575.jpg',
-};
-
 const services = [
   { label: 'Tire Mounting & Balancing', slug: 'tire-mounting-balancing' },
   { label: 'Wheel Alignment', slug: 'wheel-alignment' },
@@ -55,7 +45,7 @@ interface Props {
 }
 
 export default function LocationDetail({ location }: Props) {
-  const heroImage = LOCATION_IMAGES[location.slug];
+  const heroImage = location.image;
 
   return (
     <main className="bg-[#0a0a0a] text-white min-h-screen">
@@ -228,7 +218,7 @@ export default function LocationDetail({ location }: Props) {
           {/* Shop tires */}
           <div className="border border-[#9dfb40]/20 rounded-2xl p-6 bg-[#9dfb40]/5">
             <h3 className="font-bold text-white mb-2">Need a tire?</h3>
-            <p className="text-gray-500 text-sm mb-4">Browse our inventory of 3,600+ new and used tires online.</p>
+            <p className="text-gray-500 text-sm mb-4">Browse our inventory of 15,000+ new and used tires online.</p>
             <Link href="/tires"
               className="block text-center bg-[#9dfb40] text-black font-bold py-3 px-6 rounded-full text-sm hover:bg-[#8ae636] transition-colors">
               Shop Tires

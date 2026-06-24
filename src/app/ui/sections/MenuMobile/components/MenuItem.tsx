@@ -47,8 +47,8 @@ export const MenuItem: React.FC<MenuItemProps> = ({
     animationStage >= index + 2 ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4';
 
   if (submenu?.length) {
-    const miamiKids = submenu.filter(c => c.name.startsWith('Miami'));
-    const orlandoKids = submenu.filter(c => c.name.startsWith('Orlando'));
+    const miamiKids = submenu.filter(c => c.city === 'Miami');
+    const orlandoKids = submenu.filter(c => c.city === 'Orlando');
     return (
       <div className={`transition-all duration-300 ${animClass}`}>
         <div
@@ -104,7 +104,7 @@ export const MenuItem: React.FC<MenuItemProps> = ({
                         onClick={onClick}
                         className="block px-2 py-1.5 text-sm text-gray-300 hover:text-[#9dfb40] hover:bg-white/5 rounded transition-colors"
                       >
-                        {kid.name.replace('Miami – ', '')}
+                        {kid.name}
                       </Link>
                     </li>
                   ))}
@@ -122,7 +122,7 @@ export const MenuItem: React.FC<MenuItemProps> = ({
                         onClick={onClick}
                         className="block px-2 py-1.5 text-sm text-gray-300 hover:text-[#9dfb40] hover:bg-white/5 rounded transition-colors"
                       >
-                        {kid.name.replace('Orlando – ', '')}
+                        {kid.name}
                       </Link>
                     </li>
                   ))}

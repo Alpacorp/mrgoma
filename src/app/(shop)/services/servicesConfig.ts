@@ -174,7 +174,7 @@ export const servicesConfig: ServiceConfig[] = [
     shortDescription:
       'Fast, affordable flat tire repair — or a replacement from our inventory if needed.',
     longDescription:
-      'A flat tire doesn\'t have to ruin your day. Our technicians assess whether your tire can be safely repaired or needs to be replaced. We follow industry-standard repair procedures for punctures in the repairable zone and can pull from our 3,600+ tire inventory if a replacement is needed — often getting you back on the road faster than ordering elsewhere.',
+      'A flat tire doesn\'t have to ruin your day. Our technicians assess whether your tire can be safely repaired or needs to be replaced. We follow industry-standard repair procedures for punctures in the repairable zone and can pull from our 15,000+ tire inventory if a replacement is needed — often getting you back on the road faster than ordering elsewhere.',
     whatIncluded: [
       'Tire removal and inspection for damage',
       'Puncture location and severity assessment',
@@ -203,7 +203,7 @@ export const servicesConfig: ServiceConfig[] = [
     ],
     metaTitle: 'Flat Tire Repair in Miami & Orlando | Fast Service | MrGoma Tires',
     metaDescription:
-      'Fast flat tire repair at 7 locations in Miami and Orlando, FL. Professional plug-and-patch repairs or replacement from 3,600+ tire inventory. No appointment needed.',
+      'Fast flat tire repair at 7 locations in Miami and Orlando, FL. Professional plug-and-patch repairs or replacement from 15,000+ tire inventory. No appointment needed.',
     icon: 'repair',
     relatedServices: ['tire-mounting-balancing', 'tpms-service', 'tire-rotation'],
   },

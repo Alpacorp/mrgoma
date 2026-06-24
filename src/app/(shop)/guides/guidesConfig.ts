@@ -39,7 +39,7 @@ export const guides: Guide[] = [
       'Used tires should have at least 4/32" of remaining tread — the legal minimum is 2/32"',
       'Check the DOT code on the sidewall: avoid any tire manufactured more than 6 years ago',
       'Reject tires with sidewall cracks, bulges, uneven wear, or visible cord damage',
-      "MrGoma's 180-day warranty is the longest on used tires in Florida — 6x the 30-day industry standard",
+      "Every MrGoma used tire is backed by a 30-day warranty — many used-tire sellers offer none at all",
       'All MrGoma used tires are inspected by ASE-certified technicians before sale',
     ],
     sections: [
@@ -92,7 +92,7 @@ export const guides: Guide[] = [
         heading: 'MrGoma\'s Inspection Process',
         type: 'callout',
         content:
-          'Every tire sold at MrGoma passes a multi-point inspection: tread depth measurement, visual sidewall check, DOT date verification, and an internal inspection. We back each used tire with a 180-day warranty — the longest in Florida. If a tire fails within 180 days of normal use, we replace it.',
+          'Every tire sold at MrGoma passes a multi-point inspection: tread depth measurement, visual sidewall check, DOT date verification, and an internal inspection. We back each used tire with a 30-day warranty. If a tire fails within 30 days of normal use, we replace it.',
       },
     ],
     faqs: [
@@ -114,7 +114,7 @@ export const guides: Guide[] = [
       {
         question: 'Do used tires come with a warranty?',
         answer:
-          'Most used tire shops offer 30 days or no warranty. MrGoma Tires backs every used tire with a 180-day warranty — six times the industry standard — because we only sell tires we stand behind.',
+          'Many used tire shops offer no warranty at all. MrGoma Tires backs every used tire with a 30-day warranty — because we only sell tires we stand behind.',
       },
     ],
   },
@@ -195,7 +195,7 @@ export const guides: Guide[] = [
         heading: 'What MrGoma Checks Before Every Sale',
         type: 'callout',
         content:
-          'All eight of the above points, plus an internal inspection for liner damage. Our ASE-certified technicians reject tires that do not meet our standard before they ever reach the inventory. Every tire listed on our site has at least 50% remaining life. Backed by a 180-day warranty.',
+          'All eight of the above points, plus an internal inspection for liner damage. Our ASE-certified technicians reject tires that do not meet our standard before they ever reach the inventory. Every tire listed on our site has at least 50% remaining life. Backed by a 30-day warranty.',
       },
     ],
     faqs: [
@@ -408,7 +408,7 @@ export const guides: Guide[] = [
       'Used tires from reputable shops are safe when properly inspected by ASE-certified technicians',
       'New tires offer full manufacturer warranty and maximum expected lifespan',
       'For high-mileage drivers (rideshare, delivery), used tires offer the best cost-per-mile value',
-      'MrGoma\'s 180-day warranty on used tires reduces the risk gap vs. new',
+      'MrGoma\'s 30-day warranty on used tires reduces the risk gap vs. new',
     ],
     sections: [
       {
@@ -449,13 +449,13 @@ export const guides: Guide[] = [
         heading: 'The Warranty Gap — and How MrGoma Closes It',
         type: 'callout',
         content:
-          "New tires come with manufacturer warranties covering defects. Most used tire shops offer 30 days or nothing. MrGoma's 180-day warranty on used tires narrows that gap significantly. If a tire fails within 180 days of normal use, we replace it — no questions asked.",
+          "New tires come with manufacturer warranties covering defects. Many used tire shops offer no warranty at all. MrGoma's 30-day warranty on used tires helps narrow that gap. If a tire fails within 30 days of normal use, we replace it — no questions asked.",
       },
       {
         heading: 'The Bottom Line',
         type: 'text',
         content:
-          'If your vehicle is in good shape and you plan to keep it for several years, new tires are the right long-term investment. If your budget is tight, you drive a lot of miles, or your vehicle is older, quality used tires from a reputable shop are a smart, safe choice — especially with a 180-day warranty backing them.',
+          'If your vehicle is in good shape and you plan to keep it for several years, new tires are the right long-term investment. If your budget is tight, you drive a lot of miles, or your vehicle is older, quality used tires from a reputable shop are a smart, safe choice — especially with a 30-day warranty backing them.',
       },
     ],
     faqs: [

@@ -159,7 +159,7 @@ export async function generateMetadata({
   };
 }
 
-async function TireJsonLd({ productId, slug }: { productId: string; slug: string }) {
+async function TireJsonLd({ productId }: { productId: string }) {
   const product = await fetchProduct(productId);
   if (!product) return null;
 
@@ -215,7 +215,7 @@ export default async function TirePage({ params }: { params: Promise<{ slug: str
 
   return (
     <>
-      <TireJsonLd productId={productId} slug={slug} />
+      <TireJsonLd productId={productId} />
       <Suspense fallback={<LoadingScreen message="Loading results ..." />}>
         <Detail productId={productId} />
       </Suspense>

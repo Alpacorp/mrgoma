@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ServiceConfig } from '@/app/(shop)/services/servicesConfig';
+import { locationsConfig } from '@/app/(shop)/locations/locationsConfig';
 
 const SERVICE_IMAGES: Record<string, string> = {
   tire: '/assets/images/bg-service-card.jpg',
@@ -13,15 +14,7 @@ const SERVICE_IMAGES: Record<string, string> = {
   tpms: '/assets/images/tpms.webp',
 };
 
-const locationNames = [
-  'Miami – South (US-1)',
-  'Miami – Airport',
-  'Miami – North (441)',
-  'Miami – Coral Gables',
-  'Miami – Hialeah',
-  'Orlando – West Colonial',
-  'Orlando – Semoran',
-];
+const locationLinks = locationsConfig.map(l => ({ name: l.name, slug: l.slug }));
 
 interface Props {
   service: ServiceConfig;
@@ -127,7 +120,7 @@ export default function ServiceDetail({ service }: Props) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {[
                 { title: 'ASE-Certified Technicians', body: 'Every technician is certified by the National Automotive Service of Excellence.' },
-                { title: '180-Day Warranty', body: 'The longest warranty on used tires in Florida — 6× the industry standard.' },
+                { title: '30-Day Warranty', body: 'Every used tire is backed by a 30-day warranty — many shops offer none at all.' },
                 { title: '7 Locations', body: 'Across Miami and Orlando — always a shop near you.' },
                 { title: 'No Appointment Needed', body: 'Walk in at any location. Fast service, no waiting weeks for a slot.' },
               ].map(item => (
@@ -176,10 +169,15 @@ export default function ServiceDetail({ service }: Props) {
           <div className="border border-white/8 rounded-2xl p-6">
             <h3 className="font-bold text-white mb-4 text-sm uppercase tracking-widest">Available at</h3>
             <ul className="space-y-2.5">
-              {locationNames.map(loc => (
-                <li key={loc} className="flex items-center gap-2 text-sm text-gray-400">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#9dfb40] shrink-0" />
-                  {loc}
+              {locationLinks.map(loc => (
+                <li key={loc.slug}>
+                  <Link
+                    href={`/locations/${loc.slug}`}
+                    className="flex items-center gap-2 text-sm text-gray-400 hover:text-[#9dfb40] transition-colors"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#9dfb40] shrink-0" />
+                    {loc.name}
+                  </Link>
                 </li>
               ))}
             </ul>

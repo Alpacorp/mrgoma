@@ -163,7 +163,7 @@ export default function OgImage() {
               alignItems: 'center',
             }}
           >
-            {['7 Locations', '3,600+ Tires', '180-Day Warranty', 'Free Shipping'].map(
+            {['7 Locations', '15,000+ Tires', '30-Day Warranty', 'Free Shipping'].map(
               (item, i, arr) => (
                 <div key={item} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span

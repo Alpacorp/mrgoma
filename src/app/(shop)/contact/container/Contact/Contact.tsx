@@ -1,70 +1,17 @@
 'use client';
 
-const locations = [
-  {
-    id: '01',
-    name: 'Miami – South (US-1)',
-    address: '18200 S Dixie Hwy, Miami, FL 33157',
-    phone: '(305)-278-4632',
-    tel: 'tel:+13052784632',
-    map: 'https://maps.app.goo.gl/RTpygmaN6vMcPxmX8',
-    area: 'Cutler Bay · Palmetto Bay · Kendall',
-  },
-  {
-    id: '02',
-    name: 'Miami – Airport',
-    address: '3251 NW 27th Ave, Miami, FL 33142',
-    phone: '(305)-456-9588',
-    tel: 'tel:+13054569588',
-    map: 'https://maps.app.goo.gl/1gpRJFveeqs3hM7G9',
-    area: 'Allapattah · Midtown · MIA Airport',
-  },
-  {
-    id: '03',
-    name: 'Miami – North (441)',
-    address: '20282 NW 2nd Ave, Miami, FL 33169',
-    phone: '(305)-770-1154',
-    tel: 'tel:+13057701154',
-    map: 'https://maps.app.goo.gl/G79tY9zNu7ETtru8A',
-    area: 'Miami Gardens · Hollywood · Aventura',
-  },
-  {
-    id: '04',
-    name: 'Miami – Coral Gables',
-    address: '900 South Le Jeune Rd, Miami, FL 33134',
-    phone: '(305)-713-1258',
-    tel: 'tel:+13057131258',
-    map: 'https://maps.app.goo.gl/99HuCuuroqTVZRdz8',
-    area: 'Coral Gables · Westchester · Near MIA',
-  },
-  {
-    id: '05',
-    name: 'Miami – Hialeah',
-    address: '4040 E 10th Ct, Hialeah, FL 33013',
-    phone: '(305)-836-4200',
-    tel: 'tel:+13058364200',
-    map: 'https://maps.app.goo.gl/oF6vhCsS7MdikcYX8',
-    area: 'Hialeah · Miami Springs · East Hialeah',
-  },
-  {
-    id: '06',
-    name: 'Orlando – West Colonial',
-    address: '4400 W Colonial Dr, Orlando, FL 32808',
-    phone: '(407)-203-3912',
-    tel: 'tel:+14072033912',
-    map: 'https://maps.app.goo.gl/n32Upo4RiH9PWJVA7',
-    area: 'Midtown · Wintergarden · West Orlando',
-  },
-  {
-    id: '07',
-    name: 'Orlando – Semoran',
-    address: '575 N Semoran Blvd, Orlando, FL 32807',
-    phone: '(407)-282-3100',
-    tel: 'tel:+14072823100',
-    map: 'https://maps.app.goo.gl/fuDXk1EAKZ5ZAvpu6',
-    area: 'Azalea Park · Winter Park · East Orlando',
-  },
-];
+import { locationsConfig } from '@/app/(shop)/locations/locationsConfig';
+
+// Derived from the single source of truth (locationsConfig).
+const locations = locationsConfig.map((l, i) => ({
+  id: String(i + 1).padStart(2, '0'),
+  name: l.name,
+  address: l.address,
+  phone: l.phone,
+  tel: l.tel,
+  map: l.mapLink,
+  area: l.serving.replace(/•/g, '·'),
+}));
 
 const hours = [
   { day: 'Monday', time: '8:00 AM – 6:00 PM' },
@@ -78,7 +25,7 @@ const hours = [
 
 const trust = [
   { label: 'ASE Certified', icon: '✦' },
-  { label: '180-Day Warranty', icon: '✦' },
+  { label: '30-Day Warranty', icon: '✦' },
   { label: 'Free Shipping', icon: '✦' },
   { label: 'Est. Miami, FL', icon: '✦' },
 ];

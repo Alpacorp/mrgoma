@@ -17,7 +17,7 @@ const BrandHeadline: FC<BrandHeadlineProps> = ({
 }) => {
   const mainClass =
     size === 'lg'
-      ? 'text-3xl sm:text-4xl md:text-5xl uppercase font-extrabold text-white tracking-tight [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.45)]'
+      ? 'text-2xl sm:text-3xl uppercase font-extrabold text-white tracking-tight [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.45)]'
       : 'text-base sm:text-2xl uppercase font-extrabold text-white tracking-tight [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.45)]';
 
   const subClass =
@@ -46,12 +46,10 @@ const BrandHeadline: FC<BrandHeadlineProps> = ({
     <div className={wrapperClass}>
       <Tag className={mainClass}>
         The <span className="text-lime-400">Tires</span> you{' '}
-        <span className="text-lime-400">need</span>
-      </Tag>
-      <p className={subClass}>
-        The <span className="text-lime-400">Price</span> you{' '}
+        <span className="text-lime-400">need</span>, The{' '}
+        <span className="text-lime-400">Price</span> you{' '}
         <span className="text-lime-400">want</span>
-      </p>
+      </Tag>
     </div>
   );
 };

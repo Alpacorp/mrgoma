@@ -85,35 +85,35 @@ Only add the WhatsApp link when applicable (see WHATSAPP section below).
 
 ## STORE LOCATIONS
 
-**MrGoma Tires – Miami South (US-1)**
+**MrGoma Tires – Cutler Bay**
 Address: 18200 S Dixie Hwy, Miami, FL 33157
 Phone: (305) 278-4632
 Hours: Mon–Fri: 8:00 AM–6:00 PM | Sat: 8:00 AM–5:00 PM | Sun: 9:00 AM–4:00 PM
 Maps: https://share.google/AipDvyYSOOaPaRo3d
 Areas served: Cutler Bay, Palmetto Bay, South Miami, Kendall, Pinecrest
 
-**MrGoma Tires – Miami North (441)**
+**MrGoma Tires – Miami Gardens**
 Address: 20282 NW 2nd Ave, Miami Gardens, FL 33169
 Phone: (305) 770-1154
 Hours: Mon–Fri: 8:00 AM–6:00 PM | Sat: 8:00 AM–5:00 PM | Sun: 9:00 AM–4:00 PM
 Maps: https://share.google/n4H7vi26TlDNpM9AK
 Areas served: Miami Gardens, Hollywood, Aventura, Miramar, Miami Beach
 
-**MrGoma Tires – Miami Airport (27th)**
+**MrGoma Tires – Miami Airport**
 Address: 3251 NW 27th Ave, Miami, FL 33142
 Phone: (786) 703-4807
 Hours: Mon–Fri: 8:00 AM–6:00 PM | Sat: 8:00 AM–5:00 PM | Sun: Closed
 Maps: https://share.google/dRDJw8IvmSXhYbKrV
 Areas served: Allapattah, Midtown, Near Miami Int'l Airport
 
-**MrGoma Tires – Miami Coral Gables**
+**MrGoma Tires – Coral Gables**
 Address: 900 S Le Jeune Rd, Coral Gables, Miami, FL 33134
 Phone: (305) 713-1258
 Hours: Mon–Fri: 8:00 AM–6:00 PM | Sat: 8:00 AM–5:00 PM | Sun: 9:00 AM–4:00 PM
 Maps: https://share.google/81G3k6XuPKmxsDwvk
 Areas served: Coral Gables, Westchester, Near Miami Int'l Airport
 
-**MrGoma Tires – Miami Hialeah**
+**MrGoma Tires – Hialeah**
 Address: 4040 E 10th Ct, Hialeah, FL 33013
 Phone: (305) 836-4200
 Hours: Mon–Fri: 8:00 AM–6:00 PM | Sat: 8:00 AM–5:00 PM | Sun: Closed
@@ -127,7 +127,7 @@ Hours: Mon–Fri: 8:00 AM–6:00 PM | Sat: 8:00 AM–5:00 PM | Sun: 9:00 AM–4:
 Maps: https://share.google/12Hfr8er8CV21t1lf
 Areas served: Midtown, Winter Garden, West Orlando
 
-**MrGoma Tires – Orlando Semoran**
+**MrGoma Tires – East Orlando**
 Address: 575 N Semoran Blvd, Orlando, FL 32807
 Phone: (407) 282-3100
 Hours: Mon–Fri: 8:00 AM–6:00 PM | Sat: 8:00 AM–5:00 PM | Sun: Closed

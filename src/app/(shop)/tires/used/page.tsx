@@ -15,7 +15,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: 'Used Tires in Miami & Orlando',
   description:
-    'Buy quality used tires at MrGoma Tires. Every tire is ASE-inspected before sale with a 180-day warranty — 6x the industry standard. 7 locations in Miami and Orlando, FL. Free shipping.',
+    'Buy quality used tires at MrGoma Tires. Every tire is ASE-inspected before sale and backed by a 30-day warranty. 7 locations in Miami and Orlando, FL. Free shipping.',
   alternates: { canonical: canonical('/tires/used') },
   openGraph: {
     type: 'website',
@@ -23,14 +23,14 @@ export const metadata: Metadata = {
     url: canonical('/tires/used'),
     title: 'Used Tires in Miami & Orlando | MrGoma Tires',
     description:
-      'Quality used tires with ASE inspection, 180-day warranty, and free shipping. 7 locations in Miami and Orlando, FL.',
+      'Quality used tires with ASE inspection, 30-day warranty, and free shipping. 7 locations in Miami and Orlando, FL.',
   },
 };
 
 const reasons = [
   {
-    title: '180-Day Warranty',
-    body: '6x the industry standard of 30 days. Every used tire comes with our full warranty — because we stand behind what we sell.',
+    title: '30-Day Warranty',
+    body: 'Every used tire comes with a 30-day warranty — because we stand behind what we sell.',
   },
   {
     title: 'ASE-Inspected',
@@ -106,8 +106,8 @@ export default async function UsedTiresPage() {
               <span style={{ color: '#9dfb40' }}>Miami & Orlando</span>
             </h1>
             <p className="text-gray-400 text-lg max-w-lg leading-relaxed">
-              Every used tire in our inventory is ASE-inspected and backed by our 180-day warranty —
-              the longest in Florida. Quality you can trust at a price that makes sense.
+              Every used tire in our inventory is ASE-inspected and backed by our 30-day warranty.
+              Quality you can trust at a price that makes sense.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <span className="bg-white/10 border border-white/20 rounded-full px-4 py-2 text-sm font-semibold">
@@ -117,7 +117,7 @@ export default async function UsedTiresPage() {
                 className="border rounded-full px-4 py-2 text-sm font-semibold"
                 style={{ color: '#fbbf24', borderColor: 'rgba(251,191,36,0.3)', background: 'rgba(251,191,36,0.1)' }}
               >
-                180-Day Warranty
+                30-Day Warranty
               </span>
               <span className="bg-white/10 border border-white/20 rounded-full px-4 py-2 text-sm font-semibold">
                 Free Shipping

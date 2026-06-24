@@ -316,7 +316,6 @@ export async function POST(req: NextRequest) {
     }
 
     // Dynamically import stripe to avoid build-time dependency issues
-    // eslint-disable-next-line import/no-unresolved
     const StripeMod = await import('stripe');
     const Stripe = StripeMod.default;
     const stripe = new Stripe(secretKey, {
