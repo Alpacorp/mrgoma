@@ -3,11 +3,14 @@ import { describe, expect, it } from 'vitest';
 import {
   absUrl,
   buildBreadcrumbJsonLd,
+  buildLocationsJsonLd,
   buildProductJsonLd,
   canonical,
   getSiteUrl,
+  organizationJsonLd,
   productDescription,
   productTitle,
+  websiteJsonLd,
 } from './seo';
 
 describe('absUrl / canonical', () => {
@@ -93,5 +96,43 @@ describe('buildBreadcrumbJsonLd', () => {
     expect(items).toHaveLength(2);
     expect(items[0].position).toBe(1);
     expect(items[1].name).toBe('Tires');
+  });
+});
+
+describe('site-wide JSON-LD', () => {
+  it('organizationJsonLd includes the brand and the official TikTok handle', () => {
+    const ld = organizationJsonLd();
+    expect(ld['@type']).toBe('Organization');
+    expect(ld.sameAs).toContain('https://www.tiktok.com/@mrgomatiresofficial');
+  });
+
+  it('websiteJsonLd exposes a tire SearchAction', () => {
+    const ld = websiteJsonLd();
+    expect(ld['@type']).toBe('WebSite');
+    expect((ld.potentialAction as Record<string, unknown>)['@type']).toBe('SearchAction');
+  });
+});
+
+describe('buildLocationsJsonLd', () => {
+  it('maps a location to an AutoPartsStore with a parsed address', () => {
+    const [ld] = buildLocationsJsonLd([
+      {
+        name: 'Cutler Bay',
+        address: '18200 S Dixie Hwy, Miami, FL 33157',
+        phone: '(305) 123',
+        mapLink: 'http://map',
+      },
+    ]);
+    expect(ld['@type']).toBe('AutoPartsStore');
+    expect(ld.name).toBe('MrGoma Tires — Cutler Bay');
+    expect(ld.hasMap).toBe('http://map');
+    const addr = ld.address as Record<string, unknown>;
+    expect(addr.streetAddress).toBe('18200 S Dixie Hwy');
+    expect(addr.postalCode).toBe('33157');
+  });
+
+  it('omits hasMap when there is no map link', () => {
+    const [ld] = buildLocationsJsonLd([{ name: 'X', address: 'A St, Town, FL 1', phone: 'p' }]);
+    expect(ld.hasMap).toBeUndefined();
   });
 });

@@ -50,4 +50,26 @@ describe('TireCard', () => {
     await user.click(addButtons[0]);
     expect(screen.getAllByRole('button', { name: /in cart/i }).length).toBeGreaterThan(0);
   });
+
+  it('renders the spec strip and used-condition link for a used tire', () => {
+    const used = {
+      ...product,
+      condition: 'used',
+      features: [
+        { name: 'Remaining life', value: '70%' },
+        { name: 'Tread depth', value: '8' },
+        { name: 'Patched', value: 'No' },
+        { name: 'Run Flat', value: 'No' },
+      ],
+    } as unknown as TransformedTire;
+
+    render(
+      <CartProvider>
+        <TireCard products={[used]} />
+      </CartProvider>
+    );
+
+    expect(screen.getByText('70%')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Used' })).toBeInTheDocument();
+  });
 });

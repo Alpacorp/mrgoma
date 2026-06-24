@@ -39,10 +39,10 @@ export default defineConfig({
       ],
       // Safety net against big regressions; we currently sit comfortably above.
       thresholds: {
-        statements: 70,
-        branches: 65,
-        functions: 70,
-        lines: 70,
+        statements: 80,
+        branches: 72,
+        functions: 80,
+        lines: 80,
       },
     },
   },

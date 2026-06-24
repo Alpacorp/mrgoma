@@ -42,4 +42,39 @@ describe('POST /api/instant-quote', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock.mock.calls[0][0]).toBe('http://webhook');
   });
+
+  it('rejects a disallowed origin with 403', async () => {
+    vi.stubEnv('N8N_WEBHOOK_URL', 'http://webhook');
+    const res = await POST(makeReq({}, { origin: 'http://evil.example' }));
+    expect(res.status).toBe(403);
+  });
+
+  it('silently accepts (200) when the honeypot is filled', async () => {
+    vi.stubEnv('N8N_WEBHOOK_URL', 'http://webhook');
+    const res = await POST(makeReq({ hp: 'bot', size: '225/40/18', name: 'J', email: 'a@b.co' }));
+    expect(res.status).toBe(200);
+  });
+
+  it('rate-limits after too many requests from one IP', async () => {
+    vi.stubEnv('N8N_WEBHOOK_URL', 'http://webhook');
+    const headers = { 'x-forwarded-for': '9.9.9.9' };
+    let res!: Response;
+    for (let i = 0; i < 6; i++) res = await POST(makeReq({}, headers));
+    expect(res.status).toBe(429);
+  });
+
+  it('returns 502 when the upstream webhook fails', async () => {
+    vi.stubEnv('N8N_WEBHOOK_URL', 'http://webhook');
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+        text: async () => 'oops',
+        json: async () => ({}),
+      })
+    );
+    const res = await POST(makeReq({ size: '225/40/18', name: 'J', email: 'a@b.co' }));
+    expect(res.status).toBe(502);
+  });
 });

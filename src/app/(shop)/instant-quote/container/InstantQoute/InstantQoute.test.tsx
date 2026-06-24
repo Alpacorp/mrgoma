@@ -67,5 +67,63 @@ describe('InstantQuote form', () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock.mock.calls[0][0]).toBe('/api/instant-quote');
+    expect(await screen.findByText(/thanks for choosing mrgoma tires/i)).toBeInTheDocument();
+  });
+
+  it('surfaces an error when the submission fails upstream', async () => {
+    const user = userEvent.setup();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({ ok: false, json: async () => ({ message: 'Upstream failed' }) })
+    );
+
+    renderWithSize({ width: '225', sidewall: '40', diameter: '18' });
+    await user.type(screen.getByLabelText('Name'), 'John Doe');
+    await user.type(screen.getByLabelText('Email'), 'john@example.com');
+    const store = screen.getByLabelText(/choose a store for pick-up/i);
+    await user.selectOptions(store, within(store).getAllByRole('option')[1]);
+
+    await user.click(screen.getByRole('button', { name: /get my quote/i }));
+    expect(await screen.findByText('Upstream failed')).toBeInTheDocument();
+  });
+
+  it('shows an error when the form is submitted incomplete', async () => {
+    const { container } = renderWithSize();
+    fireEvent.submit(container.querySelector('form') as HTMLFormElement);
+    expect(
+      await screen.findByText(/please complete all required fields correctly/i)
+    ).toBeInTheDocument();
+  });
+
+  it('toggles a tire-condition checkbox', async () => {
+    const user = userEvent.setup();
+    renderWithSize();
+    const used = screen.getByRole('checkbox', { name: 'Used' });
+    expect(used).not.toBeChecked();
+    await user.click(used);
+    expect(used).toBeChecked();
+  });
+
+  it('auto-capitalizes the vehicle details', () => {
+    renderWithSize();
+    const vehicle = screen.getByLabelText(/vehicle details/i);
+    fireEvent.change(vehicle, { target: { value: 'toyota camry 2019' } });
+    expect(vehicle).toHaveValue('Toyota Camry 2019');
+  });
+
+  it('warns when the vehicle details lack a 4-digit year', () => {
+    renderWithSize();
+    const vehicle = screen.getByLabelText(/vehicle details/i);
+    fireEvent.change(vehicle, { target: { value: 'Honda Civic' } });
+    expect(screen.getByText(/please include a 4-digit model year/i)).toBeInTheDocument();
+  });
+
+  it('shows a phone error only for an incomplete number', () => {
+    renderWithSize();
+    const phone = screen.getByLabelText('Phone');
+    fireEvent.change(phone, { target: { value: '123' } });
+    expect(screen.getByText('Enter a valid phone.')).toBeInTheDocument();
+    fireEvent.change(phone, { target: { value: '1234567890' } });
+    expect(screen.queryByText('Enter a valid phone.')).not.toBeInTheDocument();
   });
 });

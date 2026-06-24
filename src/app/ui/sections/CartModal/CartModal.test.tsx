@@ -60,4 +60,23 @@ describe('CartModal', () => {
     await user.click(screen.getByRole('button', { name: /remove michelin pilot from cart/i }));
     expect(cart.value.removeFromCart).toHaveBeenCalledWith('1');
   });
+
+  it('closes via the close button', async () => {
+    const user = userEvent.setup();
+    render(<CartModal />);
+    await user.click(screen.getByRole('button', { name: /close cart/i }));
+    expect(cart.value.setShowCartModal).toHaveBeenCalledWith(false);
+  });
+
+  it('shows the subtotal footer and closes on checkout', async () => {
+    const user = userEvent.setup();
+    cart.value.cartItems = [{ id: '1', name: 'Tire', price: 99, quantity: 1 }];
+    cart.value.cartTotal = 99;
+
+    render(<CartModal />);
+    expect(screen.getByText('Subtotal')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('link', { name: /^checkout$/i }));
+    expect(cart.value.setShowCartModal).toHaveBeenCalledWith(false);
+  });
 });
