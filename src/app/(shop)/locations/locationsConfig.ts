@@ -15,7 +15,7 @@ export interface LocationConfig {
 
 export const locationsConfig: LocationConfig[] = [
   {
-    slug: 'miami-south-us1',
+    slug: 'cutler-bay',
     name: 'Cutler Bay',
     address: '18200 S Dixie Hwy, Miami, FL 33157',
     phone: '(305)-278-4632',
@@ -47,7 +47,7 @@ export const locationsConfig: LocationConfig[] = [
       'Conveniently located near Miami International Airport on NW 27th Ave, this location serves Allapattah, Midtown Miami, and Wynwood. We carry new and used tires for all makes and models, plus a full menu of automotive services.',
   },
   {
-    slug: 'miami-north-441',
+    slug: 'miami-gardens',
     name: 'Miami Gardens',
     address: '20282 NW 2nd Ave, Miami, FL 33169',
     phone: '(305)-770-1154',
@@ -63,7 +63,7 @@ export const locationsConfig: LocationConfig[] = [
       'Our North Miami location on NW 2nd Ave serves Miami Gardens, Hollywood, Aventura, and North Miami. With 15,000+ tires in stock across our network, we can quickly find the right tire for your vehicle.',
   },
   {
-    slug: 'miami-coral-gables',
+    slug: 'coral-gables',
     name: 'Coral Gables',
     address: '900 South Le Jeune Rd, Miami, FL 33134',
     phone: '(305)-713-1258',
@@ -79,7 +79,7 @@ export const locationsConfig: LocationConfig[] = [
       'Located on South Le Jeune Road, our Coral Gables shop serves the upscale communities of Coral Gables, Westchester, and West Miami. Quality tire service from ASE-certified technicians.',
   },
   {
-    slug: 'miami-hialeah',
+    slug: 'hialeah',
     name: 'Hialeah',
     address: '4040 E 10th Ct, Hialeah, FL 33013',
     phone: '(305)-836-4200',
@@ -111,7 +111,7 @@ export const locationsConfig: LocationConfig[] = [
       'Our West Colonial Drive location serves Winter Garden, Metrowest, and West Orlando. Same quality tires and services as our Miami locations — now serving Central Florida drivers.',
   },
   {
-    slug: 'orlando-semoran',
+    slug: 'east-orlando',
     name: 'East Orlando',
     address: '575 N Semoran Blvd, Orlando, FL 32807',
     phone: '(407)-282-3100',

@@ -78,12 +78,8 @@ const Header: FC<{ compact?: boolean }> = ({ compact = false }): ReactNode => {
                   (pathname === '/' && activeHash === item.href.replace('/', ''));
 
                 if (item.children?.length) {
-                  const miamiKids = item.children.filter(c =>
-                    c.href.includes('/locations/miami-')
-                  );
-                  const orlandoKids = item.children.filter(c =>
-                    c.href.includes('/locations/orlando-')
-                  );
+                  const miamiKids = item.children.filter(c => c.city === 'Miami');
+                  const orlandoKids = item.children.filter(c => c.city === 'Orlando');
                   return (
                     <div key={item.name} className="relative group">
                       <Link

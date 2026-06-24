@@ -3,13 +3,13 @@ import Link from 'next/link';
 import { LocationConfig } from '@/app/(shop)/locations/locationsConfig';
 
 const LOCATION_IMAGES: Record<string, string> = {
-  'miami-south-us1': '/assets/images/Locations/18200.jpg',
+  'cutler-bay': '/assets/images/Locations/18200.jpg',
   'miami-airport': '/assets/images/Locations/3251.webp',
-  'miami-north-441': '/assets/images/Locations/20282.jpg',
-  'miami-coral-gables': '/assets/images/Locations/900.jpg',
-  'miami-hialeah': '/assets/images/Locations/4040.webp',
+  'miami-gardens': '/assets/images/Locations/20282.jpg',
+  'coral-gables': '/assets/images/Locations/900.jpg',
+  'hialeah': '/assets/images/Locations/4040.webp',
   'orlando-west-colonial': '/assets/images/Locations/4400.jpg',
-  'orlando-semoran': '/assets/images/Locations/575.jpg',
+  'east-orlando': '/assets/images/Locations/575.jpg',
 };
 
 const services = [

@@ -47,8 +47,8 @@ export const MenuItem: React.FC<MenuItemProps> = ({
     animationStage >= index + 2 ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4';
 
   if (submenu?.length) {
-    const miamiKids = submenu.filter(c => c.href.includes('/locations/miami-'));
-    const orlandoKids = submenu.filter(c => c.href.includes('/locations/orlando-'));
+    const miamiKids = submenu.filter(c => c.city === 'Miami');
+    const orlandoKids = submenu.filter(c => c.city === 'Orlando');
     return (
       <div className={`transition-all duration-300 ${animClass}`}>
         <div

@@ -16,13 +16,13 @@ const SERVICE_SLUGS = [
 ];
 
 const LOCATION_SLUGS = [
-  'miami-south-us1',
+  'cutler-bay',
   'miami-airport',
-  'miami-north-441',
-  'miami-coral-gables',
-  'miami-hialeah',
+  'miami-gardens',
+  'coral-gables',
+  'hialeah',
   'orlando-west-colonial',
-  'orlando-semoran',
+  'east-orlando',
 ];
 
 const GUIDE_SLUGS = [
