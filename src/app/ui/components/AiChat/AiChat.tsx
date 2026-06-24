@@ -216,7 +216,9 @@ export default function AiChat({
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-green-600 text-white shrink-0">
             <div className="flex items-center gap-2">
-              <span className="text-lg" aria-hidden="true">✨</span>
+              <span className="text-lg" aria-hidden="true">
+                ✨
+              </span>
               <div>
                 <p id="aichat-title" className="font-semibold text-sm">
                   AI Inventory Assistant
