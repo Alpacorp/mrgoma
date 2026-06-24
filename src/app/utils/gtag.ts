@@ -4,7 +4,7 @@ export const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || '';
 declare global {
   interface Window {
     dataLayer: unknown[];
-    gtag: (...args: any[]) => void;
+    gtag: (...args: unknown[]) => void;
   }
 }
 
@@ -24,7 +24,7 @@ export type GaEventParams = {
   category?: string;
   label?: string;
   value?: number;
-  params?: Record<string, any>;
+  params?: Record<string, unknown>;
 };
 
 export const event = ({ action, category, label, value, params }: GaEventParams) => {

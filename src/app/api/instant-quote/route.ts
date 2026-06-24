@@ -144,7 +144,7 @@ export async function POST(req: NextRequest) {
     const data = await resp.json().catch(() => ({ ok: true }));
     return NextResponse.json({ ok: true, data });
   } catch (err: unknown) {
-    logger.error('Failed to process instant-quote POST', err as any);
+    logger.error('Failed to process instant-quote POST', err);
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ message }, { status: 500 });
   }

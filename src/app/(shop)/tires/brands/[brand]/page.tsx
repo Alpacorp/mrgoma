@@ -67,7 +67,8 @@ export default async function BrandCategoryPage({
   ]);
   const tires = (result.records as TiresData[]).map(transformTireData);
   const totalCount = result.totalCount;
-  const brandId = result.records.length > 0 ? ((result.records[0] as any).BrandId as number) : undefined;
+  const brandId =
+    result.records.length > 0 ? (result.records[0] as TiresData).BrandId : undefined;
 
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     { name: 'Home', url: '/' },

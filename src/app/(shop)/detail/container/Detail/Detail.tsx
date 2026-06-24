@@ -54,9 +54,10 @@ const Detail = ({ productId: propProductId }: { productId?: string }) => {
         const json: SingleTire = await res.json();
 
         setData(json);
-      } catch (e: any) {
-        if (e.name !== 'AbortError') {
-          setError(e.code === 'NOT_FOUND' ? 'NOT_FOUND' : e.message || 'Unknown error');
+      } catch (e: unknown) {
+        const err = e as { name?: string; code?: string; message?: string };
+        if (err.name !== 'AbortError') {
+          setError(err.code === 'NOT_FOUND' ? 'NOT_FOUND' : err.message || 'Unknown error');
         }
       } finally {
         setLoading(false);
@@ -305,7 +306,7 @@ const Detail = ({ productId: propProductId }: { productId?: string }) => {
               </div>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight">
                 <span className="text-[#9dfb40]">{data.brand}</span>
-                {(data as any).model2 && <> {(data as any).model2}</>}
+                {data.model2 && <> {data.model2}</>}
               </h1>
             </div>
           )}
