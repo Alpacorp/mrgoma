@@ -11,12 +11,6 @@ export const metadata: Metadata = {
   alternates: { canonical: canonical('/guides') },
 };
 
-const categoryColors: Record<string, string> = {
-  'buying-guide': 'bg-[#9dfb40]/10 text-[#4a7a00] border border-[#9dfb40]/30',
-  rideshare: 'bg-amber-50 text-amber-700 border border-amber-200',
-  maintenance: 'bg-blue-50 text-blue-700 border border-blue-200',
-};
-
 export default function GuidesPage() {
   const buyingGuides = guides.filter(g => g.category === 'buying-guide');
   const rideshareGuides = guides.filter(g => g.category === 'rideshare');

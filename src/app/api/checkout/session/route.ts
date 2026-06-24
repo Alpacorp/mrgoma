@@ -27,7 +27,6 @@ export async function GET(req: NextRequest) {
     }
 
     // Dynamically import Stripe to avoid build-time issues
-    // eslint-disable-next-line import/no-unresolved
     const StripeMod = await import('stripe');
     const Stripe = StripeMod.default;
     const stripe = new Stripe(secretKey, {

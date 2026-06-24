@@ -91,7 +91,7 @@ export default function ServicesPage() {
       {/* Services grid */}
       <section className="bg-[#111]">
         <div className="max-w-6xl mx-auto px-6 lg:px-8 py-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {servicesConfig.map((service, i) => (
+          {servicesConfig.map(service => (
             <Link
               key={service.slug}
               href={`/services/${service.slug}`}

@@ -16,7 +16,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           type: 'password',
         },
       },
-      authorize: async (credentials, req) => {
+      authorize: async credentials => {
         try {
           const username = (credentials?.username as string) ?? '';
           const password = (credentials?.password as string) ?? '';
