@@ -192,7 +192,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
                   Need Tires?
                 </p>
                 <h3 className="font-black text-gray-900 text-lg mb-2 leading-snug">
-                  3,600+ tires in stock
+                  15,000+ tires in stock
                 </h3>
                 <p className="text-gray-500 text-sm mb-5 leading-relaxed">
                   7 locations in Miami and Orlando, FL. Free shipping nationwide.

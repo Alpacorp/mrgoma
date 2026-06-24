@@ -122,7 +122,7 @@ export default function GuidesPage() {
             Ready to find your tire?
           </h2>
           <p className="text-black/60 max-w-md">
-            Browse 3,600+ tires in stock or contact our ASE-certified team at any of our 7 locations.
+            Browse 15,000+ tires in stock or contact our ASE-certified team at any of our 7 locations.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <Link

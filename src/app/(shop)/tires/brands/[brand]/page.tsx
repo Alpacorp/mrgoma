@@ -136,7 +136,7 @@ export default async function BrandCategoryPage({
         {/* Trust bar */}
         <div className="bg-gray-900 text-white">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap gap-x-8 gap-y-2 text-xs text-gray-400 font-medium">
-            {['ASE-Certified Technicians', '180-Day Warranty', 'Free Shipping', '7 Locations Miami & Orlando'].map(item => (
+            {['ASE-Certified Technicians', '30-Day Warranty', 'Free Shipping', '7 Locations Miami & Orlando'].map(item => (
               <span key={item} className="flex items-center gap-1.5">
                 <span className="text-[#9dfb40]">✦</span>
                 {item}

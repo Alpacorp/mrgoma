@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 const stats = [
   { value: '7', label: 'Locations', sub: 'Miami & Orlando, FL' },
-  { value: '3,600+', label: 'Tires in stock', sub: 'At all times' },
+  { value: '15,000+', label: 'Tires in stock', sub: 'At all times' },
   { value: '180', label: 'Day warranty', sub: 'On used tires' },
   { value: '[YEAR]+', label: 'Years in Miami', sub: 'Placeholder — update' },
   { value: 'ASE', label: 'Certified', sub: 'Every technician' },
@@ -20,8 +20,8 @@ const pillars = [
   },
   {
     number: '02',
-    title: '180-Day Warranty',
-    body: 'The longest warranty on used tires in Florida. 6× the industry standard of 30 days — because we stand behind what we sell.',
+    title: '30-Day Warranty',
+    body: 'Every used tire we sell is backed by a 30-day warranty — many shops offer none at all, because we stand behind what we sell.',
   },
   {
     number: '03',
@@ -310,7 +310,7 @@ export default function AboutUs() {
             Ready to find your tire?
           </h2>
           <p className="text-black/60 text-lg max-w-md">
-            Browse 3,600+ tires online or visit any of our 7 locations across Miami and Orlando.
+            Browse 15,000+ tires online or visit any of our 7 locations across Miami and Orlando.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <Link

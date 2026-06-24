@@ -127,7 +127,7 @@ export default function ServiceDetail({ service }: Props) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {[
                 { title: 'ASE-Certified Technicians', body: 'Every technician is certified by the National Automotive Service of Excellence.' },
-                { title: '180-Day Warranty', body: 'The longest warranty on used tires in Florida — 6× the industry standard.' },
+                { title: '30-Day Warranty', body: 'Every used tire is backed by a 30-day warranty — many shops offer none at all.' },
                 { title: '7 Locations', body: 'Across Miami and Orlando — always a shop near you.' },
                 { title: 'No Appointment Needed', body: 'Walk in at any location. Fast service, no waiting weeks for a slot.' },
               ].map(item => (

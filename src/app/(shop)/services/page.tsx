@@ -121,7 +121,7 @@ export default function ServicesPage() {
       {/* Trust bar */}
       <section className="border-t border-white/8 bg-[#0a0a0a]">
         <div className="max-w-6xl mx-auto px-6 lg:px-8 py-12 flex flex-wrap justify-center gap-x-12 gap-y-6 text-center">
-          {['ASE-Certified Technicians', '7 Locations', '180-Day Warranty', 'No Appointment Needed'].map(item => (
+          {['ASE-Certified Technicians', '7 Locations', '30-Day Warranty', 'No Appointment Needed'].map(item => (
             <div key={item} className="flex flex-col gap-1">
               <span className="text-[#9dfb40] font-bold text-sm">✦</span>
               <span className="text-white font-semibold text-sm">{item}</span>

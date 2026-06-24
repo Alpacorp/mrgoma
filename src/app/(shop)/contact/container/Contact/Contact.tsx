@@ -78,7 +78,7 @@ const hours = [
 
 const trust = [
   { label: 'ASE Certified', icon: '✦' },
-  { label: '180-Day Warranty', icon: '✦' },
+  { label: '30-Day Warranty', icon: '✦' },
   { label: 'Free Shipping', icon: '✦' },
   { label: 'Est. Miami, FL', icon: '✦' },
 ];

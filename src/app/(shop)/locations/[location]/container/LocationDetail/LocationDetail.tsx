@@ -228,7 +228,7 @@ export default function LocationDetail({ location }: Props) {
           {/* Shop tires */}
           <div className="border border-[#9dfb40]/20 rounded-2xl p-6 bg-[#9dfb40]/5">
             <h3 className="font-bold text-white mb-2">Need a tire?</h3>
-            <p className="text-gray-500 text-sm mb-4">Browse our inventory of 3,600+ new and used tires online.</p>
+            <p className="text-gray-500 text-sm mb-4">Browse our inventory of 15,000+ new and used tires online.</p>
             <Link href="/tires"
               className="block text-center bg-[#9dfb40] text-black font-bold py-3 px-6 rounded-full text-sm hover:bg-[#8ae636] transition-colors">
               Shop Tires

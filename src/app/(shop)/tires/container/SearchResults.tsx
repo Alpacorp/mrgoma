@@ -314,7 +314,7 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
                 tiresData.totalCount > 0 ? `${tiresData.totalCount.toLocaleString()} tires in stock` : '3,600+ tires in stock',
                 'Free shipping nationwide',
                 '7 locations Miami & Orlando',
-                '180-Day warranty',
+                '30-Day warranty',
               ].map(item => (
                 <span
                   key={item}

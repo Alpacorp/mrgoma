@@ -60,7 +60,7 @@ export const locationsConfig: LocationConfig[] = [
       'MrGoma Tires on NW 2nd Ave serving Miami Gardens, Hollywood, and Aventura. New and used tires, mounting, balancing, and more. ASE-certified technicians.',
     h1: 'MrGoma Tires – Miami North (441)',
     description:
-      'Our North Miami location on NW 2nd Ave serves Miami Gardens, Hollywood, Aventura, and North Miami. With 3,600+ tires in stock across our network, we can quickly find the right tire for your vehicle.',
+      'Our North Miami location on NW 2nd Ave serves Miami Gardens, Hollywood, Aventura, and North Miami. With 15,000+ tires in stock across our network, we can quickly find the right tire for your vehicle.',
   },
   {
     slug: 'miami-coral-gables',
@@ -92,7 +92,7 @@ export const locationsConfig: LocationConfig[] = [
       'MrGoma Tires in Hialeah on E 10th Ct. Serving Hialeah, Miami Springs, and East Hialeah with new and used tires, oil changes, brake service, and more.',
     h1: 'MrGoma Tires – Hialeah (E 10th Ct)',
     description:
-      'Our Hialeah location on E 10th Court serves Hialeah, Miami Springs, and East Hialeah. We offer the same full menu of tire and automotive services as all our locations — with the same ASE-certified technicians and 180-day warranty on used tires.',
+      'Our Hialeah location on E 10th Court serves Hialeah, Miami Springs, and East Hialeah. We offer the same full menu of tire and automotive services as all our locations — with the same ASE-certified technicians and 30-day warranty on used tires.',
   },
   {
     slug: 'orlando-west-colonial',
