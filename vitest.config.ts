@@ -17,7 +17,8 @@ export default defineConfig({
         'src/app/hooks/**',
         'src/app/api/tire/**',
         'src/app/api/ranges/**',
-        'src/app/**/instant-quote/**',
+        'src/app/api/instant-quote/**',
+        'src/app/**/InstantQoute/**',
         'src/app/ui/components/BrandHeadline/**',
         'src/app/ui/components/Dialog/**',
         'src/app/ui/components/HamburgerMenu/**',
@@ -27,13 +28,21 @@ export default defineConfig({
         'src/app/ui/sections/CartModal/**',
         'src/app/ui/sections/TireCard/**',
       ],
-      exclude: ['**/*.test.{ts,tsx}', '**/*.d.ts'],
+      exclude: [
+        '**/*.test.{ts,tsx}',
+        '**/*.d.ts',
+        // Infra that isn't a meaningful unit-test target (integration/E2E instead).
+        'src/app/utils/authOptions.ts', // NextAuth provider config
+        'src/app/utils/parseText.tsx', // markdown→JSX parser
+        'src/app/hooks/useTireDimensions.ts', // context + effect heavy
+        'src/app/hooks/useTireSizeWithContext.ts',
+      ],
       // Safety net against big regressions; we currently sit comfortably above.
       thresholds: {
-        statements: 55,
-        branches: 55,
-        functions: 55,
-        lines: 55,
+        statements: 70,
+        branches: 65,
+        functions: 70,
+        lines: 70,
       },
     },
   },
