@@ -19,11 +19,9 @@ const FreeShippingBadge: React.FC<FreeShippingBadgeProps> = ({
     'inline-flex items-center rounded-full bg-green-50 text-green-700 ring-1 ring-inset ring-green-200 px-2 py-0.5 text-xs font-medium ' +
     (className || '');
 
-  return (
-    <Tag className={classes} role="note" title={label}>
-      {label}
-    </Tag>
-  );
+  // Rendered via createElement so the polymorphic `as` tag does not trip the
+  // JSX intrinsic-element union (react-three-fiber augments it globally).
+  return React.createElement(Tag, { className: classes, role: 'note', title: label }, label);
 };
 
 export default FreeShippingBadge;

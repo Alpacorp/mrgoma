@@ -7,7 +7,8 @@ import { useRouter } from 'next/navigation';
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
 import { useTireDimensions } from '@/app/hooks/useTireDimensions';
 import { useTireSizeWithContext } from '@/app/hooks/useTireSizeWithContext';
-import { ButtonSearch, TireDisplay } from '@/app/ui/components';
+import { ButtonSearch } from '@/app/ui/components';
+import TirePreview3D from '@/app/ui/components/TirePreview3D/TirePreview3D';
 import { CarFront } from '@/app/ui/icons';
 import { SizeSelectors } from '@/app/ui/sections';
 
@@ -93,8 +94,8 @@ const SearchBySize: FC = () => {
             <ButtonSearch onClick={handleSearch} disabled={canSearch} />
           </div>
         </div>
-        <div className="hidden md:flex items-center justify-center flex-1">
-          <TireDisplay />
+        <div className="hidden md:flex items-stretch justify-center flex-1">
+          <TirePreview3D />
         </div>
       </div>
     </>
