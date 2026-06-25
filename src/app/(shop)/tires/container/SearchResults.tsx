@@ -2,7 +2,6 @@
 
 import React, { FC, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 
-import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { BrowseFilters } from '@/app/(shop)/tires/container/BrowseFilters/BrowseFilters';
@@ -28,9 +27,6 @@ import {
 import { createPaginatedResponse } from '@/app/utils/transformTireData';
 
 import { PaginatedTiresResponse } from '../utils/fetchTiresServer';
-
-// Lazy-loaded: keeps the AI chat bundle out of the initial tires-page payload.
-const AiChat = dynamic(() => import('@/app/ui/components/AiChat/AiChat'), { ssr: false });
 
 interface SearchResultsProps {
   initialData?: PaginatedTiresResponse;
@@ -509,19 +505,6 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
         <div className="block lg:hidden">
           <CollapsibleSearchBar redirectBasePath={'tires'} />
         </div>
-        <AiChat
-          apiEndpoint="/api/tires/ai-chat"
-          redirectBasePath="tires"
-          exampleQueries={[
-            '205/55/16 nuevas Michelin',
-            'used Michelin aro 17',
-            'usadas menos de $50',
-            '¿qué diferencia hay entre nueva y usada?',
-            '195/65/15 with more than 50% life',
-            'Pirelli',
-            'used tires under $80',
-          ]}
-        />
       </main>
     </Suspense>
   );

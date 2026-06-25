@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import Image from 'next/image';
 
-/** Parses inline markdown tokens: **bold** and [text](url) */
+/** Parses inline Markdown tokens: **bold** and [text](url) */
 function parseInline(text: string): React.ReactNode[] {
   const pattern = /(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/g;
   const parts: React.ReactNode[] = [];
@@ -216,7 +216,9 @@ export default function AiChat({
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-green-600 text-white shrink-0">
             <div className="flex items-center gap-2">
-              <span className="text-lg" aria-hidden="true">✨</span>
+              <span className="text-lg" aria-hidden="true">
+                ✨
+              </span>
               <div>
                 <p id="aichat-title" className="font-semibold text-sm">
                   AI Inventory Assistant
@@ -397,18 +399,33 @@ export default function AiChat({
           <button
             type="button"
             onClick={() => setIsOpen(true)}
-            className="cursor-pointer relative w-16 h-16 rounded-full overflow-hidden transition-all duration-200 hover:scale-110 active:scale-95 ring-4 ring-white bg-white [box-shadow:0_6px_24px_rgba(0,0,0,0.4)]"
+            className="cursor-pointer relative w-16 h-16 rounded-full transition-transform duration-200 hover:scale-110 active:scale-95 [box-shadow:0_6px_24px_rgba(0,0,0,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2"
             aria-label="Open AI assistant"
           >
-            <Image
-              alt="MrGoma AI Assistant"
-              src={mrGomaAvatar || '/placeholder.svg'}
-              fill
-              className="object-cover object-top"
-              priority
+            {/* Animated AI gradient ring — slow spin, frozen for reduced motion */}
+            <span
+              aria-hidden="true"
+              className="absolute inset-0 rounded-full animate-spin [animation-duration:4s] motion-reduce:animate-none"
+              style={{
+                backgroundImage:
+                  'conic-gradient(from 0deg, #15803d, #9dfb40, #22c55e, #9dfb40, #15803d)',
+              }}
             />
-            {/* Active indicator dot */}
-            <span className="absolute bottom-1 right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white shadow-md" />
+            {/* Avatar disc sits above the ring, leaving a thin gradient rim */}
+            <span className="absolute inset-[3px] rounded-full overflow-hidden bg-white">
+              <Image
+                alt="MrGoma AI Assistant"
+                src={mrGomaAvatar || '/placeholder.svg'}
+                fill
+                className="object-cover object-top"
+                priority
+              />
+            </span>
+            {/* AI badge — signals this is an interactive AI assistant */}
+            <span className="absolute -top-1.5 -right-1.5 flex items-center gap-0.5 rounded-full bg-green-600 px-1.5 py-0.5 text-[9px] font-bold leading-none text-white ring-2 ring-white shadow-md">
+              AI
+              <span aria-hidden="true">✨</span>
+            </span>
           </button>
         )}
       </div>

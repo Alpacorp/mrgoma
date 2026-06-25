@@ -12,8 +12,8 @@ import { DetailModalProvider } from '@/app/context/ShowDetailModal';
 import { FiltersProvider } from '@/app/context/ShowFilterContext';
 import { MenuProvider } from '@/app/context/ShowMenuContext';
 import { CookieConsent } from '@/app/ui/components';
+import SiteAiChat from '@/app/ui/components/AiChat/SiteAiChat';
 import GoogleAnalytics from '@/app/ui/components/GoogleAnalytics/GoogleAnalytics';
-import WhatsAppButton from '@/app/ui/components/WhatsAppButton/WhatsAppButton';
 import { locationsData } from '@/app/ui/sections/LocationsSlider/locationsData';
 import {
   buildDefaultMetadata,
@@ -64,7 +64,7 @@ export default function RootLayout({
                       <GoogleAnalytics />
                     </React.Suspense>
                     {children}
-                    <WhatsAppButton />
+                    <SiteAiChat />
                     <CookieConsent />
                     <Analytics />
                   </body>
