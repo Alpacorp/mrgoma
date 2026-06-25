@@ -636,8 +636,6 @@ export default function Checkout() {
                                       width={64}
                                       height={64}
                                       className="h-full w-full object-cover object-center"
-                                      // Remote tire photos skip Vercel's optimizer (quota / 402).
-                                      unoptimized={item.image.startsWith('http')}
                                     />
                                   ) : (
                                     <div className="flex h-full w-full items-center justify-center bg-gray-100 text-xs text-gray-500">
