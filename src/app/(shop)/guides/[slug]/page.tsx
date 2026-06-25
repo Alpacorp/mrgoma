@@ -217,6 +217,9 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
                   href="https://wa.me/14073644016"
                   target="_blank"
                   rel="noopener noreferrer"
+                  data-track="open_whatsapp"
+                  data-track-category="contact"
+                  data-track-label="guide"
                   className="flex items-center justify-center gap-2 w-full border-2 border-[#25D366] text-[#25D366] font-bold py-3 rounded-full hover:bg-[#25D366] hover:text-white transition-colors duration-200 text-sm"
                 >
                   <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">

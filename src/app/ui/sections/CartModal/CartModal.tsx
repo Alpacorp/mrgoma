@@ -130,6 +130,8 @@ const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
                   aria-disabled={cartItems.length === 0}
                   role={cartItems.length === 0 ? 'link' : undefined}
                   tabIndex={cartItems.length === 0 ? -1 : 0}
+                  data-track="begin_checkout"
+                  data-track-category="cart"
                   className={`flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
                     cartItems.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
                   }`}

@@ -1,6 +1,7 @@
 import { unstable_cache } from 'next/cache';
 import { NextResponse } from 'next/server';
 
+import { withLogging } from '@/app/api/_lib/withLogging';
 import { fetchTireHeights } from '@/repositories/dimensionsRepository';
 import { logger } from '@/utils/logger';
 
@@ -12,7 +13,7 @@ const getCachedHeights = unstable_cache(() => fetchTireHeights(), ['dimensions-h
 /**
  * API route to get all unique tire heights (displayed as Width in the UI)
  */
-export async function GET() {
+export const GET = withLogging('dimensions.heights.GET', async () => {
   try {
     const heights = await getCachedHeights();
     return NextResponse.json(heights);
@@ -21,4 +22,4 @@ export async function GET() {
     const errorMessage = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ message: errorMessage }, { status: 500 });
   }
-}
+});

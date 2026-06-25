@@ -1,6 +1,7 @@
 import { VarChar } from 'mssql';
 
 import { getPool } from '@/connection/db';
+import { logQuery } from '@/connection/queryLogger';
 
 export interface UserRecord {
   UserName: string;
@@ -24,7 +25,7 @@ export async function findUserByUsername(username: string): Promise<UserRecord |
     WHERE LTRIM(RTRIM(UserName)) = @username
   `;
 
-  const result = await request.query(query);
+  const result = await logQuery('users.findByUsername', () => request.query(query));
 
   if (result.recordset.length > 0) {
     return result.recordset[0] as UserRecord;

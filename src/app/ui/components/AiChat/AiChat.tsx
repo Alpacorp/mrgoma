@@ -274,6 +274,9 @@ export default function AiChat({
                       key={q}
                       type="button"
                       onClick={() => setInputValue(q)}
+                      data-track="ai_chat_example"
+                      data-track-category="ai_chat"
+                      data-track-label={q}
                       className="cursor-pointer block w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-600 hover:border-green-600 hover:text-green-600 transition-colors"
                     >
                       {q}
@@ -351,6 +354,8 @@ export default function AiChat({
             <button
               type="submit"
               disabled={isLoading || !inputValue.trim()}
+              data-track="ai_chat_send"
+              data-track-category="ai_chat"
               className="cursor-pointer p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
               aria-label="Send"
             >
@@ -401,6 +406,8 @@ export default function AiChat({
             onClick={() => setIsOpen(true)}
             className="cursor-pointer relative w-16 h-16 rounded-full transition-transform duration-200 hover:scale-110 active:scale-95 [box-shadow:0_6px_24px_rgba(0,0,0,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2"
             aria-label="Open AI assistant"
+            data-track="open_ai_chat"
+            data-track-category="ai_chat"
           >
             {/* Animated AI gradient ring — slow spin, frozen for reduced motion */}
             <span

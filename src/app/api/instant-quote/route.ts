@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { withLogging } from '@/app/api/_lib/withLogging';
 import { logger } from '@/utils/logger';
 
 // --- Simple in-memory rate limiter (per instance) ---
@@ -58,7 +59,7 @@ function isAllowedOrigin(req: NextRequest): boolean {
   }
 }
 
-export async function POST(req: NextRequest) {
+export const POST = withLogging('instantQuote.POST', async (req: NextRequest) => {
   try {
     const webhookUrl = process.env.N8N_WEBHOOK_URL;
     if (!webhookUrl) {
@@ -148,4 +149,4 @@ export async function POST(req: NextRequest) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ message }, { status: 500 });
   }
-}
+});

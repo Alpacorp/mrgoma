@@ -813,6 +813,9 @@ export default function Checkout() {
                   <button
                     type="button"
                     onClick={proceedToPayment}
+                    data-track="place_order"
+                    data-track-category="checkout"
+                    data-track-label={fulfillmentMethod}
                     className="inline-flex w-full cursor-pointer items-center justify-center rounded-md bg-green-600 px-5 py-2.5 text-base font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={
                       isEmpty ||

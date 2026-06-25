@@ -1,6 +1,7 @@
 import { Float, Int, VarChar } from 'mssql';
 
 import { getPool } from '@/connection/db';
+import { logQuery } from '@/connection/queryLogger';
 
 type MssqlType = typeof VarChar | typeof Int | typeof Float;
 type SqlParam = { name: string; type: MssqlType; value: unknown };
@@ -232,8 +233,8 @@ async function fetchTiresInternal(
   const countQuery = `SELECT COUNT(*) AS totalCount ${baseQuery}`;
 
   const [dataResult, countResult] = await Promise.all([
-    request.query(dataQuery),
-    countRequest.query(countQuery),
+    logQuery('tires.list.data', () => request.query(dataQuery), { offset, pageSize }),
+    logQuery('tires.list.count', () => countRequest.query(countQuery)),
   ]);
 
   const records = dataResult.recordset as DocumentRecord[];
@@ -265,7 +266,7 @@ async function fetchTireRangesInternal(baseWhereClause: string): Promise<TireRan
     FROM dbo.View_Tires
     WHERE ${baseWhereClause}`;
 
-  const result = await pool.request().query(query);
+  const result = await logQuery('tires.ranges', () => pool.request().query(query));
 
   return result.recordset[0] as TireRangeResult;
 }
@@ -299,7 +300,7 @@ async function fetchBrandsInternal(
     WHERE ${whereClause} AND Brand IS NOT NULL AND Brand <> ''
     ORDER BY Brand`;
 
-  const result = await request.query(query);
+  const result = await logQuery('tires.brands', () => request.query(query));
   return result.recordset.map(row => row.Brand as string);
 }
 
@@ -310,7 +311,7 @@ export async function fetchSizes(): Promise<string[]> {
     FROM dbo.View_Tires
     WHERE ${baseWhere} AND RealSize IS NOT NULL AND RealSize <> ''
     ORDER BY RealSize`;
-  const result = await pool.request().query(query);
+  const result = await logQuery('tires.sizes', () => pool.request().query(query));
   return result.recordset.map(row => row.RealSize as string);
 }
 
@@ -320,7 +321,7 @@ export async function fetchDashboardStores(): Promise<string[]> {
     FROM dbo.View_Tires
     WHERE Trash = 'false' AND VaultName IS NOT NULL AND VaultName <> ''
     ORDER BY VaultName DESC`;
-  const result = await pool.request().query(query);
+  const result = await logQuery('tires.stores', () => pool.request().query(query));
   return result.recordset.map(row => row.VaultName as string);
 }
 
@@ -331,7 +332,7 @@ export async function fetchTireById(tireId: string): Promise<DocumentRecord | nu
 
   const query = `SELECT TOP 1 * FROM dbo.View_Tires WHERE TireId = @tireId`;
 
-  const result = await request.query(query);
+  const result = await logQuery('tires.byId', () => request.query(query), { tireId });
   const record = (result.recordset && result.recordset[0]) as DocumentRecord | undefined;
   return record || null;
 }
@@ -348,8 +349,10 @@ export async function fetchTiresByIds(tireIds: string[]): Promise<DocumentRecord
     return `@tid${idx}`;
   });
 
-  const result = await request.query(
-    `SELECT * FROM dbo.View_Tires WHERE TireId IN (${params.join(',')})`
+  const result = await logQuery(
+    'tires.byIds',
+    () => request.query(`SELECT * FROM dbo.View_Tires WHERE TireId IN (${params.join(',')})`),
+    { count: unique.length }
   );
   return (result.recordset as DocumentRecord[]) ?? [];
 }
@@ -365,7 +368,7 @@ export async function fetchActiveTireIds(
                  FROM dbo.View_Tires
                  WHERE Local = '0' AND Trash = 'false' AND Condition != 'sold' AND Price != 0
                  ORDER BY ModificationDate DESC`;
-  const result = await request.query(query);
+  const result = await logQuery('tires.activeIds', () => request.query(query), { limit });
   return (result.recordset || []).map((row: { TireId: string; ModificationDate?: Date; Brand?: string; RealSize?: string }) => ({
     id: String(row.TireId),
     modified: row.ModificationDate,
@@ -397,7 +400,9 @@ export async function setTiresConditionIdToSoldByIds(
   request.input('condId', Int, conditionId);
 
   const sql = `UPDATE dbo.Tires SET ConditionId = @condId, Trash = 1 WHERE TireId IN (${params.join(', ')})`;
-  const result = await request.query(sql);
+  const result = await logQuery('tires.markSold', () => request.query(sql), {
+    count: unique.length,
+  });
 
   const rows = result.rowsAffected.reduce((acc, n) => acc + n, 0);
 

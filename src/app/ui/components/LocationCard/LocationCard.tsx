@@ -69,6 +69,9 @@ export const LocationCard = ({
           </button>
           <button
             onClick={handlePhoneClick}
+            data-track="call_store"
+            data-track-category="contact"
+            data-track-label={name}
             className="flex items-center gap-2 transition-colors cursor-pointer group"
             aria-label={`Call ${phone}`}
           >
