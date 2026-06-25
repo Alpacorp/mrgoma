@@ -77,6 +77,8 @@ const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
                               width={64}
                               height={64}
                               className="w-full h-full object-center object-cover"
+                              // Remote tire photos skip Vercel's optimizer (quota / 402).
+                              unoptimized={item.image.startsWith('http')}
                             />
                           ) : (
                             <div className="w-full h-full bg-gray-200 flex items-center justify-center">

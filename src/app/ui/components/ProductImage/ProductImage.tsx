@@ -55,6 +55,10 @@ const ProductImage: FC<ProductImageProps> = ({ product, priority = false }) => {
         className={`w-full object-contain object-center transition ease-in-out hover:scale-105 duration-300`}
         alt={product.imageAlt || product.brand || 'Tire image'}
         src={imgSrc}
+        // Remote tire photos are served by our own image host; bypass Vercel's
+        // image optimizer for them (avoids the optimization quota / 402 errors).
+        // Local assets (e.g. the fallback) keep optimization.
+        unoptimized={imgSrc.startsWith('http')}
         onError={handleImageError}
         priority={priority}
         loading={priority ? undefined : 'lazy'}
