@@ -102,6 +102,9 @@ const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
               className="object-contain object-center"
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
               priority={false}
+              // Remote tire photos load straight from our image host (skip
+              // Vercel's optimizer to avoid the optimization quota / 402 errors).
+              unoptimized={current.src.startsWith('http')}
             />
             <div className="pointer-events-none absolute top-2 left-2 z-30">
               <ProductCondition condition={singleTire.condition} />

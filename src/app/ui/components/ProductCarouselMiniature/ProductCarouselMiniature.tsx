@@ -31,6 +31,9 @@ const ProductCarouselMiniature: FC<ProductImageProps> = ({ product, isHovered })
         }`}
         alt={safeAlt}
         src={safeSrc}
+        // Remote tire photos load straight from our image host (skip Vercel's
+        // optimizer to avoid the optimization quota / 402 errors).
+        unoptimized={safeSrc.startsWith('http')}
         title={safeAlt}
         aria-label={safeAlt}
         priority
