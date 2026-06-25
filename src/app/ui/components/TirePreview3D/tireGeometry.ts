@@ -56,31 +56,30 @@ export function computeTireProportions(input: TireSizeInput): TireProportions {
 
 /**
  * Cross-section profile of the rubber, revolved around the axle (Y) by
- * THREE.LatheGeometry. Points are (radius, axialPosition). A few inward dips in
- * the tread region become real circumferential grooves once revolved — which is
- * exactly how a tire's longitudinal grooves run.
+ * THREE.LatheGeometry. Points are (radius, axialPosition).
+ *
+ * The profile is smooth (no carved grooves) so the silhouette reads as one
+ * solid tire from any angle — the tread blocks/grooves come from the procedural
+ * normal map instead. The tread is gently crowned and the sidewalls bulge for a
+ * realistic shape. Indices keep the tread roughly in V 0.34–0.66 to line up
+ * with the texture layout in tireTextures.ts.
  */
 export function buildTireProfile(rimR: number, overallR: number, halfWidth: number): THREE.Vector2[] {
   const hw = halfWidth;
   const sidewall = overallR - rimR;
-  const groove = overallR * 0.055;
   const t = overallR;
 
   return [
-    new THREE.Vector2(rimR, -hw * 0.92), // inner bead (one side)
-    new THREE.Vector2(rimR + sidewall * 0.45, -hw * 1.0), // sidewall bulge
-    new THREE.Vector2(t * 0.985, -hw * 0.86), // shoulder
-    new THREE.Vector2(t, -hw * 0.62), // tread starts
-    new THREE.Vector2(t - groove, -hw * 0.52), // groove
-    new THREE.Vector2(t, -hw * 0.42), // rib
-    new THREE.Vector2(t, -hw * 0.14),
-    new THREE.Vector2(t - groove, 0), // center groove
-    new THREE.Vector2(t, hw * 0.14),
-    new THREE.Vector2(t, hw * 0.42), // rib
-    new THREE.Vector2(t - groove, hw * 0.52), // groove
-    new THREE.Vector2(t, hw * 0.62), // tread ends
-    new THREE.Vector2(t * 0.985, hw * 0.86), // shoulder
-    new THREE.Vector2(rimR + sidewall * 0.45, hw * 1.0), // sidewall bulge
-    new THREE.Vector2(rimR, hw * 0.92), // inner bead (other side)
+    new THREE.Vector2(rimR, -hw * 0.95), // bead (one side)
+    new THREE.Vector2(rimR + sidewall * 0.3, -hw * 1.0), // widest sidewall bulge
+    new THREE.Vector2(rimR + sidewall * 0.66, -hw * 0.95), // upper sidewall
+    new THREE.Vector2(t * 0.965, -hw * 0.82), // shoulder
+    new THREE.Vector2(t, -hw * 0.62), // tread edge
+    new THREE.Vector2(t * 1.006, 0), // crown (slightly larger at center)
+    new THREE.Vector2(t, hw * 0.62), // tread edge
+    new THREE.Vector2(t * 0.965, hw * 0.82), // shoulder
+    new THREE.Vector2(rimR + sidewall * 0.66, hw * 0.95), // upper sidewall
+    new THREE.Vector2(rimR + sidewall * 0.3, hw * 1.0), // widest sidewall bulge
+    new THREE.Vector2(rimR, hw * 0.95), // bead (other side)
   ];
 }

@@ -10,8 +10,8 @@ import { ArrowsToRight } from '@/app/ui/icons';
 import TireDisplay from '../TireDisplay/TireDisplay';
 
 const Skeleton = () => (
-  <div className="w-full h-full min-h-[16rem] flex items-center justify-center">
-    <div className="h-40 w-40 rounded-full border-4 border-gray-200 border-t-green-500 animate-spin" />
+  <div className="w-full h-full flex items-center justify-center">
+    <div className="h-20 w-20 rounded-full border-4 border-gray-200 border-t-green-500 animate-spin" />
   </div>
 );
 
@@ -73,8 +73,9 @@ const TirePreview3D: FC = () => {
   const allSelected = selectedFilters.width && selectedFilters.sidewall && selectedFilters.diameter;
 
   return (
-    <div className="relative w-full h-full min-h-[16rem]">
-      {/* Decorative canvas: the dropdowns + the badge below carry the meaning. */}
+    <div className="relative w-full h-full">
+      {/* Decorative canvas (transparent — the white card shows through). The
+          dropdowns + the badge below carry the meaning. */}
       <div className="absolute inset-0" aria-hidden="true">
         <TireScene size={size} reducedMotion={reducedMotion} />
       </div>
