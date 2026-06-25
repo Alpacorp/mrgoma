@@ -24,7 +24,6 @@ export default defineConfig({
         'src/app/ui/components/HamburgerMenu/**',
         'src/app/ui/components/ProductImage/**',
         'src/app/ui/components/SelectDropdown/**',
-        'src/app/ui/components/WhatsAppButton/**',
         'src/app/ui/sections/CartModal/**',
         'src/app/ui/sections/TireCard/**',
       ],
