@@ -154,6 +154,8 @@ const Header: FC<{ compact?: boolean }> = ({ compact = false }): ReactNode => {
             <div className="flex">
               <button
                 onClick={handleCartClick}
+                data-track="open_cart"
+                data-track-category="cart"
                 className="flex items-center justify-center cursor-pointer rounded-full bg-white/10 border border-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/20 transition-colors relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
                 aria-label={isMounted ? `Shopping cart with ${cartCount} items` : 'Shopping cart'}
               >

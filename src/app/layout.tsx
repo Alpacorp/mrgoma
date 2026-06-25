@@ -14,6 +14,7 @@ import { MenuProvider } from '@/app/context/ShowMenuContext';
 import { CookieConsent } from '@/app/ui/components';
 import SiteAiChat from '@/app/ui/components/AiChat/SiteAiChat';
 import GoogleAnalytics from '@/app/ui/components/GoogleAnalytics/GoogleAnalytics';
+import InteractionTracker from '@/app/ui/components/InteractionTracker/InteractionTracker';
 import { locationsData } from '@/app/ui/sections/LocationsSlider/locationsData';
 import {
   buildDefaultMetadata,
@@ -63,6 +64,7 @@ export default function RootLayout({
                     <React.Suspense fallback={null}>
                       <GoogleAnalytics />
                     </React.Suspense>
+                    <InteractionTracker />
                     {children}
                     <SiteAiChat />
                     <CookieConsent />

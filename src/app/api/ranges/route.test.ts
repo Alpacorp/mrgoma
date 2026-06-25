@@ -10,10 +10,12 @@ const h = vi.hoisted(() => ({
 vi.mock('next/cache', () => ({ unstable_cache: (fn: unknown) => fn }));
 vi.mock('@/repositories/tiresRepository', () => ({ fetchTireRanges: () => h.impl() }));
 vi.mock('@/utils/logger', () => ({
-  logger: { error: vi.fn(), warn: vi.fn(), info: vi.fn() },
+  logger: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn(), log: vi.fn() },
 }));
 
 import { GET } from './route';
+
+const req = new Request('http://localhost/api/ranges') as never;
 
 beforeEach(() => {
   h.impl = () => ({ minPrice: 10, maxPrice: 500 });
@@ -21,7 +23,7 @@ beforeEach(() => {
 
 describe('GET /api/ranges', () => {
   it('returns the ranges as JSON', async () => {
-    const res = await GET();
+    const res = await GET(req);
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ minPrice: 10, maxPrice: 500 });
   });
@@ -30,7 +32,7 @@ describe('GET /api/ranges', () => {
     h.impl = () => {
       throw new Error('db down');
     };
-    const res = await GET();
+    const res = await GET(req);
     expect(res.status).toBe(500);
   });
 });

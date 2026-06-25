@@ -521,6 +521,8 @@ const InstantQuote: React.FC = () => {
               <button
                 type="submit"
                 disabled={!allRequiredFilled || submitting}
+                data-track="quote_submit"
+                data-track-category="lead"
                 className={`inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-2 text-sm font-medium rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 transition-colors ${
                   !allRequiredFilled || submitting
                     ? 'bg-gray-300 text-gray-600 cursor-not-allowed'

@@ -1,6 +1,7 @@
 import { unstable_cache } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
+import { withLogging } from '@/app/api/_lib/withLogging';
 import { fetchTireSizes } from '@/repositories/dimensionsRepository';
 import { logger } from '@/utils/logger';
 
@@ -14,7 +15,7 @@ const getCachedSizes = unstable_cache(
  * API route to get all unique tire sizes (displayed as Diameter in the UI)
  * Can be filtered by height and width if provided in query params
  */
-export async function GET(req: NextRequest) {
+export const GET = withLogging('dimensions.sizes.GET', async (req: NextRequest) => {
   try {
     const { searchParams } = new URL(req.url);
     const height = searchParams.get('height'); // Optional filter by height
@@ -32,4 +33,4 @@ export async function GET(req: NextRequest) {
     const errorMessage = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ message: errorMessage }, { status: 500 });
   }
-}
+});

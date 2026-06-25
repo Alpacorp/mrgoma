@@ -180,6 +180,9 @@ export default function Contact() {
             href="https://wa.me/14073644016"
             target="_blank"
             rel="noopener noreferrer"
+            data-track="open_whatsapp"
+            data-track-category="contact"
+            data-track-label="contact_hero"
             className="flex items-center gap-3 bg-black text-[#9dfb40] font-bold px-8 py-4 rounded-full text-base whitespace-nowrap hover:bg-zinc-900 transition-colors duration-200 shrink-0"
           >
             <WhatsAppIcon />
@@ -232,6 +235,9 @@ export default function Contact() {
 
                 <a
                   href={loc.tel}
+                  data-track="call_store"
+                  data-track-category="contact"
+                  data-track-label={loc.name}
                   className="flex items-center gap-2 text-sm text-gray-400 hover:text-[#9dfb40] transition-colors duration-150 w-fit"
                 >
                   <PhoneIcon />
@@ -323,6 +329,9 @@ export default function Contact() {
                   href="https://wa.me/14073644016"
                   target="_blank"
                   rel="noopener noreferrer"
+                  data-track="open_whatsapp"
+                  data-track-category="contact"
+                  data-track-label="contact_footer"
                   className="text-white hover:text-[#9dfb40] transition-colors font-medium text-lg inline-flex items-center gap-2"
                 >
                   <WhatsAppIcon />
