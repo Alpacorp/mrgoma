@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import type Stripe from 'stripe';
 
+import { withLogging } from '@/app/api/_lib/withLogging';
+
 // Helper to build the application's origin from the request URL
 function getOrigin(req: NextRequest) {
   try {
@@ -101,7 +103,7 @@ function formatCurrency(n: number) {
   }
 }
 
-export async function POST(req: NextRequest) {
+export const POST = withLogging('checkout.createSession.POST', async (req: NextRequest) => {
   try {
     const origin = getOrigin(req);
     const assetsBase =
@@ -428,4 +430,4 @@ export async function POST(req: NextRequest) {
     const message = e instanceof Error ? e.message : 'Unexpected server error';
     return NextResponse.json({ message }, { status: 500 });
   }
-}
+});

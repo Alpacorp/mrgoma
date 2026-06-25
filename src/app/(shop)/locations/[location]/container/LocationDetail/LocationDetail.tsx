@@ -136,7 +136,7 @@ export default function LocationDetail({ location }: Props) {
                 <PhoneIcon />
                 <div>
                   <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Phone</p>
-                  <a href={location.tel} className="text-white font-medium hover:text-[#9dfb40] transition-colors text-lg">
+                  <a href={location.tel} data-track="call_store" data-track-category="contact" data-track-label={location.name} className="text-white font-medium hover:text-[#9dfb40] transition-colors text-lg">
                     {location.phone}
                   </a>
                 </div>
@@ -195,11 +195,13 @@ export default function LocationDetail({ location }: Props) {
               <p className="text-black font-black text-lg mb-1">Contact This Location</p>
               <p className="text-black/60 text-sm mb-4">Fastest reply via WhatsApp</p>
               <a href="https://wa.me/14073644016" target="_blank" rel="noopener noreferrer"
+                data-track="open_whatsapp" data-track-category="contact" data-track-label={location.name}
                 className="flex items-center justify-center gap-2 bg-black text-[#9dfb40] font-bold py-3 px-6 rounded-full text-sm hover:bg-zinc-900 transition-colors w-full">
                 <WhatsAppIcon />
                 Open WhatsApp
               </a>
               <a href={location.tel}
+                data-track="call_store" data-track-category="contact" data-track-label={location.name}
                 className="flex items-center justify-center gap-2 mt-3 border border-black/20 text-black font-semibold py-3 px-6 rounded-full text-sm hover:bg-black/10 transition-colors w-full">
                 <PhoneIcon />
                 {location.phone}

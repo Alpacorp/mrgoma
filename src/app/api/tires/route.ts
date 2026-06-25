@@ -1,6 +1,7 @@
 import { unstable_cache } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
+import { withLogging } from '@/app/api/_lib/withLogging';
 import { buildTireFilters } from '@/app/utils/filterUtils';
 import {
   DEFAULT_PAGE,
@@ -17,7 +18,7 @@ const getCachedTires = unstable_cache(
   { revalidate: 120, tags: ['tires'] }
 );
 
-export async function GET(req: NextRequest) {
+export const GET = withLogging('tires.GET', async (req: NextRequest) => {
   const { searchParams } = new URL(req.url);
 
   // Get and validate pagination parameters
@@ -46,4 +47,4 @@ export async function GET(req: NextRequest) {
     const errorMessage = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ message: errorMessage }, { status: 500 });
   }
-}
+});

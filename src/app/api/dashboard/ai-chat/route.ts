@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import Anthropic from '@anthropic-ai/sdk';
 
+import { withLogging } from '@/app/api/_lib/withLogging';
 import { auth } from '@/app/utils/authOptions';
 import { logger } from '@/utils/logger';
 import { createRateLimiter } from '@/utils/rateLimit';
@@ -117,7 +118,7 @@ interface ApiMessage {
   content: string;
 }
 
-export async function POST(req: NextRequest) {
+export const POST = withLogging('dashboard.aiChat.POST', async (req: NextRequest) => {
   if (isRateLimited(req)) {
     return NextResponse.json({ message: 'Too many requests. Try again in a moment.' }, { status: 429 });
   }
@@ -178,4 +179,4 @@ export async function POST(req: NextRequest) {
     const errorMessage = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ message: errorMessage }, { status: 500 });
   }
-}
+});

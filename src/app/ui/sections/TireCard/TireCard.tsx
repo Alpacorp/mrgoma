@@ -119,6 +119,9 @@ const TireCard: FC<TireCardProps> = ({ products }) => {
                       type="button"
                       onClick={e => handleAddToCart(e, product)}
                       disabled={productInCart}
+                      data-track="add_to_cart"
+                      data-track-category="cart"
+                      data-track-label={titleText}
                       className="flex items-center gap-2 pl-3 pr-4 py-2 bg-green-600 text-white text-sm font-black rounded-full hover:bg-green-700 disabled:opacity-50 transition-colors whitespace-nowrap"
                     >
                       <CartIcon />
@@ -180,6 +183,9 @@ const TireCard: FC<TireCardProps> = ({ products }) => {
                     type="button"
                     onClick={e => handleAddToCart(e, product)}
                     disabled={productInCart}
+                    data-track="add_to_cart"
+                    data-track-category="cart"
+                    data-track-label={titleText}
                     className="w-full flex items-center justify-center gap-2 py-3 bg-green-600 text-white text-sm font-black rounded-full hover:bg-green-700 disabled:opacity-50 transition-colors"
                   >
                     <CartIcon />

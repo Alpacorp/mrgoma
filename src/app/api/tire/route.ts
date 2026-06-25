@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { withLogging } from '@/app/api/_lib/withLogging';
 import { fetchTireById } from '@/repositories/tiresRepository';
 
-export async function GET(req: NextRequest) {
+export const GET = withLogging('tire.GET', async (req: NextRequest) => {
   const { searchParams } = new URL(req.url);
   const productId = searchParams.get('productId');
 
@@ -71,4 +72,4 @@ export async function GET(req: NextRequest) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ message }, { status: 500 });
   }
-}
+});

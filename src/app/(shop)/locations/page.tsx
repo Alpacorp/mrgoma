@@ -125,6 +125,7 @@ function LocationCard({ loc }: { loc: (typeof locationsConfig)[0] }) {
       </div>
 
       <a href={loc.tel}
+        data-track="call_store" data-track-category="contact" data-track-label={loc.name}
         className="flex items-center gap-2 text-sm text-gray-200 hover:text-[#9dfb40] transition-colors w-fit">
         <PhoneIcon />
         {loc.phone}

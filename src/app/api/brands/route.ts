@@ -1,6 +1,7 @@
 import { unstable_cache } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
+import { withLogging } from '@/app/api/_lib/withLogging';
 import { buildBrandFilters } from '@/app/utils/filterUtils';
 import { TireFilters, fetchBrands } from '@/repositories/tiresRepository';
 import { logger } from '@/utils/logger';
@@ -11,7 +12,7 @@ const getCachedBrands = unstable_cache(
   { revalidate: 300, tags: ['brands'] }
 );
 
-export async function GET(req: NextRequest) {
+export const GET = withLogging('brands.GET', async (req: NextRequest) => {
   try {
     const { searchParams } = new URL(req.url);
     const filters = buildBrandFilters(searchParams);
@@ -22,4 +23,4 @@ export async function GET(req: NextRequest) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ message }, { status: 500 });
   }
-}
+});

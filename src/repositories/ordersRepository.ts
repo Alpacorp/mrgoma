@@ -1,6 +1,7 @@
 import { VarChar, Decimal, Int, NVarChar } from 'mssql';
 
 import { getPool } from '@/connection/db';
+import { logQuery } from '@/connection/queryLogger';
 import { logger } from '@/utils/logger';
 
 export interface InsertOrderInput {
@@ -27,11 +28,13 @@ export async function getOrderByStripeSessionId(
   const pool = await getPool();
   const request = pool.request();
   request.input('StripeSessionId', NVarChar(255), stripeSessionId);
-  const result = await request.query(`
+  const result = await logQuery('orders.getByStripeSession', () =>
+    request.query(`
     SELECT TOP 1 Id AS orderId, CAST(OrderGuid AS NVARCHAR(36)) AS orderGuid
     FROM dbo.SC_Order
     WHERE StripeSessionId = @StripeSessionId
-  `);
+  `)
+  );
   const row = result.recordset?.[0] as { orderId: number; orderGuid: string } | undefined;
   if (!row) return null;
   return { orderId: row.orderId, orderGuid: row.orderGuid };
@@ -120,7 +123,7 @@ export async function insertOrder(input: InsertOrderInput): Promise<InsertOrderR
         @StripeSessionId
       );`;
 
-    const result = await request.query(sql);
+    const result = await logQuery('orders.insert', () => request.query(sql));
     await transaction.commit();
 
     const row = (result.recordset && result.recordset[0]) as

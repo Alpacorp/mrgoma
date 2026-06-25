@@ -1,6 +1,7 @@
 import { Decimal, Int, VarChar } from 'mssql';
 
 import { getPool } from '@/connection/db';
+import { logQuery } from '@/connection/queryLogger';
 import { logger } from '@/utils/logger';
 
 export interface OrderDetailInputItem {
@@ -14,7 +15,9 @@ async function getOrdenNumberByOrderId(orderId: number): Promise<number | null> 
   const request = pool.request();
   request.input('orderId', Int, orderId);
   const sql = `SELECT TOP 1 OrdenNumber FROM dbo.SC_Order WHERE Id = @orderId`;
-  const result = await request.query(sql);
+  const result = await logQuery('orderDetails.getOrdenNumber', () => request.query(sql), {
+    orderId,
+  });
   const row = result.recordset?.[0] as { OrdenNumber?: number | string } | undefined;
   const ordenNumber = row?.OrdenNumber;
   const parsed =
@@ -84,7 +87,7 @@ export async function insertOrderDetailsByOrderId(
     });
 
     const sql = statements.join(' ;\n');
-    await request.query(sql);
+    await logQuery('orderDetails.insert', () => request.query(sql), { rows: rows.length });
     await transaction.commit();
 
     logger.info(

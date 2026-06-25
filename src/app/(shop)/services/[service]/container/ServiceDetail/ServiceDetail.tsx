@@ -159,6 +159,7 @@ export default function ServiceDetail({ service }: Props) {
               <p className="text-black font-black text-lg mb-1">Book via WhatsApp</p>
               <p className="text-black/60 text-sm mb-4">Fastest way to schedule</p>
               <a href="https://wa.me/14073644016" target="_blank" rel="noopener noreferrer"
+                data-track="open_whatsapp" data-track-category="contact" data-track-label="service_detail"
                 className="flex items-center justify-center gap-2 bg-black text-[#9dfb40] font-bold py-3 px-6 rounded-full text-sm hover:bg-zinc-900 transition-colors">
                 <WhatsAppIcon />
                 Chat with us

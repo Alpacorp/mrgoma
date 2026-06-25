@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/utils/logger', () => ({
-  logger: { error: vi.fn(), warn: vi.fn(), info: vi.fn() },
+  logger: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn(), log: vi.fn() },
 }));
 
 import { POST } from './route';

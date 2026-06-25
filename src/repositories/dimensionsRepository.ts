@@ -1,6 +1,8 @@
 import { Float } from 'mssql';
 
 import { getPool } from '@/connection/db';
+import { logQuery } from '@/connection/queryLogger';
+import { logger } from '@/utils/logger';
 
 export type DimensionOption = {
   id: number;
@@ -40,10 +42,10 @@ export async function fetchTireHeights(): Promise<DimensionOption[]> {
       ORDER BY TRY_CAST(value AS float)
     `;
 
-    const result = await pool.request().query(query);
+    const result = await logQuery('dimensions.heights', () => pool.request().query(query));
     return result.recordset as DimensionOption[];
   } catch (error) {
-    console.error('Error fetching tire heights:', error);
+    logger.error('Error fetching tire heights', error);
     return [];
   }
 }
@@ -97,10 +99,10 @@ export async function fetchTireWidths(height?: number): Promise<DimensionOption[
       ORDER BY TRY_CAST(value AS float)
     `;
 
-    const result = await request.query(query);
+    const result = await logQuery('dimensions.widths', () => request.query(query), { height });
     return result.recordset as DimensionOption[];
   } catch (error) {
-    console.error('Error fetching tire widths:', error);
+    logger.error('Error fetching tire widths', error);
     return [];
   }
 }
@@ -165,10 +167,13 @@ export async function fetchTireSizes(height?: number, width?: number): Promise<D
       ORDER BY TRY_CAST(value AS float)
     `;
 
-    const result = await request.query(query);
+    const result = await logQuery('dimensions.sizes', () => request.query(query), {
+      height,
+      width,
+    });
     return result.recordset as DimensionOption[];
   } catch (error) {
-    console.error('Error fetching tire sizes:', error);
+    logger.error('Error fetching tire sizes', error);
     return [];
   }
 }

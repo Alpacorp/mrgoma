@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 
+import { withLogging } from '@/app/api/_lib/withLogging';
 import { auth } from '@/app/utils/authOptions';
 import { fetchDashboardRanges } from '@/repositories/tiresRepository';
 import { logger } from '@/utils/logger';
 
-export async function GET() {
+export const GET = withLogging('dashboard.ranges.GET', async () => {
   const session = await auth();
 
   if (!session) {
@@ -20,4 +21,4 @@ export async function GET() {
     const errorMessage = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ message: errorMessage }, { status: 500 });
   }
-}
+});

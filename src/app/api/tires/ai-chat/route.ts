@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 
 import { fetchTiresServer } from '@/app/(shop)/tires/utils/fetchTiresServer';
+import { withLogging } from '@/app/api/_lib/withLogging';
 import { logger } from '@/utils/logger';
 
 const SPANISH_PATTERN =
@@ -284,7 +285,7 @@ interface ApiMessage {
   content: string;
 }
 
-export async function POST(req: NextRequest) {
+export const POST = withLogging('tires.aiChat.POST', async (req: NextRequest) => {
   try {
     const body = await req.json();
     const { messages }: { messages: ApiMessage[] } = body;
@@ -347,4 +348,4 @@ export async function POST(req: NextRequest) {
     const errorMessage = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ message: errorMessage }, { status: 500 });
   }
-}
+});

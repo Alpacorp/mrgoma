@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import type Stripe from 'stripe';
 
+import { withLogging } from '@/app/api/_lib/withLogging';
 import { insertOrderDetailsByOrderId } from '@/repositories/orderDetailsRepository';
 import { getOrderByStripeSessionId, insertOrder } from '@/repositories/ordersRepository';
 import { fetchTiresByIds, setTiresConditionIdToSoldByIds } from '@/repositories/tiresRepository';
@@ -11,7 +12,7 @@ function badRequest(message: string) {
   return NextResponse.json({ message }, { status: 400 });
 }
 
-export async function GET(req: NextRequest) {
+export const GET = withLogging('checkout.session.GET', async (req: NextRequest) => {
   try {
     const { searchParams } = new URL(req.url);
     const sessionId = searchParams.get('session_id') || searchParams.get('id');
@@ -235,4 +236,4 @@ export async function GET(req: NextRequest) {
     const message = e instanceof Error ? e.message : 'Unexpected server error';
     return NextResponse.json({ message }, { status: 500 });
   }
-}
+});
