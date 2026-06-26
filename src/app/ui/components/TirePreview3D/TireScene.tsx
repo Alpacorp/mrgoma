@@ -24,7 +24,7 @@ interface TireSceneProps {
 const TireScene = ({ size, reducedMotion }: TireSceneProps) => {
   const { ref, active } = useCanvasActive();
   return (
-    <div ref={ref} className="h-full w-full">
+    <div ref={ref} className="h-full w-full cursor-grab active:cursor-grabbing">
       <Canvas
         shadows
         camera={{ position: [2.6, 1.35, 3.4], fov: 32 }}
