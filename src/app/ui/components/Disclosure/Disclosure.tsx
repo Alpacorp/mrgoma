@@ -41,10 +41,11 @@ export const Disclosure: React.FC<DisclosureProps> = ({
 
   return (
     <DisclosureContext.Provider value={{ isOpen, toggle }}>
-      <Component className={className} data-open={isOpen}>
-        {children}
-      </Component>
+      {/* createElement keeps the polymorphic `as` tag from tripping the JSX
+          intrinsic-element union (react-three-fiber augments it globally). */}
+      {React.createElement(Component, { className, 'data-open': isOpen }, children)}
     </DisclosureContext.Provider>
+
   );
 };
 

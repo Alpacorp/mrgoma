@@ -5,6 +5,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { SingleTire } from '@/app/interfaces/tires';
+import TreadWearExplorer from '@/app/ui/components/TreadWearExplorer/TreadWearExplorer';
 import {
   ProductCarousel,
   TireInformation,
@@ -214,15 +215,20 @@ const Detail = ({ productId: propProductId }: { productId?: string }) => {
 
     if (data)
       return (
-        <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8">
-          <ProductCarousel singleTire={data} />
-          <div className="mt-10 sm:mt-16 lg:mt-0">
-            <TireInformation singleTire={data} />
-            <section aria-labelledby="details-heading" className="my-6">
-              <TireFeatures singleTire={data} />
-            </section>
+        <>
+          <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8">
+            <ProductCarousel singleTire={data} />
+            <div className="mt-10 sm:mt-16 lg:mt-0">
+              <TireInformation singleTire={data} />
+              <section aria-labelledby="details-heading" className="my-6">
+                <TireFeatures singleTire={data} />
+              </section>
+            </div>
           </div>
-        </div>
+          <section aria-labelledby="tread-wear-heading" className="mt-10">
+            <TreadWearExplorer singleTire={data} />
+          </section>
+        </>
       );
 
     return null;

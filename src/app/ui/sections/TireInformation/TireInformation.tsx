@@ -109,7 +109,9 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
           </div>
           <div
             aria-label="Key specifications"
-            className="mt-4 grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-gray-100 border border-gray-200 rounded-xl overflow-hidden"
+            className={`mt-4 grid grid-cols-2 ${
+              singleTire.runFlat ? 'sm:grid-cols-5' : 'sm:grid-cols-4'
+            } divide-x divide-y sm:divide-y-0 divide-gray-100 border border-gray-200 rounded-xl overflow-hidden`}
           >
             <div className="px-3 py-3 bg-gray-50">
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Condition</p>
@@ -136,12 +138,15 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Patched</p>
               <span className="text-sm font-bold text-gray-900">{singleTire.patched || '—'}</span>
             </div>
+            {singleTire.runFlat && (
+              <div className="col-span-2 sm:col-span-1 px-3 py-3 bg-gray-50">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Run Flat</p>
+                <span className="text-sm font-bold text-gray-900">
+                  {/^y/i.test(singleTire.runFlat) ? 'Yes' : 'No'}
+                </span>
+              </div>
+            )}
           </div>
-          {singleTire.runFlat && singleTire.runFlat !== 'No' && (
-            <p className="mt-2 text-xs text-gray-500">
-              <span className="font-semibold text-gray-700">Run Flat:</span> {singleTire.runFlat}
-            </p>
-          )}
         </div>
       </div>
       <div className="my-6">

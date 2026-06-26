@@ -65,5 +65,17 @@ export default defineConfig([
       ],
     },
   },
+  {
+    // react-three-fiber maps three.js props onto JSX elements (intensity,
+    // position, args, castShadow, …) which eslint-plugin-react flags as unknown
+    // DOM properties. They are valid in r3f, so disable the rule for 3D files.
+    files: [
+      'src/app/ui/components/TirePreview3D/**/*.{ts,tsx}',
+      'src/app/ui/components/TreadWearExplorer/**/*.{ts,tsx}',
+    ],
+    rules: {
+      'react/no-unknown-property': 'off',
+    },
+  },
   eslintConfigPrettier,
 ]);
