@@ -2,10 +2,11 @@
 
 import React, { FC, useCallback, useMemo, useState } from 'react';
 
-import Image from 'next/image';
-
 import { TireInformationProps } from '@/app/interfaces/tires';
 import { ProductCondition, ProductCarouselMiniature, StockBadge } from '@/app/ui/components';
+import ProductImageZoom from '@/app/ui/components/ProductImageZoom/ProductImageZoom';
+
+const FALLBACK_IMAGE = '/assets/images/generic-tire-image.webp';
 
 const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
   const images = useMemo(() => singleTire.images || [], [singleTire.images]);
@@ -36,9 +37,12 @@ const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
   const current = images[index] || {
     id: 0,
     name: 'Image',
-    src: '/assets/images/generic-tire-image.webp',
+    src: FALLBACK_IMAGE,
     alt: `${singleTire.brand} ${singleTire.name}`,
   };
+
+  // Nothing to inspect on the generic placeholder — disable zoom for it.
+  const zoomEnabled = current.src !== FALLBACK_IMAGE;
 
   return (
     <div className="flex flex-col-reverse" aria-label="Product gallery">
@@ -95,13 +99,11 @@ const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
           className="w-full"
         >
           <div className="relative isolate w-full bg-white rounded-lg overflow-hidden aspect-square sm:aspect-[16/10] lg:aspect-[16/9]">
-            <Image
-              alt={current.alt || current.name}
+            <ProductImageZoom
               src={current.src}
-              fill
-              className="object-contain object-center"
+              alt={current.alt || current.name}
+              enabled={zoomEnabled}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
-              priority={false}
             />
             <div className="pointer-events-none absolute top-2 left-2 z-30">
               <ProductCondition condition={singleTire.condition} />

@@ -12,6 +12,7 @@ import { ButtonSearch, XMarkIcon } from '@/app/ui/components';
 import { ArrowsToRight, CarFront } from '@/app/ui/icons';
 import { SizeSelectors } from '@/app/ui/sections';
 
+import { TIRE_3D_HINT_KEY, useDiscoveryHint } from './useDiscoveryHint';
 import { isWebglAvailable } from './webgl';
 
 const TireScene = dynamic(() => import('./TireScene'), {
@@ -37,6 +38,7 @@ const TirePreview3DMobile: FC<{
   const [supported, setSupported] = useState(false);
   const [open, setOpen] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const hint = useDiscoveryHint(TIRE_3D_HINT_KEY);
 
   useEffect(() => {
     setSupported(isWebglAvailable());
@@ -77,13 +79,18 @@ const TirePreview3DMobile: FC<{
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          hint.dismiss();
+          setOpen(true);
+        }}
         data-track="open_tire_3d"
         data-track-category="home_search"
-        className="md:hidden inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold text-green-700 transition-colors hover:bg-green-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+        className={`md:hidden inline-flex items-center gap-1.5 rounded-full border border-green-200 bg-green-50 px-2.5 py-1 text-xs font-semibold text-green-700 transition-colors hover:bg-green-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
+          hint.show ? 'mg-attention' : ''
+        }`}
       >
         <CarFront className="h-3.5 w-3.5" />
-        3D
+        View in 3D
       </button>
 
       {open &&

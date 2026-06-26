@@ -138,10 +138,15 @@ interface BrandScrollerProps {
   activeBrand?: string;
 }
 
-// Variant that reads ?brand= from URL — only used inside variant='browse' (route /tires)
+// Variant that reads the active brand from the URL — only used inside
+// variant='browse' (route /tires). Highlights from either the singular `?brand=`
+// (SEO/browse links) or a single `?brands=` value (the multi-filter scheme the
+// home "More filters" panel uses), so arriving with one brand lights up the chip.
 const BrandScrollerWithSearchParam: FC<BrandScrollerProps> = ({ brands, activeBrand }) => {
   const searchParams = useSearchParams();
-  const fromParam = searchParams?.get('brand') || '';
+  const brandsParam = searchParams?.get('brands') || '';
+  const singleBrand = brandsParam && !brandsParam.includes(',') ? brandsParam : '';
+  const fromParam = searchParams?.get('brand') || singleBrand || '';
   return <BrandScroller brands={brands} activeBrand={activeBrand || fromParam} />;
 };
 

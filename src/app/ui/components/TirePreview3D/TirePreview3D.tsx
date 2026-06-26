@@ -7,8 +7,24 @@ import dynamic from 'next/dynamic';
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
 import { ArrowsToRight } from '@/app/ui/icons';
 
+import { TIRE_3D_HINT_KEY, useDiscoveryHint } from './useDiscoveryHint';
 import { isWebglAvailable } from './webgl';
 import TireDisplay from '../TireDisplay/TireDisplay';
+
+/** Small circular-arrow glyph for the "Drag to rotate" cue (inline so it scales
+ *  with the chip and inherits currentColor — the shared RotationIcon is fixed-
+ *  size and un-styleable). */
+const RotateGlyph = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path
+      d="M4 12a8 8 0 0 1 13.66-5.66M20 12a8 8 0 0 1-13.66 5.66"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
+    <path d="M17 3v3.5h-3.5M7 21v-3.5h3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
 
 const Skeleton = () => (
   <div className="w-full h-full flex items-center justify-center">
@@ -32,6 +48,16 @@ const TirePreview3D: FC = () => {
   // null = still detecting; true/false = decision made (avoids SSR/hydration flash).
   const [enabled, setEnabled] = useState<boolean | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const hint = useDiscoveryHint(TIRE_3D_HINT_KEY);
+  // Visually retire the "Drag to rotate" chip after a few seconds even without
+  // interaction; persistence still only happens once the user actually drags.
+  const [hintFaded, setHintFaded] = useState(false);
+
+  useEffect(() => {
+    if (!hint.show) return;
+    const t = setTimeout(() => setHintFaded(true), 6000);
+    return () => clearTimeout(t);
+  }, [hint.show]);
 
   useEffect(() => {
     const desktop = window.matchMedia('(min-width: 768px)');
@@ -64,10 +90,23 @@ const TirePreview3D: FC = () => {
   return (
     <div className="relative w-full h-full">
       {/* Decorative canvas (transparent — the white card shows through). The
-          dropdowns + the badge below carry the meaning. */}
-      <div className="absolute inset-0" aria-hidden="true">
+          dropdowns + the badge below carry the meaning. A first drag dismisses
+          the discovery hint for good. */}
+      <div className="absolute inset-0" aria-hidden="true" onPointerDown={hint.dismiss}>
         <TireScene size={size} reducedMotion={reducedMotion} />
       </div>
+
+      {/* One-time "this is interactive" cue so users notice the 3D selector and
+          that they can spin it. Subtle, capped pulse; gone after the first drag
+          or a few seconds, and never shown again once discovered. */}
+      {hint.show && !hintFaded && (
+        <div className="pointer-events-none absolute left-1/2 top-2 z-10 -translate-x-1/2">
+          <span className="mg-attention inline-flex items-center gap-1.5 rounded-full bg-neutral-900/85 px-3 py-1 text-xs font-medium text-white shadow-lg ring-1 ring-white/10">
+            <RotateGlyph className="h-3.5 w-3.5 text-green-400" />
+            Drag to rotate
+          </span>
+        </div>
+      )}
 
       {/* Disclaimer — this is a size-orientation aid, not an exact tire model. */}
       <span
