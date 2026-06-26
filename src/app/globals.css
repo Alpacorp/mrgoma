@@ -9,6 +9,24 @@
   }
 }
 
+/* Subtle one-time attention halo for onboarding cues (e.g. the 3D selector
+   button/hint). Soft green glow that pulses a few times and stops on its own,
+   so it never nags. Fully suppressed under reduce-motion by the blanket rule
+   below (iteration-count forced to 1 + near-zero duration). */
+@keyframes mg-attention {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.28);
+  }
+}
+
+.mg-attention {
+  animation: mg-attention 1.6s ease-in-out 3;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   :root {
     scroll-behavior: smooth;
