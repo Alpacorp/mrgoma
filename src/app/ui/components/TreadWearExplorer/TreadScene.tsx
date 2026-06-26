@@ -88,7 +88,7 @@ interface TreadSceneProps {
 const TreadScene = ({ currentUnits, newUnits, reducedMotion }: TreadSceneProps) => {
   const { ref, active } = useCanvasActive();
   return (
-    <div ref={ref} className="h-full w-full">
+    <div ref={ref} className="h-full w-full cursor-grab active:cursor-grabbing">
       <Canvas
         camera={{ position: [2.6, 2.7, 3.9], fov: 32 }}
         dpr={[1, 2]}
