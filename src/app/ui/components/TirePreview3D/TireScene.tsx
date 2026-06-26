@@ -6,6 +6,7 @@ import * as THREE from 'three';
 
 import { TireSizeInput } from './tireGeometry';
 import TireMesh from './TireMesh';
+import { useCanvasActive } from './useCanvasActive';
 
 interface TireSceneProps {
   size: TireSizeInput;
@@ -21,20 +22,22 @@ interface TireSceneProps {
  *    the main/server bundle.
  */
 const TireScene = ({ size, reducedMotion }: TireSceneProps) => {
+  const { ref, active } = useCanvasActive();
   return (
-    <Canvas
-      shadows
-      camera={{ position: [2.6, 1.35, 3.4], fov: 32 }}
-      dpr={[1, 2]}
-      gl={{
-        antialias: true,
-        alpha: true,
-        powerPreference: 'high-performance',
-        toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1.4,
-      }}
-      frameloop={reducedMotion ? 'demand' : 'always'}
-    >
+    <div ref={ref} className="h-full w-full">
+      <Canvas
+        shadows
+        camera={{ position: [2.6, 1.35, 3.4], fov: 32 }}
+        dpr={[1, 2]}
+        gl={{
+          antialias: true,
+          alpha: true,
+          powerPreference: 'high-performance',
+          toneMapping: THREE.ACESFilmicToneMapping,
+          toneMappingExposure: 1.4,
+        }}
+        frameloop={!active ? 'never' : reducedMotion ? 'demand' : 'always'}
+      >
       <ambientLight intensity={0.6} />
       {/* Key */}
       <directionalLight position={[4, 6, 5]} intensity={2.6} castShadow shadow-mapSize={[1024, 1024]} />
@@ -67,7 +70,8 @@ const TireScene = ({ size, reducedMotion }: TireSceneProps) => {
         maxPolarAngle={Math.PI / 1.7}
         autoRotate={false}
       />
-    </Canvas>
+      </Canvas>
+    </div>
   );
 };
 

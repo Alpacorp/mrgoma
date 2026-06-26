@@ -7,6 +7,7 @@ import dynamic from 'next/dynamic';
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
 import { ArrowsToRight } from '@/app/ui/icons';
 
+import { isWebglAvailable } from './webgl';
 import TireDisplay from '../TireDisplay/TireDisplay';
 
 const Skeleton = () => (
@@ -18,18 +19,6 @@ const Skeleton = () => (
 // three.js is heavy (~150 KB gzip): load it only when this component mounts on a
 // capable desktop, never on the server or in the main bundle.
 const TireScene = dynamic(() => import('./TireScene'), { ssr: false, loading: () => <Skeleton /> });
-
-const isWebglAvailable = (): boolean => {
-  try {
-    const canvas = document.createElement('canvas');
-    return !!(
-      window.WebGLRenderingContext &&
-      (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
-    );
-  } catch {
-    return false;
-  }
-};
 
 /**
  * Live 3D preview of the tire size selected in the home search. The model's
@@ -79,6 +68,15 @@ const TirePreview3D: FC = () => {
       <div className="absolute inset-0" aria-hidden="true">
         <TireScene size={size} reducedMotion={reducedMotion} />
       </div>
+
+      {/* Disclaimer — this is a size-orientation aid, not an exact tire model. */}
+      <span
+        className="absolute top-1 right-1 flex h-5 w-5 cursor-help items-center justify-center rounded-full bg-gray-100/90 text-[11px] font-bold text-gray-500 ring-1 ring-black/5"
+        title="Visual size aid only — not an exact representation of the tire's condition, measurements or physical aspects."
+        aria-label="Visual size aid only — not an exact representation of the tire's condition, measurements or physical aspects."
+      >
+        i
+      </span>
 
       {/* Size badge — kept accessible and readable over the model. */}
       <div className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-1 bg-neutral-800/90 rounded-full shadow-xl">

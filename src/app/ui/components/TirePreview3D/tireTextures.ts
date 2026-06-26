@@ -65,8 +65,9 @@ const drawHeight = (ctx: CanvasRenderingContext2D): void => {
   ctx.fillRect(0, TREAD_TOP, W, TREAD_BOT - TREAD_TOP);
 
   const treadH = TREAD_BOT - TREAD_TOP;
-  // 2 deep circumferential grooves -> 3 chunky ribs.
-  const ribs = 3;
+  // 3 deep circumferential grooves -> 4 ribs (an extra central rib for a finer,
+  // highway-style pattern: |__|..|___|..|___|..|__|).
+  const ribs = 4;
   const ribH = treadH / ribs;
   ctx.fillStyle = '#2b2b2b';
   for (let g = 1; g < ribs; g++) {

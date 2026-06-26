@@ -13,6 +13,8 @@ interface SizeSelectorsProps {
   isLoadingWidth?: boolean;
   isLoadingSidewall?: boolean;
   isLoadingDiameter?: boolean;
+  /** Show the selected-size removable chips below the dropdowns (default true). */
+  showChips?: boolean;
 }
 
 const SizeSelectors: FC<SizeSelectorsProps> = ({
@@ -25,6 +27,7 @@ const SizeSelectors: FC<SizeSelectorsProps> = ({
   isLoadingWidth = false,
   isLoadingSidewall = false,
   isLoadingDiameter = false,
+  showChips = true,
 }) => {
   // Determinar cuando los selectores deben estar deshabilitados
   const isSidewallDisabled = !currentSize.width || isLoadingSidewall;
@@ -96,14 +99,16 @@ const SizeSelectors: FC<SizeSelectorsProps> = ({
           />
         </div>
       </div>
-      <div className="flex flex-wrap gap-2">
-        {Object.entries(currentSize).map(([key, value]) => {
-          if (!value) return null;
-          return (
-            <SizeSelector key={key} filterKey={key} value={value} removeFilter={removeFilter} />
-          );
-        })}
-      </div>
+      {showChips && (
+        <div className="flex flex-wrap gap-2">
+          {Object.entries(currentSize).map(([key, value]) => {
+            if (!value) return null;
+            return (
+              <SizeSelector key={key} filterKey={key} value={value} removeFilter={removeFilter} />
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

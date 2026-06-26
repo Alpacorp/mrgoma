@@ -17,6 +17,8 @@ const num = (v: unknown, fallback: number): number => {
   return Number.isFinite(n) && n > 0 ? n : fallback;
 };
 
+const clamp = (v: number, lo: number, hi: number): number => Math.min(hi, Math.max(lo, v));
+
 export type TireProportions = {
   /** Outer radius, normalized to 1 so the tire always frames the same. */
   overallR: number;
@@ -36,9 +38,12 @@ export type TireProportions = {
  * common 225/45R17 when the customer hasn't picked everything yet.
  */
 export function computeTireProportions(input: TireSizeInput): TireProportions {
-  const widthMm = num(input.width, 225);
-  const aspect = num(input.aspect, 45);
-  const rimIn = num(input.diameter, 17);
+  // Clamp to realistic ranges so a wildly disproportionate size (e.g. a typo in
+  // free-text search) never renders a grotesque model — it just pins to the
+  // nearest plausible tire.
+  const widthMm = clamp(num(input.width, 225), 125, 355);
+  const aspect = clamp(num(input.aspect, 45), 25, 85);
+  const rimIn = clamp(num(input.diameter, 17), 12, 24);
 
   const rimMm = rimIn * 25.4;
   const sidewallMm = (widthMm * aspect) / 100;
