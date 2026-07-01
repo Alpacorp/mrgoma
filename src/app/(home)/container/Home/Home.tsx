@@ -1,7 +1,10 @@
 import React, { FC } from 'react';
 
+
 import Image from 'next/image';
 import Link from 'next/link';
+
+import { preload } from 'react-dom';
 
 import { servicesConfig } from '@/app/(shop)/services/servicesConfig';
 import {
@@ -98,6 +101,11 @@ const SERVICE_ICONS: Record<string, React.ReactNode> = {
 };
 
 const Home: FC = () => {
+  // Prioritize the hero LCP: the <video> poster has no native fetchpriority, so
+  // preload it as a high-priority image so it paints sooner (Baseline 2024).
+  // See spec/features/002-lcp-fetchpriority.
+  preload('/assets/images/banner-hero.webp', { as: 'image', fetchPriority: 'high' });
+
   return (
     <main className="bg-white">
 

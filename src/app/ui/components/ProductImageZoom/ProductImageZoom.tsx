@@ -16,6 +16,8 @@ interface ProductImageZoomProps {
   enabled?: boolean;
   /** Passed through to the base next/image for correct responsive sizing. */
   sizes?: string;
+  /** Prioritize the base image as the LCP (eager + fetchpriority=high). */
+  priority?: boolean;
 }
 
 const LENS = 168; // lens diameter in px
@@ -35,7 +37,13 @@ const ZOOM = 2.4; // magnification factor
  * The lens is purely decorative (aria-hidden); keyboard and screen-reader users
  * open the same full-screen view via the button wrapper.
  */
-const ProductImageZoom: FC<ProductImageZoomProps> = ({ src, alt, enabled = true, sizes }) => {
+const ProductImageZoom: FC<ProductImageZoomProps> = ({
+  src,
+  alt,
+  enabled = true,
+  sizes,
+  priority = false,
+}) => {
   const containerRef = useRef<HTMLButtonElement>(null);
   const [canHover, setCanHover] = useState(false);
   const [lens, setLens] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
@@ -79,7 +87,7 @@ const ProductImageZoom: FC<ProductImageZoomProps> = ({ src, alt, enabled = true,
       fill
       className="object-contain object-center"
       sizes={sizes}
-      priority={false}
+      priority={priority}
     />
   );
 
