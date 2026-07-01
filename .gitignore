@@ -43,6 +43,8 @@ yarn-error.log*
 next-env.d.ts
 
 # IA
-.claude
+# Ignore local Claude config but track the shared SDD slash commands.
+.claude/*
+!.claude/commands/
 .agents
 skills-lock.json
