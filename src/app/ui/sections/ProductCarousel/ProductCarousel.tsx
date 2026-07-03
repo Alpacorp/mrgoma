@@ -103,6 +103,7 @@ const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
               src={current.src}
               alt={current.alt || current.name}
               enabled={zoomEnabled}
+              priority={index === 0}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
             />
             <div className="pointer-events-none absolute top-2 left-2 z-30">
