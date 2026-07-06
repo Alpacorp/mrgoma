@@ -86,11 +86,15 @@ export interface SingleTire {
   patched: string;
   remainingLife: string;
   treadDepth: string;
+  dot?: string;
+  size?: string;
+  loadIndex?: string;
+  speedIndex?: string;
   runFlat?: string;
-  images: singleProductImages[];
+  images: singleTireImages[];
   description?: string;
   model2?: string;
-  details: SingleProductDetails;
+  details: SingleTireDetails[];
 }
 
 export interface TireFeature {
