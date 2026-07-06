@@ -1,23 +1,19 @@
-'use client';
+import { FC } from 'react';
 
-import React, { FC, SyntheticEvent } from 'react';
-
-import { useCart } from '@/app/context/CartContext';
 import { TireInformationProps } from '@/app/interfaces/tires';
 import {
   ProductName,
   ProductPrice,
   ProductDescription,
   BrandImage,
-  CtaButton,
   FreeShippingBadge,
 } from '@/app/ui/components';
+import AddToCartButton from '@/app/ui/components/AddToCartButton/AddToCartButton';
 import { generateTireDescription } from '@/app/utils/tireDescription';
 
+// Server Component: renders the product info from props. The only interactive
+// piece (add-to-cart) is delegated to the `AddToCartButton` client island.
 const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
-  const { addToCart, isInCart } = useCart();
-  const productInCart = isInCart(singleTire.id);
-
   // Determine availability from DB Condition (exposed as status)
   const isSold =
     typeof singleTire.status === 'string' && singleTire.status.trim().toLowerCase() === 'sold';
@@ -49,11 +45,6 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
     loadIndex: findDetail('Load Index'),
     speedIndex: findDetail('Speed Index'),
   });
-
-  const handleAddToCart = (event: SyntheticEvent) => {
-    event.preventDefault();
-    addToCart(singleTire);
-  };
 
   return (
     <section aria-labelledby={`product-name-${singleTire.id}`}>
@@ -92,19 +83,7 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
                 Not available
               </div>
             ) : (
-              <div className="flex gap-2">
-                <CtaButton
-                  product={singleTire}
-                  text={productInCart ? 'In Cart' : 'Add to Cart'}
-                  style="primary"
-                  onClick={handleAddToCart}
-                  disabled={productInCart}
-                  isLink={false}
-                />
-                <div className="sr-only" aria-live="polite" role="status">
-                  {productInCart ? 'This item is already in your cart.' : ''}
-                </div>
-              </div>
+              <AddToCartButton product={singleTire} />
             )}
           </div>
           <div
