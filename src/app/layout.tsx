@@ -37,6 +37,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
         <link rel="icon" href="/favicon.png" sizes="any" type="image/x-icon" />
         <link rel="apple-touch-icon" href="/desk-logo.png" />
         <script type="application/ld+json">{JSON.stringify(organizationJsonLd())}</script>

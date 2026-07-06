@@ -33,7 +33,7 @@ const ProductCarouselMiniature: FC<ProductImageProps> = ({ product, isHovered })
         src={safeSrc}
         title={safeAlt}
         aria-label={safeAlt}
-        priority
+        sizes="128px"
         width={500}
         height={500}
       />

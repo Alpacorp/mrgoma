@@ -69,7 +69,7 @@ export const Footer = ({
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: `url('/assets/images/background-footer.png')`,
+            backgroundImage: `image-set(url('/assets/images/background-footer.avif') type('image/avif'), url('/assets/images/background-footer.webp') type('image/webp'))`,
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
           }}
@@ -85,7 +85,7 @@ export const Footer = ({
                 aria-label="Go to the home page"
                 src={mrGomaLogoLight || '/placeholder.svg'}
                 className="h-8 w-auto"
-                priority
+                sizes="185px"
               />
             </div>
             {sections.map(section => (

@@ -11,7 +11,7 @@ export const DashboardFooter = () => {
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: `url('/assets/images/background-footer.png')`,
+            backgroundImage: `image-set(url('/assets/images/background-footer.avif') type('image/avif'), url('/assets/images/background-footer.webp') type('image/webp'))`,
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
           }}
@@ -24,7 +24,7 @@ export const DashboardFooter = () => {
               alt="MrGoma Tires logo"
               src={mrGomaLogoLight || '/placeholder.svg'}
               className="h-8 w-auto"
-              priority
+              sizes="185px"
             />
             <div className="space-y-1">
               <p className="text-white text-sm font-semibold leading-snug">
