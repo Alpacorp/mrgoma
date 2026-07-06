@@ -1,11 +1,11 @@
-import { Suspense, cache } from 'react';
+import { cache } from 'react';
 
 import { notFound } from 'next/navigation';
 
 import type { Metadata } from 'next';
 
-import Detail from '@/app/(shop)/detail/container/Detail/Detail';
-import { LoadingScreen } from '@/app/ui/components';
+import DetailView from '@/app/(shop)/detail/container/DetailView/DetailView';
+import type { SingleTire } from '@/app/interfaces/tires';
 import {
   absUrl,
   buildBreadcrumbJsonLd,
@@ -16,63 +16,19 @@ import {
 } from '@/app/utils/seo';
 import { generateTireDescription } from '@/app/utils/tireDescription';
 import { buildTireSlug, extractIdFromSlug } from '@/app/utils/tireSlug';
+import { mapTireRecordToSingleTire } from '@/repositories/mapTireRecordToSingleTire';
 import { fetchTireById } from '@/repositories/tiresRepository';
 
-// Wrapped in React cache() so generateMetadata and the JSON-LD render
-// share a single DB read per request instead of querying twice.
-const fetchProduct = cache(async (productId: string) => {
+// Dynamic (no-store) render so price and sold/stock stay accurate per request.
+export const dynamic = 'force-dynamic';
+
+// Wrapped in React cache() so generateMetadata, the JSON-LD and the page render
+// share a single DB read per request instead of querying multiple times.
+const fetchProduct = cache(async (productId: string): Promise<SingleTire | null> => {
   try {
     const record = await fetchTireById(productId);
     if (!record) return null;
-
-    const images = [record.Image1, record.Image2, record.Image3, record.Image4]
-      .filter(Boolean)
-      .map((src, idx) => ({
-        id: idx + 1,
-        name: `Image ${idx + 1}`,
-        src: src as string,
-        alt: `${record.Brand || 'Brand'} ${record.Model2 || ''} ${record.RealSize || ''}`.trim(),
-      }));
-
-    if (images.length === 0) {
-      images.push({
-        id: 1,
-        name: 'Image 1',
-        src: '/assets/images/generic-tire-image.webp',
-        alt: `${record.Brand || 'Brand'} ${record.Model2 || ''} ${record.RealSize || ''}`.trim(),
-      });
-    }
-
-    return {
-      id: String(record.TireId ?? ''),
-      status: record.Condition,
-      name: `(${record.Code || ''}) | ${record.Brand || 'Unknown'} | ${record.RealSize || ''}`.trim(),
-      color: 'Black',
-      dot: record.DOT || 'N/A',
-      price: record.Price?.toString() || '-',
-      brand: record.Brand || 'Unknown',
-      brandId: record.BrandId || 1,
-      condition: record.ProductTypeId === 1 ? 'New' : 'Used',
-      patched: record.Patched === '0' ? 'No' : 'Yes',
-      remainingLife: (record.RemainingLife as string) || '-',
-      treadDepth: (record.Tread as string) || '-',
-      size: record.RealSize || undefined,
-      loadIndex: (record.loadIndex as string) || undefined,
-      speedIndex: record.speedIndex || undefined,
-      model2: (record.Model2 as string) || undefined,
-      runFlat: record.KindSaleId === 1 ? 'Yes' : (record.KindSale || 'No'),
-      images,
-      details: [
-        {
-          name: 'More Details',
-          items: [
-            `Load Index: ${(record.loadIndex as string) || '-'}`,
-            `DOT: ${record.DOT || ''}`,
-            `Speed Index: ${record.speedIndex || ''}`,
-          ],
-        },
-      ],
-    };
+    return mapTireRecordToSingleTire(record);
   } catch {
     return null;
   }
@@ -96,7 +52,7 @@ export async function generateMetadata({
     };
   }
 
-  const canonicalSlug = buildTireSlug(product.id, product.brand, product.size || '');
+  const canonicalSlug = buildTireSlug(String(product.id), product.brand, product.size || '');
   const url = canonical(`/tires/${canonicalSlug}`);
 
   const title = productTitle({
@@ -162,7 +118,7 @@ async function TireJsonLd({ productId }: { productId: string }) {
   const product = await fetchProduct(productId);
   if (!product) return null;
 
-  const canonicalSlug = buildTireSlug(product.id, product.brand, product.size || '');
+  const canonicalSlug = buildTireSlug(String(product.id), product.brand, product.size || '');
   const url = canonical(`/tires/${canonicalSlug}`);
   const breadcrumbLabel =
     `${product.condition} ${product.brand}${product.size ? ` ${product.size}` : ''}`.trim();
@@ -189,7 +145,7 @@ async function TireJsonLd({ productId }: { productId: string }) {
     currency: 'USD',
     condition: product.condition,
     availability: 'InStock',
-    sku: product.id,
+    sku: String(product.id),
   });
 
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
@@ -212,12 +168,13 @@ export default async function TirePage({ params }: { params: Promise<{ slug: str
 
   if (!productId) notFound();
 
+  const product = await fetchProduct(productId);
+  if (!product) notFound();
+
   return (
     <>
       <TireJsonLd productId={productId} />
-      <Suspense fallback={<LoadingScreen message="Loading results ..." />}>
-        <Detail productId={productId} />
-      </Suspense>
+      <DetailView product={product} />
     </>
   );
 }
