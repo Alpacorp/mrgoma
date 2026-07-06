@@ -20,8 +20,10 @@
 | -------- | ---------- | --------- | ----------------------------- |
 | Home `/` | 4.5 s      | _pending_ | before ❌ → after _pending_    |
 | /tires   | 3.2 s      | _pending_ | before ❌ → after _pending_    |
-| Detail   | 4.5 s      | _pending_ | before ❌ (+lazy) → _pending_  |
+| Detail   | 4.5 s      | 3.2 s     | before ❌ (+lazy) → after ✅    |
 
-> After deploy, re-run PSI on the three production URLs and fill "after".
-> Note: Detail's "discoverable in the initial HTML" sub-audit stays failing until
-> **P1.7** (the image is still client-fetched).
+> Home `/` and `/tires` "after" still pending a PSI run on those URLs.
+> **Detail** was measured after **P1.7** shipped (2026-07-06): LCP 4.5 s → 3.2 s and
+> CLS 0.914 → 0 (mobile). With the image now server-rendered, the "discoverable in
+> the initial HTML" sub-audit passes. Full detail numbers:
+> [003 results](../003-detail-server-render/results.md).
