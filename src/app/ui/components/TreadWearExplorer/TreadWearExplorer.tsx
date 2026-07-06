@@ -4,6 +4,7 @@ import { FC, useEffect, useMemo, useState } from 'react';
 
 import dynamic from 'next/dynamic';
 
+import { useIdleReady } from '../TirePreview3D/useIdleReady';
 import { isWebglAvailable } from '../TirePreview3D/webgl';
 
 const clamp = (v: number, lo: number, hi: number): number => Math.min(hi, Math.max(lo, v));
@@ -59,6 +60,8 @@ const TreadWearExplorer: FC<TreadWearExplorerProps> = ({ singleTire }) => {
 
   const [enabled, setEnabled] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+  // Defer mounting the three.js canvas until the browser is idle (shared hook).
+  const idleReady = useIdleReady();
 
   useEffect(() => {
     setEnabled(isWebglAvailable());
@@ -98,9 +101,13 @@ const TreadWearExplorer: FC<TreadWearExplorerProps> = ({ singleTire }) => {
         {/* 3D tread blocks */}
         <div className="relative h-64 overflow-hidden rounded-xl bg-gradient-to-b from-gray-50 to-gray-100">
           {enabled ? (
-            <div className="absolute inset-0" aria-hidden="true">
-              <TreadScene currentUnits={current} newUnits={newUnits} reducedMotion={reducedMotion} />
-            </div>
+            idleReady ? (
+              <div className="absolute inset-0" aria-hidden="true">
+                <TreadScene currentUnits={current} newUnits={newUnits} reducedMotion={reducedMotion} />
+              </div>
+            ) : (
+              <SceneSkeleton />
+            )
           ) : (
             <Fallback2D current={current} newUnits={newUnits} />
           )}
