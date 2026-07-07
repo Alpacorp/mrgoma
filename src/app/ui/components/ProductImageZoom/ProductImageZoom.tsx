@@ -108,7 +108,7 @@ const ProductImageZoom: FC<ProductImageZoomProps> = ({
         data-track-category="product_detail"
         data-track-label={alt}
         aria-label="Open full-size image to zoom"
-        className={`absolute inset-0 block focus:outline-none focus-visible:ring-2 focus-visible:ring-green-primary focus-visible:ring-offset-2 ${
+        className={`absolute inset-0 block focus:outline-none focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2 ${
           canHover ? 'cursor-zoom-in' : 'cursor-pointer'
         }`}
       >

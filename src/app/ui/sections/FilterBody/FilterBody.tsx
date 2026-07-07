@@ -40,7 +40,7 @@ export const FilterBody = (
       <div className="space-y-4">
         {isLoadingRanges ? (
           <div className="flex justify-center items-center h-20">
-            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-green-primary"></div>
+            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-green-600"></div>
             <span className="ml-2 text-sm text-gray-500">Loading price range...</span>
           </div>
         ) : (
@@ -67,7 +67,7 @@ export const FilterBody = (
       <div className="space-y-4">
         {isLoadingRanges ? (
           <div className="flex justify-center items-center h-20">
-            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-green-primary"></div>
+            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-green-600"></div>
             <span className="ml-2 text-sm text-gray-500">Loading tread depth range...</span>
           </div>
         ) : (
@@ -94,7 +94,7 @@ export const FilterBody = (
       <div className="space-y-4">
         {isLoadingRanges ? (
           <div className="flex justify-center items-center h-20">
-            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-green-primary"></div>
+            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-green-600"></div>
             <span className="ml-2 text-sm text-gray-500">Loading remaining life range...</span>
           </div>
         ) : (
@@ -121,7 +121,7 @@ export const FilterBody = (
       <div>
         {isLoadingBrands ? (
           <div className="flex justify-center items-center h-20">
-            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-green-primary"></div>
+            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-green-600"></div>
             <span className="ml-2 text-sm text-gray-500">Updating brands...</span>
           </div>
         ) : (
@@ -142,7 +142,7 @@ export const FilterBody = (
                     type="checkbox"
                     checked={isChecked('brands', brand)}
                     onChange={handleCheckboxChange}
-                    className="h-4 w-4 rounded border-gray-300 text-green-primary focus:ring-green-primary"
+                    className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-600"
                   />
                   <label
                     htmlFor={`filter-${idPrefix}brands-${idx}`}
@@ -175,7 +175,7 @@ export const FilterBody = (
               type="checkbox"
               checked={isChecked('local', option.value)}
               onChange={handleCheckboxChange}
-              className="h-4 w-4 rounded border-gray-300 text-green-primary focus:ring-green-primary"
+              className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-600"
             />
             <label
               htmlFor={`filter-${idPrefix}local-${optionIdx}`}
@@ -203,7 +203,7 @@ export const FilterBody = (
               type="checkbox"
               checked={isChecked(section.id as FilterKey, option.value)}
               onChange={handleCheckboxChange}
-              className="h-4 w-4 rounded border-gray-300 text-green-primary focus:ring-green-primary"
+              className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-600"
             />
             <label
               htmlFor={`filter-${idPrefix}${section.id}-${optionIdx}`}

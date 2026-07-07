@@ -27,6 +27,29 @@
   animation: mg-attention 1.6s ease-in-out 3;
 }
 
+/* Cart drawer slide-in. Declared here (not in tailwind.config.ts) because
+   Tailwind v4 does not auto-load that config — the keyframes + `--animate-*`
+   token below register the `animate-slide-in-right` utility the CartModal uses.
+   Reduced motion is handled by the blanket rule below (duration → 0.01ms). */
+@keyframes slide-in-right {
+  0% {
+    transform: translateX(1000px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Tailwind v4 theme tokens (the v3-style tailwind.config.ts is ignored): the
+   `xs` breakpoint and the slide-in animation utility. Kept low in the file, apart
+   from the P1.3 `--font-sans` @theme block, so the two merge without collision. */
+@theme {
+  --breakpoint-xs: 350px;
+  --animate-slide-in-right: slide-in-right 2.5s ease-out;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   :root {
     scroll-behavior: smooth;

@@ -88,7 +88,7 @@ const FiltersMobile: FC<{
                 type="button"
                 onClick={() => setShowFilter(false)}
                 aria-label="Close filters"
-                className="-mr-2 flex h-10 w-10 items-center justify-center rounded-md bg-white p-2 text-green-primary"
+                className="-mr-2 flex h-10 w-10 items-center justify-center rounded-md bg-white p-2 text-green-600"
               >
                 <XMarkIcon className="h-6 w-6" aria-hidden />
               </button>
