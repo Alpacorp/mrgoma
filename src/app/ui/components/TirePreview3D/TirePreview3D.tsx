@@ -8,6 +8,7 @@ import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
 import { ArrowsToRight } from '@/app/ui/icons';
 
 import { TIRE_3D_HINT_KEY, useDiscoveryHint } from './useDiscoveryHint';
+import { useIdleReady } from './useIdleReady';
 import { isWebglAvailable } from './webgl';
 import TireDisplay from '../TireDisplay/TireDisplay';
 
@@ -48,6 +49,9 @@ const TirePreview3D: FC = () => {
   // null = still detecting; true/false = decision made (avoids SSR/hydration flash).
   const [enabled, setEnabled] = useState<boolean | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
+  // Defer mounting the heavy three.js canvas until the browser is idle, so it
+  // doesn't compete with hydration / the first interaction on load (P1.5/P1.6).
+  const idleReady = useIdleReady();
   const hint = useDiscoveryHint(TIRE_3D_HINT_KEY);
   // Visually retire the "Drag to rotate" chip after a few seconds even without
   // interaction; persistence still only happens once the user actually drags.
@@ -79,6 +83,9 @@ const TirePreview3D: FC = () => {
   // Until we know, or when WebGL/desktop isn't available, use the static diagram.
   if (enabled === null) return <Skeleton />;
   if (!enabled) return <TireDisplay />;
+  // Desktop + WebGL ready, but hold the canvas (behind the skeleton, same space)
+  // until the browser is idle — keeps the main thread free during load.
+  if (!idleReady) return <Skeleton />;
 
   const size = {
     width: selectedFilters.width,
