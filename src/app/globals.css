@@ -2,8 +2,8 @@
 
 /* Inter is the app's single sans typeface. It's loaded via next/font and exposed
    as the `--font-inter` CSS variable on <html> (see src/app/layout.tsx). Tailwind
-   v4 does NOT auto-load tailwind.config.ts (there's no @config directive), so the
-   `sans` token must be declared here in CSS. `@theme inline` makes the `font-sans`
+   v4 has no JS-config auto-load, so the `sans` token must be declared here in CSS
+   (this is the single source of truth for it). `@theme inline` makes the `font-sans`
    utility emit the Inter variable directly, and Preflight applies `--font-sans` to
    <html>, so the whole document inherits Inter (no system-font flash). The
    variable already expands to `'Inter', 'Inter Fallback'` (the metric-matched
@@ -40,9 +40,9 @@
   animation: mg-attention 1.6s ease-in-out 3;
 }
 
-/* Cart drawer slide-in. Declared here (not in tailwind.config.ts) because
-   Tailwind v4 does not auto-load that config — the keyframes + `--animate-*`
-   token below register the `animate-slide-in-right` utility the CartModal uses.
+/* Cart drawer slide-in. Declared here in CSS (Tailwind v4 has no JS-config
+   auto-load) — the keyframes + `--animate-*` token below register the
+   `animate-slide-in-right` utility the CartModal uses.
    Reduced motion is handled by the blanket rule below (duration → 0.01ms). */
 @keyframes slide-in-right {
   0% {
@@ -55,7 +55,7 @@
   }
 }
 
-/* Tailwind v4 theme tokens (the v3-style tailwind.config.ts is ignored): the
+/* Tailwind v4 theme tokens (declared in CSS, the only place v4 reads them): the
    `xs` breakpoint and the slide-in animation utility. Kept low in the file, apart
    from the P1.3 `--font-sans` @theme block, so the two merge without collision. */
 @theme {

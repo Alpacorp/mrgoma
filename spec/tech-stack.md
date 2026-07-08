@@ -14,8 +14,10 @@ Versions taken from `package.json` (2026-06-30). Update here when they change.
 - **Next.js 16.1.5** — App Router, Server Components, Turbopack.
 - **React 19.2** + **React DOM 19.2**.
 - **TypeScript 5.9** — strict mode; no `any` unless justified.
-- **Tailwind CSS v4** (`tailwindcss` 4.1, `@tailwindcss/postcss`) + plugins
-  `forms`, `typography`, `aspect-ratio`, `tailwindcss-animate`.
+- **Tailwind CSS v4** (`tailwindcss` 4.1) via `@tailwindcss/postcss` and
+  `@import "tailwindcss"`; design tokens live in CSS `@theme` in `globals.css`
+  (there is no `tailwind.config.ts` — v4 has no JS-config auto-load — and no v3
+  plugins).
 
 ### Data and backend
 - **SQL Server** via **`mssql` 12** (repository pattern in `src/repositories/`).
