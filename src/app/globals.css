@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+/* Inter is the app's single sans typeface. It's loaded via next/font and exposed
+   as the `--font-inter` CSS variable on <html> (see src/app/layout.tsx). Tailwind
+   v4 does NOT auto-load tailwind.config.ts (there's no @config directive), so the
+   `sans` token must be declared here in CSS. `@theme inline` makes the `font-sans`
+   utility emit the Inter variable directly, and Preflight applies `--font-sans` to
+   <html>, so the whole document inherits Inter (no system-font flash). The
+   variable already expands to `'Inter', 'Inter Fallback'` (the metric-matched
+   fallback next/font generates), followed here by generic system fallbacks. */
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
 /* Explicit keyframe for loading spinners so rotation never depends on
    Tailwind's `spin` keyframe being resolvable under the reduce-motion
    override below. */
