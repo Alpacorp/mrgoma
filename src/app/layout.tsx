@@ -54,6 +54,16 @@ export default function RootLayout({
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
         <link rel="icon" href="/favicon.png" sizes="any" type="image/x-icon" />
         <link rel="apple-touch-icon" href="/desk-logo.png" />
+        {/* Hide an already-dismissed PromoBanner before it paints, so a returning
+            user's banner never occupies space and hydration causes no layout
+            shift. Reads the `promo_<key>=dismissed` cookie and injects a hide-rule
+            for `#promo-<key>` before the body parses. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var i=[];document.cookie.split('; ').forEach(function(c){var m=c.match(/^promo_(.+)=dismissed$/);if(m)i.push('#promo-'+m[1]);});if(i.length){var s=document.createElement('style');s.textContent=i.join(',')+'{display:none!important}';document.head.appendChild(s);}}catch(e){}})();",
+          }}
+        />
         <script type="application/ld+json">{JSON.stringify(organizationJsonLd())}</script>
         <script type="application/ld+json">{JSON.stringify(websiteJsonLd())}</script>
         {buildLocationsJsonLd(

@@ -26,6 +26,17 @@ export interface PromoBannerProps {
   storageKey?: string; // Used to persist dismissed state per banner config
 }
 
+// Dismissed state lives in a cookie (not localStorage) so a tiny pre-paint script
+// in the root <head> can hide an already-dismissed banner before it ever paints —
+// no reserved-space flash, no layout shift on hydration for returning users.
+const DISMISS_MAX_AGE = 60 * 60 * 24 * 180; // 180 days
+
+const readCookie = (name: string): string | null => {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
+};
+
 const isWithinRange = (start?: string, end?: string): boolean => {
   try {
     const now = new Date();
@@ -62,19 +73,14 @@ const PromoBanner: FC<PromoBannerProps> = ({ content, className = '', storageKey
 
   useEffect(() => {
     if (!storageKey) return;
-    try {
-      const persisted = localStorage.getItem(`promo:${storageKey}`);
-      setDismissed(persisted === 'dismissed');
-    } catch {
-      // ignore
-    }
+    setDismissed(readCookie(`promo_${storageKey}`) === 'dismissed');
   }, [storageKey]);
 
   const onClose = () => {
     setDismissed(true);
     if (!storageKey) return;
     try {
-      localStorage.setItem(`promo:${storageKey}`, 'dismissed');
+      document.cookie = `promo_${storageKey}=dismissed;path=/;max-age=${DISMISS_MAX_AGE}`;
     } catch {
       // ignore
     }
@@ -84,6 +90,7 @@ const PromoBanner: FC<PromoBannerProps> = ({ content, className = '', storageKey
 
   return (
     <aside
+      id={storageKey ? `promo-${storageKey}` : undefined}
       role="region"
       aria-label="Promotion"
       className={`w-full overflow-hidden rounded-lg ${bgColor} ${textColor} ${className} relative`}
