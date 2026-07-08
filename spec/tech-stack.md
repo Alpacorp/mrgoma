@@ -124,6 +124,13 @@ A change is done when:
 - Core Web Vitals targets (field, p75): **LCP < 2.5s · INP < 200ms · CLS < 0.1**
   on `/`, `/tires` and detail. Heavy/optional code (three.js) loads deferred;
   images through `next/image` with correct `sizes` / `priority`.
+- **JS-weight budget (enforced in CI).** Client JS is what drives INP/TBT, so its
+  growth is capped in `perf-budget.json` (gzip): **shared First-Load JS ≤ 180 KB**
+  (the JS every page loads) and **total client JS ≤ 680 KB** (all chunks, incl.
+  deferred). `npm run perf:budget` (`scripts/perf-budget.mjs`) measures the build
+  and fails CI on a breach. Next 16/Turbopack doesn't emit per-route First-Load
+  JS, so the shared floor + total are the reliable proxy. Bump the limits
+  deliberately in a PR when a real increase is justified.
 
 ### Working rules
 - **Small, verifiable** changes; one branch per feature (never commit directly to
