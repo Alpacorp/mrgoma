@@ -31,8 +31,8 @@ import './globals.css';
 // - `preload: true` — request the Inter woff2 as early as possible.
 // - `adjustFontFallback: true` — generate a size-adjusted "Inter Fallback"
 //   (@font-face with size-adjust/ascent-override…) so the swap causes no CLS.
-// - `variable` — expose Inter as `--font-inter` and wire it as Tailwind's `sans`
-//   token (tailwind.config.ts) so `font-sans` utilities resolve to Inter too.
+// - `variable` — expose Inter as `--font-inter`, wired as Tailwind's `sans`
+//   token in globals.css `@theme` so `font-sans` utilities resolve to Inter too.
 const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
