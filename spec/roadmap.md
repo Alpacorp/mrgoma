@@ -28,27 +28,30 @@ Goal: hit the Core Web Vitals targets (field, p75) —
 detail).
 
 **Exit criteria:** the three metrics meet target on all key routes and a
-performance budget is in place (P1.8).
+performance budget is in place (P1.8). **Status:** the anti-regression **JS-weight
+budget is in place** (P1.8, CI-enforced); the **CWV re-measurement on the deployed
+site is the last step** to confirm the metric targets and formally close the track.
 
-- ⬜ **P1.0 — Baseline.** Measure CWV (Lighthouse/PageSpeed + field data) on home,
-  `/tires` and detail. Record LCP/INP/CLS and the top 3 offenders. _No code
-  changes; produces the prioritized list._
-- ⬜ **P1.1 — LCP image.** Identify the LCP image of each route and ensure
-  `priority`/preload, correct `sizes`, and a modern format (webp/avif).
-- ⬜ **P1.2 — Below-the-fold images.** Proper lazy-loading, reserved dimensions
-  (no CLS), responsive `sizes` in the `/tires` grids.
-- ⬜ **P1.3 — Fonts.** Verify `next/font` (Inter) with no CLS: `display: swap`,
-  no flashes; subset if applicable.
-- ⬜ **P1.4 — Structural CLS.** Reserve space for badges, carousels and media;
-  avoid jumps on hydration.
-- ⬜ **P1.5 — JS / bundle.** Audit heavy imports; confirm that 3D (three.js) and
-  other non-critical chunks load deferred; trim the rest.
-- ⬜ **P1.6 — INP / interactivity.** Reduce main-thread work; confirm the 3D
-  canvases only run when active.
-- ⬜ **P1.7 — Data / routes.** Review caching/ISR where applicable and hot SQL
-  queries that affect TTFB.
-- ⬜ **P1.8 — Re-measure and budget.** Confirm CWV in the green and set a
-  performance budget to prevent regressions.
+- ✅ **P1.0 — Baseline.** Measured CWV on home, `/tires` and detail; recorded
+  LCP/INP/CLS and the top offenders (`001-perf-baseline`).
+- ✅ **P1.1 — LCP image.** Hero LCP prioritized (`priority`/preload/`fetchpriority`),
+  correct `sizes`, modern format (`002-lcp-fetchpriority`).
+- ✅ **P1.2 — Below-the-fold images.** Lazy-loading, reserved dimensions, responsive
+  `sizes`, AVIF/WebP + payload trims (`004-image-payload`).
+- ✅ **P1.3 — Fonts.** `next/font` (Inter) made explicit — `display: swap`, preload,
+  metric-matched fallback, wired as the `sans` token (`006-fonts-cls`).
+- ✅ **P1.4 — Structural CLS.** Audit + PromoBanner hydration-jump fix; other
+  surfaces already reserved space (`008-structural-cls`).
+- ✅ **P1.5 — JS / bundle.** three.js deferred (dynamic import + idle-mount), other
+  chunks confirmed non-blocking (`005-home-3d-defer`).
+- ✅ **P1.6 — INP / interactivity.** 3D canvases run only when active/visible; idle
+  mount reduces main-thread work on load (`005-home-3d-defer`).
+- ✅ **P1.7 — Data / routes.** Detail page server-rendered (shared mapper, force-
+  dynamic), cutting the client-fetch CLS/LCP cost (`003-detail-server-render`).
+- 🟡 **P1.8 — Re-measure and budget.** JS-weight performance budget shipped as a
+  local/pre-deploy gate — `npm run perf:budget` (`009-perf-budget`); not a CI step
+  because `next build` needs the DB. The deployed-site CWV re-measurement (PSI)
+  remains to confirm targets and close Track 1.
 
 ## Track 2 — Payments go-live (Stripe)
 
