@@ -48,8 +48,9 @@ site is the last step** to confirm the metric targets and formally close the tra
   mount reduces main-thread work on load (`005-home-3d-defer`).
 - ✅ **P1.7 — Data / routes.** Detail page server-rendered (shared mapper, force-
   dynamic), cutting the client-fetch CLS/LCP cost (`003-detail-server-render`).
-- 🟡 **P1.8 — Re-measure and budget.** JS-weight performance budget shipped and
-  CI-enforced (`009-perf-budget`); the deployed-site CWV re-measurement (PSI)
+- 🟡 **P1.8 — Re-measure and budget.** JS-weight performance budget shipped as a
+  local/pre-deploy gate — `npm run perf:budget` (`009-perf-budget`); not a CI step
+  because `next build` needs the DB. The deployed-site CWV re-measurement (PSI)
   remains to confirm targets and close Track 1.
 
 ## Track 2 — Payments go-live (Stripe)

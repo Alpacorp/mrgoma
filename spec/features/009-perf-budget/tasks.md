@@ -33,11 +33,14 @@ Ordered, **very small, independently verifiable** tasks. Build the guard first
 
 ## CI + documentation
 
-- [x] **T5 — Wire the guard into CI** · in `.github/workflows/ci.yml`, add (after
-  the test step) `npm run build` then `npm run perf:budget`. No DB env needed — the
-  brand/size `generateStaticParams` already `try/catch → []`. · files:
-  `.github/workflows/ci.yml` · check: workflow YAML valid; the local
-  build → `perf:budget` sequence passes (CI re-verifies on push).
+- [x] **T5 — Guard runs as a local/pre-deploy gate (not CI)** · a first attempt to
+  add `build + perf:budget` to `ci.yml` failed: `next build` needs the DB
+  (`constants.ts` throws on missing env at import; `sitemap` + `/tires/new|used`
+  fetch at build) and CI has none. Owner chose to keep the guard out of CI (vs
+  making the build DB-optional), so `ci.yml` is left unchanged and the guard runs
+  via `npm run perf:budget` in the DoD / before deploy. · files:
+  `.github/workflows/ci.yml` (reverted to original) · check: CI stays
+  lint/typecheck/test only and passes.
 - [x] **T6 — Document the budget** · extend `tech-stack.md` "Performance budget"
   with the JS limits (shared ≤180 KB, total ≤680 KB gzip, `perf-budget.json`, how
   CI checks it) and mark **P1.8 done + Track 1 exit-criteria status** in

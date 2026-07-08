@@ -2,7 +2,7 @@
 
 > Feature: `009-perf-budget` · Status: budget shipped; CWV re-measure awaiting PSI
 
-## JS-weight budget (shipped, CI-enforced)
+## JS-weight budget (shipped)
 
 Measured on the current production build (gzip), with headroom above today's real
 numbers so the budget guards *growth*:
@@ -12,8 +12,11 @@ numbers so the budget guards *growth*:
 | Shared First-Load JS | **157.3 KB** | ≤ 180 KB | ✅ pass |
 | Total client JS | **611.0 KB** | ≤ 680 KB | ✅ pass |
 
-Guard: `npm run perf:budget` (`scripts/perf-budget.mjs`) → run in CI after
-`npm run build`. Fails the build on a breach or a missing/format-changed manifest.
+Guard: `npm run perf:budget` (`scripts/perf-budget.mjs`), run after `npm run build`
+as part of the DoD / before a deploy. Exits non-zero on a breach or a
+missing/format-changed manifest. **Not a CI step** — `next build` needs the DB
+(build-time fetches + `constants.ts` env throw), which CI lacks; keeping the guard
+local avoids DB/secret coupling in CI.
 
 ## CWV re-measure — before → after (post-deploy PSI)
 

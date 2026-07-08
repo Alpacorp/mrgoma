@@ -5,7 +5,8 @@
 ## Technical approach
 
 Two deliverables: a **documented re-measurement** (owner-run post-deploy PSI,
-recorded in `results.md`) and an **automatic, lightweight JS-weight guard** in CI.
+recorded in `results.md`) and a **lightweight JS-weight guard** run as a
+local/pre-deploy gate (`npm run perf:budget`).
 
 ### Grounding discovery — what Next 16 (Turbopack) exposes
 
@@ -59,10 +60,14 @@ absorb minor Linux/Windows build variance.
   error, never a silent pass. The size math lives in exported pure functions so it
   is unit-testable without a build.
 - **`package.json`** — `"perf:budget": "node scripts/perf-budget.mjs"`.
-- **CI (`.github/workflows/ci.yml`)** — a step (after tests) that runs
-  `npm run build` then `npm run perf:budget`. The build **degrades gracefully with
-  no DB** (the brand/size `generateStaticParams` already `try/catch → []`, verified
-  in code), so CI needs no database; the client chunks are identical regardless.
+- **Run as a local/pre-deploy gate** — `npm run build && npm run perf:budget`, in
+  the Definition of Done and before a deploy. _Not_ a CI step: a first attempt to
+  add `build + perf:budget` to CI failed because `next build` needs the DB for
+  build-time data fetches (`sitemap`, `/tires/new|used` call repositories that hit
+  SQL, and `constants.ts` throws on missing env at import), which CI doesn't have.
+  Owner chose to keep the guard out of CI rather than make the whole build
+  DB-optional. (That DB-optional refactor — lazy `constants`/`db` + guarded
+  build-time fetches — is the noted alternative if CI enforcement is wanted later.)
 
 ### Re-measure
 
@@ -87,16 +92,15 @@ fix here.
 - **`src/perf-budget.test.ts`** — **new**; unit tests for `evaluateBudget`
   (within-budget passes; over-budget fails → covers AC4).
 - **`package.json`** — add the `perf:budget` script.
-- **`.github/workflows/ci.yml`** — add the build + `perf:budget` step.
 - **`spec/tech-stack.md`** — extend the "Performance budget" section with the JS
-  limits and how they're checked (AC5).
+  limits and how they're checked (`npm run perf:budget`, local/pre-deploy) (AC5).
 - **`spec/roadmap.md`** — mark P1.8 done and state Track 1 exit-criteria status.
 - **`spec/features/009-perf-budget/results.md`** — **new**; before→after CWV table
   (filled from the owner's PSI) + the recorded JS budget numbers.
 
 ## Data & flow
 
-No runtime/app changes — build-time + CI only. The guard reads build output
+No runtime/app changes — build-time only. The guard reads build output
 artifacts; nothing ships to users. PSI is external/manual.
 
 ## Acceptance criteria → implementation
@@ -119,17 +123,20 @@ artifacts; nothing ships to users. PSI is external/manual.
   `zlib` does the job in ~60 lines; no dependency, no headless browser.
 - **gzip (chosen)** vs raw on-disk — gzip is what users download and the honest
   metric; `zlib.gzipSync` is free.
-- **CI build + check (chosen)** vs a documented-manual gate — automatic is worth
-  the ~1–2 min CI build, and the build already tolerates no-DB.
+- **Local/pre-deploy gate (chosen after CI attempt)** vs a CI step — CI can't
+  `next build` without a DB (build-time fetches + `constants.ts` env throw). Rather
+  than make the whole build DB-optional (lazy `constants`/`db` + guarded fetches),
+  the owner chose to run the guard in the DoD / pre-deploy. Trade: not enforced on
+  every PR (relies on the DoD), but zero DB/secret coupling in CI.
 
 ## Risks
 
-- **CI build without DB** — mitigated: `generateStaticParams` already
-  `try/catch → []`; build succeeds without prerendering brand/size pages (verified
-  in code). If a build step ever hangs on a DB connection, the check can move to a
-  Vercel build artifact or a pre-push gate (noted).
-- **Cross-platform gzip variance** (CI Linux vs local Windows) — absorbed by the
-  ~11–14% headroom.
+- **CI build needs a DB (realized)** — `next build` fails without a DB:
+  `constants.ts` throws on missing env at import, and `sitemap` / `/tires/new|used`
+  fetch at build. This is why the guard runs locally/pre-deploy, not in CI. Making
+  the build DB-optional (lazy `constants`/`db` + guarded fetches) would re-enable a
+  CI step later.
+- **Build-to-build gzip variance** — absorbed by the ~11–14% headroom.
 - **Turbopack manifest format changes** — the script fails loudly on an empty/
   missing `rootMainFiles`, so a format change is caught, not silently passed.
 - **Budget set too loose** — headroom is modest (~11–14%); tightened later if

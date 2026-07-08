@@ -42,16 +42,6 @@ jobs:
       - name: Unit tests + coverage
         run: npm run test:coverage
 
-      # Build then enforce the JS-weight performance budget (feature 009). No DB
-      # is needed: the brand/size generateStaticParams already try/catch -> [], so
-      # the build succeeds without prerendering those pages; the client chunks
-      # (what the budget measures) are identical either way.
-      - name: Build
-        run: npm run build
-
-      - name: Performance budget (client JS)
-        run: npm run perf:budget
-
       - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@v4

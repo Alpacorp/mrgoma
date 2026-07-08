@@ -44,9 +44,9 @@ caught early. It is the P1.8 slice — the **exit gate** of Track 1.
     the CWV field targets (from the constitution) **plus** an enforceable,
     measurable-without-deploy JS-weight proxy (shared First-Load JS + total client
     JS).
-  - **Add a lightweight guard** that enforces the enforceable part automatically
-    (in CI or an equivalent check), so a regression fails fast — without adding
-    heavy tooling unless justified.
+  - **Add a lightweight guard** — a repeatable command (`npm run perf:budget`)
+    that fails on a breach — run in the Definition of Done and before a deploy, so
+    a regression is caught fast, without adding heavy tooling.
   - **Document the budget** in the constitution (extend the existing
     `tech-stack.md` "Performance budget" section) so it's discoverable and durable.
   - Mark Track 1 **exit criteria** met (or list what remains) in the roadmap.
@@ -54,9 +54,9 @@ caught early. It is the P1.8 slice — the **exit gate** of Track 1.
   - New performance *optimizations* — this phase measures and guards; it does not
     re-optimize (that was P1.1–P1.7). If re-measure reveals a **missed** target, we
     record it and open a follow-up, not fix it here.
-  - Field-data (CrUX) enforcement in CI — field CWV can't be measured pre-deploy;
-    CI guards the pre-deploy proxy, field targets stay a documented post-deploy
-    gate.
+  - Field-data (CrUX) automated enforcement — field CWV can't be measured
+    pre-deploy; the command guards the pre-deploy JS proxy, field targets stay a
+    documented post-deploy gate.
   - Synthetic monitoring / alerting infrastructure beyond the chosen guard.
 
 ## Functional requirements
@@ -67,15 +67,16 @@ caught early. It is the P1.8 slice — the **exit gate** of Track 1.
 - **FR2:** A written **performance budget** exists: the CWV targets **and**
   concrete **JS-weight** limits — **shared First-Load JS** (loaded by every page)
   and **total client JS** — with specific KB (gzip) numbers.
-- **FR3:** The JS-weight budget is **enforced automatically in CI** — a change that
-  pushes the shared First-Load JS or total client JS over its limit fails the check
-  before merge; no headless-browser tooling.
+- **FR3:** The JS-weight budget is **enforced by a repeatable command**
+  (`npm run perf:budget`) that exits non-zero when the shared First-Load JS or
+  total client JS exceeds its limit — run as part of the Definition of Done and
+  before a deploy. (Not a CI step: `next build` needs the DB, which CI lacks.)
 - **FR4:** The budget and the measurement method are **documented** in the
   constitution so future contributors can find and follow them.
 - **FR5:** The roadmap reflects Track 1's **exit criteria** status (met, or the
   precise remainder).
-- **FR6:** The guard is **lightweight** — no heavy tooling (e.g. headless-browser
-  CI) unless a lighter option can't do the job; it must not materially slow CI.
+- **FR6:** The guard is **lightweight** — no heavy tooling (e.g. headless browser)
+  unless a lighter option can't do the job; the command must run fast.
 
 ## Acceptance criteria (testable)
 
@@ -99,9 +100,9 @@ caught early. It is the P1.8 slice — the **exit gate** of Track 1.
 
 ## Non-functional / constraints
 
-- **Reuse before creating:** reuse the constitution's existing CWV targets and the
-  existing CI workflow; prefer extending them over new infrastructure.
-- **Lightweight:** the guard must keep CI fast; avoid headless-browser runs unless
+- **Reuse before creating:** reuse the constitution's existing CWV targets;
+  prefer a small script over new infrastructure.
+- **Lightweight:** the guard must run fast; avoid headless-browser runs unless
   necessary.
 - **Honest baselining:** set the enforceable limit at (or just above) the current
   real value so it guards against *growth*, not an aspirational number that fails
@@ -111,11 +112,14 @@ caught early. It is the P1.8 slice — the **exit gate** of Track 1.
 
 ## Resolved clarifications
 
-- **Enforcement = lightweight CI check on JS weight.** Add a build + a check to CI
-  that fails when the shared First-Load JS or total client JS exceeds its limit
-  (a small Node script gzip-summing the build's chunks). No headless Chrome;
-  ~1–2 min of extra CI. This guards the regression class that drives INP/TBT (our
-  worst baseline metric).
+- **Enforcement = a repeatable local/pre-deploy command.** A small Node script
+  (`npm run perf:budget`) gzip-sums the build's chunks and fails when the shared
+  First-Load JS or total client JS exceeds its limit, guarding the regression class
+  that drives INP/TBT (our worst baseline metric). _Adjusted after the CI build
+  failed (owner-decided):_ `next build` needs the DB for build-time data fetches
+  (sitemap, `/tires/new|used`), which CI doesn't have — so the guard runs as part
+  of the DoD / before a deploy rather than as a CI step. (Making the build
+  DB-optional was the alternative; deferred.)
 - **Budget scope = JS weight (shared First-Load JS + total client JS).** Few,
   high-signal limits; JS weight is what breaks INP/TBT. _Adjusted during `/plan`
   (owner-confirmed):_ Next 16/Turbopack does **not** emit per-route First-Load JS
