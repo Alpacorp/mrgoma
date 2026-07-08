@@ -64,7 +64,7 @@ const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
                 id={`image-tab-${image.id}`}
                 type="button"
                 onClick={() => select(i)}
-                className={`group relative flex h-24 cursor-pointer items-center justify-center rounded-md bg-white text-sm font-medium uppercase text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring ring-green-primary focus:ring-opacity-60 focus:ring-offset-4 ${selected ? 'ring-2 ring-green-primary' : 'ring-2 ring-transparent'}`}
+                className={`group relative flex h-24 cursor-pointer items-center justify-center rounded-md bg-white text-sm font-medium uppercase text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring ring-green-600 focus:ring-opacity-60 focus:ring-offset-4 ${selected ? 'ring-2 ring-green-600' : 'ring-2 ring-transparent'}`}
                 title={image.name}
               >
                 <span className="sr-only">{image.name}</span>
