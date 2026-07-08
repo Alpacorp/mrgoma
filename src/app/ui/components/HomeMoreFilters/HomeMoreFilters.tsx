@@ -186,7 +186,7 @@ const HomeMoreFilters: FC<HomeMoreFiltersProps> = ({ value, onApply }) => {
         aria-haspopup="dialog"
         data-track="open_home_more_filters"
         data-track-category="home_search"
-        className="inline-flex items-center gap-1.5 rounded-full border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-gray-400 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-primary"
+        className="inline-flex items-center gap-1.5 rounded-full border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-gray-400 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-600"
       >
         <SlidersIcon className="h-4 w-4 text-gray-500" />
         More filters
@@ -209,7 +209,7 @@ const HomeMoreFilters: FC<HomeMoreFiltersProps> = ({ value, onApply }) => {
             type="button"
             onClick={() => panelRef.current?.hidePopover()}
             aria-label="Close filters"
-            className="rounded-md p-1 text-gray-400 hover:text-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-primary"
+            className="rounded-md p-1 text-gray-400 hover:text-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-600"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -229,7 +229,7 @@ const HomeMoreFilters: FC<HomeMoreFiltersProps> = ({ value, onApply }) => {
                     value={opt.value}
                     checked={condition.includes(opt.value)}
                     onChange={() => setCondition(prev => toggleValue(prev, opt.value))}
-                    className="h-4 w-4 rounded border-gray-300 text-green-primary focus:ring-green-primary"
+                    className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-600"
                   />
                   {opt.label}
                 </label>
@@ -271,7 +271,7 @@ const HomeMoreFilters: FC<HomeMoreFiltersProps> = ({ value, onApply }) => {
               placeholder="Search brands…"
               aria-label="Search brands"
               style={{ fontSize: '16px' }}
-              className="mb-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-green-primary focus:outline-none focus:ring-1 focus:ring-green-primary"
+              className="mb-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600"
             />
             <div className="max-h-44 space-y-2.5 overflow-y-auto pr-1">
               {loading && allBrands.length === 0 ? (
@@ -291,7 +291,7 @@ const HomeMoreFilters: FC<HomeMoreFiltersProps> = ({ value, onApply }) => {
                       value={brand}
                       checked={brands.includes(brand)}
                       onChange={() => setBrands(prev => toggleValue(prev, brand))}
-                      className="h-4 w-4 rounded border-gray-300 text-green-primary focus:ring-green-primary"
+                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-600"
                     />
                     {brand.toUpperCase()}
                   </label>
@@ -307,7 +307,7 @@ const HomeMoreFilters: FC<HomeMoreFiltersProps> = ({ value, onApply }) => {
             onClick={clear}
             data-track="clear_home_filters"
             data-track-category="home_search"
-            className="text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-primary"
+            className="text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-600"
           >
             Clear
           </button>

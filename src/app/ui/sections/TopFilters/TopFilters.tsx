@@ -324,7 +324,7 @@ export const TopFilters: FC<{
                       <div className="absolute left-0 mt-2 z-50 w-80 md:w-96 bg-white border border-gray-200 rounded-lg shadow-lg p-4">
                         {isLoadingStores ? (
                           <div className="flex justify-center items-center h-20">
-                            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-green-primary"></div>
+                            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-green-600"></div>
                             <span className="ml-2 text-sm text-gray-500">Loading stores...</span>
                           </div>
                         ) : (
@@ -338,7 +338,7 @@ export const TopFilters: FC<{
                                   type="checkbox"
                                   checked={isChecked('stores', store)}
                                   onChange={handleCheckboxChange}
-                                  className="h-4 w-4 rounded border-gray-300 text-green-primary focus:ring-green-primary"
+                                  className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-600"
                                 />
                                 <label
                                   htmlFor={`filter-stores-${idx}`}

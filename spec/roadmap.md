@@ -82,6 +82,12 @@ persisted (`SC_Order`/`SC_OrderDetail`), tire marked `sold`, and receipt shown.
 
 To be resumed after the two tracks above; no fixed order yet.
 
+- ⬜ **Tailwind v4 config activation (bug).** `tailwind.config.ts` is ignored by
+  Tailwind v4 (no `@config` directive), so its custom tokens are dormant **in
+  production today**: `green-primary` (brand accent on focus rings/checkboxes),
+  the `xs` (350px) breakpoint, and the `slide-in-right` cart animation. Activate
+  them the v4 way (migrate to CSS `@theme` or add `@config`) and visually verify
+  no regressions. Found during P1.3 (`006-fonts-cls`).
 - ⬜ **SEO — phased plan.** 4 phases from the WJM audit; Phase 1 ready to
   implement.
 - ⬜ **TireCard redesign.** UX/UI improvements for the `/tires` cards (analysis

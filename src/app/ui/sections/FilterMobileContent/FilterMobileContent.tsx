@@ -52,7 +52,7 @@ export const FilterMobileContent: FC<{
           <h3 className="-my-3 flow-root">
             <DisclosureButton className="flex w-full items-center justify-between bg-gray-50 py-3 text-sm text-gray-400 hover:text-gray-500">
               <span className="font-medium text-gray-900">Price</span>
-              <span className="ml-6 flex items-center text-green-primary">
+              <span className="ml-6 flex items-center text-green-600">
                 <DisclosureIcon />
               </span>
             </DisclosureButton>
@@ -88,7 +88,7 @@ export const FilterMobileContent: FC<{
               className={`flex w-full items-center justify-between bg-gray-50 ${isMobile ? 'px-2' : ''} py-3 text-sm text-gray-400 hover:text-gray-500`}
             >
               <span className="font-medium text-gray-900">Location</span>
-              <span className="ml-6 flex items-center text-green-primary">
+              <span className="ml-6 flex items-center text-green-600">
                 <DisclosureIcon />
               </span>
             </DisclosureButton>
@@ -96,7 +96,7 @@ export const FilterMobileContent: FC<{
           <DisclosurePanel className="pt-6">
             {isLoadingStores ? (
               <div className="flex justify-center items-center h-20">
-                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-green-primary"></div>
+                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-green-600"></div>
                 <span className="ml-2 text-sm text-gray-500">Loading stores...</span>
               </div>
             ) : (
@@ -110,7 +110,7 @@ export const FilterMobileContent: FC<{
                       type="checkbox"
                       checked={isChecked('stores', store)}
                       onChange={handleCheckboxChange}
-                      className="h-4 w-4 rounded border-gray-300 text-green-primary focus:ring-green-primary"
+                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-600"
                     />
                     <label
                       htmlFor={`filter-${isMobile ? 'mobile-' : ''}stores-${idx}`}
@@ -135,7 +135,7 @@ export const FilterMobileContent: FC<{
         <h3 className="-my-3 flow-root">
           <DisclosureButton className="flex w-full items-center justify-between bg-gray-50 py-3 text-sm text-gray-400 hover:text-gray-500">
             <span className="font-medium text-gray-900">Tread Depth</span>
-            <span className="ml-6 flex items-center text-green-primary">
+            <span className="ml-6 flex items-center text-green-600">
               <DisclosureIcon />
             </span>
           </DisclosureButton>
@@ -167,7 +167,7 @@ export const FilterMobileContent: FC<{
         <h3 className="-my-3 flow-root">
           <DisclosureButton className="flex w-full items-center justify-between bg-gray-50 py-3 text-sm text-gray-400 hover:text-gray-500">
             <span className="font-medium text-gray-900">Remaining Life</span>
-            <span className="ml-6 flex items-center text-green-primary">
+            <span className="ml-6 flex items-center text-green-600">
               <DisclosureIcon />
             </span>
           </DisclosureButton>
@@ -203,7 +203,7 @@ export const FilterMobileContent: FC<{
               className={`flex w-full items-center justify-between bg-gray-50 ${isMobile ? 'px-2' : ''} py-3 text-sm text-gray-400 hover:text-gray-500`}
             >
               <span className="font-medium text-gray-900">{section.name}</span>
-              <span className="ml-6 flex items-center text-green-primary">
+              <span className="ml-6 flex items-center text-green-600">
                 <DisclosureIcon />
               </span>
             </DisclosureButton>
@@ -239,7 +239,7 @@ export const FilterMobileContent: FC<{
               className={`flex w-full items-center justify-between bg-gray-50 ${isMobile ? 'px-2' : ''} py-3 text-sm text-gray-400 hover:text-gray-500`}
             >
               <span className="font-medium text-gray-900">Local Install Only</span>
-              <span className="ml-6 flex items-center text-green-primary">
+              <span className="ml-6 flex items-center text-green-600">
                 <DisclosureIcon />
               </span>
             </DisclosureButton>
@@ -265,7 +265,7 @@ export const FilterMobileContent: FC<{
               className={`flex w-full items-center justify-between bg-gray-50 ${isMobile ? 'px-2' : ''} py-3 text-sm text-gray-400 hover:text-gray-500`}
             >
               <span className="font-medium text-gray-900">Brands</span>
-              <span className="ml-6 flex items-center text-green-primary">
+              <span className="ml-6 flex items-center text-green-600">
                 <DisclosureIcon />
               </span>
             </DisclosureButton>

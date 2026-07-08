@@ -24,18 +24,10 @@ const config: Config = {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
-      colors: {
-        'green-primary': '#1dbd5b',
-      },
-      keyframes: {
-        'slide-in-right': {
-          '0%': { transform: 'translateX(1000px)', opacity: '0' },
-          '100%': { transform: 'translateX(0)', opacity: '1' },
-        },
-      },
-      animation: {
-        'slide-in-right': 'slide-in-right 2.5s ease-out',
-      },
+      // NOTE: `green-primary` was retired (reconciled to green-600) and
+      // `slide-in-right` moved to globals.css @theme — Tailwind v4 does not load
+      // this file (no @config), so tokens must live in CSS. The remaining
+      // entries here are likewise dormant; reviving them is a separate follow-up.
     },
   },
   plugins: [forms, aspectRatio, typography],
