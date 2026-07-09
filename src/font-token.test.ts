@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 /**
  * Guard for the font-token wiring (feature 006-fonts-cls). Inter is loaded via
  * next/font as `--font-inter`; the Tailwind v4 `sans` token is declared in CSS
- * (`@theme` in globals.css, because v4 does not auto-load tailwind.config.ts) and
+ * (`@theme` in globals.css, because v4 has no JS-config auto-load) and
  * must point at that variable so `font-sans` — and the document default — resolve
  * to Inter instead of the system stack. If someone drops the variable, text
  * silently falls back to a system font; this test fails first.

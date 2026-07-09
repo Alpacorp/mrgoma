@@ -1,0 +1,11 @@
+{
+  "$comment": "Performance budget (feature 009-perf-budget / P1.8). Gzip KB limits on client JS weight, checked in CI by scripts/perf-budget.mjs. Set above today's real numbers so they guard growth, not fail on day one. Bump deliberately in a PR when a real increase is justified.",
+  "sharedFirstLoadJs": {
+    "limitKB": 180,
+    "note": "gzip of rootMainFiles + polyfillFiles from .next/build-manifest.json — the First Load JS shared by every page (current ~157 KB)"
+  },
+  "totalClientJs": {
+    "limitKB": 680,
+    "note": "gzip of every .next/static/chunks/*.js incl. deferred chunks like three.js (current ~611 KB)"
+  }
+}
