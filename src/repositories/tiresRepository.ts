@@ -2,6 +2,11 @@ import { Float, Int, VarChar } from 'mssql';
 
 import { getPool } from '@/connection/db';
 import { logQuery } from '@/connection/queryLogger';
+import {
+  STOREFRONT_SELLABLE_WHERE,
+  buildFeedQuery,
+  type FeedTireRecord,
+} from '@/repositories/feedQuery';
 
 type MssqlType = typeof VarChar | typeof Int | typeof Float;
 type SqlParam = { name: string; type: MssqlType; value: unknown };
@@ -178,12 +183,7 @@ export async function fetchTires(
   pageSize: number,
   filters: TireFilters = {}
 ): Promise<{ records: DocumentRecord[]; totalCount: number }> {
-  return fetchTiresInternal(
-    offset,
-    pageSize,
-    filters,
-    "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND RemainingLife >= '50%' AND Price != 0"
-  );
+  return fetchTiresInternal(offset, pageSize, filters, STOREFRONT_SELLABLE_WHERE);
 }
 
 export async function fetchDashboardTires(
@@ -375,6 +375,18 @@ export async function fetchActiveTireIds(
     brand: row.Brand || undefined,
     size: row.RealSize || undefined,
   }));
+}
+
+/**
+ * Fetches the full online-sellable lot for the Google Merchant feed — same
+ * business rule as `fetchTires` (via the shared `buildFeedQuery`), whitelisted
+ * columns, no pagination/cap.
+ */
+export async function fetchSellableTiresForFeed(): Promise<FeedTireRecord[]> {
+  const pool = await getPool();
+  const request = pool.request();
+  const result = await logQuery('tires.merchantFeed', () => request.query(buildFeedQuery()));
+  return (result.recordset as FeedTireRecord[]) ?? [];
 }
 
 export async function setTiresConditionIdToSoldByIds(

@@ -88,6 +88,15 @@ To be resumed after the two tracks above; no fixed order yet.
   the `xs` (350px) breakpoint, and the `slide-in-right` cart animation. Activate
   them the v4 way (migrate to CSS `@theme` or add `@config`) and visually verify
   no regressions. Found during P1.3 (`006-fonts-cls`).
+- 🟡 **GMC product feed (`011-gmc-product-feed`).** Token-protected XML feed at
+  `/feed/google-merchant.xml` serving the online-sellable lot (reuses the
+  `fetchTires` filter, no business-rule change) so Google Merchant Center reads an
+  authoritative catalog instead of guessing via crawl. Owner registers the
+  tokenized URL in the GMC admin. _In progress._
+- ⬜ **Public-API security review.** Consistent input validation (Zod),
+  rate-limiting and output field-whitelisting across the existing public API
+  surface (`/api/tires`, `/api/tire`, `/api/brands`, `/api/ranges`,
+  `/api/dimensions/*`, `/api/instant-quote`). Scoped as the follow-up to `011`.
 - ⬜ **SEO — phased plan.** 4 phases from the WJM audit; Phase 1 ready to
   implement.
 - ⬜ **TireCard redesign.** UX/UI improvements for the `/tires` cards (analysis
