@@ -1,9 +1,15 @@
 import { unstable_cache } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
+import { z } from 'zod';
+
+import { jsonError } from '@/app/api/_lib/apiError';
 import { withLogging } from '@/app/api/_lib/withLogging';
 import { fetchTireWidths } from '@/repositories/dimensionsRepository';
-import { logger } from '@/utils/logger';
+
+// Coerce an optional numeric query param: non-numeric/garbage → undefined
+// (ignored filter), never NaN passed to the query.
+const optionalNumber = z.coerce.number().positive().optional().catch(undefined);
 
 const getCachedWidths = unstable_cache(
   (height?: number) => fetchTireWidths(height),
@@ -18,13 +24,11 @@ const getCachedWidths = unstable_cache(
 export const GET = withLogging('dimensions.widths.GET', async (req: NextRequest) => {
   try {
     const { searchParams } = new URL(req.url);
-    const height = searchParams.get('height'); // Optional filter by height
+    const height = optionalNumber.parse(searchParams.get('height') ?? undefined);
 
-    const widths = await getCachedWidths(height ? parseInt(height, 10) : undefined);
+    const widths = await getCachedWidths(height);
     return NextResponse.json(widths);
   } catch (err: unknown) {
-    logger.error('Failed to fetch tire widths', err);
-    const errorMessage = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ message: errorMessage }, { status: 500 });
+    return jsonError(500, 'Failed to fetch tire widths', err);
   }
 });

@@ -1,10 +1,10 @@
 import { unstable_cache } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
+import { jsonError } from '@/app/api/_lib/apiError';
 import { withLogging } from '@/app/api/_lib/withLogging';
 import { buildBrandFilters } from '@/app/utils/filterUtils';
 import { TireFilters, fetchBrands } from '@/repositories/tiresRepository';
-import { logger } from '@/utils/logger';
 
 const getCachedBrands = unstable_cache(
   (filters: TireFilters) => fetchBrands(filters),
@@ -19,8 +19,6 @@ export const GET = withLogging('brands.GET', async (req: NextRequest) => {
     const brands = await getCachedBrands(filters);
     return NextResponse.json(brands);
   } catch (err: unknown) {
-    logger.error('Failed to fetch brands', err);
-    const message = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ message }, { status: 500 });
+    return jsonError(500, 'Failed to fetch brands', err);
   }
 });

@@ -1,6 +1,7 @@
 import { unstable_cache } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
+import { jsonError } from '@/app/api/_lib/apiError';
 import { withLogging } from '@/app/api/_lib/withLogging';
 import { buildTireFilters } from '@/app/utils/filterUtils';
 import {
@@ -9,6 +10,7 @@ import {
   MAX_PAGE_SIZE,
   validatePageSize,
 } from '@/app/utils/paginationUtils';
+import { pickTireListFields } from '@/repositories/tireListFields';
 import { TireFilters, fetchTires } from '@/repositories/tiresRepository';
 import { logger } from '@/utils/logger';
 
@@ -41,10 +43,14 @@ export const GET = withLogging('tires.GET', async (req: NextRequest) => {
 
   try {
     const result = await getCachedTires(offset, pageSize, filters);
-    return NextResponse.json(result);
+    // Whitelist each record to the fields the storefront consumes, so internal
+    // DB columns (VaultName, Local, Trash, Amount, …) never reach the client.
+    // Shape unchanged: `{ records, totalCount }` — the client still transforms.
+    return NextResponse.json({
+      records: result.records.map(pickTireListFields),
+      totalCount: result.totalCount,
+    });
   } catch (err: unknown) {
-    logger.error('Failed to fetch tires', err);
-    const errorMessage = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ message: errorMessage }, { status: 500 });
+    return jsonError(500, 'Failed to fetch tires', err);
   }
 });

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { jsonError } from '@/app/api/_lib/apiError';
 import { withLogging } from '@/app/api/_lib/withLogging';
 import { logger } from '@/utils/logger';
 
@@ -7,6 +8,11 @@ import { logger } from '@/utils/logger';
 const RATE_WINDOW_MS = 5 * 60 * 1000; // 5 minutes
 const RATE_MAX = 5; // max 5 requests per window per IP
 const ipRequestLog = new Map<string, number[]>();
+
+// A quote submission is tiny (a few fields); anything larger is abuse. Cap the
+// request body so a huge payload can't be forwarded to the webhook or exhaust
+// memory. Generous vs. a real form (~1 KB).
+const MAX_BODY_BYTES = 10 * 1024; // 10 KB
 
 function getClientIp(req: NextRequest): string | undefined {
   const xff = req.headers.get('x-forwarded-for');
@@ -79,7 +85,19 @@ export const POST = withLogging('instantQuote.POST', async (req: NextRequest) =>
       return NextResponse.json({ message: 'Too many requests' }, { status: 429 });
     }
 
-    const payload = await req.json().catch(() => ({}));
+    // 2b) Body-size cap — reject oversized payloads before parsing/forwarding.
+    const rawBody = await req.text();
+    if (rawBody.length > MAX_BODY_BYTES) {
+      logger.warn('instant-quote body exceeded size cap', { ip: clientIp, bytes: rawBody.length });
+      return NextResponse.json({ message: 'Payload too large' }, { status: 413 });
+    }
+
+    let payload: Record<string, unknown> = {};
+    try {
+      payload = rawBody ? JSON.parse(rawBody) : {};
+    } catch {
+      payload = {};
+    }
 
     // 3) Honeypot detection – short-circuit with 200 to avoid tipping bots
     if (typeof payload?.hp === 'string' && payload.hp.trim() !== '') {
@@ -145,8 +163,6 @@ export const POST = withLogging('instantQuote.POST', async (req: NextRequest) =>
     const data = await resp.json().catch(() => ({ ok: true }));
     return NextResponse.json({ ok: true, data });
   } catch (err: unknown) {
-    logger.error('Failed to process instant-quote POST', err);
-    const message = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ message }, { status: 500 });
+    return jsonError(500, 'Failed to process instant-quote', err);
   }
 });

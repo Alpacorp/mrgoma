@@ -93,10 +93,13 @@ To be resumed after the two tracks above; no fixed order yet.
   `fetchTires` filter, no business-rule change) so Google Merchant Center reads an
   authoritative catalog instead of guessing via crawl. Owner registers the
   tokenized URL in the GMC admin. _In progress._
-- ⬜ **Public-API security review.** Consistent input validation (Zod),
-  rate-limiting and output field-whitelisting across the existing public API
-  surface (`/api/tires`, `/api/tire`, `/api/brands`, `/api/ranges`,
-  `/api/dimensions/*`, `/api/instant-quote`). Scoped as the follow-up to `011`.
+- 🟡 **Public-API security review (`012-public-api-hardening`).** Consistent
+  defense-in-depth across the public API surface (`/api/tires`, `/api/tire`,
+  `/api/brands`, `/api/ranges`, `/api/dimensions/*`, `/api/instant-quote`): generic
+  error responses (no `err.message` leak), output field-whitelisting on `/api/tires`
+  (drops internal columns), Zod coercion on numeric dimension params, and an
+  instant-quote body-size cap — all with **zero contract change**. Follow-up to
+  `011`. _In progress._
 - ⬜ **SEO — phased plan.** 4 phases from the WJM audit; Phase 1 ready to
   implement.
 - ⬜ **TireCard redesign.** UX/UI improvements for the `/tires` cards (analysis
