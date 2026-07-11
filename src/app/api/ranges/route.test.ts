@@ -28,11 +28,14 @@ describe('GET /api/ranges', () => {
     expect(await res.json()).toEqual({ minPrice: 10, maxPrice: 500 });
   });
 
-  it('returns 500 when the repository throws', async () => {
+  it('returns a generic 500 (no err.message leak) when the repository throws', async () => {
     h.impl = () => {
-      throw new Error('db down');
+      throw new Error('db down connection=secret');
     };
     const res = await GET(req);
     expect(res.status).toBe(500);
+    const body = await res.json();
+    expect(body.message).toBe('Failed to fetch tire ranges');
+    expect(JSON.stringify(body)).not.toContain('secret');
   });
 });

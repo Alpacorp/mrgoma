@@ -8,10 +8,12 @@ vi.mock('@/utils/logger', () => ({
 
 import { POST } from './route';
 
+// The route reads the raw body via `req.text()` (for the size cap) then parses
+// it. Serialize objects to their JSON string; pass a raw string as-is.
 const makeReq = (body: unknown, headers: Record<string, string> = {}) =>
   ({
     headers: new Headers(headers),
-    json: async () => body,
+    text: async () => (typeof body === 'string' ? body : JSON.stringify(body)),
     nextUrl: { toString: () => 'http://x/api/instant-quote' },
   }) as unknown as NextRequest;
 
@@ -29,6 +31,15 @@ describe('POST /api/instant-quote', () => {
     vi.stubEnv('N8N_WEBHOOK_URL', 'http://webhook');
     const res = await POST(makeReq({}));
     expect(res.status).toBe(400);
+  });
+
+  it('rejects an oversized body with 413 before forwarding', async () => {
+    vi.stubEnv('N8N_WEBHOOK_URL', 'http://webhook');
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    const res = await POST(makeReq('x'.repeat(11 * 1024)));
+    expect(res.status).toBe(413);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('forwards a valid lead to the webhook', async () => {
