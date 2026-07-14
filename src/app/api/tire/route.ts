@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { jsonError } from '@/app/api/_lib/apiError';
 import { withLogging } from '@/app/api/_lib/withLogging';
 import { mapTireRecordToSingleTire } from '@/repositories/mapTireRecordToSingleTire';
 import { fetchTireById } from '@/repositories/tiresRepository';
@@ -22,7 +23,6 @@ export const GET = withLogging('tire.GET', async (req: NextRequest) => {
     // Shared mapper — same shape the server page render uses, so they never drift.
     return NextResponse.json(mapTireRecordToSingleTire(record));
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ message }, { status: 500 });
+    return jsonError(500, 'Failed to fetch tire', err);
   }
 });

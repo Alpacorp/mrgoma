@@ -1,9 +1,9 @@
 import { unstable_cache } from 'next/cache';
 import { NextResponse } from 'next/server';
 
+import { jsonError } from '@/app/api/_lib/apiError';
 import { withLogging } from '@/app/api/_lib/withLogging';
 import { fetchTireHeights } from '@/repositories/dimensionsRepository';
-import { logger } from '@/utils/logger';
 
 const getCachedHeights = unstable_cache(() => fetchTireHeights(), ['dimensions-heights'], {
   revalidate: 3600,
@@ -18,8 +18,6 @@ export const GET = withLogging('dimensions.heights.GET', async () => {
     const heights = await getCachedHeights();
     return NextResponse.json(heights);
   } catch (err: unknown) {
-    logger.error('Failed to fetch tire heights', err);
-    const errorMessage = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ message: errorMessage }, { status: 500 });
+    return jsonError(500, 'Failed to fetch tire heights', err);
   }
 });

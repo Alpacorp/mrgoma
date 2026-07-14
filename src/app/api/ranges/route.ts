@@ -1,9 +1,9 @@
 import { unstable_cache } from 'next/cache';
 import { NextResponse } from 'next/server';
 
+import { jsonError } from '@/app/api/_lib/apiError';
 import { withLogging } from '@/app/api/_lib/withLogging';
 import { fetchTireRanges } from '@/repositories/tiresRepository';
-import { logger } from '@/utils/logger';
 
 const getCachedRanges = unstable_cache(() => fetchTireRanges(), ['ranges'], {
   revalidate: 300,
@@ -18,8 +18,6 @@ export const GET = withLogging('ranges.GET', async () => {
     const ranges = await getCachedRanges();
     return NextResponse.json(ranges);
   } catch (err: unknown) {
-    logger.error('Failed to fetch tire ranges', err);
-    const message = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ message }, { status: 500 });
+    return jsonError(500, 'Failed to fetch tire ranges', err);
   }
 });
