@@ -85,7 +85,8 @@ export const Footer = ({
                 aria-label="Go to the home page"
                 src={mrGomaLogoLight || '/placeholder.svg'}
                 className="h-8 w-auto"
-                sizes="185px"
+                width={185}
+                height={32}
               />
             </div>
             {sections.map(section => (

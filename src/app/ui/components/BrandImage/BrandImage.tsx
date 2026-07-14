@@ -21,9 +21,8 @@ const BrandImage: FC<BrandImageProps> = ({ product }) => {
       title={product.brand}
       aria-label={product.brand}
       priority
-      width={400}
-      height={300}
-      sizes="(max-width: 768px) 160px, 200px"
+      width={128}
+      height={96}
       onError={() => setSrc('/assets/images/TireBrand/no-brand.webp')}
     />
   );
