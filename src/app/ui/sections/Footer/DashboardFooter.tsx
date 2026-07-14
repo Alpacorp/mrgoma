@@ -24,7 +24,8 @@ export const DashboardFooter = () => {
               alt="MrGoma Tires logo"
               src={mrGomaLogoLight || '/placeholder.svg'}
               className="h-8 w-auto"
-              sizes="185px"
+              width={185}
+              height={32}
             />
             <div className="space-y-1">
               <p className="text-white text-sm font-semibold leading-snug">
