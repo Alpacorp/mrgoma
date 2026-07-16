@@ -329,12 +329,12 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
 
         <div>
           <div className="bg-gray-50 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative h-full">
-            {/* Primary page heading for SEO and accessibility */}
-            <h1 id="products-heading" className="sr-only">
+            {/* Section label for the product list (the page's single <h1> lives in the hero above) */}
+            <h2 id="products-heading" className="sr-only">
               {getTireSize()
                 ? `Used & New Tires in Miami – Size ${getTireSize()}`
                 : 'Used & New Tires in Miami'}
-            </h1>
+            </h2>
             <section aria-labelledby="products-heading" className="pb-24">
               <div className="md:mt-10 space-y-6">
                 <div className="w-full">
