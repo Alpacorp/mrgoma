@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { preload } from 'react-dom';
 
 import { servicesConfig } from '@/app/(shop)/services/servicesConfig';
-import { TrustStrip } from '@/app/ui/components';
+import { HeroVideo, TrustStrip } from '@/app/ui/components';
 import {
   InfoCardsSection,
   PromoBanner,
@@ -125,20 +125,11 @@ const Home: FC = () => {
       {/* ── Hero ── */}
       <section aria-label="Tire search" className="px-4 sm:px-6 lg:px-8 relative">
         <div className="absolute inset-0 overflow-hidden">
-          <video
+          <HeroVideo
             className="absolute inset-0 h-full w-full object-cover"
-            autoPlay
-            muted
-            loop
-            playsInline
-            controls={false}
+            src="/assets/images/banner-hero.mp4"
             poster="/assets/images/banner-hero.webp"
-            preload="metadata"
-            aria-hidden="true"
-          >
-            <source src="/assets/images/banner-hero.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+          />
         </div>
         <div className="relative pt-12 sm:pt-16">
           {/* The page's single <h1>. Server-rendered on purpose: it is what

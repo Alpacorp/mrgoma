@@ -311,7 +311,10 @@ completed.
   asks. Absolute LCP under that synthetic throttle is not comparable to the field
   p75 target; the real check is the CrUX data after deploy._
 
-  _Still open: the real-device pass and the two gates below._
+  _Real-device pass: **done** (owner, 2026-07-31) — confirmed working._
+
+  _Still open: T28 and T29 below. Both need something this branch can't provide
+  on its own — Search Console access, and a publicly reachable deployment._
 
 ## Coordinates to validate (filled in T11, signed off in T31)
 

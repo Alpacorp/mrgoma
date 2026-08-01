@@ -102,6 +102,14 @@ To be resumed after the two tracks above; no fixed order yet.
   `011`. _In progress._
 - ⬜ **SEO — phased plan.** 4 phases from the WJM audit; Phase 1 ready to
   implement.
+- 🟡 **SERP differentiators (`014-serp-differentiators`).** We rank for
+  "tires miami" but the snippet says nothing a competitor couldn't. Puts the
+  owner's real differentiators (30-day warranty, 15,000+ across 7 locations,
+  free shipping) into the page above the fold and into the metadata, fixes the
+  seven store entities that all pointed at the site root, and routes every
+  JSON-LD node through one emitter. Code complete and verified; **merge is gated
+  on capturing the Search Console baseline** — once the new titles are live the
+  "before" numbers are gone. _In progress._
 - ⬜ **TireCard redesign.** UX/UI improvements for the `/tires` cards (analysis
   done).
 - ⬜ **Dashboard AI chat improvements.**
