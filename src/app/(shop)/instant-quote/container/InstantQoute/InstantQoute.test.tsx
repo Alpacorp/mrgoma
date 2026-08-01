@@ -18,11 +18,15 @@ const renderWithSize = (size = { width: '', sidewall: '', diameter: '' }) =>
     </SelectedFiltersContext.Provider>
   );
 
+// `delay: null` on every setup below: user-event's default inter-keystroke
+// delay uses real timers, so on a loaded machine these typing-heavy cases
+// intermittently blew the 5s budget. Removing the delay makes them
+// deterministic without changing what they assert.
 afterEach(() => vi.unstubAllGlobals());
 
 describe('InstantQuote form', () => {
   it('shows an email error only for invalid input', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderWithSize();
     const email = screen.getByLabelText('Email');
 
@@ -47,7 +51,7 @@ describe('InstantQuote form', () => {
   });
 
   it('submits the lead to /api/instant-quote when complete', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ ok: true }) });
     vi.stubGlobal('fetch', fetchMock);
 
@@ -71,7 +75,7 @@ describe('InstantQuote form', () => {
   });
 
   it('surfaces an error when the submission fails upstream', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({ ok: false, json: async () => ({ message: 'Upstream failed' }) })
@@ -96,7 +100,7 @@ describe('InstantQuote form', () => {
   });
 
   it('toggles a tire-condition checkbox', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderWithSize();
     const used = screen.getByRole('checkbox', { name: 'Used' });
     expect(used).not.toBeChecked();

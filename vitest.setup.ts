@@ -9,6 +9,25 @@ if (!Element.prototype.scrollIntoView) {
   Element.prototype.scrollIntoView = () => {};
 }
 
+// jsdom doesn't implement matchMedia either. Components that query a media
+// feature (e.g. `prefers-reduced-motion` before autoplaying the hero video)
+// would throw, so provide a stub that reports "no preference" — the default a
+// browser gives when the user hasn't asked for reduced motion. Tests that care
+// about the other branch stub it themselves.
+if (!window.matchMedia) {
+  window.matchMedia = (query: string) =>
+    ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    }) as MediaQueryList;
+}
+
 // Unmount React trees after every test so the DOM doesn't leak between cases.
 afterEach(() => {
   cleanup();
