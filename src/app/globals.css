@@ -24,6 +24,30 @@ html {
     'Helvetica Neue', Arial, sans-serif;
 }
 
+/* WebKit paints a large play glyph over any <video> that hasn't started, even
+   with `controls={false}` — and on iOS every browser is WebKit, Chrome
+   included. The hero video is decorative background: when a policy such as Low
+   Power Mode refuses autoplay it should degrade to its poster silently, not
+   invite a tap it doesn't want.
+
+   These are a backstop only. Both pseudo-elements were observed doing nothing
+   on a real iPhone, in Safari and in Chrome alike, so what actually keeps the
+   glyph away is HeroVideo holding the element at opacity 0 until it is truly
+   playing. They are kept because they cost nothing where they do work, and
+   deliberately split into separate rules: one unrecognised selector in a
+   comma-separated list invalidates the whole rule, which would take the
+   working half down with it. Scoped to the hero so real players keep their
+   controls. */
+[data-hero-video]::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+[data-hero-video]::-webkit-media-controls {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
 /* Explicit keyframe for loading spinners so rotation never depends on
    Tailwind's `spin` keyframe being resolvable under the reduce-motion
    override below. */
