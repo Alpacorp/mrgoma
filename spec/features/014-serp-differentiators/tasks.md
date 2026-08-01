@@ -258,13 +258,40 @@ completed.
 
   **Zero errors** on all five. · check: result summary per page pasted in the PR.
 
-- [ ] **T30** — **Manual:** accessibility pass on the new above-the-fold content —
+  **Blocked until deploy** — Google's Rich Results Test fetches a public URL and
+  cannot reach localhost. It has to run against the preview or production
+  deployment.
+
+  _Pre-validated in the meantime:_ a structural check over the production build
+  parsed every JSON-LD node on 8 pages covering all 10 node types the site emits
+  (Organization, WebSite, AutoPartsStore, BreadcrumbList, ItemList, Product,
+  Article, FAQPage, Service, AutoRepair) and asserted Google's documented
+  required properties per type, plus `@context` presence, `@id` uniqueness per
+  page, breadcrumb item completeness, Product `offers` price/currency, store URLs
+  that aren't the site root, and coordinates inside Florida.
+  **Result: 0 errors, 0 warnings** — including all *recommended* properties for
+  AutoPartsStore, Organization and Product. So the RRT run is a confirmation, not
+  a discovery; it can still surface eligibility rules this check doesn't model.
+
+- [x] **T30** — **Manual:** accessibility pass on the new above-the-fold content —
   keyboard reachable, announced as a list by a screen reader, and pill text meets
   WCAG 2.1 AA contrast against the dark hero. · check: documented in the PR.
 
-- [ ] **T31** — **Manual:** owner validates the seven coordinate pairs from T11
+  _Measured at a 390×844 mobile viewport (Chrome device emulation via CDP):_
+  native `<ul>`/`<li>` semantics with **no `role` override**, accessible name
+  "Why buy from MrGoma Tires", 3 list items with all 3 decorative markers
+  `aria-hidden`, **0 focusable elements** inside (static text — nothing to reach
+  or trap). Heading outline `h1 → h2 → h2 → …`, exactly one `h1`, no skipped
+  levels. Contrast of the 12px/600 pill text: **5.74:1 against the brightest
+  possible video frame** (the `bg-black/60` backdrop composited over pure white)
+  and 21:1 against the darkest — AA needs 4.5:1, so it passes on every frame.
+
+- [x] **T31** — **Manual:** owner validates the seven coordinate pairs from T11
   before merge. A wrong pin sends a customer to the wrong store, which is worse
   than emitting no coordinates at all. · check: owner sign-off recorded.
+
+  _Owner sign-off 2026-07-31: coordinates accepted; the Miami Gardens map link
+  confirmed correct despite resolving to a differently-titled listing._
 
 - [ ] **T-DoD** — Definition of Done: `npx tsc --noEmit` + `npm run lint` +
   `npm test` + `npm run build` + `npm run perf:budget` all green; then:
@@ -273,6 +300,18 @@ completed.
   - Manual check of `/`, `/tires`, `/tires/used`, `/locations` and one location
     page on a real phone.
   - Confirm T28–T31 are all signed off.
+
+  _Automated gates: all five green (321 tests; 157.3 KB shared / 611.5 KB total
+  client JS, both under budget)._
+
+  _CWV measured on the production build at 390×844 with 4× CPU throttling and
+  ~1.6 Mbps: **CLS 0.0000, zero layout shifts**, and the LCP element is still
+  `banner-hero.webp` (the hero video poster preloaded by `002-lcp-fetchpriority`)
+  — the new `h1` and trust strip did **not** displace it, which is what AC13
+  asks. Absolute LCP under that synthetic throttle is not comparable to the field
+  p75 target; the real check is the CrUX data after deploy._
+
+  _Still open: the real-device pass and the two gates below._
 
 ## Coordinates to validate (filled in T11, signed off in T31)
 
@@ -284,18 +323,16 @@ Florida's bounding box.
 | --- | --- | --- | --- | --- |
 | Cutler Bay | 18200 S Dixie Hwy, Miami, FL 33157 | 25.6004443 | -80.3537512 |  |
 | Miami Airport | 3251 NW 27th Ave, Miami, FL 33142 | 25.8060487 | -80.2398748 |  |
-| Miami Gardens | 20282 NW 2nd Ave, Miami, FL 33169 | 25.9613344 | -80.2062047 | link resolves to **KeyZoo Locksmiths** - see note |
+| Miami Gardens | 20282 NW 2nd Ave, Miami, FL 33169 | 25.9613344 | -80.2062047 | resolves to a "KeyZoo Locksmiths" listing - **owner confirms the link is correct** |
 | Coral Gables | 900 South Le Jeune Rd, Miami, FL 33134 | 25.7633216 | -80.2635377 |  |
 | Hialeah | 4040 E 10th Ct, Hialeah, FL 33013 | 25.8598175 | -80.2616707 | listing named "MrGoma Tires Automotive - Hialeah" |
 | Orlando West Colonial | 4400 W Colonial Dr, Orlando, FL 32808 | 28.5522005 | -81.4342076 | listing named "MrGoma Tires - Orlando Colonial Dr" |
 | East Orlando | 575 N Semoran Blvd, Orlando, FL 32807 | 28.5519878 | -81.3103062 |  |
 
-> **Found while resolving these (needs the owner):** the Miami Gardens
-> `mapLink` resolves to a Google Maps listing for **KeyZoo Locksmiths**, not to
-> MrGoma. The coordinate sits at the right street address, but the "Get
-> directions" link on the live site currently opens another business's listing.
-> Either the saved link is wrong or that store has no Google Business Profile of
-> its own - both matter for local search, and neither is fixable from this repo.
+> **Resolved (owner, 2026-07-31):** the Miami Gardens `mapLink` resolves to a
+> Google Maps listing titled "KeyZoo Locksmiths". Flagged during T11 because the
+> "Get directions" link appears to open another business; the owner confirms the
+> link is the correct one for that store. Coordinates accepted as-is.
 
 ## Traceability
 
