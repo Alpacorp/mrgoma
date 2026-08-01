@@ -35,13 +35,17 @@ const SearchContainer: FC = () => {
   }, [activeTab]);
 
   return (
-    <div className="py-14">
+    <div className="pt-6 pb-14">
+      {/* The page's <h1> is rendered by the server component above this one.
+          Keeping it out of the client bundle matters: this wrapper paints at
+          opacity-0 until hydration, and the main visual heading is one of the
+          sources Google uses to build the search result's title link. */}
       <div
         className={`mb-8 transition-all duration-700 ease-out transform ${
           isMounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
         }`}
       >
-        <BrandHeadline as="h1" size="lg" />
+        <BrandHeadline as="h2" size="sm" />
       </div>
 
       <div className="w-full">

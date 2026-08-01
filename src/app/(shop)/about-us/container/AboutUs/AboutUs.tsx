@@ -4,11 +4,19 @@ import { useEffect, useRef, useState } from 'react';
 
 import Link from 'next/link';
 
+import {
+  FAMILY_OWNED,
+  FOUNDED_YEAR,
+  INVENTORY_NETWORK,
+  INVENTORY_NETWORK_FIGURE,
+  INVENTORY_NETWORK_LABEL,
+} from '@/app/utils/brandClaims';
+
 const stats = [
   { value: '7', label: 'Locations', sub: 'Miami & Orlando, FL' },
-  { value: '15,000+', label: 'Tires in stock', sub: 'At all times' },
-  { value: '180', label: 'Day warranty', sub: 'On used tires' },
-  { value: '[YEAR]+', label: 'Years in Miami', sub: 'Placeholder — update' },
+  { value: INVENTORY_NETWORK_FIGURE, label: INVENTORY_NETWORK_LABEL, sub: 'At all times' },
+  { value: '30', label: 'Day warranty', sub: 'On used tires' },
+  { value: String(FOUNDED_YEAR), label: 'Serving Florida since', sub: FAMILY_OWNED },
   { value: 'ASE', label: 'Certified', sub: 'Every technician' },
   { value: 'Free', label: 'Shipping', sub: 'Continental US' },
 ];
@@ -163,7 +171,7 @@ export default function AboutUs() {
               />
               <div className="relative space-y-6">
                 {[
-                  { label: 'Founded', value: '[YEAR]' },
+                  { label: 'Founded', value: String(FOUNDED_YEAR) },
                   { label: 'Parent company', value: 'Jomah Trading Inc.' },
                   { label: 'Headquarters', value: 'Miami, FL' },
                   { label: 'Markets', value: 'Miami & Orlando, FL' },
@@ -281,7 +289,7 @@ export default function AboutUs() {
               { label: 'ASE Certified', detail: 'National Automotive Service of Excellence' },
               { label: 'Jomah Trading Inc.', detail: 'Registered trademark holder' },
               { label: 'Miami, FL', detail: 'Headquartered & founded here' },
-              { label: 'Since [YEAR]', detail: 'Serving Florida drivers' },
+              { label: `Since ${FOUNDED_YEAR}`, detail: 'Family-owned, serving Florida drivers' },
             ]
               .filter(cert => !cert.label.includes('[')) // hide pending-confirmation certs
               .map(cert => (
@@ -311,7 +319,7 @@ export default function AboutUs() {
             Ready to find your tire?
           </h2>
           <p className="text-black/60 text-lg max-w-md">
-            Browse 15,000+ tires online or visit any of our 7 locations across Miami and Orlando.
+            Browse {INVENTORY_NETWORK} online or visit any of them across Miami and Orlando.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <Link

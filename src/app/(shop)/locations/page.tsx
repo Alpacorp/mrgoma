@@ -3,14 +3,11 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 
 import { locationsConfig } from '@/app/(shop)/locations/locationsConfig';
-import { canonical } from '@/app/utils/seo';
+import { JsonLd } from '@/app/ui/components';
+import { HOME_TRUST_CLAIMS } from '@/app/utils/brandClaims';
+import { buildLocationsJsonLd, locationsMetadata } from '@/app/utils/seo';
 
-export const metadata: Metadata = {
-  title: 'Tire Shop Locations | Miami & Orlando, FL | MrGoma Tires',
-  description:
-    'Find MrGoma Tires near you. 7 locations across Miami and Orlando, FL — Coral Gables, Hialeah, Airport, South, North, West Colonial, and Semoran. Walk-ins welcome.',
-  alternates: { canonical: canonical('/locations') },
-};
+export const metadata: Metadata = locationsMetadata();
 
 function MapPinIcon() {
   return (
@@ -35,7 +32,10 @@ const orlandos = locationsConfig.filter(l => l.city === 'Orlando');
 
 export default function LocationsPage() {
   return (
-    <main className="bg-[#0a0a0a] text-white min-h-screen">
+    <>
+      {/* The canonical home for all seven store entities. */}
+      <JsonLd data={buildLocationsJsonLd(locationsConfig)} />
+      <main className="bg-[#0a0a0a] text-white min-h-screen">
 
       {/* Hero */}
       <section className="relative border-b border-white/8 overflow-hidden">
@@ -91,7 +91,7 @@ export default function LocationsPage() {
       {/* Trust bar */}
       <section className="border-t border-white/8 bg-white/[0.02]">
         <div className="max-w-6xl mx-auto px-6 lg:px-8 py-10 flex flex-wrap justify-center gap-x-12 gap-y-4">
-          {['Walk-ins Welcome', 'ASE-Certified Technicians', '15,000+ Tires in Stock', '30-Day Warranty'].map(item => (
+          {['Walk-ins Welcome', 'ASE-Certified Technicians', ...HOME_TRUST_CLAIMS].map(item => (
             <div key={item} className="flex items-center gap-2">
               <span className="text-[#9dfb40] text-xs">✦</span>
               <span className="text-white/70 font-medium text-sm">{item}</span>
@@ -100,7 +100,8 @@ export default function LocationsPage() {
         </div>
       </section>
 
-    </main>
+      </main>
+    </>
   );
 }
 

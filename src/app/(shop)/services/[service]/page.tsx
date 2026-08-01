@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 
 import ServiceDetail from '@/app/(shop)/services/[service]/container/ServiceDetail/ServiceDetail';
 import { servicesConfig, getServiceBySlug } from '@/app/(shop)/services/servicesConfig';
+import { JsonLd } from '@/app/ui/components';
 import { canonical, buildBreadcrumbJsonLd } from '@/app/utils/seo';
 
 export function generateStaticParams() {
@@ -69,9 +70,9 @@ export default async function ServicePage({
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <JsonLd data={breadcrumb} />
+      <JsonLd data={serviceSchema} />
+      <JsonLd data={faqSchema} />
       <ServiceDetail service={service} />
     </>
   );

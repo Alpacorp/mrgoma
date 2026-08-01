@@ -6,6 +6,7 @@ import type { Metadata } from 'next';
 
 import DetailView from '@/app/(shop)/detail/container/DetailView/DetailView';
 import type { SingleTire } from '@/app/interfaces/tires';
+import { JsonLd } from '@/app/ui/components';
 import {
   absUrl,
   buildBreadcrumbJsonLd,
@@ -156,8 +157,8 @@ async function TireJsonLd({ productId }: { productId: string }) {
 
   return (
     <>
-      <script type="application/ld+json">{JSON.stringify(productJsonLd)}</script>
-      <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
+      <JsonLd data={productJsonLd} />
+      <JsonLd data={breadcrumbJsonLd} />
     </>
   );
 }

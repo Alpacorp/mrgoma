@@ -1,8 +1,29 @@
 import type { Metadata } from 'next';
 
+import {
+  FOUNDED_YEAR,
+  INVENTORY_NETWORK,
+  LOCATIONS_LABEL_LONG,
+  SHIPPING,
+  SLOGAN,
+  WARRANTY,
+} from '@/app/utils/brandClaims';
+
 export const SITE_NAME = 'MrGoma Tires';
+
+/** Brand suffix used by the commercial entry points. Shorter than the root
+ *  template's ` | MrGoma Tires` so the differentiator gets the character budget. */
+export const TITLE_SUFFIX = ' | MrGoma';
+
+/** Google truncates title links past roughly this width. */
+export const TITLE_MAX = 60;
+
+/** The window in which Google reliably shows a description without cutting it. */
+export const DESCRIPTION_MIN = 140;
+export const DESCRIPTION_MAX = 160;
+
 export const DEFAULT_DESCRIPTION =
-  'Buy new and used tires in Miami, Florida. Fast installation, multiple locations, and online ordering at MrGoma Tires.';
+  'Used and new tires in Miami & Orlando, FL. Every like-new used tire is backed by a 30-day warranty. Free shipping nationwide and 7 convenient locations.';
 export const DEFAULT_KEYWORDS = [
   'tires',
   'used tires',
@@ -46,7 +67,9 @@ export function buildDefaultMetadata(): Metadata {
   return {
     metadataBase: new URL(site),
     title: {
-      default: `${SITE_NAME} | Miami, FL`,
+      // The fallback for every page that doesn't build its own (contact, legal,
+      // checkout…). It carries a differentiator so the long tail isn't generic.
+      default: `Used & New Tires in Miami & Orlando${TITLE_SUFFIX}`,
       template: `%s | ${SITE_NAME}`,
     },
     description: DEFAULT_DESCRIPTION,
@@ -61,7 +84,7 @@ export function buildDefaultMetadata(): Metadata {
       type: 'website',
       url: site,
       siteName: SITE_NAME,
-      title: `${SITE_NAME} | Miami, FL`,
+      title: `Used & New Tires in Miami & Orlando${TITLE_SUFFIX}`,
       description: DEFAULT_DESCRIPTION,
       locale: 'en_US',
       images: [
@@ -75,7 +98,7 @@ export function buildDefaultMetadata(): Metadata {
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${SITE_NAME} | Miami, FL`,
+      title: `Used & New Tires in Miami & Orlando${TITLE_SUFFIX}`,
       description: DEFAULT_DESCRIPTION,
       images: [absUrl('/opengraph-image')],
     },
@@ -84,6 +107,242 @@ export function buildDefaultMetadata(): Metadata {
     },
     category: 'Automotive',
   };
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * Metadata builders for the commercial entry points.
+ *
+ * These are deliberately **pure** — plain values in, `Metadata` out, no I/O.
+ * Three of the pages they serve build metadata inside a `generateMetadata` that
+ * also awaits database data, so testing the page modules would mean mocking
+ * `mssql`. Keeping the copy here means the regression guard in `metadata.test.ts`
+ * runs with no database and no mocks.
+ *
+ * Every title bypasses the root `%s | MrGoma Tires` template via
+ * `title: { absolute }` — the template costs 15 characters that the
+ * differentiator needs.
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+/** Picks the first candidate that fits Google's title width; hard-trims if none do. */
+function fitTitle(...candidates: string[]): string {
+  return (
+    candidates.find(candidate => candidate.length <= TITLE_MAX) ??
+    candidates[candidates.length - 1].slice(0, TITLE_MAX).trimEnd()
+  );
+}
+
+/**
+ * Composes a description that lands inside Google's display window.
+ *
+ * Pages with a variable head (a brand name, a tire size) can't hit 140–160 with
+ * one fixed sentence, so each builder supplies several tail clauses ordered
+ * longest-first and this picks the one that fits.
+ */
+function fitDescription(head: string, tails: readonly string[]): string {
+  const candidates = tails.map(tail => `${head} ${tail}`.replace(/\s+/g, ' ').trim());
+
+  const fits = candidates.find(
+    candidate => candidate.length >= DESCRIPTION_MIN && candidate.length <= DESCRIPTION_MAX
+  );
+  if (fits) return fits;
+
+  // Nothing landed in the window (an unusually long brand name, say). Prefer the
+  // longest candidate that at least doesn't overflow.
+  const underMax = candidates.filter(candidate => candidate.length <= DESCRIPTION_MAX);
+  if (underMax.length) return underMax[underMax.length - 1];
+
+  return candidates[candidates.length - 1].slice(0, DESCRIPTION_MAX).trimEnd();
+}
+
+function pageMetadata(params: { title: string; description: string; path: string }): Metadata {
+  const url = canonical(params.path);
+  return {
+    title: { absolute: params.title },
+    description: params.description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: 'website',
+      siteName: SITE_NAME,
+      url,
+      title: params.title,
+      description: params.description,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: params.title,
+      description: params.description,
+    },
+  };
+}
+
+/** Home. The copy here is fixed by the approved decision in `spec.md` (AC3b). */
+export function homeMetadata(): Metadata {
+  return pageMetadata({
+    title: `Used & New Tires Miami — ${WARRANTY}${TITLE_SUFFIX}`,
+    description:
+      '15,000+ like-new used and new tires, every used tire backed by a 30-day warranty. 7 locations in Miami & Orlando. Free shipping. Since 2007.',
+    path: '/',
+  });
+}
+
+/**
+ * `/tires` — the full catalogue, optionally narrowed by size and paginated.
+ * Takes the route's own `w`/`s`/`d` param names rather than inventing new ones.
+ */
+export function tiresMetadata(
+  params: { w?: string; s?: string; d?: string; page?: number } = {}
+): Metadata {
+  const w = (params.w || '').trim();
+  const s = (params.s || '').trim();
+  const d = (params.d || '').trim();
+  const page = params.page && params.page > 1 ? params.page : 1;
+
+  const size = w && s && d ? `${w}/${s}/${d}` : '';
+  const paged = page > 1 ? ` — Page ${page}` : '';
+
+  const title = size
+    ? fitTitle(
+        `${size} Tires in Miami — ${WARRANTY}${paged}${TITLE_SUFFIX}`,
+        `${size} Tires in Miami${paged}${TITLE_SUFFIX}`,
+        `${size} Tires${paged}${TITLE_SUFFIX}`
+      )
+    : fitTitle(
+        `Used & New Tires in Miami — ${WARRANTY}${paged}${TITLE_SUFFIX}`,
+        `Used & New Tires in Miami${paged}${TITLE_SUFFIX}`
+      );
+
+  const head = size
+    ? `Shop ${size} tires in Miami and Orlando — like-new used and new, every used tire backed by a 30-day warranty.`
+    : 'Browse like-new used and new tires in Miami and Orlando, every used tire backed by a 30-day warranty.';
+
+  const query = new URLSearchParams();
+  if (w) query.set('w', w);
+  if (s) query.set('s', s);
+  if (d) query.set('d', d);
+  if (page > 1) query.set('page', String(page));
+
+  return pageMetadata({
+    title,
+    description: fitDescription(head, [
+      `${SHIPPING} and installation at our 7 locations.`,
+      `${SHIPPING}. 7 locations.`,
+      'Free shipping.',
+    ]),
+    path: query.toString() ? `/tires?${query.toString()}` : '/tires',
+  });
+}
+
+/** `/tires/used` — the strongest page for the warranty claim. */
+export function usedTiresMetadata(): Metadata {
+  return pageMetadata({
+    title: fitTitle(`Used Tires Miami & Orlando — ${WARRANTY}${TITLE_SUFFIX}`),
+    description: fitDescription(
+      'Like-new used tires, every one ASE-inspected and backed by a 30-day warranty. Save up to 70% versus new.',
+      [`${SHIPPING} and 7 locations in Miami & Orlando.`, `${SHIPPING}. 7 locations.`]
+    ),
+    path: '/tires/used',
+  });
+}
+
+/** `/tires/new` — leads with shipping; the warranty claim belongs to used tires. */
+export function newTiresMetadata(): Metadata {
+  return pageMetadata({
+    title: fitTitle(`New Tires in Miami & Orlando — Free Shipping${TITLE_SUFFIX}`),
+    description: fitDescription(
+      `Brand-new tires from top manufacturers, part of ${INVENTORY_NETWORK}.`,
+      [
+        `${SHIPPING} and expert installation at ${LOCATIONS_LABEL_LONG}.`,
+        `${SHIPPING} and expert installation in Miami & Orlando.`,
+        `${SHIPPING}.`,
+      ]
+    ),
+    path: '/tires/new',
+  });
+}
+
+/** `/tires/brands/[brand]` — head length varies with the brand name. */
+export function brandMetadata(params: { brand: string; slug: string }): Metadata {
+  const { brand, slug } = params;
+  return pageMetadata({
+    title: fitTitle(
+      `${brand} Tires in Miami — ${WARRANTY}${TITLE_SUFFIX}`,
+      `${brand} Tires in Miami & Orlando${TITLE_SUFFIX}`,
+      `${brand} Tires${TITLE_SUFFIX}`
+    ),
+    description: fitDescription(
+      `Shop ${brand} tires in Miami and Orlando — like-new used and new, every used tire backed by a 30-day warranty.`,
+      [
+        `${SHIPPING} and installation at our 7 locations.`,
+        `${SHIPPING}. 7 locations.`,
+        'Free shipping.',
+      ]
+    ),
+    path: `/tires/brands/${slug}`,
+  });
+}
+
+/** `/tires/size/[size]` — head length varies with the size label. */
+export function sizeMetadata(params: { size: string; slug: string }): Metadata {
+  const { size, slug } = params;
+  return pageMetadata({
+    title: fitTitle(
+      `${size} Tires in Miami — ${WARRANTY}${TITLE_SUFFIX}`,
+      `${size} Tires in Miami & Orlando${TITLE_SUFFIX}`,
+      `${size} Tires${TITLE_SUFFIX}`
+    ),
+    description: fitDescription(
+      `Shop ${size} tires in Miami and Orlando — like-new used and new, every used tire backed by a 30-day warranty.`,
+      [
+        `${SHIPPING} and installation at our 7 locations.`,
+        `${SHIPPING}. 7 locations.`,
+        'Free shipping.',
+      ]
+    ),
+    path: `/tires/size/${slug}`,
+  });
+}
+
+/** `/locations` — the hub for all seven stores. */
+export function locationsMetadata(): Metadata {
+  return pageMetadata({
+    title: fitTitle(`7 Tire Shops in Miami & Orlando, FL${TITLE_SUFFIX}`),
+    description: fitDescription(
+      `Find MrGoma Tires near you — ${INVENTORY_NETWORK}, every like-new used tire backed by a 30-day warranty.`,
+      [
+        'Walk-ins welcome at all 7 shops in Miami & Orlando.',
+        'Walk-ins welcome at every location.',
+        'Walk-ins welcome.',
+      ]
+    ),
+    path: '/locations',
+  });
+}
+
+/** `/locations/[location]` — one store. */
+export function locationMetadata(params: {
+  name: string;
+  slug: string;
+  city: string;
+  serving?: string;
+}): Metadata {
+  const { name, slug, city } = params;
+  return pageMetadata({
+    title: fitTitle(
+      `${name} Tire Shop — ${WARRANTY}${TITLE_SUFFIX}`,
+      `${name} Tire Shop, ${city}${TITLE_SUFFIX}`,
+      `${name} Tire Shop${TITLE_SUFFIX}`
+    ),
+    description: fitDescription(
+      `MrGoma Tires ${name}: like-new used and new tires, every used tire backed by a 30-day warranty.`,
+      [
+        `Walk-ins welcome, ${SHIPPING.toLowerCase()}, and same-day installation in ${city}.`,
+        `Walk-ins welcome and same-day installation in ${city}.`,
+        'Walk-ins welcome, same-day installation.',
+        `Walk-ins welcome in ${city}.`,
+      ]
+    ),
+    path: `/locations/${slug}`,
+  });
 }
 
 export function productTitle(params: {
@@ -165,7 +424,9 @@ export function buildProductJsonLd(params: {
   };
 }
 
-export function buildBreadcrumbJsonLd(items: { name: string; url: string }[]): Record<string, unknown> {
+export function buildBreadcrumbJsonLd(
+  items: { name: string; url: string }[]
+): Record<string, unknown> {
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -178,14 +439,31 @@ export function buildBreadcrumbJsonLd(items: { name: string; url: string }[]): R
   };
 }
 
+/** Stable identifier for the brand as an entity, so other nodes can point at it. */
+export function organizationId(): string {
+  return `${getSiteUrl()}/#organization`;
+}
+
 export function organizationJsonLd() {
   const site = getSiteUrl();
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
+    '@id': organizationId(),
     name: SITE_NAME,
     url: site,
     logo: absUrl('/favicon.png'),
+    // The WhatsApp line: already the primary contact CTA on /contact, so the
+    // structured data now matches what the site actually pushes.
+    telephone: '+14073644016',
+    description: DEFAULT_DESCRIPTION,
+    slogan: SLOGAN,
+    foundingDate: String(FOUNDED_YEAR),
+    areaServed: [
+      { '@type': 'City', name: 'Miami' },
+      { '@type': 'City', name: 'Orlando' },
+      { '@type': 'State', name: 'Florida' },
+    ],
     sameAs: [
       'https://instagram.com/mrgomatires',
       'https://www.facebook.com/profile.php?id=61573861890811',
@@ -202,30 +480,72 @@ export function organizationJsonLd() {
 }
 
 export interface LocationSchemaInput {
+  slug: string;
   name: string;
   address: string;
   phone: string;
+  city?: string;
   mapLink?: string;
+  image?: string;
+  neighborhoods?: string[];
+  geo?: { latitude: number; longitude: number };
+  hours?: { days: string[]; opens: string; closes: string }[];
 }
 
+/**
+ * One node per physical store.
+ *
+ * Before this feature all seven declared `url: <site root>` — seven businesses
+ * claiming a single URL, which is worse for local search than emitting nothing.
+ * Each now points at its own `/locations/[slug]` page and carries a stable `@id`
+ * so Google can tell them apart and link them to the brand entity.
+ */
 export function buildLocationsJsonLd(locations: LocationSchemaInput[]): Record<string, unknown>[] {
-  const site = getSiteUrl();
   return locations.map(loc => {
     // Parse "18200 S Dixie Hwy, Miami, FL 33157" → structured address
     const parts = loc.address.split(', ');
     const streetAddress = parts[0] || loc.address;
-    const addressLocality = parts[1] || 'Miami';
+    const addressLocality = parts[1] || loc.city || 'Miami';
     const stateZip = (parts[2] || 'FL 00000').split(' ');
     const addressRegion = stateZip[0] || 'FL';
     const postalCode = stateZip[1] || '';
 
+    const url = absUrl(`/locations/${loc.slug}`);
+
     return {
       '@context': 'https://schema.org',
       '@type': 'AutoPartsStore',
+      '@id': `${url}#store`,
       name: `MrGoma Tires — ${loc.name}`,
-      url: site,
+      url,
       telephone: loc.phone,
+      priceRange: '$$',
+      ...(loc.image ? { image: absUrl(loc.image) } : {}),
       ...(loc.mapLink ? { hasMap: loc.mapLink } : {}),
+      ...(loc.geo
+        ? {
+            geo: {
+              '@type': 'GeoCoordinates',
+              latitude: loc.geo.latitude,
+              longitude: loc.geo.longitude,
+            },
+          }
+        : {}),
+      ...(loc.hours?.length
+        ? {
+            openingHoursSpecification: loc.hours.map(span => ({
+              '@type': 'OpeningHoursSpecification',
+              dayOfWeek: span.days,
+              opens: span.opens,
+              closes: span.closes,
+            })),
+          }
+        : {}),
+      ...(loc.neighborhoods?.length
+        ? {
+            areaServed: loc.neighborhoods.map(name => ({ '@type': 'Place', name })),
+          }
+        : {}),
       address: {
         '@type': 'PostalAddress',
         streetAddress,
@@ -234,10 +554,7 @@ export function buildLocationsJsonLd(locations: LocationSchemaInput[]): Record<s
         postalCode,
         addressCountry: 'US',
       },
-      parentOrganization: {
-        '@type': 'Organization',
-        name: SITE_NAME,
-      },
+      parentOrganization: { '@id': organizationId() },
     };
   });
 }
@@ -247,12 +564,30 @@ export function websiteJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
+    '@id': `${site}/#website`,
     name: SITE_NAME,
     url: site,
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: `${site}/tires?w={w}&s={s}&d={d}`,
-      'query-input': 'required name=w,required name=s,required name=d',
-    },
+    // No `potentialAction`/SearchAction: Google retired the sitelinks search box,
+    // so it produced nothing and was dead weight in every page's head.
+    publisher: { '@id': organizationId() },
+  };
+}
+
+/**
+ * Declares how many items a listing page holds, so the rendered "N available to
+ * buy online" claim is backed by data rather than being only a string.
+ */
+export function buildItemListJsonLd(params: {
+  url: string;
+  name: string;
+  count: number;
+}): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    '@id': `${absUrl(params.url)}#items`,
+    name: params.name,
+    url: absUrl(params.url),
+    numberOfItems: params.count,
   };
 }

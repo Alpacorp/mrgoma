@@ -7,26 +7,15 @@ import type { Metadata } from 'next';
 import { BrowseFilters } from '@/app/(shop)/tires/container/BrowseFilters/BrowseFilters';
 import { TireGrid } from '@/app/(shop)/tires/container/TireGrid/TireGrid';
 import { TiresData } from '@/app/interfaces/tires';
-import { buildBreadcrumbJsonLd, canonical } from '@/app/utils/seo';
+import { JsonLd } from '@/app/ui/components';
+import { onlineInventoryLabel } from '@/app/utils/brandClaims';
+import { buildBreadcrumbJsonLd, buildItemListJsonLd, newTiresMetadata } from '@/app/utils/seo';
 import { transformTireData } from '@/app/utils/transformTireData';
 import { fetchBrands, fetchTires } from '@/repositories/tiresRepository';
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: 'New Tires in Miami & Orlando',
-  description:
-    'Buy brand-new tires at MrGoma Tires. Top brands, competitive prices, free shipping, and expert installation at 7 locations across Miami and Orlando, FL.',
-  alternates: { canonical: canonical('/tires/new') },
-  openGraph: {
-    type: 'website',
-    siteName: 'MrGoma Tires',
-    url: canonical('/tires/new'),
-    title: 'New Tires in Miami & Orlando | MrGoma Tires',
-    description:
-      'Brand-new tires from top manufacturers at MrGoma Tires. Free shipping and expert installation at 7 locations in Miami and Orlando, FL.',
-  },
-};
+export const metadata: Metadata = newTiresMetadata();
 
 const advantages = [
   {
@@ -61,9 +50,15 @@ export default async function NewTiresPage() {
     { name: 'New Tires', url: '/tires/new' },
   ]);
 
+  const itemListJsonLd = buildItemListJsonLd({
+    url: '/tires/new',
+    name: 'New tires available online',
+    count: totalCount,
+  });
+
   return (
     <>
-      <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
+      <JsonLd data={[breadcrumbJsonLd, itemListJsonLd]} />
 
       <main className="min-h-screen bg-white">
         {/* Breadcrumb */}
@@ -112,7 +107,7 @@ export default async function NewTiresPage() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <span className="bg-white/10 border border-white/20 rounded-full px-4 py-2 text-sm font-semibold">
-                {totalCount > 0 ? `${totalCount}+ tires in stock` : 'In stock now'}
+                {totalCount > 0 ? onlineInventoryLabel(totalCount) : 'In stock now'}
               </span>
               <span
                 className="border rounded-full px-4 py-2 text-sm font-semibold"

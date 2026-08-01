@@ -5,7 +5,9 @@ import type { Metadata } from 'next';
 
 import { TireGrid } from '@/app/(shop)/tires/container/TireGrid/TireGrid';
 import { TiresData } from '@/app/interfaces/tires';
-import { buildBreadcrumbJsonLd, canonical } from '@/app/utils/seo';
+import { JsonLd } from '@/app/ui/components';
+import { LOCATIONS_LABEL, SHIPPING, WARRANTY, onlineInventoryLabel } from '@/app/utils/brandClaims';
+import { buildBreadcrumbJsonLd, buildItemListJsonLd, sizeMetadata } from '@/app/utils/seo';
 import { slugify } from '@/app/utils/tireSlug';
 import { transformTireData } from '@/app/utils/transformTireData';
 import { fetchSizes, fetchTires } from '@/repositories/tiresRepository';
@@ -56,18 +58,7 @@ export async function generateMetadata({
   const data = await getSizeData(sizeSlug);
   if (!data) return { title: 'Not Found', robots: { index: false, follow: true } };
 
-  const sizeLabel = data.originalSize;
-  const title = `${sizeLabel} Tires in Miami & Orlando`;
-  const description = `Shop ${sizeLabel} tires at MrGoma Tires. New and used ${sizeLabel} tires available at 7 locations in Miami and Orlando, FL. Free shipping nationwide.`;
-  const url = canonical(`/tires/size/${sizeSlug}`);
-
-  return {
-    title,
-    description,
-    alternates: { canonical: url },
-    openGraph: { type: 'website', siteName: 'MrGoma Tires', url, title, description },
-    twitter: { card: 'summary_large_image', title, description },
-  };
+  return sizeMetadata({ size: data.originalSize, slug: sizeSlug });
 }
 
 export default async function SizeCategoryPage({
@@ -91,11 +82,17 @@ export default async function SizeCategoryPage({
     { name: `${originalSize} Tires`, url: `/tires/size/${sizeSlug}` },
   ]);
 
+  const itemListJsonLd = buildItemListJsonLd({
+    url: `/tires/size/${sizeSlug}`,
+    name: `${originalSize} tires available online`,
+    count: totalCount,
+  });
+
   const viewAllHref = `/tires?w=${encodeURIComponent(width)}&s=${encodeURIComponent(sidewall)}&d=${encodeURIComponent(diameter)}`;
 
   return (
     <>
-      <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
+      <JsonLd data={[breadcrumbJsonLd, itemListJsonLd]} />
 
       <main className="min-h-screen bg-white">
         {/* Breadcrumb */}
@@ -133,8 +130,8 @@ export default async function SizeCategoryPage({
             </h1>
             <p className="text-gray-400 text-lg">
               {totalCount > 0
-                ? `${totalCount} tire${totalCount !== 1 ? 's' : ''} in this size · Free shipping nationwide`
-                : 'Free shipping nationwide · 7 locations in Miami & Orlando'}
+                ? `${onlineInventoryLabel(totalCount)} · ${SHIPPING}`
+                : `${SHIPPING} · ${LOCATIONS_LABEL}`}
             </p>
           </div>
         </section>
@@ -142,7 +139,7 @@ export default async function SizeCategoryPage({
         {/* Trust bar */}
         <div className="bg-gray-900 text-white">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap gap-x-8 gap-y-2 text-xs text-gray-400 font-medium">
-            {['ASE-Certified Technicians', '30-Day Warranty', 'Free Shipping', '7 Locations Miami & Orlando'].map(item => (
+            {['ASE-Certified Technicians', WARRANTY, SHIPPING, LOCATIONS_LABEL].map(item => (
               <span key={item} className="flex items-center gap-1.5">
                 <span className="text-[#9dfb40]">✦</span>
                 {item}
