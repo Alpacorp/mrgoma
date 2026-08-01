@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
+import { locationsConfig } from '@/app/(shop)/locations/locationsConfig';
+
 import {
   absUrl,
   buildBreadcrumbJsonLd,
+  buildItemListJsonLd,
   buildLocationsJsonLd,
   buildProductJsonLd,
   canonical,
@@ -106,23 +109,59 @@ describe('site-wide JSON-LD', () => {
     expect(ld.sameAs).toContain('https://www.tiktok.com/@mrgomatiresofficial');
   });
 
-  it('websiteJsonLd exposes a tire SearchAction', () => {
+  it('organizationJsonLd carries the contact and history fields a complete entity needs', () => {
+    const ld = organizationJsonLd();
+    expect(ld.telephone).toBe('+14073644016');
+    expect(ld.foundingDate).toBe('2007');
+    expect(ld.slogan).toBeTruthy();
+    expect(ld.description).toBeTruthy();
+    expect(ld['@id']).toMatch(/#organization$/);
+  });
+
+  it('organizationJsonLd survives serialization with an ampersand in its description', () => {
+    // The description says "Miami & Orlando"; JsonLd must round-trip it.
+    const ld = organizationJsonLd();
+    expect(String(ld.description)).toContain('&');
+    expect(JSON.parse(JSON.stringify(ld))).toEqual(ld);
+  });
+
+  it('websiteJsonLd no longer emits the retired sitelinks search box', () => {
     const ld = websiteJsonLd();
     expect(ld['@type']).toBe('WebSite');
-    expect((ld.potentialAction as Record<string, unknown>)['@type']).toBe('SearchAction');
+    expect(ld).not.toHaveProperty('potentialAction');
+  });
+
+  it('websiteJsonLd links to the organization entity', () => {
+    expect((websiteJsonLd().publisher as Record<string, unknown>)['@id']).toBe(
+      organizationJsonLd()['@id']
+    );
+  });
+});
+
+describe('buildItemListJsonLd', () => {
+  it('declares the item count so the rendered claim is backed by data', () => {
+    const ld = buildItemListJsonLd({ url: '/tires/used', name: 'Used tires', count: 4342 });
+    expect(ld['@type']).toBe('ItemList');
+    expect(ld.numberOfItems).toBe(4342);
+    expect(ld.url).toBe(absUrl('/tires/used'));
   });
 });
 
 describe('buildLocationsJsonLd', () => {
+  const CUTLER_BAY = {
+    slug: 'cutler-bay',
+    name: 'Cutler Bay',
+    address: '18200 S Dixie Hwy, Miami, FL 33157',
+    phone: '(305) 123',
+    mapLink: 'http://map',
+    image: '/assets/images/Locations/18200.jpg',
+    neighborhoods: ['Cutler Bay', 'Pinecrest'],
+    geo: { latitude: 25.6004443, longitude: -80.3537512 },
+    hours: [{ days: ['Monday'], opens: '08:00', closes: '18:00' }],
+  };
+
   it('maps a location to an AutoPartsStore with a parsed address', () => {
-    const [ld] = buildLocationsJsonLd([
-      {
-        name: 'Cutler Bay',
-        address: '18200 S Dixie Hwy, Miami, FL 33157',
-        phone: '(305) 123',
-        mapLink: 'http://map',
-      },
-    ]);
+    const [ld] = buildLocationsJsonLd([CUTLER_BAY]);
     expect(ld['@type']).toBe('AutoPartsStore');
     expect(ld.name).toBe('MrGoma Tires — Cutler Bay');
     expect(ld.hasMap).toBe('http://map');
@@ -131,8 +170,53 @@ describe('buildLocationsJsonLd', () => {
     expect(addr.postalCode).toBe('33157');
   });
 
-  it('omits hasMap when there is no map link', () => {
-    const [ld] = buildLocationsJsonLd([{ name: 'X', address: 'A St, Town, FL 1', phone: 'p' }]);
+  // The bug this feature exists to fix: every store used to declare the site
+  // root as its URL, so seven businesses claimed one page.
+  it('points each store at its own location page, never the site root', () => {
+    const [ld] = buildLocationsJsonLd([CUTLER_BAY]);
+    expect(ld.url).toBe(absUrl('/locations/cutler-bay'));
+    expect(ld.url).not.toBe(getSiteUrl());
+    expect(ld['@id']).toBe(`${absUrl('/locations/cutler-bay')}#store`);
+  });
+
+  it('gives every real store a distinct URL and identity', () => {
+    const nodes = buildLocationsJsonLd(locationsConfig);
+    expect(nodes).toHaveLength(locationsConfig.length);
+    expect(new Set(nodes.map(n => n.url)).size).toBe(locationsConfig.length);
+    expect(new Set(nodes.map(n => n['@id'])).size).toBe(locationsConfig.length);
+  });
+
+  it('emits hours and coordinates for every real store', () => {
+    for (const node of buildLocationsJsonLd(locationsConfig)) {
+      const geo = node.geo as { latitude: number; longitude: number };
+      expect(geo).toBeDefined();
+      // Florida's bounding box — catches a transposed or mistyped pair.
+      expect(geo.latitude).toBeGreaterThan(24);
+      expect(geo.latitude).toBeLessThan(31);
+      expect(geo.longitude).toBeGreaterThan(-88);
+      expect(geo.longitude).toBeLessThan(-80);
+
+      const hours = node.openingHoursSpecification as unknown[];
+      expect(hours.length).toBeGreaterThan(0);
+      expect(node.priceRange).toBeTruthy();
+      expect(node.telephone).toBeTruthy();
+    }
+  });
+
+  it('links every store back to the organization entity', () => {
+    for (const node of buildLocationsJsonLd(locationsConfig)) {
+      expect((node.parentOrganization as Record<string, unknown>)['@id']).toBe(
+        organizationJsonLd()['@id']
+      );
+    }
+  });
+
+  it('omits optional fields when the source has none', () => {
+    const [ld] = buildLocationsJsonLd([
+      { slug: 'x', name: 'X', address: 'A St, Town, FL 1', phone: 'p' },
+    ]);
     expect(ld.hasMap).toBeUndefined();
+    expect(ld.geo).toBeUndefined();
+    expect(ld.openingHoursSpecification).toBeUndefined();
   });
 });

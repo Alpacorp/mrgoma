@@ -4,7 +4,8 @@ import type { Metadata } from 'next';
 
 import LocationDetail from '@/app/(shop)/locations/[location]/container/LocationDetail/LocationDetail';
 import { locationsConfig, getLocationBySlug } from '@/app/(shop)/locations/locationsConfig';
-import { canonical, buildBreadcrumbJsonLd, buildLocationsJsonLd } from '@/app/utils/seo';
+import { JsonLd } from '@/app/ui/components';
+import { buildBreadcrumbJsonLd, buildLocationsJsonLd, locationMetadata } from '@/app/utils/seo';
 
 export function generateStaticParams() {
   return locationsConfig.map(l => ({ location: l.slug }));
@@ -19,11 +20,7 @@ export async function generateMetadata({
   const loc = getLocationBySlug(slug);
   if (!loc) return { title: 'Location Not Found', robots: { index: false, follow: false } };
 
-  return {
-    title: loc.metaTitle,
-    description: loc.metaDescription,
-    alternates: { canonical: canonical(`/locations/${slug}`) },
-  };
+  return locationMetadata({ name: loc.name, slug: loc.slug, city: loc.city });
 }
 
 export default async function LocationPage({
@@ -41,14 +38,11 @@ export default async function LocationPage({
     { name: loc.name, url: `/locations/${slug}` },
   ]);
 
-  const [locationSchema] = buildLocationsJsonLd([
-    { name: loc.name, address: loc.address, phone: loc.phone, mapLink: loc.mapLink },
-  ]);
+  const [locationSchema] = buildLocationsJsonLd([loc]);
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(locationSchema) }} />
+      <JsonLd data={[breadcrumb, locationSchema]} />
       <LocationDetail location={loc} />
     </>
   );

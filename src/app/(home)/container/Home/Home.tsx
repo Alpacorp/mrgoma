@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { preload } from 'react-dom';
 
 import { servicesConfig } from '@/app/(shop)/services/servicesConfig';
+import { TrustStrip } from '@/app/ui/components';
 import {
   InfoCardsSection,
   PromoBanner,
@@ -14,6 +15,18 @@ import {
 } from '@/app/ui/sections';
 import { LocationsSlider } from '@/app/ui/sections/LocationsSlider/LocationsSlider';
 import { promoBannerConfig } from '@/app/ui/sections/PromoBanner/config/promoBanner';
+import {
+  FAMILY_OWNED,
+  FOUNDED_YEAR,
+  HOME_TRUST_CLAIMS,
+  INVENTORY_NETWORK,
+  INVENTORY_NETWORK_FIGURE,
+  INVENTORY_NETWORK_LABEL,
+  LOCATIONS_LABEL_LONG,
+  SELECTION_CLAIM,
+  SHIPPING,
+  WARRANTY,
+} from '@/app/utils/brandClaims';
 
 const SERVICE_IMAGES: Record<string, string> = {
   tire: '/assets/images/bg-service-card.jpg',
@@ -49,7 +62,7 @@ const FEATURED_GUIDES = [
 
 const STATS = [
   { n: '7', label: 'Locations in Miami & Orlando' },
-  { n: '15,000+', label: 'Tires in stock' },
+  { n: INVENTORY_NETWORK_FIGURE, label: INVENTORY_NETWORK_LABEL },
   { n: '30-day', label: 'Warranty on used tires' },
   { n: 'Free', label: 'Shipping on every order' },
 ];
@@ -127,7 +140,26 @@ const Home: FC = () => {
             Your browser does not support the video tag.
           </video>
         </div>
-        <div className="relative">
+        <div className="relative pt-12 sm:pt-16">
+          {/* The page's single <h1>. Server-rendered on purpose: it is what
+              Google reads to build the result's title link, so it must be in the
+              raw HTML rather than inside the client search component (which
+              paints at opacity-0 until hydration). Tires-only by decision — the
+              wider service range lives on /services and would dilute our
+              strongest query. */}
+          <h1 className="text-center text-3xl sm:text-5xl font-black tracking-tight text-white uppercase [text-shadow:_0px_4px_10px_rgb(0_0_0_/_0.6)]">
+            New &amp; Used Tires in{' '}
+            <span className="text-[#9dfb40]">Miami &amp; Orlando</span>
+          </h1>
+
+          {/* The claims Google turns into the snippet. Plain server-rendered
+              text — no image, no extra font, no client JS. */}
+          <TrustStrip
+            items={HOME_TRUST_CLAIMS}
+            variant="onMedia"
+            className="justify-center mt-5 sm:mt-6"
+          />
+
           <SearchContainer />
         </div>
       </section>
@@ -135,6 +167,13 @@ const Home: FC = () => {
       {/* ── Stats strip ── */}
       <section className="bg-[#0a0a0a]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+          {/* The differentiators as a full sentence, not just badge words —
+              Google needs prose it can lift into a description. */}
+          <p className="text-gray-300 text-base sm:text-lg leading-relaxed max-w-3xl mx-auto text-center mb-10 sm:mb-14">
+            {SELECTION_CLAIM}, every one backed by a {WARRANTY.toLowerCase()}. Shop{' '}
+            {INVENTORY_NETWORK}, with {SHIPPING.toLowerCase()} and expert installation across{' '}
+            {LOCATIONS_LABEL_LONG}. {FAMILY_OWNED} since {FOUNDED_YEAR}.
+          </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 sm:gap-0 sm:divide-x sm:divide-white/10">
             {STATS.map(s => (
               <div key={s.n} className="text-center sm:px-8">

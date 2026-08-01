@@ -43,3 +43,5 @@ export { default as LoginForm } from './LoginForm/LoginForm';
 export { default as InputError } from './InputError/InputError';
 export { default as ButtonSpinner } from './ButtonSpinner/ButtonSpinner';
 export { default as Snackbar } from './Snackbar/Snackbar';
+export { default as JsonLd } from './JsonLd/JsonLd';
+export { default as TrustStrip } from './TrustStrip/TrustStrip';

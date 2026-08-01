@@ -3,6 +3,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 
 import { guides } from '@/app/(shop)/guides/guidesConfig';
+import { INVENTORY_NETWORK } from '@/app/utils/brandClaims';
 import { canonical } from '@/app/utils/seo';
 
 export const metadata: Metadata = {
@@ -117,7 +118,7 @@ export default function GuidesPage() {
             Ready to find your tire?
           </h2>
           <p className="text-black/60 max-w-md">
-            Browse 15,000+ tires in stock or contact our ASE-certified team at any of our 7 locations.
+            Browse {INVENTORY_NETWORK} or contact our ASE-certified team at any of them.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <Link

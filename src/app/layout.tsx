@@ -11,17 +11,11 @@ import { SelectedFiltersProvider } from '@/app/context/SelectedFilters';
 import { DetailModalProvider } from '@/app/context/ShowDetailModal';
 import { FiltersProvider } from '@/app/context/ShowFilterContext';
 import { MenuProvider } from '@/app/context/ShowMenuContext';
-import { CookieConsent } from '@/app/ui/components';
+import { CookieConsent, JsonLd } from '@/app/ui/components';
 import SiteAiChat from '@/app/ui/components/AiChat/SiteAiChat';
 import GoogleAnalytics from '@/app/ui/components/GoogleAnalytics/GoogleAnalytics';
 import InteractionTracker from '@/app/ui/components/InteractionTracker/InteractionTracker';
-import { locationsData } from '@/app/ui/sections/LocationsSlider/locationsData';
-import {
-  buildDefaultMetadata,
-  buildLocationsJsonLd,
-  organizationJsonLd,
-  websiteJsonLd,
-} from '@/app/utils/seo';
+import { buildDefaultMetadata, organizationJsonLd, websiteJsonLd } from '@/app/utils/seo';
 
 import './globals.css';
 
@@ -64,20 +58,11 @@ export default function RootLayout({
               "(function(){try{var i=[];document.cookie.split('; ').forEach(function(c){var m=c.match(/^promo_(.+)=dismissed$/);if(m)i.push('#promo-'+m[1]);});if(i.length){var s=document.createElement('style');s.textContent=i.join(',')+'{display:none!important}';document.head.appendChild(s);}}catch(e){}})();",
           }}
         />
-        <script type="application/ld+json">{JSON.stringify(organizationJsonLd())}</script>
-        <script type="application/ld+json">{JSON.stringify(websiteJsonLd())}</script>
-        {buildLocationsJsonLd(
-          locationsData.map(l => ({
-            name: l.name,
-            address: l.address,
-            phone: l.phone,
-            mapLink: l.link,
-          }))
-        ).map((schema, i) => (
-          <script key={i} type="application/ld+json">
-            {JSON.stringify(schema)}
-          </script>
-        ))}
+        {/* Only the site-wide entities live here. The seven stores used to be
+            emitted on every page, which duplicated each of them site-wide and
+            made a location page ship its own store twice. They now render once,
+            on /locations and on each store's own page. */}
+        <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
       </head>
       <SessionProvider>
         <DetailModalProvider>

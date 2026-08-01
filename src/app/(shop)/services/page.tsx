@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 
 import { servicesConfig } from '@/app/(shop)/services/servicesConfig';
+import { LOCATIONS_LABEL, WARRANTY } from '@/app/utils/brandClaims';
 import { canonical } from '@/app/utils/seo';
 
 export const metadata: Metadata = {
@@ -123,7 +124,7 @@ export default function ServicesPage() {
       {/* Trust bar */}
       <section className="border-t border-white/8 bg-[#0a0a0a]">
         <div className="max-w-6xl mx-auto px-6 lg:px-8 py-12 flex flex-wrap justify-center gap-x-12 gap-y-6 text-center">
-          {['ASE-Certified Technicians', '7 Locations', '30-Day Warranty', 'No Appointment Needed'].map(item => (
+          {['ASE-Certified Technicians', LOCATIONS_LABEL, WARRANTY, 'No Appointment Needed'].map(item => (
             <div key={item} className="flex flex-col gap-1">
               <span className="text-[#9dfb40] font-bold text-sm">✦</span>
               <span className="text-white font-semibold text-sm">{item}</span>

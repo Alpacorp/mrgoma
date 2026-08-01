@@ -5,12 +5,23 @@ export const alt = 'MrGoma Tires – New & Used Tires in Miami & Orlando, FL';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
+/**
+ * Google renders this next to the search result at roughly 96×96. The previous
+ * design was a near-black card with a 30px tagline and a row of 16px pills; at
+ * thumbnail size that collapses into an unreadable dark square, which is exactly
+ * what the live US result showed.
+ *
+ * So this is designed for the small size first: a bright brand-green field and
+ * one very large wordmark, with nothing that has to be *read* for the image to
+ * say "MrGoma". The supporting line exists for the full 1200×630 rendering used
+ * in social shares — it is not load-bearing at thumbnail size.
+ */
 export default function OgImage() {
   return new ImageResponse(
     (
       <div
         style={{
-          background: '#0a0a0a',
+          background: '#9dfb40',
           width: '100%',
           height: '100%',
           display: 'flex',
@@ -22,81 +33,40 @@ export default function OgImage() {
           overflow: 'hidden',
         }}
       >
-        {/* Top accent bar */}
+        {/* Oversized tire silhouette. Reads as a shape, not as detail, so it
+            still registers when the image is scaled to a favicon-sized square. */}
         <div
           style={{
             position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '6px',
-            background: '#9dfb40',
+            right: '-90px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: '520px',
+            height: '520px',
+            borderRadius: '50%',
+            border: '64px solid #0a0a0a',
+            opacity: 0.14,
             display: 'flex',
           }}
         />
 
-        {/* Background circle decoration */}
-        <div
-          style={{
-            position: 'absolute',
-            right: '-120px',
-            top: '-120px',
-            width: '500px',
-            height: '500px',
-            borderRadius: '50%',
-            border: '2px solid rgba(157,251,64,0.12)',
-            display: 'flex',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            right: '-60px',
-            top: '-60px',
-            width: '340px',
-            height: '340px',
-            borderRadius: '50%',
-            border: '2px solid rgba(157,251,64,0.08)',
-            display: 'flex',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            left: '-100px',
-            bottom: '-100px',
-            width: '400px',
-            height: '400px',
-            borderRadius: '50%',
-            border: '2px solid rgba(157,251,64,0.08)',
-            display: 'flex',
-          }}
-        />
-
-        {/* Main content */}
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '0px',
             zIndex: 1,
           }}
         >
-          {/* Brand name */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'baseline',
-              gap: '0px',
-            }}
-          >
+          {/* The wordmark. Deliberately enormous: at 96px wide this is the only
+              thing that survives, and it has to be enough. */}
+          <div style={{ display: 'flex', alignItems: 'baseline' }}>
             <span
               style={{
-                fontSize: '96px',
+                fontSize: '180px',
                 fontWeight: 900,
-                color: '#ffffff',
-                letterSpacing: '-4px',
+                color: '#0a0a0a',
+                letterSpacing: '-8px',
                 lineHeight: 1,
               }}
             >
@@ -104,10 +74,10 @@ export default function OgImage() {
             </span>
             <span
               style={{
-                fontSize: '96px',
+                fontSize: '180px',
                 fontWeight: 900,
-                color: '#9dfb40',
-                letterSpacing: '-4px',
+                color: '#0a0a0a',
+                letterSpacing: '-8px',
                 lineHeight: 1,
               }}
             >
@@ -115,102 +85,44 @@ export default function OgImage() {
             </span>
           </div>
 
-          {/* TIRES label */}
           <div
             style={{
-              fontSize: '22px',
-              fontWeight: 700,
-              color: '#9dfb40',
-              letterSpacing: '12px',
-              marginTop: '-4px',
+              fontSize: '44px',
+              fontWeight: 800,
+              color: '#0a0a0a',
+              letterSpacing: '18px',
+              marginTop: '4px',
+              marginRight: '-18px',
               display: 'flex',
             }}
           >
             TIRES
           </div>
 
-          {/* Divider */}
+          {/* For the full-size share rendering only. */}
           <div
             style={{
-              width: '60px',
-              height: '2px',
-              background: 'rgba(157,251,64,0.5)',
-              margin: '28px 0',
-              display: 'flex',
-            }}
-          />
-
-          {/* Tagline */}
-          <div
-            style={{
+              marginTop: '40px',
               fontSize: '30px',
-              color: '#e5e5e5',
+              fontWeight: 700,
+              color: '#0a0a0a',
+              opacity: 0.75,
               textAlign: 'center',
-              lineHeight: 1.4,
-              fontWeight: 400,
               display: 'flex',
             }}
           >
-            New & Used Tires · Miami & Orlando, FL
-          </div>
-
-          {/* Trust signals */}
-          <div
-            style={{
-              display: 'flex',
-              gap: '8px',
-              marginTop: '36px',
-              alignItems: 'center',
-            }}
-          >
-            {['7 Locations', '15,000+ Tires', '30-Day Warranty', 'Free Shipping'].map(
-              (item, i, arr) => (
-                <div key={item} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span
-                    style={{
-                      fontSize: '16px',
-                      color: '#9dfb40',
-                      fontWeight: 600,
-                      background: 'rgba(157,251,64,0.1)',
-                      padding: '6px 14px',
-                      borderRadius: '20px',
-                      border: '1px solid rgba(157,251,64,0.3)',
-                    }}
-                  >
-                    {item}
-                  </span>
-                  {i < arr.length - 1 && (
-                    <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: '14px' }}>·</span>
-                  )}
-                </div>
-              )
-            )}
+            New &amp; Used Tires · 30-Day Warranty · Miami &amp; Orlando, FL
           </div>
         </div>
 
-        {/* Bottom URL */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '28px',
-            color: 'rgba(255,255,255,0.3)',
-            fontSize: '16px',
-            letterSpacing: '1px',
-            display: 'flex',
-          }}
-        >
-          www.mrgomatires.com
-        </div>
-
-        {/* Bottom accent bar */}
         <div
           style={{
             position: 'absolute',
             bottom: 0,
             left: 0,
             right: 0,
-            height: '3px',
-            background: 'rgba(157,251,64,0.4)',
+            height: '14px',
+            background: '#0a0a0a',
             display: 'flex',
           }}
         />

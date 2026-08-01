@@ -15,9 +15,16 @@ import {
   ResultsHeader,
   ResultsSkeleton,
   TireResults,
+  TrustStrip,
 } from '@/app/ui/components';
 import { FiltersMobile, TopFilters, PromoBanner } from '@/app/ui/sections';
 import { promoBannerConfig } from '@/app/ui/sections/PromoBanner/config/promoBanner';
+import {
+  LOCATIONS_LABEL,
+  SHIPPING,
+  WARRANTY,
+  onlineInventoryLabel,
+} from '@/app/utils/brandClaims';
 import {
   DEFAULT_PAGE,
   DEFAULT_PAGE_SIZE,
@@ -305,22 +312,18 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
                 </>
               )}
             </h1>
-            <div className="flex flex-wrap gap-3 mt-6">
-              {[
-                tiresData.totalCount > 0 ? `${tiresData.totalCount.toLocaleString()} tires in stock` : '3,600+ tires in stock',
-                'Free shipping nationwide',
-                '7 locations Miami & Orlando',
-                '30-Day warranty',
-              ].map(item => (
-                <span
-                  key={item}
-                  className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 bg-white/5 border border-white/10 rounded-full px-3 py-1.5"
-                >
-                  <span className="text-[#9dfb40] text-[10px]">✦</span>
-                  {item}
-                </span>
-              ))}
-            </div>
+            <TrustStrip
+              className="mt-6"
+              items={[
+                // The live catalogue count, labelled for what it is. The
+                // "15,000+" network claim describes physical stock across the
+                // stores and must never appear unqualified next to this number.
+                ...(tiresData.totalCount > 0 ? [onlineInventoryLabel(tiresData.totalCount)] : []),
+                SHIPPING,
+                LOCATIONS_LABEL,
+                WARRANTY,
+              ]}
+            />
           </div>
         </section>
 

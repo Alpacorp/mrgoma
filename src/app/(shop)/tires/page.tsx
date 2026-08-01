@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import SearchResults from '@/app/(shop)/tires/container/SearchResults';
 import { fetchTiresServer } from '@/app/(shop)/tires/utils/fetchTiresServer';
 import { LoadingScreen } from '@/app/ui/components';
-import { canonical } from '@/app/utils/seo';
+import { tiresMetadata } from '@/app/utils/seo';
 import { fetchBrands } from '@/repositories/tiresRepository';
 
 export async function generateMetadata({
@@ -14,47 +14,12 @@ export async function generateMetadata({
   searchParams: Promise<{ w?: string; s?: string; d?: string; page?: string }>;
 }): Promise<Metadata> {
   const sp = await searchParams;
-  const w = (sp?.w || '').trim();
-  const s = (sp?.s || '').trim();
-  const d = (sp?.d || '').trim();
-  const page = parseInt(sp?.page || '1', 10) || 1;
-
-  const hasSize = w && s && d;
-  const sizeLabel = hasSize ? `${w}/${s}/${d}` : '';
-
-  const baseTitle = hasSize
-    ? `Used & New Tires in Miami – Size ${sizeLabel}`
-    : 'Used & New Tires in Miami';
-  const title = page > 1 ? `${baseTitle} – Page ${page}` : baseTitle;
-
-  const descBase = hasSize
-    ? `Browse ${sizeLabel} tires available in Miami, Florida. Find quality used and new tires with online ordering and multiple installation locations.`
-    : 'Browse our selection of used and new tires available in Miami, Florida. Buy online and install at our locations.';
-
-  const params = new URLSearchParams();
-  if (w) params.set('w', w);
-  if (s) params.set('s', s);
-  if (d) params.set('d', d);
-  if (page > 1) params.set('page', String(page));
-  const canonPath = params.toString() ? `/tires?${params.toString()}` : '/tires';
-
-  return {
-    title,
-    description: descBase,
-    alternates: { canonical: canonical(canonPath) },
-    openGraph: {
-      type: 'website',
-      siteName: 'MrGoma Tires',
-      url: canonical(canonPath),
-      title,
-      description: descBase,
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description: descBase,
-    },
-  };
+  return tiresMetadata({
+    w: sp?.w,
+    s: sp?.s,
+    d: sp?.d,
+    page: parseInt(sp?.page || '1', 10) || 1,
+  });
 }
 
 export default async function TiresPage({

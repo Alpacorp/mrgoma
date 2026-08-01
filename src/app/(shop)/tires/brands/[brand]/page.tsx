@@ -8,8 +8,9 @@ import type { Metadata } from 'next';
 import { BrowseFilters } from '@/app/(shop)/tires/container/BrowseFilters/BrowseFilters';
 import { TireGrid } from '@/app/(shop)/tires/container/TireGrid/TireGrid';
 import { TiresData } from '@/app/interfaces/tires';
-import { BrandImage } from '@/app/ui/components';
-import { buildBreadcrumbJsonLd, canonical } from '@/app/utils/seo';
+import { BrandImage, JsonLd } from '@/app/ui/components';
+import { LOCATIONS_LABEL, SHIPPING, WARRANTY, onlineInventoryLabel } from '@/app/utils/brandClaims';
+import { brandMetadata, buildBreadcrumbJsonLd, buildItemListJsonLd } from '@/app/utils/seo';
 import { slugify } from '@/app/utils/tireSlug';
 import { transformTireData } from '@/app/utils/transformTireData';
 import { fetchBrands, fetchTires } from '@/repositories/tiresRepository';
@@ -39,17 +40,7 @@ export async function generateMetadata({
   const brandName = await getBrandName(brandSlug);
   if (!brandName) return { title: 'Not Found', robots: { index: false, follow: true } };
 
-  const title = `${brandName} Tires in Miami & Orlando`;
-  const description = `Shop ${brandName} tires at MrGoma Tires — 7 locations across Miami and Orlando, FL. New and used ${brandName} tires with free shipping to your door.`;
-  const url = canonical(`/tires/brands/${brandSlug}`);
-
-  return {
-    title,
-    description,
-    alternates: { canonical: url },
-    openGraph: { type: 'website', siteName: 'MrGoma Tires', url, title, description },
-    twitter: { card: 'summary_large_image', title, description },
-  };
+  return brandMetadata({ brand: brandName, slug: brandSlug });
 }
 
 export default async function BrandCategoryPage({
@@ -76,9 +67,15 @@ export default async function BrandCategoryPage({
     { name: `${brandName} Tires`, url: `/tires/brands/${brandSlug}` },
   ]);
 
+  const itemListJsonLd = buildItemListJsonLd({
+    url: `/tires/brands/${brandSlug}`,
+    name: `${brandName} tires available online`,
+    count: totalCount,
+  });
+
   return (
     <>
-      <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
+      <JsonLd data={[breadcrumbJsonLd, itemListJsonLd]} />
 
       <main className="min-h-screen bg-white">
         {/* Breadcrumb */}
@@ -118,8 +115,8 @@ export default async function BrandCategoryPage({
               </h1>
               <p className="text-gray-400 text-lg">
                 {totalCount > 0
-                  ? `${totalCount} tire${totalCount !== 1 ? 's' : ''} available · Free shipping nationwide`
-                  : 'Free shipping nationwide · 7 locations in Miami & Orlando'}
+                  ? `${onlineInventoryLabel(totalCount)} · ${SHIPPING}`
+                  : `${SHIPPING} · ${LOCATIONS_LABEL}`}
               </p>
             </div>
 
@@ -137,7 +134,7 @@ export default async function BrandCategoryPage({
         {/* Trust bar */}
         <div className="bg-gray-900 text-white">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap gap-x-8 gap-y-2 text-xs text-gray-400 font-medium">
-            {['ASE-Certified Technicians', '30-Day Warranty', 'Free Shipping', '7 Locations Miami & Orlando'].map(item => (
+            {['ASE-Certified Technicians', WARRANTY, SHIPPING, LOCATIONS_LABEL].map(item => (
               <span key={item} className="flex items-center gap-1.5">
                 <span className="text-[#9dfb40]">✦</span>
                 {item}

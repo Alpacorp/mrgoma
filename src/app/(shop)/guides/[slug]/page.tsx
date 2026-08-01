@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 
 import { getGuideBySlug, guides, type GuideSection } from '@/app/(shop)/guides/guidesConfig';
+import { JsonLd } from '@/app/ui/components';
+import { INVENTORY_NETWORK } from '@/app/utils/brandClaims';
 import { buildBreadcrumbJsonLd, canonical } from '@/app/utils/seo';
 
 export function generateStaticParams() {
@@ -81,9 +83,9 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
 
   return (
     <>
-      <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
-      <script type="application/ld+json">{JSON.stringify(faqJsonLd)}</script>
-      <script type="application/ld+json">{JSON.stringify(articleJsonLd)}</script>
+      <JsonLd data={breadcrumbJsonLd} />
+      <JsonLd data={faqJsonLd} />
+      <JsonLd data={articleJsonLd} />
 
       <main className="bg-white min-h-screen">
         {/* Breadcrumb */}
@@ -192,7 +194,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
                   Need Tires?
                 </p>
                 <h3 className="font-black text-gray-900 text-lg mb-2 leading-snug">
-                  15,000+ tires in stock
+                  {INVENTORY_NETWORK}
                 </h3>
                 <p className="text-gray-500 text-sm mb-5 leading-relaxed">
                   7 locations in Miami and Orlando, FL. Free shipping nationwide.
