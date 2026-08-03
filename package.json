@@ -12,6 +12,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "perf:budget": "node scripts/perf-budget.mjs",
+    "icons:generate": "node scripts/generate-app-icons.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "clean": "powershell -Command \"Remove-Item -Recurse -Force node_modules, .next, package-lock.json -ErrorAction SilentlyContinue\"",

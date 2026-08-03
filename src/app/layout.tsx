@@ -46,8 +46,9 @@ export default function RootLayout({
     <html lang="en" className={inter.variable}>
       <head>
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
-        <link rel="icon" href="/favicon.png" sizes="any" type="image/x-icon" />
-        <link rel="apple-touch-icon" href="/desk-logo.png" />
+        {/* The favicon and home-screen icons are declared in `buildDefaultMetadata`
+            (see seo.ts), not here — they were written twice, and the copy in this
+            head pointed apple-touch-icon at the wide `desk-logo.png` lockup. */}
         {/* Hide an already-dismissed PromoBanner before it paints, so a returning
             user's banner never occupies space and hydration causes no layout
             shift. Reads the `promo_<key>=dismissed` cookie and injects a hide-rule
