@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { APPLE_TOUCH_ICON } from '@/app/utils/appManifest';
 import {
   FOUNDED_YEAR,
   INVENTORY_NETWORK,
@@ -38,6 +39,15 @@ export const DEFAULT_KEYWORDS = [
   'Miami',
 ];
 
+/**
+ * Where the site canonically lives — the host for canonicals, the sitemap, OG
+ * URLs and JSON-LD, and the host `next.config.mjs` redirects the bare-domain
+ * traffic to. Keep the fallback below in step with the one there.
+ *
+ * Not to be confused with `NEXT_PUBLIC_BASE_URL`, which is a different setting
+ * answering a different question (Stripe return URLs, and the origin allow-list
+ * in `/api/instant-quote`). They happen to hold the same value today.
+ */
 export function getSiteUrl(): string {
   const env = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL;
   const fallback = 'https://www.mrgomatires.com';
@@ -77,8 +87,20 @@ export function buildDefaultMetadata(): Metadata {
       index: true,
       follow: true,
     },
+    // Every icon the document advertises, in one place. These used to be split
+    // between here and two hand-written <link> tags in the root layout, one of
+    // which declared the PNG favicon as `image/x-icon`.
+    //
+    // `apple` is the one iOS reads when the crew adds the staff portal to a home
+    // screen, and it has to be a real 180x180 square with no alpha — iOS
+    // composites a transparent icon onto black.
     icons: {
-      icon: [{ url: '/favicon.png', type: 'image/png' }],
+      icon: [
+        { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
+        { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+        { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+      ],
+      apple: [{ url: APPLE_TOUCH_ICON, sizes: '180x180', type: 'image/png' }],
     },
     openGraph: {
       type: 'website',
