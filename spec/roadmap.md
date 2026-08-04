@@ -118,6 +118,14 @@ To be resumed after the two tracks above; no fixed order yet.
   count a button press rather than a completed order or an accepted quote — and
   adds a server-side purchase event that no ad-blocker can suppress. Privacy
   policy and banner updated to name both tools. _Spec drafted._
+- 🟡 **Consent withdrawal (`016-consent-withdrawal`).** The cookie banner is a
+  one-way switch: accepting binds the visitor for a year and no control anywhere
+  undoes it. The code has admitted the gap for months ("reversible via settings
+  page if added later" — that page was never added). It matters now because
+  `015` rewrote the privacy policy to state that Google Analytics runs only after
+  acceptance; claiming that while offering no exit undercuts the transparency the
+  mission puts first. Includes actually clearing the `_ga` identifiers, since
+  unmounting the component revokes nothing. _Spec drafted._
 - ⬜ **TireCard redesign.** UX/UI improvements for the `/tires` cards (analysis
   done).
 - ⬜ **Dashboard AI chat improvements.**

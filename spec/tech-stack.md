@@ -113,6 +113,20 @@ Versions taken from `package.json` (2026-06-30). Update here when they change.
 - Events emitted from a route handler use `@vercel/analytics/server` and must
   never delay or fail the request they observe. See
   `spec/features/015-vercel-event-tracking/`.
+- **Consent is read and written only through `src/app/utils/consent.ts`.** Never
+  touch `cookiesAccepted` or the decline timer directly: the rule was once
+  duplicated between the banner and the analytics loader, and two copies of a
+  consent rule eventually disagree — which means either tracking someone who
+  said no or losing someone who said yes.
+- **Revoking consent is not "stop rendering the analytics component".** By then
+  gtag has run, its cookies are written and `window.gtag` is still callable.
+  `revokeConsent()` sets Google's `ga-disable-*` property, deletes the `_ga*`
+  cookies against every domain they may sit on, and clears the decision. See
+  `spec/features/016-consent-withdrawal/`.
+- A visitor can always reach their decision again from **Cookie Preferences** in
+  the footer, which reopens the same banner. Declining a first time buys 1 day of
+  silence; withdrawing an existing consent buys 30. Both periods are stated in
+  the privacy policy, so changing one means changing that page too.
 
 ### Feature flags
 

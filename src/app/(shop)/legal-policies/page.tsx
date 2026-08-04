@@ -80,6 +80,9 @@ export default function LegalPoliciesPage() {
                 <strong>Analytics:</strong> We measure how the site is used so we can improve it, with two tools. <strong>Google Analytics</strong> uses cookies to recognize returning visitors, so it runs only after you accept cookies — if you decline, it is never loaded. <strong>Vercel Web Analytics</strong> stores nothing on your device and cannot identify you or follow you to other websites, so it runs on every visit to give us an anonymous count of traffic. Neither tool receives your name, email address, phone number, or postal address.
               </li>
               <li>
+                <strong>Changing your mind:</strong> Select <strong>Cookie Preferences</strong> at the bottom of any page to see your current choice and change it, at any time. Withdrawing is exactly as easy as accepting — the same notice, the same two buttons. If you withdraw, we delete the Google Analytics identifiers already stored on your device and stop that tool immediately, without needing a page reload. We will not ask you again for <strong>30 days</strong> after you withdraw. If you decline on a first visit without having accepted before, we ask again after <strong>1 day</strong>. Your shopping cart is stored on your device and is never affected by this choice.
+              </li>
+              <li>
                 <strong>Your Rights:</strong> You may request access, correction, or deletion of your personal data by contacting us.
               </li>
             </ol>

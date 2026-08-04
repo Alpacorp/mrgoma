@@ -5,25 +5,12 @@ import { useEffect, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import Script from 'next/script';
 
-import { GA_ID, pageview } from '@/app/utils/gtag';
+import { GA_ID, hasConsent } from '@/app/utils/consent';
+import { pageview } from '@/app/utils/gtag';
 
-const hasConsent = (): boolean => {
-  try {
-    if (typeof window === 'undefined') return false;
-    const ls = window.localStorage.getItem('cookiesAccepted') === 'true';
-    const cookieValue =
-      typeof document !== 'undefined'
-        ? document.cookie
-            .split(';')
-            .map(c => c.trim())
-            .find(c => c.startsWith('cookiesAccepted='))
-        : null;
-    const cookie = cookieValue ? cookieValue.split('=')[1] === 'true' : false;
-    return ls || cookie;
-  } catch {
-    return false;
-  }
-};
+// `hasConsent` used to be reimplemented here. Two readings of the same rule is
+// how they start to disagree, and disagreeing about consent means either
+// tracking someone who said no or losing someone who said yes.
 
 const GoogleAnalytics = () => {
   const pathname = usePathname();

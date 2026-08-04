@@ -38,3 +38,35 @@ describe('legal policies — analytics disclosure', () => {
     );
   });
 });
+
+describe('legal policies — withdrawing consent (feature 016)', () => {
+  it('says where the choice can be changed', () => {
+    const { container } = render(<LegalPoliciesPage />);
+    const text = container.textContent ?? '';
+
+    expect(text).toMatch(/cookie preferences/i);
+    expect(text).toMatch(/bottom of any page/i);
+  });
+
+  it('commits to both waiting periods in writing', () => {
+    // The site waits before asking again. That is a promise to the visitor, so
+    // it belongs in the policy rather than being discovered by experiencing it.
+    const { container } = render(<LegalPoliciesPage />);
+    const text = container.textContent ?? '';
+
+    expect(text).toMatch(/30 days.{0,40}withdraw|withdraw.{0,60}30 days/i);
+    expect(text).toMatch(/1 day/i);
+  });
+
+  it('promises that withdrawal actually removes the identifiers', () => {
+    const { container } = render(<LegalPoliciesPage />);
+
+    expect(container.textContent ?? '').toMatch(/delete the google analytics identifiers/i);
+  });
+
+  it('repeats that the cart is unaffected, matching the banner', () => {
+    const { container } = render(<LegalPoliciesPage />);
+
+    expect(container.textContent ?? '').toMatch(/cart is stored on your device/i);
+  });
+});
