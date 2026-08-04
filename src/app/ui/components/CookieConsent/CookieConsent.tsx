@@ -8,7 +8,13 @@ import Link from 'next/link';
  * CookieConsent
  * - Shows a fixed banner at the bottom until the user accepts or declines.
  * - Accept: persists consent using both localStorage and a cookie (cookiesAccepted=true; max-age=1 year) and never shows again.
- * - Decline: does NOT set a persistent "false" cookie; instead hides the banner and schedules a re-show after 30 days using localStorage.
+ * - Decline: does NOT set a persistent "false" cookie; instead hides the banner and schedules a re-show after `DECLINE_DAYS` using localStorage.
+ *
+ * What consent actually gates: Google Analytics, whose script is not loaded at
+ * all until it is granted. Vercel Web Analytics is cookie-free, stores nothing
+ * on the device and runs regardless — which is why the copy below says "cookies
+ * and some analytics" rather than implying every measurement waits for a click.
+ * See /legal-policies#privacy, which names both tools.
  * - Safe for SSR: only reads window APIs in effects.
  * - Improved UX: slide-up animation, compact layout, clear actions, consistent policy link.
  */
@@ -149,8 +155,8 @@ export const CookieConsent: React.FC = () => {
                 </svg>
               </span>
               <p id="cookie-consent-desc" className="text-sm leading-6 text-gray-200">
-                We use cookies to improve your experience and analyze site traffic. By continuing,
-                you agree to our{' '}
+                We use cookies to improve your experience. Accepting also enables Google Analytics;
+                declining does not. Read our{' '}
                 <Link
                   href="/legal-policies#privacy"
                   className="underline text-[#4da6ff] hover:text-[#7bb8ff]"

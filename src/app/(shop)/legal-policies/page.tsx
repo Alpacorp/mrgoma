@@ -74,7 +74,10 @@ export default function LegalPoliciesPage() {
                 <strong>Sharing of Information:</strong> We may share limited information with service providers (payment processors, shipping companies) as required to fulfill your order. We do not sell personal data.
               </li>
               <li>
-                <strong>Cookies:</strong> Our website uses cookies and analytics tools (e.g., Google Analytics) to improve your browsing experience.
+                <strong>Cookies:</strong> We use cookies to keep your cart and preferences between visits, and to remember whether you accepted this notice.
+              </li>
+              <li>
+                <strong>Analytics:</strong> We measure how the site is used so we can improve it, with two tools. <strong>Google Analytics</strong> uses cookies to recognize returning visitors, so it runs only after you accept cookies — if you decline, it is never loaded. <strong>Vercel Web Analytics</strong> stores nothing on your device and cannot identify you or follow you to other websites, so it runs on every visit to give us an anonymous count of traffic. Neither tool receives your name, email address, phone number, or postal address.
               </li>
               <li>
                 <strong>Your Rights:</strong> You may request access, correction, or deletion of your personal data by contacting us.

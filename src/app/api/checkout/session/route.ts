@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import type Stripe from 'stripe';
 
 import { withLogging } from '@/app/api/_lib/withLogging';
+import { emitPurchase } from '@/app/api/checkout/_lib/purchaseEvent';
 import { insertOrderDetailsByOrderId } from '@/repositories/orderDetailsRepository';
 import { getOrderByStripeSessionId, insertOrder } from '@/repositories/ordersRepository';
 import { fetchTiresByIds, setTiresConditionIdToSoldByIds } from '@/repositories/tiresRepository';
@@ -201,6 +202,29 @@ export const GET = withLogging('checkout.session.GET', async (req: NextRequest) 
           } catch (err) {
             logger.error('Failed to update dbo.Tires ConditionId after payment', err);
           }
+
+          // Report the sale exactly once. This sits inside the `!existing`
+          // branch on purpose: `getOrderByStripeSessionId` above already
+          // guarantees one pass per order no matter how often the customer
+          // reloads or shares this URL, so the analytics event inherits that
+          // guarantee from a guard that protects the money path and will not be
+          // quietly removed. Being nested inside `!checkoutTestMode` likewise
+          // keeps test payments out of production analytics for free.
+          //
+          // `emitPurchase` never throws and never waits long — see its own
+          // comments for why both matter here.
+          await emitPurchase({
+            orderTotal,
+            currency,
+            fulfillmentMethod,
+            store,
+            // `items`, not `detailItems`: the latter is scoped to the try block
+            // above and is already gone by here. The synthetic tax line is not a
+            // product and must not be counted.
+            itemCount: items
+              .filter(it => it.productId && it.productId !== 'tax')
+              .reduce((n, it) => n + (it.quantity || 1), 0),
+          });
           } // end else (new order)
         }
       }
