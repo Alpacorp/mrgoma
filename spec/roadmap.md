@@ -110,6 +110,14 @@ To be resumed after the two tracks above; no fixed order yet.
   JSON-LD node through one emitter. Code complete and verified; **merge is gated
   on capturing the Search Console baseline** — once the new titles are live the
   "before" numbers are gone. _In progress._
+- 🟡 **Vercel event tracking (`015-vercel-event-tracking`).** The funnel we steer
+  by is visible only in GA4, which ad-blockers silence and the cookie banner
+  gates, so we cannot tell how partial our own numbers are. Fans the existing
+  `data-track` events out to Vercel Web Analytics as a second, cookie-free
+  reading (GA4 unchanged), fixes `place_order` and `quote_submit` — which today
+  count a button press rather than a completed order or an accepted quote — and
+  adds a server-side purchase event that no ad-blocker can suppress. Privacy
+  policy and banner updated to name both tools. _Spec drafted._
 - ⬜ **TireCard redesign.** UX/UI improvements for the `/tires` cards (analysis
   done).
 - ⬜ **Dashboard AI chat improvements.**

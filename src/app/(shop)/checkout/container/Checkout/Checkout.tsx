@@ -11,6 +11,8 @@ import { LoadingScreen } from '@/app/ui/components';
 import ProductMeta from '@/app/ui/components/ProductMeta/ProductMeta';
 import ShippingStateGate from '@/app/ui/components/ShippingStateGate/ShippingStateGate';
 import { locationsData } from '@/app/ui/sections/LocationsSlider/locationsData';
+import { trackEvent } from '@/app/utils/analytics';
+import { EVENTS } from '@/app/utils/analyticsEvents';
 import { buildTireSlug } from '@/app/utils/tireSlug';
 
 const TAX_RATE = (() => {
@@ -243,6 +245,15 @@ export default function Checkout() {
 
       const data = await res.json();
       if (data?.whatsappUrl) {
+        // The order left the site. Recorded separately from `purchase` on
+        // purpose: we can see the hand-off but never whether it was completed,
+        // and folding an unconfirmed order into the paid ones would reintroduce
+        // exactly the inflation this instrumentation exists to remove.
+        trackEvent({
+          action: EVENTS.WHATSAPP_ORDER_SENT,
+          category: 'checkout',
+          label: fulfillmentMethod,
+        });
         window.open(data.whatsappUrl, '_blank', 'noopener,noreferrer');
         // Reflect order initiation on the current page
         router.replace('/checkout?whatsapp=1');
@@ -813,7 +824,7 @@ export default function Checkout() {
                   <button
                     type="button"
                     onClick={proceedToPayment}
-                    data-track="place_order"
+                    data-track={EVENTS.ADD_SHIPPING_INFO}
                     data-track-category="checkout"
                     data-track-label={fulfillmentMethod}
                     className="inline-flex w-full cursor-pointer items-center justify-center rounded-md bg-green-600 px-5 py-2.5 text-base font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"

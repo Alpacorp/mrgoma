@@ -5,6 +5,8 @@ import React, { FormEvent, useContext, useEffect, useMemo, useRef, useState } fr
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
 import { SearchByText } from '@/app/ui/components';
 import { locationsData } from '@/app/ui/sections/LocationsSlider/locationsData';
+import { trackEvent } from '@/app/utils/analytics';
+import { EVENTS } from '@/app/utils/analyticsEvents';
 
 // Types
 type Condition = 'new' | 'used' | 'both';
@@ -227,6 +229,15 @@ const InstantQuote: React.FC = () => {
         throw new Error(m?.message || 'Failed to submit');
       }
       setSuccess(true);
+      // Past the `!res.ok` throw above, so this counts an accepted request and
+      // never a failed or abandoned attempt. No field of `lead` is sent: the
+      // form holds a name, email and phone, none of which may reach an
+      // analytics platform.
+      trackEvent({
+        action: EVENTS.GENERATE_LEAD,
+        category: 'lead',
+        label: 'instant-quote',
+      });
       setLead(initialLead);
       setPickupStore('');
     } catch (err: unknown) {
@@ -521,8 +532,9 @@ const InstantQuote: React.FC = () => {
               <button
                 type="submit"
                 disabled={!allRequiredFilled || submitting}
-                data-track="quote_submit"
-                data-track-category="lead"
+                // Deliberately untracked: a click here is an attempt, not a
+                // lead. `generate_lead` fires in `onSubmit`, once the server has
+                // actually accepted the request.
                 className={`inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-2 text-sm font-medium rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 transition-colors ${
                   !allRequiredFilled || submitting
                     ? 'bg-gray-300 text-gray-600 cursor-not-allowed'

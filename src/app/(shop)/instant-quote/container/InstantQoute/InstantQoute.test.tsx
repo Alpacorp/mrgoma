@@ -3,13 +3,19 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
+import { trackEvent } from '@/app/utils/analytics';
 
 // SearchByText pulls next/navigation's router; stub it via the barrel.
+// `vi.mock` is hoisted, so these apply despite sitting below the imports.
 vi.mock('@/app/ui/components', () => ({
   SearchByText: () => <div data-testid="search-by-text" />,
 }));
 
+vi.mock('@/app/utils/analytics', () => ({ trackEvent: vi.fn() }));
+
 import InstantQuote from './InstantQoute';
+
+const tracked = vi.mocked(trackEvent);
 
 const renderWithSize = (size = { width: '', sidewall: '', diameter: '' }) =>
   render(
@@ -22,7 +28,10 @@ const renderWithSize = (size = { width: '', sidewall: '', diameter: '' }) =>
 // delay uses real timers, so on a loaded machine these typing-heavy cases
 // intermittently blew the 5s budget. Removing the delay makes them
 // deterministic without changing what they assert.
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.clearAllMocks();
+});
 
 describe('InstantQuote form', () => {
   it('shows an email error only for invalid input', async () => {
@@ -72,6 +81,12 @@ describe('InstantQuote form', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock.mock.calls[0][0]).toBe('/api/instant-quote');
     expect(await screen.findByText(/thanks for choosing mrgoma tires/i)).toBeInTheDocument();
+
+    // AC7: an accepted submission is exactly one lead, and it carries none of
+    // the name/email/phone the form just collected.
+    const leads = tracked.mock.calls.filter(([e]) => e.action === 'generate_lead');
+    expect(leads).toHaveLength(1);
+    expect(JSON.stringify(leads[0][0])).not.toMatch(/john|example\.com/i);
   });
 
   it('surfaces an error when the submission fails upstream', async () => {
@@ -89,6 +104,10 @@ describe('InstantQuote form', () => {
 
     await user.click(screen.getByRole('button', { name: /get my quote/i }));
     expect(await screen.findByText('Upstream failed')).toBeInTheDocument();
+
+    // AC6: a rejected submission is not a lead. This is the whole point of
+    // moving the event off the button — the click happened, the lead did not.
+    expect(tracked).not.toHaveBeenCalled();
   });
 
   it('shows an error when the form is submitted incomplete', async () => {

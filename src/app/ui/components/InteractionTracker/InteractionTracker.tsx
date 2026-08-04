@@ -2,28 +2,36 @@
 
 import { useEffect } from 'react';
 
-import { event } from '@/app/utils/gtag';
+import { trackEvent } from '@/app/utils/analytics';
 
 /**
  * Global, declarative interaction tracking.
  *
  * Mount once (in the root layout). It listens for clicks anywhere in the
  * document and, when the clicked element (or an ancestor) carries a
- * `data-track` attribute, reports a Google Analytics event.
+ * `data-track` attribute, reports the event to **both** GA4 and Vercel Web
+ * Analytics via `trackEvent`.
+ *
+ * This is the single choke point for tracked clicks: marking an element reaches
+ * both platforms, and there is no way to wire up only one of them by mistake.
  *
  * Mark any actionable like:
  *   <button data-track="add_to_cart" data-track-label="Goodyear 205/55R16">…</button>
  *   <a data-track="open_whatsapp" data-track-category="contact">…</a>
  *
  * Conventions:
- *   - data-track            → GA event action (required)
- *   - data-track-category   → event_category (optional)
- *   - data-track-label      → event_label (optional)
+ *   - data-track            → event name (required)
+ *   - data-track-category   → GA `event_category` / Vercel `category` (optional)
+ *   - data-track-label      → GA `event_label` / Vercel `label` (optional)
  *   - data-track-value      → numeric value (optional)
  *   - any other data-track-* → forwarded as extra params (e.g. data-track-tire-id="123")
  *
- * `event()` is a no-op until GA has loaded (i.e. after cookie consent), so this
- * never throws and never sends anything without consent.
+ * Never put personal data in these attributes — the values are sent verbatim to
+ * two third parties.
+ *
+ * `trackEvent` never throws: GA stays silent until the cookie banner is accepted
+ * and its script loads, while Vercel (cookie-free) records from the first visit.
+ * A click is therefore reported to whichever platforms are live at that moment.
  */
 const camelToSnake = (s: string) => s.replace(/[A-Z]/g, m => `_${m.toLowerCase()}`);
 
@@ -52,7 +60,7 @@ const InteractionTracker = () => {
         params[paramName] = val;
       }
 
-      event({
+      trackEvent({
         action,
         category,
         label,
