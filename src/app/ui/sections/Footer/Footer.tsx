@@ -3,6 +3,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import CookieSettingsLink from '@/app/ui/components/CookieConsent/CookieSettingsLink';
 import type {
   FooterProps,
   FooterSection as FooterSectionType,
@@ -149,6 +150,9 @@ export const Footer = ({
               >
                 Privacy Policy
               </Link>
+              {/* Beside the policy that explains the choice, so the way to change
+                  it sits next to the description of what it does. */}
+              <CookieSettingsLink />
             </div>
           </div>
         </div>

@@ -13,7 +13,7 @@ anything is touched. Skipping it turns every later task into a guess.
 
 ## Groundwork
 
-- [ ] **T0** — _(Deferred to the UI batch: its findings serve T7/T9/T10, none of which are in this first slice.)_ Consult the **`modern-web-guidance`** skill before writing any UI.
+- [x] **T0** — Consult the **`modern-web-guidance`** skill before writing any UI.
       This feature adds a control and reworks a consent surface; the constitution
       requires the research first. Focus it on: current patterns for consent
       re-entry points, giving two actions equal visual weight without looking
@@ -90,28 +90,28 @@ anything is touched. Skipping it turns every later task into a guess.
 
 ## The banner
 
-- [ ] **T6** — Route the banner's accept/decline through `consent.ts`, and choose
+- [x] **T6** — Route the banner's accept/decline through `consent.ts`, and choose
       the interval from prior state: consent previously granted → withdrawal → 30
       days; otherwise → first-visit decline → 1 day. · files:
       `CookieConsent.tsx`, `CookieConsent.test.tsx` · check: withdrawing sets the
       timer 30 days out and revokes GA; declining without prior consent sets it 1
       day out and revokes nothing that was never granted.
 
-- [ ] **T7** — Listen for a `cookies:reopen` window event that forces the banner
+- [x] **T7** — Listen for a `cookies:reopen` window event that forces the banner
       visible regardless of stored decision or timer, and show the visitor's
       **current** decision when it opens. · files: `CookieConsent.tsx`,
       `CookieConsent.test.tsx` · check: dispatching the event shows the banner for
       an accepted, a declined and an undecided visitor, and each sees their own
       state stated.
 
-- [ ] **T8** — Banner copy. Say what the choice governs and what it does not:
+- [x] **T8** — Banner copy. Say what the choice governs and what it does not:
       name Vercel Web Analytics as continuing regardless, and state that the cart
       lives on the device and is unaffected. Wording must match the privacy
       policy that feature 015 rewrote. · files: `CookieConsent.tsx`,
       `CookieConsent.test.tsx` · check: both statements render; the tool names
       match the policy exactly.
 
-- [ ] **T9** — ~~Give accept and decline equal visual weight.~~ **Dropped by the
+- [x] **T9** — ~~Give accept and decline equal visual weight.~~ **Dropped by the
       owner (D7), 2026-08-04**, to protect the acceptance rate on a surface every
       visitor sees. The buttons keep their current styling. What remains of this
       task: check that **neither label nor helper text** words one option as the
@@ -121,7 +121,7 @@ anything is touched. Skipping it turns every later task into a guess.
 
 ## The entry point and the disclosure
 
-- [ ] **T10** — Add the footer control that dispatches `cookies:reopen`, in the
+- [x] **T10** — Add the footer control that dispatches `cookies:reopen`, in the
       existing legal-link row beside Privacy Policy. A native `<button>`, not a
       link — it performs an action rather than navigating. · files:
       `src/app/ui/components/CookieConsent/CookieSettingsLink.tsx`,
@@ -134,25 +134,44 @@ anything is touched. Skipping it turns every later task into a guess.
       and have the Footer merely render it. The footer is mounted in
       `(home)`, `(shop)` and `not-found`, so one insertion covers the storefront.
 
-- [ ] **T11** — State both waiting periods in the privacy policy — 1 day after
+- [x] **T11** — State both waiting periods in the privacy policy — 1 day after
       declining, 30 days after withdrawing — and say the choice can be changed
       from the footer at any time. · files:
       `src/app/(shop)/legal-policies/page.tsx`, `page.test.tsx` · check: both
       numbers and the footer mention render; the analytics wording still matches
       the banner.
 
-- [ ] **T12** — Record in the constitution that consent is read and written
+- [x] **T12** — Record in the constitution that consent is read and written
       **only** through `consent.ts`, so the duplication we just removed does not
       grow back. · files: `spec/tech-stack.md` · check: an agent reading only
       `tech-stack.md` would not reimplement a consent read.
 
 ## Closing
 
-- [ ] **T13** — Definition of Done: `npx tsc --noEmit` + `npm run lint` +
+- [x] **T13** — Definition of Done: `npx tsc --noEmit` + `npm run lint` +
       `npm test` + `npm run build` + `npm run perf:budget` all green. Manual
       check at phone width on the home page: accept, then reopen from the footer
       and withdraw, and confirm with devtools that the `_ga` cookies are gone and
       that a tracked click sends nothing to GA afterwards.
+
+      _Done 2026-08-04._ `tsc`, `lint`, **433 tests / 53 files**, `build` and
+      `perf:budget` (157.3 KB shared / 613.5 KB total) all green. Verified in a
+      real browser against `next dev`, which turned out to have GA configured —
+      so Google wrote a genuine `_ga_W4TYFF5YZH` cookie on accept, and the
+      withdrawal had something real to delete rather than only seeded fakes:
+
+      | after pressing Withdraw | result                            |
+      | ----------------------- | --------------------------------- |
+      | `cookiesAccepted` (LS)  | `null`                            |
+      | `cookiesAccepted` (cookie) | gone                           |
+      | `_ga*` cookies          | **`[]`** — all three removed      |
+      | `ga-disable-G-…`        | `true`                            |
+      | silence                 | **30 days**                       |
+      | `cart`                  | untouched                         |
+
+      And the latent bug, in the exact conditions that used to trigger it:
+      `window.gtag` still a loaded function, consent `null`, a tracked element
+      clicked — `dataLayer` stayed at 5 entries. It would have sent before.
 
 - [ ] **T14** — **Owner gate:** the banner's new copy, the equalised buttons and
       the privacy-policy changes are reviewed and approved before merge (FR13).
