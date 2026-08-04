@@ -173,16 +173,39 @@ anything is touched. Skipping it turns every later task into a guess.
       `window.gtag` still a loaded function, consent `null`, a tracked element
       clicked — `dataLayer` stayed at 5 entries. It would have sent before.
 
-- [ ] **T14** — **Owner gate:** the banner's new copy, the equalised buttons and
+- [x] **T14** — **Owner gate:** the banner's new copy, the equalised buttons and
       the privacy-policy changes are reviewed and approved before merge (FR13).
+      _Approved by the owner on 2026-08-04, buttons unchanged per D7._
       Show the banner side by side with the current one — the button change is
       the part with a business consequence.
 
-- [ ] **T15** — **Post-deploy, owner-verified:** on production, accept, withdraw,
+- [x] **T15** — **Post-deploy, owner-verified:** on production, accept, withdraw,
       and confirm in devtools that the `_ga*` cookies are actually gone. Locally
       there is no `.mrgomatires.com` domain, so cookie deletion **cannot be fully
       proven before deploy** — a test that passes in development can still be
       wrong in production. This check is not optional.
+
+      _Verified on `www.mrgomatires.com`, 2026-08-04._ Read from the page itself,
+      which is what makes it conclusive: cookies written on `.mrgomatires.com`
+      are visible to `document.cookie` from `www.`, so their absence afterwards
+      proves every one of them was removed, whichever domain it sat on.
+
+      | | after accepting | after withdrawing |
+      | --- | --- | --- |
+      | `_ga*` cookies | `_ga`, `_ga_W4TYFF5YZH` | **`[]`** |
+      | `cookiesAccepted` (LS / cookie) | `"true"` / present | `null` / absent |
+      | `ga-disable-G-W4TYFF5YZH` | `undefined` | `true` |
+      | silence | none | **30 days** |
+      | cart | present | present |
+
+      The privacy policy promises we delete Google's identifiers. That promise is
+      now true in production rather than only in a jsdom approximation — which
+      was the entire reason this task was marked not optional.
+
+      It also caught the latent bug in the wild: after withdrawing,
+      `typeof window.gtag` is still `"function"` while consent is `null`. The
+      script cannot be unloaded, so before this feature that combination would
+      have kept sending to Google. The consent guard is what stops it.
 
 ## Traceability
 

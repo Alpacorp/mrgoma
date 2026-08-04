@@ -124,8 +124,13 @@ To be resumed after the two tracks above; no fixed order yet.
   page if added later" — that page was never added). It matters now because
   `015` rewrote the privacy policy to state that Google Analytics runs only after
   acceptance; claiming that while offering no exit undercuts the transparency the
-  mission puts first. Includes actually clearing the `_ga` identifiers, since
-  unmounting the component revokes nothing. _Spec drafted._
+  mission puts first. **Cookie Preferences** in the footer reopens the same
+  banner, so withdrawing costs the same two clicks as consenting. Withdrawal
+  genuinely revokes — verified in production, where both real `_ga` cookies were
+  removed — and closes a latent bug that kept events flowing to Google after a
+  withdrawal, because unmounting a component cannot unload a script that has
+  already run. Escape now dismisses the banner from anywhere, which it never
+  did. _Complete; awaiting merge._
 - ⬜ **TireCard redesign.** UX/UI improvements for the `/tires` cards (analysis
   done).
 - ⬜ **Dashboard AI chat improvements.**
