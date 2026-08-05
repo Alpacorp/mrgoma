@@ -25,11 +25,30 @@ export interface LocationConfig {
   address: string;
   phone: string;
   tel: string;
+  /**
+   * Google Maps CID — the stable identifier of this store's Business Profile,
+   * taken from the `0x…:0x…` pair in the profile's Maps URL (the half after the
+   * colon, in decimal).
+   *
+   * The link is derived from it rather than pasted, because a copied Maps URL
+   * carries a locale (`hl=`), a session token (`g_ep=`) and tracking parameters
+   * that rot, and — as we found — can silently point at a neighbouring business.
+   * A CID names one listing and nothing else.
+   */
+  cid: string;
+  /**
+   * Canonical link to the store's Business Profile. Derived from {@link cid};
+   * never hand-written.
+   */
   mapLink: string;
   /**
-   * Marker coordinates read from `mapLink`'s canonical Google Maps URL
-   * (the `!3d<lat>!4d<lng>` segment, i.e. the pin — not the viewport centre).
-   * Pending owner validation; a wrong pin sends a customer to the wrong store.
+   * Marker coordinates of the store's Business Profile pin.
+   *
+   * Verified store by store against Google Business Profile on 2026-08-04. Six
+   * matched; Miami Gardens did not — it held the coordinates of a locksmith in
+   * the same plaza, inherited from a link that pointed at the wrong listing.
+   * A wrong pin sends a customer to the wrong store, so re-verify against the
+   * profile rather than against a copied URL.
    */
   geo: { latitude: number; longitude: number };
   /** Opening hours for this store. Defaults to {@link DEFAULT_HOURS}. */
@@ -51,8 +70,9 @@ export const locationsConfig: LocationConfig[] = [
     address: '18200 S Dixie Hwy, Miami, FL 33157',
     phone: '(305)-278-4632',
     tel: 'tel:+13052784632',
-    mapLink: 'https://maps.app.goo.gl/RTpygmaN6vMcPxmX8',
-    geo: { latitude: 25.6004443, longitude: -80.3537512 },
+    cid: '5066795194871319329',
+    mapLink: 'https://maps.google.com/?cid=5066795194871319329',
+    geo: { latitude: 25.6004389, longitude: -80.3537558 },
     hours: DEFAULT_HOURS,
     image: '/assets/images/Locations/18200.jpg',
     serving: 'Cutler Bay • Palmetto Bay • South Miami • Kendall • Pinecrest',
@@ -68,7 +88,8 @@ export const locationsConfig: LocationConfig[] = [
     address: '3251 NW 27th Ave, Miami, FL 33142',
     phone: '(305)-456-9588',
     tel: 'tel:+13054569588',
-    mapLink: 'https://maps.app.goo.gl/1gpRJFveeqs3hM7G9',
+    cid: '2096624248671681511',
+    mapLink: 'https://maps.google.com/?cid=2096624248671681511',
     geo: { latitude: 25.8060487, longitude: -80.2398748 },
     hours: DEFAULT_HOURS,
     image: '/assets/images/Locations/3251.webp',
@@ -82,11 +103,12 @@ export const locationsConfig: LocationConfig[] = [
   {
     slug: 'miami-gardens',
     name: 'Miami Gardens',
-    address: '20282 NW 2nd Ave, Miami, FL 33169',
+    address: '20282 NW 2nd Ave, Miami Gardens, FL 33169',
     phone: '(305)-770-1154',
     tel: 'tel:+13057701154',
-    mapLink: 'https://maps.app.goo.gl/G79tY9zNu7ETtru8A',
-    geo: { latitude: 25.9613344, longitude: -80.2062047 },
+    cid: '12040422701354621089',
+    mapLink: 'https://maps.google.com/?cid=12040422701354621089',
+    geo: { latitude: 25.9613707, longitude: -80.2062258 },
     hours: DEFAULT_HOURS,
     image: '/assets/images/Locations/20282.jpg',
     serving: 'Miami Gardens • Hollywood • Aventura',
@@ -99,15 +121,21 @@ export const locationsConfig: LocationConfig[] = [
   {
     slug: 'coral-gables',
     name: 'Coral Gables',
-    address: '900 South Le Jeune Rd, Miami, FL 33134',
+    address: '900 South Le Jeune Rd, Coral Gables, FL 33134',
     phone: '(305)-713-1258',
     tel: 'tel:+13057131258',
-    mapLink: 'https://maps.app.goo.gl/99HuCuuroqTVZRdz8',
+    cid: '9306129931212076132',
+    mapLink: 'https://maps.google.com/?cid=9306129931212076132',
     geo: { latitude: 25.7633216, longitude: -80.2635377 },
     hours: DEFAULT_HOURS,
     image: '/assets/images/Locations/900.jpg',
     serving: 'Coral Gables • Westchester • Near MIA Airport',
-    neighborhoods: ['Coral Gables', 'Westchester', 'West Miami', 'Near Miami International Airport'],
+    neighborhoods: [
+      'Coral Gables',
+      'Westchester',
+      'West Miami',
+      'Near Miami International Airport',
+    ],
     city: 'Miami',
     h1: 'Coral Gables',
     description:
@@ -119,7 +147,8 @@ export const locationsConfig: LocationConfig[] = [
     address: '4040 E 10th Ct, Hialeah, FL 33013',
     phone: '(305)-836-4200',
     tel: 'tel:+13058364200',
-    mapLink: 'https://maps.app.goo.gl/oF6vhCsS7MdikcYX8',
+    cid: '10647748756063834745',
+    mapLink: 'https://maps.google.com/?cid=10647748756063834745',
     geo: { latitude: 25.8598175, longitude: -80.2616707 },
     hours: DEFAULT_HOURS,
     image: '/assets/images/Locations/4040.webp',
@@ -136,7 +165,8 @@ export const locationsConfig: LocationConfig[] = [
     address: '4400 W Colonial Dr, Orlando, FL 32808',
     phone: '(407)-203-3912',
     tel: 'tel:+14072033912',
-    mapLink: 'https://maps.app.goo.gl/n32Upo4RiH9PWJVA7',
+    cid: '7321587865564452670',
+    mapLink: 'https://maps.google.com/?cid=7321587865564452670',
     geo: { latitude: 28.5522005, longitude: -81.4342076 },
     hours: DEFAULT_HOURS,
     image: '/assets/images/Locations/4400.jpg',
@@ -153,12 +183,18 @@ export const locationsConfig: LocationConfig[] = [
     address: '575 N Semoran Blvd, Orlando, FL 32807',
     phone: '(407)-282-3100',
     tel: 'tel:+14072823100',
-    mapLink: 'https://maps.app.goo.gl/fuDXk1EAKZ5ZAvpu6',
+    cid: '7657616713785074051',
+    mapLink: 'https://maps.google.com/?cid=7657616713785074051',
     geo: { latitude: 28.5519878, longitude: -81.3103062 },
     hours: DEFAULT_HOURS,
     image: '/assets/images/Locations/575.jpg',
     serving: "Azalea Park • Winter Park • East Orlando • Near Orlando Int'l Airport",
-    neighborhoods: ['Azalea Park', 'Winter Park', 'East Orlando', 'Near Orlando International Airport'],
+    neighborhoods: [
+      'Azalea Park',
+      'Winter Park',
+      'East Orlando',
+      'Near Orlando International Airport',
+    ],
     city: 'Orlando',
     h1: 'East Orlando',
     description:
