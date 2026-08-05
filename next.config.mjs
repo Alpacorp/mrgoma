@@ -61,7 +61,25 @@ const nextConfig = {
       },
     ],
   },
-  allowedDevOrigins: ['local-origin.dev', '*.local-origin.dev'],
+  /**
+   * Development only — `next build` and `next start` ignore this entirely.
+   *
+   * The dev server answers its own `/_next/*` chunks with a 403 when the request
+   * arrives from an origin it does not recognise, and the LAN address a phone
+   * types (`192.168.x.x:3000`) is exactly that. The failure is quiet and easy to
+   * misread: the page still server-renders and looks right, but no JavaScript
+   * ever loads, so nothing hydrates — the menu, the cart and every Add to cart
+   * are inert, while links and anything form-driven keep working.
+   *
+   * The previous value here was Next's own documentation placeholder
+   * (`local-origin.dev`), which never matched any host we use.
+   *
+   * Matching is segment-wise against the hostname, so the wildcards below cover
+   * a home router's range without needing an edit every time DHCP hands out a
+   * different lease. These are private addresses — a public site cannot present
+   * one as its hostname — so this does not widen what a hostile page can reach.
+   */
+  allowedDevOrigins: ['192.168.*.*'],
 };
 
 export default nextConfig;

@@ -26,7 +26,12 @@ const TireScene = ({ size, reducedMotion }: TireSceneProps) => {
   return (
     <div ref={ref} className="h-full w-full cursor-grab active:cursor-grabbing">
       <Canvas
-        shadows
+        // `shadows` on its own asks for PCFSoftShadowMap, which three now
+        // deprecates and silently downgrades to PCFShadowMap on the first
+        // render — so the soft edges were never actually reaching the screen.
+        // Naming the filter we already get keeps the picture identical and
+        // stops the scene from asking for something it won't be given.
+        shadows="percentage"
         camera={{ position: [2.6, 1.35, 3.4], fov: 32 }}
         dpr={[1, 2]}
         gl={{
