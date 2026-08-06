@@ -273,6 +273,24 @@ rather than by asking.
   have none right now" are different facts and the customer acts differently on
   each. The mission puts transparency over hiding. This requires the assistant to
   know which brands the catalogue holds.
+- **D8 — Asking for WhatsApp gets the link, not two questions.** Added during
+  implementation, after manual testing found the same defect one section further
+  down and older than this feature: the pre-filled message template demanded a
+  store name and a tire size, so the assistant collected both before handing over
+  the link.
+
+  Out of the approved scope in the strict sense — no acceptance criterion covers
+  it — and included anyway, because shipping a feature that removes the blocking
+  question from search while leaving it in place for "I want to talk to someone"
+  splits a single experience along a seam only the codebase can see. It is also
+  the worse of the two: whoever types "WhatsApp" has already decided to stop
+  talking to the bot, so they have the least patience left of anyone.
+
+  The pre-filled message now carries whatever the conversation already gave and
+  omits the rest. The cost is an advisor occasionally receiving less context and
+  having to ask — which is their job — against a customer who asked for a person
+  and got a form.
+
 - **D7 — Price ordering only, by inspection.** `tiresRepository.ts` implements
   `price-asc` and `price-desc`; every other value falls through to the default.
   Offering tread life or newest would mean new catalogue capability, which this
