@@ -1,6 +1,7 @@
 'use client';
 
-import { locationsConfig } from '@/app/(shop)/locations/locationsConfig';
+import { DEFAULT_HOURS, locationsConfig } from '@/app/(shop)/locations/locationsConfig';
+import { weeklyHours } from '@/app/utils/storeHours';
 
 // Derived from the single source of truth (locationsConfig).
 const locations = locationsConfig.map((l, i) => ({
@@ -13,15 +14,11 @@ const locations = locationsConfig.map((l, i) => ({
   area: l.serving.replace(/•/g, '·'),
 }));
 
-const hours = [
-  { day: 'Monday', time: '8:00 AM – 6:00 PM' },
-  { day: 'Tuesday', time: '8:00 AM – 6:00 PM' },
-  { day: 'Wednesday', time: '8:00 AM – 6:00 PM' },
-  { day: 'Thursday', time: '8:00 AM – 6:00 PM' },
-  { day: 'Friday', time: '8:00 AM – 6:00 PM' },
-  { day: 'Saturday', time: '8:00 AM – 6:00 PM' },
-  { day: 'Sunday', time: '10:00 AM – 4:00 PM' },
-];
+// This page speaks for the chain rather than for one shop, so it renders the
+// shared default. A store that ever departs from it would make that a lie —
+// `storeHours.guard.test.ts` fails the build on the day one does, rather than
+// letting this page quietly misinform.
+const hours = weeklyHours(DEFAULT_HOURS);
 
 const trust = [
   { label: 'ASE Certified', icon: '✦' },

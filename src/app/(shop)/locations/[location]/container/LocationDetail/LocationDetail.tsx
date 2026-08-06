@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { LocationConfig } from '@/app/(shop)/locations/locationsConfig';
+import { formatHours } from '@/app/utils/storeHours';
 
 const services = [
   { label: 'Tire Mounting & Balancing', slug: 'tire-mounting-balancing' },
@@ -144,8 +145,17 @@ export default function LocationDetail({ location }: Props) {
               <div className="p-5">
                 <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Hours</p>
                 <p className="text-gray-400 text-sm">
-                  Mon–Sat: 8:00 AM – 6:00 PM
-                  <span className="block mt-0.5">Sun: 10:00 AM – 4:00 PM</span>
+                  {/* This store's own hours, not the chain's. They are uniform
+                      today, but the config models them per store precisely so a
+                      divergence is an edit rather than a refactor — and that
+                      promise only holds if this page reads them. */}
+                  {formatHours(location.hours)
+                    .split(' | ')
+                    .map((line, i) => (
+                      <span key={line} className={i === 0 ? undefined : 'block mt-0.5'}>
+                        {line}
+                      </span>
+                    ))}
                   <span className="block text-gray-600 text-xs mt-2">* Hours may vary — call ahead to confirm</span>
                 </p>
               </div>
