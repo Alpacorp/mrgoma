@@ -3,48 +3,34 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 
 import { fetchTiresServer } from '@/app/(shop)/tires/utils/fetchTiresServer';
+import { dimensionsParam, unusedDimensions } from '@/app/api/_lib/aiChat/dimensions';
+import { isSpanish } from '@/app/api/_lib/aiChat/language';
+import {
+  buildNarrowingHint,
+  buildNoResultsMessage,
+  buildUnknownBrandMessage,
+} from '@/app/api/_lib/aiChat/messages';
+import { getCachedBrands, parseBrands, unknownBrands } from '@/app/api/_lib/brandCatalogue';
 import { withLogging } from '@/app/api/_lib/withLogging';
 import { buildStoreDirectory } from '@/app/api/tires/ai-chat/_lib/storeDirectory';
 import { logger } from '@/utils/logger';
+import { createRateLimiter } from '@/utils/rateLimit';
 
-const SPANISH_PATTERN =
-  /\b(llantas?|llanta|medida|medidas|marca|marcas|busco|quiero|tienen|tienes|necesito|precio|precios|nueva|nuevas|usada|usadas|aro|ancho|perfil|hola|gracias|por favor|disponible|disponibles|cuánto|cuanto|dónde|donde|están|hay|puedes|puede|cómo|como)\b/i;
+/**
+ * This endpoint is anonymous and spends money on every call — each request is a
+ * model invocation. Until 2026-08-06 the *authenticated* dashboard assistant was
+ * the one that limited traffic and this one did not, which is backwards.
+ *
+ * Frequency and size are separate holes and a limiter closes only the first: an
+ * attacker inside the rate limit can still send each request with an enormous
+ * conversation history, and cost scales with tokens rather than requests. Hence
+ * both a limiter and a body cap.
+ */
+const isRateLimited = createRateLimiter('ai-chat-public', { windowMs: 60 * 1000, max: 20 });
 
-function isSpanish(messages: { role: string; content: string }[]): boolean {
-  const recentText = messages
-    .filter(m => m.role === 'user')
-    .slice(-3)
-    .map(m => m.content)
-    .join(' ');
-  return SPANISH_PATTERN.test(recentText);
-}
-
-function buildNoResultsMessage(spanish: boolean, filterParams: Record<string, unknown>): string {
-  const w = filterParams.w;
-  const s = filterParams.s;
-  const d = filterParams.d;
-  const sizeStr = w && s && d ? ` ${w}/${s}R${d}` : '';
-  const waText = spanish
-    ? `Hola, busco llantas${sizeStr} y no encontré disponibilidad en el sitio web.`
-    : `Hi, I'm looking for tires${sizeStr} and didn't find availability on the website.`;
-  const waUrl = `https://wa.me/14073644016?text=${encodeURIComponent(waText)}`;
-
-  if (spanish) {
-    return (
-      `No tenemos llantas${sizeStr} disponibles en este momento en nuestro inventario en línea 😔\n\n` +
-      `Nuestro inventario se actualiza constantemente — es posible que tengamos lo que necesitas en tienda. ` +
-      `Te recomendamos contactarnos directamente para una confirmación rápida:\n\n` +
-      `💬 [Escribir por WhatsApp](${waUrl})`
-    );
-  }
-
-  return (
-    `We don't have tires${sizeStr} available in our online inventory right now 😔\n\n` +
-    `Our inventory updates constantly — we may have what you need in store. ` +
-    `We recommend reaching out directly for a quick confirmation:\n\n` +
-    `💬 [Chat on WhatsApp](${waUrl})`
-  );
-}
+/** A real conversation is a few dozen short turns; anything beyond is not one. */
+const MAX_MESSAGES = 40;
+const MAX_MESSAGE_LENGTH = 2000;
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -65,7 +51,12 @@ Spanish tire terms: "llantas/cauchos/neumáticos" = tires, "aro" = rim diameter,
 ## CONVERSATION FLOW
 1. Detect language
 2. Ask what the customer needs
-3. If tires: ask for size (e.g., 225/45R17) or vehicle (year, make, model)
+3. **If the customer named ANYTHING searchable — a brand, a rim size, a
+   condition, a price, a tread life, a store — search for it right away with the
+   apply_filters tool. Do NOT ask for the tire size first.** Many people know
+   they want Michelin, or a 17-inch rim, long before they know 225/45R17.
+   Ask for a size or vehicle ONLY when the customer has given nothing to search
+   on at all (e.g. "I need tires").
 4. Ask which area/store is closest to them
 5. Show the store card (see format below)
 6. Suggest calling or visiting the store
@@ -153,6 +144,11 @@ Show it as: 💬 [Chat on WhatsApp](https://wa.me/14073644016?text=...)
 
 ## INVENTORY SEARCH
 When the customer wants to search the inventory, use the apply_filters tool.
+**A single filter is a complete search.** Brand alone, rim alone, condition alone
+or a price alone are all valid — call the tool with what you have instead of
+collecting more first. Only "confirmationMessage" is ever required.
+Sorting: "cheapest", "lowest price" → sort="price-asc"; "most expensive",
+"highest price" → sort="price-desc".
 Tire size format: width/profile/diameter (e.g., "225/45R17" or "225/45/17" → w=225, s=45, d=17)
 "Aro 17" or "rim 17" = diameter 17. "Ancho 225" = width 225.
 Prices are in USD.
@@ -226,6 +222,12 @@ const APPLY_FILTERS_TOOL: Anthropic.Tool = {
         type: 'string',
         description: 'Comma-separated list of store/branch names to filter by location',
       },
+      sort: {
+        type: 'string',
+        enum: ['price-asc', 'price-desc'],
+        description:
+          'Result ordering. "price-asc" for cheapest first, "price-desc" for most expensive first. These are the only two orderings the catalog supports.',
+      },
       confirmationMessage: {
         type: 'string',
         description:
@@ -242,6 +244,10 @@ interface ApiMessage {
 }
 
 export const POST = withLogging('tires.aiChat.POST', async (req: NextRequest) => {
+  if (isRateLimited(req)) {
+    return NextResponse.json({ message: 'Too many requests. Try again in a moment.' }, { status: 429 });
+  }
+
   try {
     const body = await req.json();
     const { messages }: { messages: ApiMessage[] } = body;
@@ -251,6 +257,16 @@ export const POST = withLogging('tires.aiChat.POST', async (req: NextRequest) =>
         { message: 'Invalid request: messages array is required' },
         { status: 400 }
       );
+    }
+
+    // Rejected before the model is called: the cost of a request is its tokens,
+    // so a cap that ran afterwards would have already paid for what it rejects.
+    if (messages.length > MAX_MESSAGES) {
+      return NextResponse.json({ message: 'Conversation too long.' }, { status: 400 });
+    }
+
+    if (messages.some(m => typeof m?.content !== 'string' || m.content.length > MAX_MESSAGE_LENGTH)) {
+      return NextResponse.json({ message: 'Message too long.' }, { status: 400 });
     }
 
     const response = await client.messages.create({
@@ -266,6 +282,23 @@ export const POST = withLogging('tires.aiChat.POST', async (req: NextRequest) =>
     if (toolUseBlock && toolUseBlock.type === 'tool_use') {
       const filters = toolUseBlock.input as Record<string, unknown>;
       const { confirmationMessage, ...filterParams } = filters;
+      const spanish = isSpanish(messages);
+      const dimensions = dimensionsParam(filterParams);
+
+      // A brand we don't carry is a different fact from a brand we're out of,
+      // and the customer acts differently on each. Checked before the inventory
+      // query, so an absent brand never costs a database round-trip either.
+      const requestedBrands = parseBrands(filterParams.brands);
+      if (requestedBrands.length > 0) {
+        const absent = unknownBrands(requestedBrands, await getCachedBrands({}));
+        if (absent.length > 0) {
+          return NextResponse.json({
+            type: 'no_results',
+            message: buildUnknownBrandMessage(spanish, absent),
+            dimensions,
+          });
+        }
+      }
 
       // Build URL params from filter values to check inventory count
       const paramRecord: Record<string, string> = {};
@@ -277,15 +310,21 @@ export const POST = withLogging('tires.aiChat.POST', async (req: NextRequest) =>
 
       if (totalCount === 0) {
         return NextResponse.json({
-          type: 'message',
-          message: buildNoResultsMessage(isSpanish(messages), filterParams),
+          type: 'no_results',
+          message: buildNoResultsMessage(spanish, filterParams),
+          dimensions,
         });
       }
+
+      // The model wrote the confirmation; the hint is appended here so it can be
+      // asserted in a test rather than merely requested of a model.
+      const hint = buildNarrowingHint(spanish, unusedDimensions(filterParams));
 
       return NextResponse.json({
         type: 'filters',
         filters: filterParams,
-        message: confirmationMessage as string,
+        message: `${confirmationMessage as string}${hint}`,
+        dimensions,
       });
     }
 

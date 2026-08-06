@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import Anthropic from '@anthropic-ai/sdk';
 
+import { dimensionsParam } from '@/app/api/_lib/aiChat/dimensions';
 import { withLogging } from '@/app/api/_lib/withLogging';
 import { auth } from '@/app/utils/authOptions';
 import { logger } from '@/utils/logger';
@@ -99,6 +100,12 @@ const APPLY_FILTERS_TOOL: Anthropic.Tool = {
         enum: ['yes', 'no'],
         description: 'Filter by Local field: "yes" to show only local tires, "no" to show only non-local tires.',
       },
+      sort: {
+        type: 'string',
+        enum: ['price-asc', 'price-desc'],
+        description:
+          'Result ordering. "price-asc" for cheapest first, "price-desc" for most expensive first. These are the only two orderings the catalog supports.',
+      },
       code: {
         type: 'string',
         description: 'Exact numeric tire code to search for (e.g., "12345"). Only digits are valid.',
@@ -160,6 +167,11 @@ export const POST = withLogging('dashboard.aiChat.POST', async (req: NextRequest
         type: 'filters',
         filters: filterParams,
         message: confirmationMessage as string,
+        // No `no_results` counterpart here on purpose: this route never queries
+        // the catalogue, so it cannot know a search came back empty. Giving it
+        // one would mean a database round-trip for a staff tool that does not
+        // want the customer-facing WhatsApp fallback either.
+        dimensions: dimensionsParam(filterParams),
       });
     }
 

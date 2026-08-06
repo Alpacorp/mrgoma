@@ -32,6 +32,29 @@ export const EVENTS = {
 
   /** The server accepted a quote request. */
   GENERATE_LEAD: 'generate_lead',
+
+  /**
+   * The assistant produced a filtered listing and the customer was taken to it.
+   *
+   * The outcome, not the attempt: it fires when filters are applied, never on
+   * opening the chat or sending a message, and **never on an empty result set** —
+   * nothing was filtered then, and counting it would blur "I took you to a list"
+   * into "we had nothing". That case is {@link AI_CHAT_NO_RESULTS}.
+   *
+   * Carries `surface` (which assistant) and `dimensions` (the names of what was
+   * filtered on — never the values the customer typed).
+   */
+  AI_CHAT_FILTERS_APPLIED: 'ai_chat_filters_applied',
+
+  /**
+   * The assistant ran a search and the catalogue had nothing.
+   *
+   * Public surface only: the dashboard route never queries the catalogue, so it
+   * cannot know. This is demand we could not meet — which brands and sizes people
+   * ask for and leave without — so it is buying information, not only analytics,
+   * and must never be aggregated with {@link AI_CHAT_FILTERS_APPLIED}.
+   */
+  AI_CHAT_NO_RESULTS: 'ai_chat_no_results',
 } as const;
 
 /**
