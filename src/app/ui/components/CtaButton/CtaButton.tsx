@@ -34,9 +34,7 @@ const CtaButton: FC<CtaButtonProps> = ({
   // Size is the last pipe-separated segment of the product name: "(CODE) | BRAND | SIZE"
   const nameParts = (product.name || '').split(' | ');
   const size = nameParts.length >= 2 ? nameParts[nameParts.length - 1] : '';
-  const slug = product.id
-    ? buildTireSlug(String(product.id), product.brand || '', size)
-    : '';
+  const slug = product.id ? buildTireSlug(String(product.id), product.brand || '', size) : '';
   let url = slug ? `/tires/${slug}` : '/tires';
 
   // Add any additional URL parameters if provided
@@ -63,7 +61,8 @@ const CtaButton: FC<CtaButtonProps> = ({
       buttonStyle += ' !border-yellow-600 text-yellow-700 hover:bg-yellow-500 hover:text-white';
       break;
     case 'filled':
-      buttonStyle += ' bg-green-600 !text-white hover:bg-green-700 hover:!text-white shadow-sm hover:shadow-md border-transparent';
+      buttonStyle +=
+        ' bg-green-600 !text-white hover:bg-green-700 hover:!text-white shadow-sm hover:shadow-md border-transparent';
       break;
     case 'filled-secondary':
       buttonStyle += ' bg-yellow-600 text-white hover:bg-yellow-500 hover:text-white';

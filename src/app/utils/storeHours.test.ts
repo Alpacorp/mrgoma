@@ -41,9 +41,7 @@ describe('formatDays', () => {
 
 describe('formatHours', () => {
   it('joins the spans the way the store card reads them', () => {
-    expect(formatHours(DEFAULT_HOURS)).toBe(
-      'Mon–Sat: 8:00 AM – 6:00 PM | Sun: 10:00 AM – 4:00 PM'
-    );
+    expect(formatHours(DEFAULT_HOURS)).toBe('Mon–Sat: 8:00 AM – 6:00 PM | Sun: 10:00 AM – 4:00 PM');
   });
 
   it('uses one spacing for a span everywhere it appears', () => {
@@ -73,10 +71,17 @@ describe('weeklyHours', () => {
     // A missing row reads as an oversight; "Closed" answers the question the
     // visitor arrived with.
     const week = weeklyHours([
-      { days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '08:00', closes: '18:00' },
+      {
+        days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+        opens: '08:00',
+        closes: '18:00',
+      },
     ]);
     expect(week.find(d => d.day === 'Saturday')).toEqual({ day: 'Saturday', time: 'Closed' });
-    expect(week.find(d => d.day === 'Monday')).toEqual({ day: 'Monday', time: '8:00 AM – 6:00 PM' });
+    expect(week.find(d => d.day === 'Monday')).toEqual({
+      day: 'Monday',
+      time: '8:00 AM – 6:00 PM',
+    });
   });
 });
 

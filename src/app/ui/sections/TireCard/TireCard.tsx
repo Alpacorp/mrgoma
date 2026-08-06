@@ -101,7 +101,11 @@ const TireCard: FC<TireCardProps> = ({ products }) => {
             {/* ── Mobile: flex-col  /  Desktop: flex-row ── */}
             <div className="flex flex-col sm:flex-row">
               {/* ── Image ── */}
-              <Link href={detailUrl} className="block bg-gray-50 sm:w-52 md:w-64 shrink-0 overflow-hidden" tabIndex={-1}>
+              <Link
+                href={detailUrl}
+                className="block bg-gray-50 sm:w-52 md:w-64 shrink-0 overflow-hidden"
+                tabIndex={-1}
+              >
                 <div className="relative h-48 sm:h-full sm:min-h-[180px] group-hover:scale-105 transition-transform duration-300 origin-center">
                   <ProductImage product={product} priority={index < 2} />
                 </div>
@@ -163,7 +167,8 @@ const TireCard: FC<TireCardProps> = ({ products }) => {
                 {/* Price + brand logo */}
                 <div className="flex items-center gap-3 flex-wrap">
                   <span className="text-2xl sm:text-3xl font-black text-gray-900 leading-none">
-                    <span className="text-green-600">$</span>{product.price}
+                    <span className="text-green-600">$</span>
+                    {product.price}
                   </span>
                   <FreeShippingBadge />
                   {product.brandId && brandSlug && (

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { IconProps } from '@/app/ui/interfaces/icons';
 
-export const LocationIcon:React.FC<IconProps> = ({ className = '', size = 20 }) => {
+export const LocationIcon: React.FC<IconProps> = ({ className = '', size = 20 }) => {
   return (
     <svg
       width={size}

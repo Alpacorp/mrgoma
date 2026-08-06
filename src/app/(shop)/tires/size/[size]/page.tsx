@@ -61,11 +61,7 @@ export async function generateMetadata({
   return sizeMetadata({ size: data.originalSize, slug: sizeSlug });
 }
 
-export default async function SizeCategoryPage({
-  params,
-}: {
-  params: Promise<{ size: string }>;
-}) {
+export default async function SizeCategoryPage({ params }: { params: Promise<{ size: string }> }) {
   const { size: sizeSlug } = await params;
   const data = await getSizeData(sizeSlug);
   if (!data) notFound();
@@ -98,9 +94,13 @@ export default async function SizeCategoryPage({
         {/* Breadcrumb */}
         <nav className="bg-gray-50 border-b border-gray-200" aria-label="Breadcrumb">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-2 text-sm text-gray-500 flex-wrap">
-            <Link href="/" className="hover:text-green-600 transition-colors">Home</Link>
+            <Link href="/" className="hover:text-green-600 transition-colors">
+              Home
+            </Link>
             <span>/</span>
-            <Link href="/tires" className="hover:text-green-600 transition-colors">Tires</Link>
+            <Link href="/tires" className="hover:text-green-600 transition-colors">
+              Tires
+            </Link>
             <span>/</span>
             <span className="text-gray-900 font-medium">{originalSize} Tires</span>
           </div>
@@ -178,9 +178,7 @@ export default async function SizeCategoryPage({
 
         {/* Bottom CTA */}
         <section className="border-t border-gray-100 bg-gray-50 py-16 text-center px-4">
-          <h2 className="text-2xl font-bold text-gray-900 mb-3">
-            Looking for a different size?
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">Looking for a different size?</h2>
           <p className="text-gray-500 mb-6 max-w-md mx-auto">
             Browse our full catalog or search by your specific tire dimensions.
           </p>

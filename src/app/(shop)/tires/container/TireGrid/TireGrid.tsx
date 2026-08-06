@@ -35,7 +35,13 @@ export function TireGrid({ tires, totalCount, viewAllHref, viewAllLabel }: TireG
             className="inline-flex items-center gap-2 bg-green-600 text-white font-bold px-10 py-3.5 rounded-full hover:bg-green-700 transition-colors duration-200 text-base"
           >
             {viewAllLabel ?? `View all ${totalCount} tires`}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-4 h-4">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2.5}
+              className="w-4 h-4"
+            >
               <line x1="7" y1="17" x2="17" y2="7" />
               <polyline points="7 7 17 7 17 17" />
             </svg>

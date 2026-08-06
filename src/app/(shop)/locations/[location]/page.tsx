@@ -23,11 +23,7 @@ export async function generateMetadata({
   return locationMetadata({ name: loc.name, slug: loc.slug, city: loc.city });
 }
 
-export default async function LocationPage({
-  params,
-}: {
-  params: Promise<{ location: string }>;
-}) {
+export default async function LocationPage({ params }: { params: Promise<{ location: string }> }) {
   const { location: slug } = await params;
   const loc = getLocationBySlug(slug);
   if (!loc) notFound();

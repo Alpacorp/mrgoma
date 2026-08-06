@@ -45,9 +45,7 @@ describe('reporting the outcome', () => {
 
     await send();
 
-    const applied = h.track.mock.calls.filter(
-      ([e]) => e.action === EVENTS.AI_CHAT_FILTERS_APPLIED
-    );
+    const applied = h.track.mock.calls.filter(([e]) => e.action === EVENTS.AI_CHAT_FILTERS_APPLIED);
     expect(applied).toHaveLength(1);
     expect(applied[0][0].params).toEqual({ surface: 'site', dimensions: 'brand' });
   });

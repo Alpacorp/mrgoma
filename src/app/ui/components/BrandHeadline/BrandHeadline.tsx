@@ -47,8 +47,7 @@ const BrandHeadline: FC<BrandHeadlineProps> = ({
       <Tag className={mainClass}>
         The <span className="text-lime-400">Tires</span> you{' '}
         <span className="text-lime-400">need</span>, The{' '}
-        <span className="text-lime-400">Price</span> you{' '}
-        <span className="text-lime-400">want</span>
+        <span className="text-lime-400">Price</span> you <span className="text-lime-400">want</span>
       </Tag>
     </div>
   );

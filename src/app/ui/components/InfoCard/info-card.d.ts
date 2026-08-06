@@ -1,15 +1,15 @@
 export interface InfoCardData {
-  id: string
-  title: string
-  description: string
-  iconType: "guarantee" | "quality" | "shipping" | "certified"
+  id: string;
+  title: string;
+  description: string;
+  iconType: 'guarantee' | 'quality' | 'shipping' | 'certified';
 }
 
 export interface InfoCardProps extends InfoCardData {
-  className?: string
+  className?: string;
 }
 
 export interface IconProps {
-  type: InfoCardData["iconType"]
-  className?: string
+  type: InfoCardData['iconType'];
+  className?: string;
 }

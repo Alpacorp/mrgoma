@@ -263,7 +263,10 @@ interface ApiMessage {
 
 export const POST = withLogging('tires.aiChat.POST', async (req: NextRequest) => {
   if (isRateLimited(req)) {
-    return NextResponse.json({ message: 'Too many requests. Try again in a moment.' }, { status: 429 });
+    return NextResponse.json(
+      { message: 'Too many requests. Try again in a moment.' },
+      { status: 429 }
+    );
   }
 
   try {
@@ -283,7 +286,9 @@ export const POST = withLogging('tires.aiChat.POST', async (req: NextRequest) =>
       return NextResponse.json({ message: 'Conversation too long.' }, { status: 400 });
     }
 
-    if (messages.some(m => typeof m?.content !== 'string' || m.content.length > MAX_MESSAGE_LENGTH)) {
+    if (
+      messages.some(m => typeof m?.content !== 'string' || m.content.length > MAX_MESSAGE_LENGTH)
+    ) {
       return NextResponse.json({ message: 'Message too long.' }, { status: 400 });
     }
 

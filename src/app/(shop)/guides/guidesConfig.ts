@@ -25,7 +25,7 @@ export const guides: Guide[] = [
   {
     slug: 'how-to-buy-used-tires',
     title: 'How to Buy Used Tires: The Complete Guide',
-    headline: 'The Complete Buyer\'s Guide to Used Tires',
+    headline: "The Complete Buyer's Guide to Used Tires",
     metaTitle: 'How to Buy Used Tires: Complete Guide',
     metaDescription:
       'Learn how to safely buy used tires. Inspection checklist, what to avoid, and how to find quality used tires in Miami. Expert advice from ASE-certified technicians.',
@@ -39,7 +39,7 @@ export const guides: Guide[] = [
       'Used tires should have at least 4/32" of remaining tread — the legal minimum is 2/32"',
       'Check the DOT code on the sidewall: avoid any tire manufactured more than 6 years ago',
       'Reject tires with sidewall cracks, bulges, uneven wear, or visible cord damage',
-      "Every MrGoma used tire is backed by a 30-day warranty — many used-tire sellers offer none at all",
+      'Every MrGoma used tire is backed by a 30-day warranty — many used-tire sellers offer none at all',
       'All MrGoma used tires are inspected by ASE-certified technicians before sale',
     ],
     sections: [
@@ -47,7 +47,7 @@ export const guides: Guide[] = [
         heading: 'Why Used Tires Are Worth Considering',
         type: 'text',
         content:
-          "A brand-new set of tires for an average car costs between $400 and $800. Quality used tires for the same vehicle can cost $80 to $200 — with the same tread life remaining as a tire that was just mounted at the factory. The savings are real, and for drivers who cover a lot of miles (commuters, rideshare drivers, delivery workers), used tires can be rotated through two or three sets in the time it takes a typical driver to wear out one set of new tires.",
+          'A brand-new set of tires for an average car costs between $400 and $800. Quality used tires for the same vehicle can cost $80 to $200 — with the same tread life remaining as a tire that was just mounted at the factory. The savings are real, and for drivers who cover a lot of miles (commuters, rideshare drivers, delivery workers), used tires can be rotated through two or three sets in the time it takes a typical driver to wear out one set of new tires.',
       },
       {
         heading: 'What to Look for When Buying Used Tires',
@@ -89,7 +89,7 @@ export const guides: Guide[] = [
           'Buy from shops that inspect every tire before sale and offer a written warranty. Avoid buying used tires from online marketplaces where you cannot physically inspect the tire or verify the DOT date. A tire that arrives with a sidewall crack or wrong DOT date is a headache and a safety risk. At MrGoma Tires, every used tire in our inventory passes an ASE-certified technician inspection — and we only list tires online that have at least 50% remaining life.',
       },
       {
-        heading: 'MrGoma\'s Inspection Process',
+        heading: "MrGoma's Inspection Process",
         type: 'callout',
         content:
           'Every tire sold at MrGoma passes a multi-point inspection: tread depth measurement, visual sidewall check, DOT date verification, and an internal inspection. We back each used tire with a 30-day warranty. If a tire fails within 30 days of normal use, we replace it.',
@@ -287,7 +287,7 @@ export const guides: Guide[] = [
       {
         question: 'How do I know what size tire I need?',
         answer:
-          'Check the sticker on your driver\'s side door jamb — it shows the recommended tire size, load index, and speed rating for your vehicle. You can also find this in your owner\'s manual or by checking the sidewall of your current tires.',
+          "Check the sticker on your driver's side door jamb — it shows the recommended tire size, load index, and speed rating for your vehicle. You can also find this in your owner's manual or by checking the sidewall of your current tires.",
       },
       {
         question: 'What does the R mean in a tire size?',
@@ -352,13 +352,13 @@ export const guides: Guide[] = [
         heading: 'The Role of Tire Age',
         type: 'text',
         content:
-          'Rubber is an organic compound that oxidizes and hardens over time. After 6 years from the manufacture date (check the DOT code), the tire\'s internal structure begins to degrade in ways that are invisible to the naked eye — even if the tread depth is acceptable. This is why the tire industry recommends replacing all tires over 6 years old, and why buying a used tire that is already 5 years old is a short-term solution at best.',
+          "Rubber is an organic compound that oxidizes and hardens over time. After 6 years from the manufacture date (check the DOT code), the tire's internal structure begins to degrade in ways that are invisible to the naked eye — even if the tread depth is acceptable. This is why the tire industry recommends replacing all tires over 6 years old, and why buying a used tire that is already 5 years old is a short-term solution at best.",
       },
       {
         heading: 'Proper Inflation: The Biggest Factor You Control',
         type: 'text',
         content:
-          'Running tires at the correct PSI (found on your door jamb sticker, not the tire sidewall maximum) distributes wear evenly across the tread and reduces heat buildup. Underinflation causes shoulder wear and heat damage. Overinflation causes center-line wear. Check pressure at least monthly — Florida\'s temperature swings cause pressure to fluctuate.',
+          "Running tires at the correct PSI (found on your door jamb sticker, not the tire sidewall maximum) distributes wear evenly across the tread and reduces heat buildup. Underinflation causes shoulder wear and heat damage. Overinflation causes center-line wear. Check pressure at least monthly — Florida's temperature swings cause pressure to fluctuate.",
       },
       {
         heading: 'When to Replace Used Tires Immediately',
@@ -408,7 +408,7 @@ export const guides: Guide[] = [
       'Used tires from reputable shops are safe when properly inspected by ASE-certified technicians',
       'New tires offer full manufacturer warranty and maximum expected lifespan',
       'For high-mileage drivers (rideshare, delivery), used tires offer the best cost-per-mile value',
-      'MrGoma\'s 30-day warranty on used tires reduces the risk gap vs. new',
+      "MrGoma's 30-day warranty on used tires reduces the risk gap vs. new",
     ],
     sections: [
       {
@@ -491,7 +491,7 @@ export const guides: Guide[] = [
       'Rideshare drivers in Florida go through tires twice as fast as average drivers — and every dollar spent on tires comes out of your earnings. Here is how to find the best tires for the way you actually drive.',
     keyFacts: [
       'Rideshare drivers average 30,000-50,000 miles per year vs. 15,000 for typical drivers',
-      'Florida\'s heat accelerates tire wear — expect to replace tires more often than colder climates',
+      "Florida's heat accelerates tire wear — expect to replace tires more often than colder climates",
       'Uber and Lyft require minimum 4/32" tread depth during vehicle inspections',
       'Used tires offer the best cost-per-mile value for high-mileage rideshare driving',
       'MrGoma offers special rideshare pricing at all 7 Miami and Orlando locations',
@@ -501,7 +501,7 @@ export const guides: Guide[] = [
         heading: 'The Unique Demands of Rideshare Driving',
         type: 'text',
         content:
-          'A typical US driver puts on 12,000-15,000 miles per year. A full-time Uber or Lyft driver in a major market can hit 40,000-60,000 miles annually. In Miami, add Florida\'s summer heat, frequent stop-and-go traffic, and the occasional airport run at highway speed. Tires that last two years on a normal car may wear out in 8-12 months on a rideshare vehicle.',
+          "A typical US driver puts on 12,000-15,000 miles per year. A full-time Uber or Lyft driver in a major market can hit 40,000-60,000 miles annually. In Miami, add Florida's summer heat, frequent stop-and-go traffic, and the occasional airport run at highway speed. Tires that last two years on a normal car may wear out in 8-12 months on a rideshare vehicle.",
       },
       {
         heading: 'What to Look for in a Rideshare Tire',
@@ -524,10 +524,10 @@ export const guides: Guide[] = [
         heading: 'Uber and Lyft Vehicle Requirements',
         type: 'text',
         content:
-          'Both platforms require vehicles to be in safe operating condition, which includes tires with adequate tread. Uber\'s guidelines specify no bald tires and no visible damage. Lyft inspectors specifically check that tread depth is at least 4/32". MrGoma\'s minimum for online sales is 50% remaining life — well above both platforms\' requirements.',
+          "Both platforms require vehicles to be in safe operating condition, which includes tires with adequate tread. Uber's guidelines specify no bald tires and no visible damage. Lyft inspectors specifically check that tread depth is at least 4/32\". MrGoma's minimum for online sales is 50% remaining life — well above both platforms' requirements.",
       },
       {
-        heading: 'MrGoma\'s Rideshare Program',
+        heading: "MrGoma's Rideshare Program",
         type: 'callout',
         content:
           'MrGoma offers special pricing for Uber and Lyft drivers at all 7 locations in Miami and Orlando. Walk in, show your rideshare app, and ask about our rideshare rate. No appointment needed. We also offer same-day mounting and balancing so you can get back on the road fast.',
@@ -576,7 +576,7 @@ export const guides: Guide[] = [
         heading: 'Why Rideshare Vehicles Need More Frequent Maintenance',
         type: 'text',
         content:
-          'A typical American driver covers 15,000 miles per year and should rotate tires every 6-12 months. A full-time Miami rideshare driver doing 40,000 miles annually should rotate every 6-8 weeks. The math is simple: more miles equals faster wear equals more frequent attention. Florida\'s heat also means tires heat cycle more often, which accelerates rubber degradation.',
+          "A typical American driver covers 15,000 miles per year and should rotate tires every 6-12 months. A full-time Miami rideshare driver doing 40,000 miles annually should rotate every 6-8 weeks. The math is simple: more miles equals faster wear equals more frequent attention. Florida's heat also means tires heat cycle more often, which accelerates rubber degradation.",
       },
       {
         heading: 'The Rideshare Tire Maintenance Schedule',
@@ -609,7 +609,7 @@ export const guides: Guide[] = [
         heading: 'Managing Costs: Used Tires for Rideshare',
         type: 'callout',
         content:
-          'At 40,000+ annual miles, new tires that cost $600 and last 8 months cost more per mile than quality used tires at $150 that last 6 months. MrGoma\'s rideshare pricing makes this math work in your favor. Ask about our rideshare discount at any of our 7 locations in Miami and Orlando — or contact us via WhatsApp at +1 (407) 364-4016.',
+          "At 40,000+ annual miles, new tires that cost $600 and last 8 months cost more per mile than quality used tires at $150 that last 6 months. MrGoma's rideshare pricing makes this math work in your favor. Ask about our rideshare discount at any of our 7 locations in Miami and Orlando — or contact us via WhatsApp at +1 (407) 364-4016.",
       },
       {
         heading: 'Quick Monthly Inspection: 5-Minute Checklist',
@@ -617,7 +617,7 @@ export const guides: Guide[] = [
         items: [
           'Check all four tire pressures with a gauge (door jamb sticker has correct PSI)',
           'Walk around the car and look at each tire sidewall for cracks or bulges',
-          'Do the quarter test on all four tires — insert a quarter into the tread; Washington\'s head should be covered',
+          "Do the quarter test on all four tires — insert a quarter into the tread; Washington's head should be covered",
           'Check for any vibration or pulling while driving — may indicate alignment or balance issue',
         ],
       },

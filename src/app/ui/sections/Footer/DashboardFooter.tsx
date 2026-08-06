@@ -42,8 +42,8 @@ export const DashboardFooter = () => {
         <div className="border-t border-gray-600" />
         <div className="container mx-auto px-6 lg:px-8 py-6">
           <p className="text-gray-400 text-xs text-center">
-            <span className="text-[#9dfb40] font-semibold">MrGoma Tires®</span> — Internal
-            Inventory System. All rights reserved {copyrightYear}.
+            <span className="text-[#9dfb40] font-semibold">MrGoma Tires®</span> — Internal Inventory
+            System. All rights reserved {copyrightYear}.
           </p>
         </div>
       </div>

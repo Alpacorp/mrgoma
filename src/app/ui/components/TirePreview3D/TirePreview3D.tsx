@@ -23,7 +23,13 @@ const RotateGlyph = ({ className }: { className?: string }) => (
       strokeWidth="2"
       strokeLinecap="round"
     />
-    <path d="M17 3v3.5h-3.5M7 21v-3.5h3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path
+      d="M17 3v3.5h-3.5M7 21v-3.5h3.5"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
@@ -127,9 +133,7 @@ const TirePreview3D: FC = () => {
       {/* Size badge — kept accessible and readable over the model. */}
       <div className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-1 bg-neutral-800/90 rounded-full shadow-xl">
         <ArrowsToRight className="w-8" />
-        <span
-          className={`text-sm font-medium ${allSelected ? 'text-green-400' : 'text-white/75'}`}
-        >
+        <span className={`text-sm font-medium ${allSelected ? 'text-green-400' : 'text-white/75'}`}>
           {selectedFilters.width || '000'}/{selectedFilters.sidewall || '00'}/
           {selectedFilters.diameter || '00'}
         </span>

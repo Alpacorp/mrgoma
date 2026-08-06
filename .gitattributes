@@ -1,0 +1,29 @@
+# Line endings: LF in the repository, LF in every working tree, on every OS.
+#
+# Without this rule a Windows clone with `core.autocrlf=true` checks files out
+# as CRLF, while Prettier writes LF. The two disagree on every line of every
+# file, so `npm run format` rewrote all of them and `git status` then reported
+# 446 modified files whose only difference from HEAD was invisible characters.
+# On 2026-08-06 that buried a four-file change in 445 files of noise.
+#
+# Declaring it here rather than relying on each developer's git config means the
+# rule travels with the repository and cannot be set differently per machine.
+* text=auto eol=lf
+
+# Assets: byte-for-byte, never line-ending conversion, never a text diff.
+# A conversion inside a compressed image corrupts it silently.
+*.webp binary
+*.png binary
+*.PNG binary
+*.jpg binary
+*.jpeg binary
+*.avif binary
+*.ico binary
+*.mp4 binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+
+# SVG is text and benefits from real diffs, so it is deliberately not listed
+# above — it only needs the LF rule every other text file gets.

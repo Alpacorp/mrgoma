@@ -56,7 +56,10 @@ describe('asking for WhatsApp is not a reason to be interrogated', () => {
    * has already decided to talk to a person — they have the least patience left
    * of anyone in the conversation.
    */
-  const section = PROMPT.slice(PROMPT.indexOf('## WHATSAPP'), PROMPT.indexOf('## INVENTORY SEARCH'));
+  const section = PROMPT.slice(
+    PROMPT.indexOf('## WHATSAPP'),
+    PROMPT.indexOf('## INVENTORY SEARCH')
+  );
 
   it('forbids collecting details just to fill the template', () => {
     expect(section).toMatch(/NEVER ask for a size or a store just to fill this in/);

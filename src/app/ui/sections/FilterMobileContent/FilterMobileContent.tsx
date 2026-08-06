@@ -247,7 +247,16 @@ export const FilterMobileContent: FC<{
           <DisclosurePanel className="pt-6">
             {FilterBody(
               'local',
-              { rangeInputs, rangeBounds, availableBrands, handleRangeChange, handleCheckboxChange, isLoadingRanges, isChecked, isLoadingBrands },
+              {
+                rangeInputs,
+                rangeBounds,
+                availableBrands,
+                handleRangeChange,
+                handleCheckboxChange,
+                isLoadingRanges,
+                isChecked,
+                isLoadingBrands,
+              },
               { isMobile, idPrefix: isMobile ? 'mobile-' : '' }
             )}
           </DisclosurePanel>

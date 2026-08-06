@@ -7,7 +7,13 @@ import { permanentRedirect } from 'next/navigation';
 export default async function LegacySearchResultsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ w?: string; s?: string; d?: string; page?: string; [key: string]: string | undefined }>;
+  searchParams: Promise<{
+    w?: string;
+    s?: string;
+    d?: string;
+    page?: string;
+    [key: string]: string | undefined;
+  }>;
 }) {
   const sp = await searchParams;
   const params = new URLSearchParams();

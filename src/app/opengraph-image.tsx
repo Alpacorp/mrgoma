@@ -17,116 +17,114 @@ export const contentType = 'image/png';
  */
 export default function OgImage() {
   return new ImageResponse(
-    (
+    <div
+      style={{
+        background: '#9dfb40',
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Oversized tire silhouette. Reads as a shape, not as detail, so it
+            still registers when the image is scaled to a favicon-sized square. */}
       <div
         style={{
-          background: '#9dfb40',
-          width: '100%',
-          height: '100%',
+          position: 'absolute',
+          right: '-90px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          width: '520px',
+          height: '520px',
+          borderRadius: '50%',
+          border: '64px solid #0a0a0a',
+          opacity: 0.14,
+          display: 'flex',
+        }}
+      />
+
+      <div
+        style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: 'system-ui, -apple-system, sans-serif',
-          position: 'relative',
-          overflow: 'hidden',
+          zIndex: 1,
         }}
       >
-        {/* Oversized tire silhouette. Reads as a shape, not as detail, so it
-            still registers when the image is scaled to a favicon-sized square. */}
-        <div
-          style={{
-            position: 'absolute',
-            right: '-90px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            width: '520px',
-            height: '520px',
-            borderRadius: '50%',
-            border: '64px solid #0a0a0a',
-            opacity: 0.14,
-            display: 'flex',
-          }}
-        />
-
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            zIndex: 1,
-          }}
-        >
-          {/* The wordmark. Deliberately enormous: at 96px wide this is the only
+        {/* The wordmark. Deliberately enormous: at 96px wide this is the only
               thing that survives, and it has to be enough. */}
-          <div style={{ display: 'flex', alignItems: 'baseline' }}>
-            <span
-              style={{
-                fontSize: '180px',
-                fontWeight: 900,
-                color: '#0a0a0a',
-                letterSpacing: '-8px',
-                lineHeight: 1,
-              }}
-            >
-              Mr
-            </span>
-            <span
-              style={{
-                fontSize: '180px',
-                fontWeight: 900,
-                color: '#0a0a0a',
-                letterSpacing: '-8px',
-                lineHeight: 1,
-              }}
-            >
-              Goma
-            </span>
-          </div>
-
-          <div
+        <div style={{ display: 'flex', alignItems: 'baseline' }}>
+          <span
             style={{
-              fontSize: '44px',
-              fontWeight: 800,
+              fontSize: '180px',
+              fontWeight: 900,
               color: '#0a0a0a',
-              letterSpacing: '18px',
-              marginTop: '4px',
-              marginRight: '-18px',
-              display: 'flex',
+              letterSpacing: '-8px',
+              lineHeight: 1,
             }}
           >
-            TIRES
-          </div>
-
-          {/* For the full-size share rendering only. */}
-          <div
+            Mr
+          </span>
+          <span
             style={{
-              marginTop: '40px',
-              fontSize: '30px',
-              fontWeight: 700,
+              fontSize: '180px',
+              fontWeight: 900,
               color: '#0a0a0a',
-              opacity: 0.75,
-              textAlign: 'center',
-              display: 'flex',
+              letterSpacing: '-8px',
+              lineHeight: 1,
             }}
           >
-            New &amp; Used Tires · 30-Day Warranty · Miami &amp; Orlando, FL
-          </div>
+            Goma
+          </span>
         </div>
 
         <div
           style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: '14px',
-            background: '#0a0a0a',
+            fontSize: '44px',
+            fontWeight: 800,
+            color: '#0a0a0a',
+            letterSpacing: '18px',
+            marginTop: '4px',
+            marginRight: '-18px',
             display: 'flex',
           }}
-        />
+        >
+          TIRES
+        </div>
+
+        {/* For the full-size share rendering only. */}
+        <div
+          style={{
+            marginTop: '40px',
+            fontSize: '30px',
+            fontWeight: 700,
+            color: '#0a0a0a',
+            opacity: 0.75,
+            textAlign: 'center',
+            display: 'flex',
+          }}
+        >
+          New &amp; Used Tires · 30-Day Warranty · Miami &amp; Orlando, FL
+        </div>
       </div>
-    ),
+
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: '14px',
+          background: '#0a0a0a',
+          display: 'flex',
+        }}
+      />
+    </div>,
     { ...size }
   );
 }

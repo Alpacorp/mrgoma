@@ -7,8 +7,7 @@ import type { DocumentRecord } from '@/repositories/tiresRepository';
  * the `/api/tire` route handler (checkout re-validation), so the two never drift.
  */
 export function mapTireRecordToSingleTire(record: DocumentRecord): SingleTire {
-  const alt =
-    `${record.Brand || 'Brand'} ${record.Model2 || ''} ${record.RealSize || ''}`.trim();
+  const alt = `${record.Brand || 'Brand'} ${record.Model2 || ''} ${record.RealSize || ''}`.trim();
 
   const images = [record.Image1, record.Image2, record.Image3, record.Image4]
     .filter(Boolean)

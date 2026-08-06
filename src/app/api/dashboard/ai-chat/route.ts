@@ -88,17 +88,20 @@ const APPLY_FILTERS_TOOL: Anthropic.Tool = {
       },
       stores: {
         type: 'string',
-        description: 'Comma-separated list of store/branch names to filter by (e.g., "Sucursal Norte,Sucursal Sur")',
+        description:
+          'Comma-separated list of store/branch names to filter by (e.g., "Sucursal Norte,Sucursal Sur")',
       },
       kindSale: {
         type: 'string',
         enum: ['yes', 'no'],
-        description: 'Filter by KindSale field: "yes" for tires marked as kind sale, "no" for regular tires.',
+        description:
+          'Filter by KindSale field: "yes" for tires marked as kind sale, "no" for regular tires.',
       },
       local: {
         type: 'string',
         enum: ['yes', 'no'],
-        description: 'Filter by Local field: "yes" to show only local tires, "no" to show only non-local tires.',
+        description:
+          'Filter by Local field: "yes" to show only local tires, "no" to show only non-local tires.',
       },
       sort: {
         type: 'string',
@@ -108,7 +111,8 @@ const APPLY_FILTERS_TOOL: Anthropic.Tool = {
       },
       code: {
         type: 'string',
-        description: 'Exact numeric tire code to search for (e.g., "12345"). Only digits are valid.',
+        description:
+          'Exact numeric tire code to search for (e.g., "12345"). Only digits are valid.',
       },
       confirmationMessage: {
         type: 'string',
@@ -127,7 +131,10 @@ interface ApiMessage {
 
 export const POST = withLogging('dashboard.aiChat.POST', async (req: NextRequest) => {
   if (isRateLimited(req)) {
-    return NextResponse.json({ message: 'Too many requests. Try again in a moment.' }, { status: 429 });
+    return NextResponse.json(
+      { message: 'Too many requests. Try again in a moment.' },
+      { status: 429 }
+    );
   }
 
   const session = await auth();

@@ -43,7 +43,8 @@ function AddToCartButton({ row }: { row: DocumentRecord }) {
       const res = await fetch(`/api/tire?productId=${encodeURIComponent(tireId)}`);
       const data = res.ok ? await res.json() : null;
       const priceRaw = data?.price;
-      const price = typeof priceRaw === 'string' ? parseFloat(priceRaw) || 0 : Number(priceRaw) || 0;
+      const price =
+        typeof priceRaw === 'string' ? parseFloat(priceRaw) || 0 : Number(priceRaw) || 0;
       addToCart({
         id: tireId,
         code: String(row.Code ?? ''),
@@ -67,7 +68,17 @@ function AddToCartButton({ row }: { row: DocumentRecord }) {
       title="Add to cart"
       className="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 active:bg-green-800 disabled:opacity-50 text-white p-1.5 rounded-md cursor-pointer transition-colors"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <circle cx="9" cy="21" r="1" />
         <circle cx="20" cy="21" r="1" />
         <polyline points="1 1 5 1 7.68 14.39 4.4 16.5 15.66 16.5 17.5 7 7 7" />
@@ -77,18 +88,22 @@ function AddToCartButton({ row }: { row: DocumentRecord }) {
 }
 
 function ExpandedRow({ row }: { row: DocumentRecord }) {
-  const price = row.Price == null || row.Price === '' || row.Price === 0
-    ? '—'
-    : (() => { const n = parseFloat(String(row.Price)); return isNaN(n) ? '—' : `$${n.toFixed(2)}`; })();
+  const price =
+    row.Price == null || row.Price === '' || row.Price === 0
+      ? '—'
+      : (() => {
+          const n = parseFloat(String(row.Price));
+          return isNaN(n) ? '—' : `$${n.toFixed(2)}`;
+        })();
 
   const fields = [
-    { label: 'Price',      value: price },
-    { label: 'Location',   value: row.VaultName },
-    { label: 'Model',      value: row.Model2 },
-    { label: 'Load',       value: row.LoadIndexId },
-    { label: 'Patched',    value: row.Patched },
-    { label: 'Tread',      value: row.Tread },
-    { label: 'DOT',        value: row.DOT },
+    { label: 'Price', value: price },
+    { label: 'Location', value: row.VaultName },
+    { label: 'Model', value: row.Model2 },
+    { label: 'Load', value: row.LoadIndexId },
+    { label: 'Patched', value: row.Patched },
+    { label: 'Tread', value: row.Tread },
+    { label: 'DOT', value: row.DOT },
   ];
 
   return (
@@ -111,13 +126,13 @@ const columns: ColumnDef<DocumentRecord>[] = [
     meta: { className: 'md:hidden w-8' },
     cell: () => null, // toggle rendered manually in the row
   },
-  { accessorKey: 'Code',        header: 'Tire Code' },
-  { accessorKey: 'Brand',       header: 'Brand' },
-  { accessorKey: 'VaultName',   header: 'Location',   meta: { className: 'hidden md:table-cell' } },
-  { accessorKey: 'Model2',      header: 'Model',      meta: { className: 'hidden md:table-cell' } },
-  { accessorKey: 'Height',      header: 'Width',      meta: { className: 'hidden md:table-cell' } },
-  { accessorKey: 'Width',       header: 'Sidewall',   meta: { className: 'hidden md:table-cell' } },
-  { accessorKey: 'Size',        header: 'Diameter',   meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'Code', header: 'Tire Code' },
+  { accessorKey: 'Brand', header: 'Brand' },
+  { accessorKey: 'VaultName', header: 'Location', meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'Model2', header: 'Model', meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'Height', header: 'Width', meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'Width', header: 'Sidewall', meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'Size', header: 'Diameter', meta: { className: 'hidden md:table-cell' } },
   {
     id: 'sizeFormatted',
     header: 'Size',
@@ -125,10 +140,10 @@ const columns: ColumnDef<DocumentRecord>[] = [
     meta: { className: 'md:hidden' },
     accessorFn: row => row.RealSize || `${row.Height ?? ''}/${row.Width ?? ''}R${row.Size ?? ''}`,
   },
-  { accessorKey: 'LoadIndexId', header: 'Load',       meta: { className: 'hidden md:table-cell' } },
-  { accessorKey: 'Patched',     header: 'Patched',    meta: { className: 'hidden md:table-cell' } },
-  { accessorKey: 'Tread',       header: 'Tread',      meta: { className: 'hidden md:table-cell' } },
-  { accessorKey: 'DOT',         header: 'DOT',        meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'LoadIndexId', header: 'Load', meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'Patched', header: 'Patched', meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'Tread', header: 'Tread', meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'DOT', header: 'DOT', meta: { className: 'hidden md:table-cell' } },
   {
     accessorKey: 'Price',
     header: 'Price',
@@ -172,7 +187,9 @@ const DashboardTable = () => {
       params.set('page', currentPage.toString());
       params.set('pageSize', PAGE_SIZE.toString());
 
-      const res = await fetch(`/api/dashboard/tires?${params.toString()}`, { credentials: 'include' });
+      const res = await fetch(`/api/dashboard/tires?${params.toString()}`, {
+        credentials: 'include',
+      });
       const result = await res.json();
       setData(result.records ?? []);
       setTotalCount(result.totalCount ?? 0);
@@ -321,11 +338,37 @@ const DashboardTable = () => {
             : 'No results'}
         </span>
         <div className="flex items-center gap-1">
-          <button onClick={() => setPage(1)} disabled={page === 1} className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors">«</button>
-          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors">‹</button>
-          <span className="px-3 py-1 text-sm text-gray-600">{page} / {totalPages || 1}</span>
-          <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages} className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors">›</button>
-          <button onClick={() => setPage(totalPages)} disabled={page >= totalPages} className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors">»</button>
+          <button
+            onClick={() => setPage(1)}
+            disabled={page === 1}
+            className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors"
+          >
+            «
+          </button>
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors"
+          >
+            ‹
+          </button>
+          <span className="px-3 py-1 text-sm text-gray-600">
+            {page} / {totalPages || 1}
+          </span>
+          <button
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages}
+            className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors"
+          >
+            ›
+          </button>
+          <button
+            onClick={() => setPage(totalPages)}
+            disabled={page >= totalPages}
+            className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors"
+          >
+            »
+          </button>
         </div>
       </div>
     </div>

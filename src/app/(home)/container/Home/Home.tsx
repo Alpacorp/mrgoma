@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 
-
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -8,11 +7,7 @@ import { preload } from 'react-dom';
 
 import { servicesConfig } from '@/app/(shop)/services/servicesConfig';
 import { HeroVideo, TrustStrip } from '@/app/ui/components';
-import {
-  InfoCardsSection,
-  PromoBanner,
-  SearchContainer,
-} from '@/app/ui/sections';
+import { InfoCardsSection, PromoBanner, SearchContainer } from '@/app/ui/sections';
 import { LocationsSlider } from '@/app/ui/sections/LocationsSlider/LocationsSlider';
 import { promoBannerConfig } from '@/app/ui/sections/PromoBanner/config/promoBanner';
 import {
@@ -44,19 +39,22 @@ const FEATURED_GUIDES = [
     slug: 'how-to-buy-used-tires',
     title: 'How to Buy Used Tires: The Complete Guide',
     readTime: '7 min read',
-    intro: 'Used tires can save you 30–70% compared to new, and when properly inspected they are just as safe.',
+    intro:
+      'Used tires can save you 30–70% compared to new, and when properly inspected they are just as safe.',
   },
   {
     slug: 'used-vs-new-tires',
     title: 'Used vs. New Tires: Which Should You Buy?',
     readTime: '6 min read',
-    intro: 'The used-vs-new debate comes down to your budget, how many miles you drive, and what kind of driving you do.',
+    intro:
+      'The used-vs-new debate comes down to your budget, how many miles you drive, and what kind of driving you do.',
   },
   {
     slug: 'best-tires-for-uber-lyft-drivers',
     title: 'Best Tires for Uber and Lyft Drivers in Miami & Orlando',
     readTime: '6 min read',
-    intro: 'Rideshare drivers in Florida go through tires twice as fast as average drivers — every dollar saved on tires goes to your pocket.',
+    intro:
+      'Rideshare drivers in Florida go through tires twice as fast as average drivers — every dollar saved on tires goes to your pocket.',
   },
 ];
 
@@ -69,45 +67,109 @@ const STATS = [
 
 const SERVICE_ICONS: Record<string, React.ReactNode> = {
   tire: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-7 h-7" aria-hidden="true">
-      <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="4" />
-      <line x1="12" y1="2" x2="12" y2="8" /><line x1="12" y1="16" x2="12" y2="22" />
-      <line x1="2" y1="12" x2="8" y2="12" /><line x1="16" y1="12" x2="22" y2="12" />
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      className="w-7 h-7"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="4" />
+      <line x1="12" y1="2" x2="12" y2="8" />
+      <line x1="12" y1="16" x2="12" y2="22" />
+      <line x1="2" y1="12" x2="8" y2="12" />
+      <line x1="16" y1="12" x2="22" y2="12" />
     </svg>
   ),
   alignment: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-7 h-7" aria-hidden="true">
-      <path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" />
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      className="w-7 h-7"
+      aria-hidden="true"
+    >
+      <path d="M12 2L2 7l10 5 10-5-10-5z" />
+      <path d="M2 17l10 5 10-5" />
+      <path d="M2 12l10 5 10-5" />
     </svg>
   ),
   oil: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-7 h-7" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      className="w-7 h-7"
+      aria-hidden="true"
+    >
       <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
     </svg>
   ),
   brakes: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-7 h-7" aria-hidden="true">
-      <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      className="w-7 h-7"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="6" />
+      <circle cx="12" cy="12" r="2" />
     </svg>
   ),
   repair: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-7 h-7" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      className="w-7 h-7"
+      aria-hidden="true"
+    >
       <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
     </svg>
   ),
   rotation: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-7 h-7" aria-hidden="true">
-      <polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" />
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      className="w-7 h-7"
+      aria-hidden="true"
+    >
+      <polyline points="23 4 23 10 17 10" />
+      <polyline points="1 20 1 14 7 14" />
       <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
     </svg>
   ),
   nitrogen: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-7 h-7" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      className="w-7 h-7"
+      aria-hidden="true"
+    >
       <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
     </svg>
   ),
   tpms: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-7 h-7" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      className="w-7 h-7"
+      aria-hidden="true"
+    >
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
     </svg>
   ),
@@ -121,7 +183,6 @@ const Home: FC = () => {
 
   return (
     <main className="bg-white">
-
       {/* ── Hero ── */}
       <section aria-label="Tire search" className="px-4 sm:px-6 lg:px-8 relative">
         <div className="absolute inset-0 overflow-hidden">
@@ -139,8 +200,7 @@ const Home: FC = () => {
               wider service range lives on /services and would dilute our
               strongest query. */}
           <h1 className="text-center text-3xl sm:text-5xl font-black tracking-tight text-white uppercase [text-shadow:_0px_4px_10px_rgb(0_0_0_/_0.6)]">
-            New &amp; Used Tires in{' '}
-            <span className="text-[#9dfb40]">Miami &amp; Orlando</span>
+            New &amp; Used Tires in <span className="text-[#9dfb40]">Miami &amp; Orlando</span>
           </h1>
 
           {/* The claims Google turns into the snippet. Plain server-rendered
@@ -181,7 +241,9 @@ const Home: FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <PromoBanner content={promoBannerConfig.home} className="mb-10" storageKey="home" />
           <div className="mb-10">
-            <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">What we offer</p>
+            <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">
+              What we offer
+            </p>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900">Our Services</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -202,7 +264,10 @@ const Home: FC = () => {
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                         className="object-cover -z-10 opacity-70 transform-gpu transition-[scale,opacity] duration-500 ease-out group-hover:opacity-90 group-hover:scale-105"
                       />
-                      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/70 to-[#0a0a0a]/20" aria-hidden="true" />
+                      <div
+                        className="absolute inset-0 -z-10 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/70 to-[#0a0a0a]/20"
+                        aria-hidden="true"
+                      />
                     </>
                   )}
                   <div className="text-[#9dfb40] shrink-0">
@@ -212,12 +277,22 @@ const Home: FC = () => {
                     <h3 className="text-base font-bold text-white leading-snug group-hover:text-[#9dfb40] transition-colors duration-200 drop-shadow-md">
                       {service.title}
                     </h3>
-                    <p className="text-gray-300 text-sm leading-relaxed drop-shadow">{service.shortDescription}</p>
+                    <p className="text-gray-300 text-sm leading-relaxed drop-shadow">
+                      {service.shortDescription}
+                    </p>
                   </div>
                   <div className="flex items-center gap-1.5 text-xs font-semibold text-[#9dfb40] mt-auto">
                     Learn more
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" aria-hidden="true">
-                      <line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" />
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200"
+                      aria-hidden="true"
+                    >
+                      <line x1="7" y1="17" x2="17" y2="7" />
+                      <polyline points="7 7 17 7 17 17" />
                     </svg>
                   </div>
                 </Link>
@@ -238,7 +313,9 @@ const Home: FC = () => {
       {/* ── Why MrGoma ── */}
       <section id="about" className="bg-[#0a0a0a]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-6">
-          <p className="text-[#9dfb40] text-xs font-bold tracking-[0.2em] uppercase mb-2">The MrGoma difference</p>
+          <p className="text-[#9dfb40] text-xs font-bold tracking-[0.2em] uppercase mb-2">
+            The MrGoma difference
+          </p>
           <h2 className="text-3xl sm:text-4xl font-black text-white">Why choose us</h2>
         </div>
         <InfoCardsSection className="bg-[#0a0a0a] pb-20" />
@@ -249,7 +326,9 @@ const Home: FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-end justify-between mb-10">
             <div>
-              <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">Learn & save</p>
+              <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">
+                Learn & save
+              </p>
               <h2 className="text-3xl sm:text-4xl font-black text-gray-900">From our guides</h2>
             </div>
             <Link
@@ -266,15 +345,24 @@ const Home: FC = () => {
                 href={`/guides/${guide.slug}`}
                 className="group block rounded-xl border border-gray-200 p-6 hover:border-green-500 hover:shadow-md transition-all duration-200"
               >
-                <p className="text-green-600 text-xs font-bold tracking-widest uppercase mb-3">{guide.readTime}</p>
-                <h3 className="text-base font-bold text-gray-900 mb-2 group-hover:text-green-700 transition-colors leading-snug">{guide.title}</h3>
+                <p className="text-green-600 text-xs font-bold tracking-widest uppercase mb-3">
+                  {guide.readTime}
+                </p>
+                <h3 className="text-base font-bold text-gray-900 mb-2 group-hover:text-green-700 transition-colors leading-snug">
+                  {guide.title}
+                </h3>
                 <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">{guide.intro}</p>
-                <span className="mt-4 inline-flex items-center text-green-600 text-sm font-bold">Read guide →</span>
+                <span className="mt-4 inline-flex items-center text-green-600 text-sm font-bold">
+                  Read guide →
+                </span>
               </Link>
             ))}
           </div>
           <div className="mt-8 text-center sm:hidden">
-            <Link href="/guides" className="text-sm font-bold text-gray-500 hover:text-green-600 transition-colors">
+            <Link
+              href="/guides"
+              className="text-sm font-bold text-gray-500 hover:text-green-600 transition-colors"
+            >
               See all guides →
             </Link>
           </div>
@@ -285,7 +373,9 @@ const Home: FC = () => {
       <section className="bg-[#0a0a0a] py-16 sm:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-10">
-            <p className="text-[#9dfb40] text-xs font-bold tracking-[0.2em] uppercase mb-2">Ready to shop?</p>
+            <p className="text-[#9dfb40] text-xs font-bold tracking-[0.2em] uppercase mb-2">
+              Ready to shop?
+            </p>
             <h2 className="text-3xl sm:text-4xl font-black text-white">Find your tire</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -293,28 +383,52 @@ const Home: FC = () => {
               href="/tires/used"
               className="group relative rounded-2xl border border-amber-400/20 bg-amber-400/5 p-8 hover:border-amber-400/50 hover:bg-amber-400/10 transition-all duration-200"
             >
-              <span className="text-amber-400 text-xs font-bold tracking-widest uppercase block mb-3">Used Tires</span>
-              <h3 className="text-2xl font-black text-white mb-2 group-hover:text-amber-400 transition-colors">Quality Pre-Owned</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">Inspected by ASE-certified techs. 30-day warranty included.</p>
-              <span className="mt-6 inline-flex items-center text-amber-400 text-sm font-bold gap-1">Shop Used →</span>
+              <span className="text-amber-400 text-xs font-bold tracking-widest uppercase block mb-3">
+                Used Tires
+              </span>
+              <h3 className="text-2xl font-black text-white mb-2 group-hover:text-amber-400 transition-colors">
+                Quality Pre-Owned
+              </h3>
+              <p className="text-gray-500 text-sm leading-relaxed">
+                Inspected by ASE-certified techs. 30-day warranty included.
+              </p>
+              <span className="mt-6 inline-flex items-center text-amber-400 text-sm font-bold gap-1">
+                Shop Used →
+              </span>
             </Link>
             <Link
               href="/tires/new"
               className="group relative rounded-2xl border border-green-500/20 bg-green-500/5 p-8 hover:border-green-500/50 hover:bg-green-500/10 transition-all duration-200"
             >
-              <span className="text-green-400 text-xs font-bold tracking-widest uppercase block mb-3">New Tires</span>
-              <h3 className="text-2xl font-black text-white mb-2 group-hover:text-green-400 transition-colors">Brand New Stock</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">Full manufacturer warranty. Free shipping nationwide.</p>
-              <span className="mt-6 inline-flex items-center text-green-400 text-sm font-bold gap-1">Shop New →</span>
+              <span className="text-green-400 text-xs font-bold tracking-widest uppercase block mb-3">
+                New Tires
+              </span>
+              <h3 className="text-2xl font-black text-white mb-2 group-hover:text-green-400 transition-colors">
+                Brand New Stock
+              </h3>
+              <p className="text-gray-500 text-sm leading-relaxed">
+                Full manufacturer warranty. Free shipping nationwide.
+              </p>
+              <span className="mt-6 inline-flex items-center text-green-400 text-sm font-bold gap-1">
+                Shop New →
+              </span>
             </Link>
             <Link
               href="/tires"
               className="group relative rounded-2xl border border-[#9dfb40]/20 bg-[#9dfb40]/5 p-8 hover:border-[#9dfb40]/50 hover:bg-[#9dfb40]/10 transition-all duration-200"
             >
-              <span className="text-[#9dfb40] text-xs font-bold tracking-widest uppercase block mb-3">All Tires</span>
-              <h3 className="text-2xl font-black text-white mb-2 group-hover:text-[#9dfb40] transition-colors">Browse Catalog</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">15,000+ tires across 7 Miami & Orlando locations.</p>
-              <span className="mt-6 inline-flex items-center text-[#9dfb40] text-sm font-bold gap-1">Browse All →</span>
+              <span className="text-[#9dfb40] text-xs font-bold tracking-widest uppercase block mb-3">
+                All Tires
+              </span>
+              <h3 className="text-2xl font-black text-white mb-2 group-hover:text-[#9dfb40] transition-colors">
+                Browse Catalog
+              </h3>
+              <p className="text-gray-500 text-sm leading-relaxed">
+                15,000+ tires across 7 Miami & Orlando locations.
+              </p>
+              <span className="mt-6 inline-flex items-center text-[#9dfb40] text-sm font-bold gap-1">
+                Browse All →
+              </span>
             </Link>
           </div>
         </div>
@@ -323,12 +437,13 @@ const Home: FC = () => {
       {/* ── Locations ── */}
       <section id="locations" className="bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-2">
-          <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">Find us near you</p>
+          <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">
+            Find us near you
+          </p>
           <h2 className="text-3xl sm:text-4xl font-black text-gray-900">Our Locations</h2>
         </div>
         <LocationsSlider />
       </section>
-
     </main>
   );
 };

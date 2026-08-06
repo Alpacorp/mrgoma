@@ -40,17 +40,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const site = getSiteUrl();
 
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: site,                         lastModified: now, changeFrequency: 'daily',   priority: 1.0 },
-    { url: absUrl('/tires'),             lastModified: now, changeFrequency: 'daily',   priority: 0.9 },
-    { url: absUrl('/tires/new'),         lastModified: now, changeFrequency: 'daily',   priority: 0.8 },
-    { url: absUrl('/tires/used'),        lastModified: now, changeFrequency: 'daily',   priority: 0.8 },
-    { url: absUrl('/guides'),            lastModified: now, changeFrequency: 'weekly',  priority: 0.7 },
-    { url: absUrl('/about-us'),          lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
-    { url: absUrl('/services'),          lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
-    { url: absUrl('/locations'),         lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
-    { url: absUrl('/contact'),           lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
-    { url: absUrl('/instant-quote'),     lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
-    { url: absUrl('/legal-policies'),    lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
+    { url: site, lastModified: now, changeFrequency: 'daily', priority: 1.0 },
+    { url: absUrl('/tires'), lastModified: now, changeFrequency: 'daily', priority: 0.9 },
+    { url: absUrl('/tires/new'), lastModified: now, changeFrequency: 'daily', priority: 0.8 },
+    { url: absUrl('/tires/used'), lastModified: now, changeFrequency: 'daily', priority: 0.8 },
+    { url: absUrl('/guides'), lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
+    { url: absUrl('/about-us'), lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
+    { url: absUrl('/services'), lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
+    { url: absUrl('/locations'), lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
+    { url: absUrl('/contact'), lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+    { url: absUrl('/instant-quote'), lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+    { url: absUrl('/legal-policies'), lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
     ...SERVICE_SLUGS.map(slug => ({
       url: absUrl(`/services/${slug}`),
       lastModified: now,

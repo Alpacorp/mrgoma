@@ -69,7 +69,11 @@ export function computeTireProportions(input: TireSizeInput): TireProportions {
  * realistic shape. Indices keep the tread roughly in V 0.34–0.66 to line up
  * with the texture layout in tireTextures.ts.
  */
-export function buildTireProfile(rimR: number, overallR: number, halfWidth: number): THREE.Vector2[] {
+export function buildTireProfile(
+  rimR: number,
+  overallR: number,
+  halfWidth: number
+): THREE.Vector2[] {
   const hw = halfWidth;
   const sidewall = overallR - rimR;
   const t = overallR;

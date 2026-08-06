@@ -96,9 +96,7 @@ export function buildNarrowingHint(spanish: boolean, dimensions: Dimension[]): s
 export function buildUnknownBrandMessage(spanish: boolean, brands: string[]): string {
   const list = joinWords(brands, spanish);
   const waUrl = whatsappLink(
-    spanish
-      ? `Hola, pregunto por llantas ${list}.`
-      : `Hi, I'm asking about ${list} tires.`
+    spanish ? `Hola, pregunto por llantas ${list}.` : `Hi, I'm asking about ${list} tires.`
   );
 
   if (spanish) {

@@ -72,14 +72,14 @@ export default function AboutUs() {
 
   return (
     <main className="bg-[#0a0a0a] text-white overflow-hidden">
-
       {/* ── HERO ── */}
       <section className="relative min-h-[70vh] flex items-center border-b border-white/8">
         {/* Background grid texture */}
         <div
           className="absolute inset-0 opacity-[0.03] pointer-events-none"
           style={{
-            backgroundImage: 'linear-gradient(#9dfb40 1px, transparent 1px), linear-gradient(90deg, #9dfb40 1px, transparent 1px)',
+            backgroundImage:
+              'linear-gradient(#9dfb40 1px, transparent 1px), linear-gradient(90deg, #9dfb40 1px, transparent 1px)',
             backgroundSize: '60px 60px',
           }}
         />
@@ -104,10 +104,7 @@ export default function AboutUs() {
           <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black leading-[0.9] tracking-tight mb-8">
             About
             <br />
-            <span
-              className="text-transparent"
-              style={{ WebkitTextStroke: '2px #9dfb40' }}
-            >
+            <span className="text-transparent" style={{ WebkitTextStroke: '2px #9dfb40' }}>
               MrGoma
             </span>
             <br />
@@ -115,8 +112,8 @@ export default function AboutUs() {
           </h1>
 
           <p className="text-gray-400 text-xl max-w-lg leading-relaxed">
-            Miami&apos;s most trusted tire shop — 7 locations, thousands of tires,
-            and one standard: quality you can count on.
+            Miami&apos;s most trusted tire shop — 7 locations, thousands of tires, and one standard:
+            quality you can count on.
           </p>
 
           {/* Scroll cue */}
@@ -149,15 +146,15 @@ export default function AboutUs() {
               </p>
               */}
               <p>
-                Today we operate 7 locations across Miami and Orlando, FL — all under
-                the same commitment to quality, transparency, and service that built
-                our reputation from the ground up.
+                Today we operate 7 locations across Miami and Orlando, FL — all under the same
+                commitment to quality, transparency, and service that built our reputation from the
+                ground up.
               </p>
               <p>
                 We&apos;re a registered brand of{' '}
-                <span className="text-white font-medium">Jomah Trading Inc.</span>,
-                serving thousands of Florida drivers every year — from daily commuters
-                to Uber and Lyft professionals who depend on their vehicle for their income.
+                <span className="text-white font-medium">Jomah Trading Inc.</span>, serving
+                thousands of Florida drivers every year — from daily commuters to Uber and Lyft
+                professionals who depend on their vehicle for their income.
               </p>
             </div>
           </div>
@@ -180,13 +177,18 @@ export default function AboutUs() {
                 ]
                   .filter(item => !item.value.startsWith('[')) // hide pending-confirmation rows
                   .map(item => (
-                  <div key={item.label} className="flex justify-between items-baseline border-b border-white/6 pb-4 last:border-0 last:pb-0">
-                    <span className="text-gray-500 text-sm">{item.label}</span>
-                    <span className={`font-semibold text-sm ${item.value.startsWith('[') ? 'text-yellow-400' : 'text-white'}`}>
-                      {item.value}
-                    </span>
-                  </div>
-                ))}
+                    <div
+                      key={item.label}
+                      className="flex justify-between items-baseline border-b border-white/6 pb-4 last:border-0 last:pb-0"
+                    >
+                      <span className="text-gray-500 text-sm">{item.label}</span>
+                      <span
+                        className={`font-semibold text-sm ${item.value.startsWith('[') ? 'text-yellow-400' : 'text-white'}`}
+                      >
+                        {item.value}
+                      </span>
+                    </div>
+                  ))}
               </div>
             </div>
           </div>
@@ -194,10 +196,7 @@ export default function AboutUs() {
       </section>
 
       {/* ── BY THE NUMBERS ── */}
-      <section
-        className="relative py-24 border-b border-white/8 overflow-hidden"
-        ref={statsRef}
-      >
+      <section className="relative py-24 border-b border-white/8 overflow-hidden" ref={statsRef}>
         {/* Diagonal accent */}
         <div
           className="absolute inset-0 pointer-events-none"
@@ -221,25 +220,25 @@ export default function AboutUs() {
             {stats
               .filter(stat => !stat.value.includes('[')) // hide pending-confirmation stats
               .map((stat, i) => (
-              <div
-                key={stat.label}
-                className="bg-[#0a0a0a] px-8 py-10 group hover:bg-white/[0.03] transition-colors duration-300"
-                style={{
-                  opacity: statsInView ? 1 : 0,
-                  transform: statsInView ? 'translateY(0)' : 'translateY(20px)',
-                  transition: `opacity 0.5s ease ${i * 0.08}s, transform 0.5s ease ${i * 0.08}s`,
-                }}
-              >
                 <div
-                  className="text-4xl sm:text-5xl font-black tracking-tight mb-2"
-                  style={{ color: stat.value.startsWith('[') ? '#facc15' : '#9dfb40' }}
+                  key={stat.label}
+                  className="bg-[#0a0a0a] px-8 py-10 group hover:bg-white/[0.03] transition-colors duration-300"
+                  style={{
+                    opacity: statsInView ? 1 : 0,
+                    transform: statsInView ? 'translateY(0)' : 'translateY(20px)',
+                    transition: `opacity 0.5s ease ${i * 0.08}s, transform 0.5s ease ${i * 0.08}s`,
+                  }}
                 >
-                  {stat.value}
+                  <div
+                    className="text-4xl sm:text-5xl font-black tracking-tight mb-2"
+                    style={{ color: stat.value.startsWith('[') ? '#facc15' : '#9dfb40' }}
+                  >
+                    {stat.value}
+                  </div>
+                  <div className="text-white font-bold text-lg mb-1">{stat.label}</div>
+                  <div className="text-gray-500 text-sm">{stat.sub}</div>
                 </div>
-                <div className="text-white font-bold text-lg mb-1">{stat.label}</div>
-                <div className="text-gray-500 text-sm">{stat.sub}</div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
       </section>
@@ -293,13 +292,15 @@ export default function AboutUs() {
             ]
               .filter(cert => !cert.label.includes('[')) // hide pending-confirmation certs
               .map(cert => (
-              <div key={cert.label} className="flex flex-col items-center gap-1 text-center">
-                <span className={`font-black text-lg ${cert.label.includes('[') ? 'text-yellow-400' : 'text-white'}`}>
-                  {cert.label}
-                </span>
-                <span className="text-gray-600 text-xs">{cert.detail}</span>
-              </div>
-            ))}
+                <div key={cert.label} className="flex flex-col items-center gap-1 text-center">
+                  <span
+                    className={`font-black text-lg ${cert.label.includes('[') ? 'text-yellow-400' : 'text-white'}`}
+                  >
+                    {cert.label}
+                  </span>
+                  <span className="text-gray-600 text-xs">{cert.detail}</span>
+                </div>
+              ))}
           </div>
         </div>
       </section>
@@ -337,7 +338,6 @@ export default function AboutUs() {
           </div>
         </div>
       </section>
-
     </main>
   );
 }

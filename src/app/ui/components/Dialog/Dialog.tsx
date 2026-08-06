@@ -155,11 +155,11 @@ export const DialogBackdrop: React.FC<DialogBackdropProps> = ({
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    
+
     if (onClick) {
       onClick();
     }
-    
+
     close();
   };
 

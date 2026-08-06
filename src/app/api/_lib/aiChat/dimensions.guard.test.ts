@@ -43,7 +43,18 @@ describe('no customer input escapes into an event property', () => {
   });
 
   it('leaks no value from any filter', () => {
-    const values = ['Michelin', 'Pirelli', 'Hialeah', 'Cutler Bay', '225', '45', '17', '12345', '41', '83'];
+    const values = [
+      'Michelin',
+      'Pirelli',
+      'Hialeah',
+      'Cutler Bay',
+      '225',
+      '45',
+      '17',
+      '12345',
+      '41',
+      '83',
+    ];
 
     for (const value of values) {
       expect(result, `"${value}" reached the event property`).not.toContain(value);

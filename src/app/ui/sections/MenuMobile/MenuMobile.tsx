@@ -35,22 +35,12 @@ const MenuMobile: FC = () => {
   if (!isVisible) return null;
 
   return (
-    <div
-      className="lg:hidden fixed inset-0 z-[100]"
-      style={{ pointerEvents }}
-    >
+    <div className="lg:hidden fixed inset-0 z-[100]" style={{ pointerEvents }}>
       {/* Backdrop with blur and semi-transparent overlay */}
-      <MenuBackdrop
-        isAnimating={isAnimating}
-        onClick={handleBackdropClick}
-      />
+      <MenuBackdrop isAnimating={isAnimating} onClick={handleBackdropClick} />
 
       {/* Sliding menu panel with content */}
-      <MenuPanel
-        isAnimating={isAnimating}
-        animationStage={animationStage}
-        onClose={closeMenu}
-      />
+      <MenuPanel isAnimating={isAnimating} animationStage={animationStage} onClose={closeMenu} />
     </div>
   );
 };

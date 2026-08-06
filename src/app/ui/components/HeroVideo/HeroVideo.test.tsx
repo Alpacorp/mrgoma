@@ -14,9 +14,20 @@ function stubPlayback({ paused = true }: { paused?: boolean } = {}) {
   const state = { paused };
   const play = vi.fn().mockResolvedValue(undefined);
   const pause = vi.fn();
-  Object.defineProperty(HTMLMediaElement.prototype, 'play', { value: play, writable: true, configurable: true });
-  Object.defineProperty(HTMLMediaElement.prototype, 'pause', { value: pause, writable: true, configurable: true });
-  Object.defineProperty(HTMLMediaElement.prototype, 'paused', { get: () => state.paused, configurable: true });
+  Object.defineProperty(HTMLMediaElement.prototype, 'play', {
+    value: play,
+    writable: true,
+    configurable: true,
+  });
+  Object.defineProperty(HTMLMediaElement.prototype, 'pause', {
+    value: pause,
+    writable: true,
+    configurable: true,
+  });
+  Object.defineProperty(HTMLMediaElement.prototype, 'paused', {
+    get: () => state.paused,
+    configurable: true,
+  });
   return { play, pause, state };
 }
 
@@ -134,7 +145,9 @@ describe('HeroVideo', () => {
       stubPlayback({ paused: true });
       const { container } = render(<HeroVideo {...props} />);
 
-      await waitFor(() => expect(container.querySelector('video')!.className).toContain('opacity-100'));
+      await waitFor(() =>
+        expect(container.querySelector('video')!.className).toContain('opacity-100')
+      );
     });
 
     // Autoplay can beat hydration, in which case the resolved `play()` we would
@@ -200,7 +213,9 @@ describe('HeroVideo', () => {
     setReducedMotion(false);
     const { play, state } = stubPlayback({ paused: true });
     const { container } = render(<HeroVideo {...props} />);
-    await waitFor(() => expect(container.querySelector('video')!.className).toContain('opacity-100'));
+    await waitFor(() =>
+      expect(container.querySelector('video')!.className).toContain('opacity-100')
+    );
     state.paused = false;
 
     play.mockClear();

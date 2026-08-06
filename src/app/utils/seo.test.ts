@@ -49,9 +49,9 @@ describe('productTitle', () => {
 
 describe('productDescription', () => {
   it('describes a new tire', () => {
-    expect(productDescription({ brand: 'Michelin', size: '225/40/18', condition: 'new' })).toContain(
-      'New tire by Michelin 225/40/18 available in Miami, Florida.'
-    );
+    expect(
+      productDescription({ brand: 'Michelin', size: '225/40/18', condition: 'new' })
+    ).toContain('New tire by Michelin 225/40/18 available in Miami, Florida.');
   });
 
   it('adds remaining life and patched status only for used tires', () => {

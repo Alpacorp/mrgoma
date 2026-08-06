@@ -27,11 +27,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function ServicePage({
-  params,
-}: {
-  params: Promise<{ service: string }>;
-}) {
+export default async function ServicePage({ params }: { params: Promise<{ service: string }> }) {
   const { service: slug } = await params;
   const service = getServiceBySlug(slug);
   if (!service) notFound();

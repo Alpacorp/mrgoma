@@ -12,10 +12,7 @@ interface MenuItemsProps {
 /**
  * Component that renders the list of menu items
  */
-export const MenuItems: React.FC<MenuItemsProps> = ({
-  onItemClick,
-  animationStage,
-}) => {
+export const MenuItems: React.FC<MenuItemsProps> = ({ onItemClick, animationStage }) => {
   return (
     <div className="mt-8 flow-root">
       <div className="-my-6">

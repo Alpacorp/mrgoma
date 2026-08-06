@@ -123,27 +123,27 @@ const TreadScene = ({ currentUnits, newUnits, reducedMotion }: TreadSceneProps) 
         }}
         frameloop={!active ? 'never' : reducedMotion ? 'demand' : 'always'}
       >
-      <ambientLight intensity={0.65} />
-      <directionalLight position={[4, 6, 5]} intensity={2} />
-      <directionalLight position={[-4, 2, -3]} intensity={0.6} color="#eaf0ff" />
+        <ambientLight intensity={0.65} />
+        <directionalLight position={[4, 6, 5]} intensity={2} />
+        <directionalLight position={[-4, 2, -3]} intensity={0.6} color="#eaf0ff" />
 
-      <TreadBlocks currentUnits={currentUnits} newUnits={newUnits} />
+        <TreadBlocks currentUnits={currentUnits} newUnits={newUnits} />
 
-      <Environment resolution={128}>
-        <Lightformer form="rect" intensity={2.4} position={[3, 4, 3]} scale={[6, 6, 1]} />
-        <Lightformer form="rect" intensity={1.4} position={[-3, 1, 2]} scale={[4, 4, 1]} />
-      </Environment>
+        <Environment resolution={128}>
+          <Lightformer form="rect" intensity={2.4} position={[3, 4, 3]} scale={[6, 6, 1]} />
+          <Lightformer form="rect" intensity={1.4} position={[-3, 1, 2]} scale={[4, 4, 1]} />
+        </Environment>
 
-      <OrbitControls
-        makeDefault
-        target={[0, 0.35, 0]}
-        enablePan={false}
-        enableZoom={false}
-        autoRotate={!reducedMotion}
-        autoRotateSpeed={0.6}
-        minPolarAngle={Math.PI / 6}
-        maxPolarAngle={Math.PI / 2}
-      />
+        <OrbitControls
+          makeDefault
+          target={[0, 0.35, 0]}
+          enablePan={false}
+          enableZoom={false}
+          autoRotate={!reducedMotion}
+          autoRotateSpeed={0.6}
+          minPolarAngle={Math.PI / 6}
+          maxPolarAngle={Math.PI / 2}
+        />
       </Canvas>
     </div>
   );

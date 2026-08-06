@@ -91,9 +91,13 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
         {/* Breadcrumb */}
         <nav className="bg-gray-50 border-b border-gray-200" aria-label="Breadcrumb">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-2 text-sm text-gray-500 flex-wrap">
-            <Link href="/" className="hover:text-green-600 transition-colors">Home</Link>
+            <Link href="/" className="hover:text-green-600 transition-colors">
+              Home
+            </Link>
             <span>/</span>
-            <Link href="/guides" className="hover:text-green-600 transition-colors">Guides</Link>
+            <Link href="/guides" className="hover:text-green-600 transition-colors">
+              Guides
+            </Link>
             <span>/</span>
             <span className="text-gray-900 font-medium line-clamp-1">{guide.headline}</span>
           </div>
@@ -141,7 +145,6 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
         {/* Article body */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-12">
-
             {/* Main content */}
             <article className="prose prose-gray max-w-none">
               {/* Key Facts box */}
@@ -152,7 +155,10 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
                 </h2>
                 <ul className="space-y-2">
                   {guide.keyFacts.map((fact, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-gray-700 leading-snug">
+                    <li
+                      key={i}
+                      className="flex items-start gap-2 text-sm text-gray-700 leading-snug"
+                    >
                       <span className="text-[#9dfb40] font-bold mt-0.5 shrink-0">→</span>
                       {fact}
                     </li>
@@ -264,9 +270,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
 
         {/* Bottom CTA */}
         <section className="border-t border-gray-100 bg-gray-50 py-14 text-center px-4">
-          <h2 className="text-2xl font-bold text-gray-900 mb-3">
-            Questions? We are here to help.
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">Questions? We are here to help.</h2>
           <p className="text-gray-500 mb-6 max-w-md mx-auto text-sm">
             Visit any of our 7 locations in Miami and Orlando, FL — or reach us on WhatsApp.
           </p>
@@ -308,12 +312,16 @@ function Section({ section }: { section: GuideSection }) {
     return (
       <div className="not-prose my-6">
         {section.heading && (
-          <h2 className="text-xl font-black text-gray-900 tracking-tight mb-4">{section.heading}</h2>
+          <h2 className="text-xl font-black text-gray-900 tracking-tight mb-4">
+            {section.heading}
+          </h2>
         )}
         <ul className="space-y-2.5">
           {section.items?.map((item, i) => (
             <li key={i} className="flex items-start gap-3 text-gray-700 leading-relaxed text-base">
-              <span className="text-green-600 font-bold mt-0.5 shrink-0 text-lg leading-none">•</span>
+              <span className="text-green-600 font-bold mt-0.5 shrink-0 text-lg leading-none">
+                •
+              </span>
               <span>{item}</span>
             </li>
           ))}

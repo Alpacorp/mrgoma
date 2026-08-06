@@ -13,10 +13,14 @@ import { TireFilters, fetchBrands } from '@/repositories/tiresRepository';
  * Lives at the shared `_lib` root rather than under `aiChat/`: a brands route
  * reaching into a chat library would be the wrong way round.
  */
-export const getCachedBrands = unstable_cache((filters: TireFilters) => fetchBrands(filters), ['brands'], {
-  revalidate: 300,
-  tags: ['brands'],
-});
+export const getCachedBrands = unstable_cache(
+  (filters: TireFilters) => fetchBrands(filters),
+  ['brands'],
+  {
+    revalidate: 300,
+    tags: ['brands'],
+  }
+);
 
 /**
  * Compare the way a person types, not the way a database stores.

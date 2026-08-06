@@ -66,8 +66,7 @@ const ENTRY_POINTS: [label: string, meta: Metadata][] = [
       { name: 'Hialeah', city: 'Miami' },
     ] as const
   ).map(
-    loc =>
-      [`/locations/${loc.name}`, locationMetadata({ ...loc, slug: 'x' })] as [string, Metadata]
+    loc => [`/locations/${loc.name}`, locationMetadata({ ...loc, slug: 'x' })] as [string, Metadata]
   ),
 ];
 
