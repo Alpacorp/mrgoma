@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Inter is the app's single sans typeface. It's loaded via next/font and exposed
    as the `--font-inter` CSS variable on <html> (see src/app/layout.tsx). Tailwind
@@ -9,8 +9,9 @@
    variable already expands to `'Inter', 'Inter Fallback'` (the metric-matched
    fallback next/font generates), followed here by generic system fallbacks. */
 @theme inline {
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-sans:
+    var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
 }
 
 /* Fallback definition for `--font-inter`. At runtime next/font sets this variable
@@ -20,8 +21,8 @@
    the `var(--font-inter)` above, and (b) degrade gracefully to the system stack if
    the font ever fails to load. */
 html {
-  --font-inter: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, sans-serif;
+  --font-inter:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 /* WebKit paints a large play glyph over any <video> that hasn't started, even
@@ -188,4 +189,3 @@ input[type='range']::-moz-range-thumb {
   width: 1.1rem;
   border-radius: 4px;
 }
-

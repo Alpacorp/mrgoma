@@ -43,7 +43,12 @@ const FilterChip: FC<{ label: string; onRemove: () => void }> = ({ label, onRemo
       className="flex h-4 w-4 items-center justify-center rounded-full text-green-600 hover:bg-green-200 hover:text-green-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
     >
       <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+        <path
+          d="M6 6l12 12M18 6L6 18"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+        />
       </svg>
     </button>
   </span>
@@ -100,8 +105,7 @@ const SearchBySize: FC = () => {
     setExtraFilters(prev => ({ ...prev, brands: prev.brands.filter(b => b !== brand) }));
   const removeCondition = (value: string) =>
     setExtraFilters(prev => ({ ...prev, condition: prev.condition.filter(c => c !== value) }));
-  const removePrice = () =>
-    setExtraFilters(prev => ({ ...prev, minPrice: null, maxPrice: null }));
+  const removePrice = () => setExtraFilters(prev => ({ ...prev, minPrice: null, maxPrice: null }));
 
   const hasPriceFilter = extraFilters.minPrice !== null || extraFilters.maxPrice !== null;
   const hasExtraFilters =
@@ -139,7 +143,9 @@ const SearchBySize: FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <CarFront className="w-5 h-5 text-gray-600" />
-                <span className="text-base font-medium text-gray-600 capitalize ml-1">Tire Size</span>
+                <span className="text-base font-medium text-gray-600 capitalize ml-1">
+                  Tire Size
+                </span>
               </div>
               <TirePreview3DMobile
                 onSearch={handleSearch}

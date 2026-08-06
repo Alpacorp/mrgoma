@@ -54,7 +54,7 @@ export const FilterBody = (
               max={rangeBounds.price[1]}
               step={1}
               value={rangeInputs.price}
-              onChange={(value) => handleRangeChange('price', value)}
+              onChange={value => handleRangeChange('price', value)}
             />
           </>
         )}
@@ -81,7 +81,7 @@ export const FilterBody = (
               max={rangeBounds.treadDepth[1]}
               step={1}
               value={rangeInputs.treadDepth}
-              onChange={(value) => handleRangeChange('treadDepth', value)}
+              onChange={value => handleRangeChange('treadDepth', value)}
             />
           </>
         )}
@@ -108,7 +108,7 @@ export const FilterBody = (
               max={rangeBounds.remainingLife[1]}
               step={1}
               value={rangeInputs.remainingLife}
-              onChange={(value) => handleRangeChange('remainingLife', value)}
+              onChange={value => handleRangeChange('remainingLife', value)}
             />
           </>
         )}

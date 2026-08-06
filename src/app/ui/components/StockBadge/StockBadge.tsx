@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { FC, useMemo } from 'react';
 
@@ -17,9 +17,7 @@ const StockBadge: FC<StockBadgeProps> = ({ count = 1, className = '', title, ari
 
   return (
     <span
-      className={
-        `inline-flex items-center gap-1.5 rounded-full bg-green-50 text-green-700 border border-green-200 px-3 py-1 text-xs font-medium shadow-sm ${className}`.trim()
-      }
+      className={`inline-flex items-center gap-1.5 rounded-full bg-green-50 text-green-700 border border-green-200 px-3 py-1 text-xs font-medium shadow-sm ${className}`.trim()}
       title={title || text}
       aria-label={ariaLabel || text}
     >

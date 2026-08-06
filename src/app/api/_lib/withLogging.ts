@@ -29,7 +29,8 @@ export function withLogging(label: string, handler: RouteHandler): RouteHandler 
     try {
       const res = await handler(req, ctx);
       const ms = Math.round(performance.now() - start);
-      const status = res instanceof NextResponse || res instanceof Response ? res.status : undefined;
+      const status =
+        res instanceof NextResponse || res instanceof Response ? res.status : undefined;
       const level = status && status >= 500 ? 'error' : status && status >= 400 ? 'warn' : 'info';
       logger.log(level, 'http_request', { label, method, path, status, ms });
       return res;

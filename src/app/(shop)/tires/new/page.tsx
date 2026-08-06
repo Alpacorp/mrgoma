@@ -64,9 +64,13 @@ export default async function NewTiresPage() {
         {/* Breadcrumb */}
         <nav className="bg-gray-50 border-b border-gray-200" aria-label="Breadcrumb">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-2 text-sm text-gray-500 flex-wrap">
-            <Link href="/" className="hover:text-green-600 transition-colors">Home</Link>
+            <Link href="/" className="hover:text-green-600 transition-colors">
+              Home
+            </Link>
             <span>/</span>
-            <Link href="/tires" className="hover:text-green-600 transition-colors">Tires</Link>
+            <Link href="/tires" className="hover:text-green-600 transition-colors">
+              Tires
+            </Link>
             <span>/</span>
             <span className="text-gray-900 font-medium">New Tires</span>
           </div>
@@ -111,7 +115,11 @@ export default async function NewTiresPage() {
               </span>
               <span
                 className="border rounded-full px-4 py-2 text-sm font-semibold"
-                style={{ color: '#4ade80', borderColor: 'rgba(74,222,128,0.3)', background: 'rgba(74,222,128,0.1)' }}
+                style={{
+                  color: '#4ade80',
+                  borderColor: 'rgba(74,222,128,0.3)',
+                  background: 'rgba(74,222,128,0.1)',
+                }}
               >
                 Full Manufacturer Lifespan
               </span>
@@ -129,7 +137,9 @@ export default async function NewTiresPage() {
         {/* Why new tires */}
         <section className="py-16 border-b border-gray-100">
           <div className="max-w-5xl mx-auto px-4 sm:px-6">
-            <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">Why buy new</p>
+            <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">
+              Why buy new
+            </p>
             <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-10">
               Nothing beats fresh rubber
             </h2>
@@ -178,7 +188,8 @@ export default async function NewTiresPage() {
               Not sure which tire fits your car?
             </h2>
             <p className="text-black/60 max-w-md">
-              Search by size or talk to one of our ASE-certified technicians — we will find the right tire for your vehicle and budget.
+              Search by size or talk to one of our ASE-certified technicians — we will find the
+              right tire for your vehicle and budget.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
               <Link

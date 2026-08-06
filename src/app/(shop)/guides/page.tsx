@@ -51,56 +51,56 @@ export default function GuidesPage() {
 
       {/* Guides sections */}
       <div className="bg-[#111] max-w-none">
-       <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16 space-y-20">
-        {/* Buying guides */}
-        {buyingGuides.length > 0 && (
-          <section>
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-6 h-px bg-[#9dfb40]" />
-              <h2 className="text-2xl font-black tracking-tight text-white">Buying Guides</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {buyingGuides.map(guide => (
-                <GuideCard key={guide.slug} guide={guide} />
-              ))}
-            </div>
-          </section>
-        )}
+        <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16 space-y-20">
+          {/* Buying guides */}
+          {buyingGuides.length > 0 && (
+            <section>
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-6 h-px bg-[#9dfb40]" />
+                <h2 className="text-2xl font-black tracking-tight text-white">Buying Guides</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {buyingGuides.map(guide => (
+                  <GuideCard key={guide.slug} guide={guide} />
+                ))}
+              </div>
+            </section>
+          )}
 
-        {/* Rideshare guides */}
-        {rideshareGuides.length > 0 && (
-          <section>
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-6 h-px bg-amber-400" />
-              <h2 className="text-2xl font-black tracking-tight text-white">
-                Rideshare Driver Guides
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {rideshareGuides.map(guide => (
-                <GuideCard key={guide.slug} guide={guide} />
-              ))}
-            </div>
-          </section>
-        )}
+          {/* Rideshare guides */}
+          {rideshareGuides.length > 0 && (
+            <section>
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-6 h-px bg-amber-400" />
+                <h2 className="text-2xl font-black tracking-tight text-white">
+                  Rideshare Driver Guides
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {rideshareGuides.map(guide => (
+                  <GuideCard key={guide.slug} guide={guide} />
+                ))}
+              </div>
+            </section>
+          )}
 
-        {/* Maintenance guides */}
-        {maintenanceGuides.length > 0 && (
-          <section>
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-6 h-px bg-blue-400" />
-              <h2 className="text-2xl font-black tracking-tight text-white">
-                Maintenance Guides
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {maintenanceGuides.map(guide => (
-                <GuideCard key={guide.slug} guide={guide} />
-              ))}
-            </div>
-          </section>
-        )}
-       </div>
+          {/* Maintenance guides */}
+          {maintenanceGuides.length > 0 && (
+            <section>
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-6 h-px bg-blue-400" />
+                <h2 className="text-2xl font-black tracking-tight text-white">
+                  Maintenance Guides
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {maintenanceGuides.map(guide => (
+                  <GuideCard key={guide.slug} guide={guide} />
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
       </div>
 
       {/* CTA */}

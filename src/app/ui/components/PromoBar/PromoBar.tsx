@@ -21,10 +21,10 @@ const PromoBar: React.FC<PromoBarProps> = ({ className }) => {
         (className ? ` ${className}` : '')
       }
     >
-      <span aria-hidden="true" className="mr-2">🎉</span>
-      <span className="font-medium">
-        Free Shipping on All Tires — No Surprises at Checkout
+      <span aria-hidden="true" className="mr-2">
+        🎉
       </span>
+      <span className="font-medium">Free Shipping on All Tires — No Surprises at Checkout</span>
     </div>
   );
 };

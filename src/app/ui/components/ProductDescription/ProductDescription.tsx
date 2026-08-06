@@ -15,13 +15,18 @@ const ProductDescription: FC<ProductDescriptionProps> = ({ description }) => {
   const isEmpty = normalized.length === 0;
 
   const needsTruncate = normalized.length > MAX_PREVIEW_CHARS;
-  const preview = needsTruncate ? normalized.slice(0, MAX_PREVIEW_CHARS).trimEnd() + '…' : normalized;
+  const preview = needsTruncate
+    ? normalized.slice(0, MAX_PREVIEW_CHARS).trimEnd() + '…'
+    : normalized;
 
   return (
     <section aria-labelledby="product-description-title" className="relative">
       <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-6 shadow-sm">
         <div className="flex items-center gap-2 mb-3">
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-green-50 text-green-600" aria-hidden="true">
+          <div
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-green-50 text-green-600"
+            aria-hidden="true"
+          >
             <span>📝</span>
           </div>
           <h3 id="product-description-title" className="text-base font-semibold text-gray-900">

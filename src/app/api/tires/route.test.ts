@@ -26,11 +26,26 @@ import { GET } from './route';
 const req = (url: string) => ({ url }) as unknown as NextRequest;
 
 const rawRecord = {
-  TireId: '42', Code: 'ABC', Brand: 'Michelin', Model2: 'Pilot', RealSize: '225/40/18',
-  Image1: 'a.jpg', Price: 99, BrandId: 3, ProductTypeId: 2, Patched: '0',
-  RemainingLife: '80%', Tread: '7', KindSaleId: 1,
-  VaultName: 'Vault-1', Local: '0', Trash: 'false', Amount: 5, DOT: '1234',
-  ModificationDate: '2026-01-01', ConditionId: 7,
+  TireId: '42',
+  Code: 'ABC',
+  Brand: 'Michelin',
+  Model2: 'Pilot',
+  RealSize: '225/40/18',
+  Image1: 'a.jpg',
+  Price: 99,
+  BrandId: 3,
+  ProductTypeId: 2,
+  Patched: '0',
+  RemainingLife: '80%',
+  Tread: '7',
+  KindSaleId: 1,
+  VaultName: 'Vault-1',
+  Local: '0',
+  Trash: 'false',
+  Amount: 5,
+  DOT: '1234',
+  ModificationDate: '2026-01-01',
+  ConditionId: 7,
 };
 
 beforeEach(() => {
@@ -47,7 +62,15 @@ describe('GET /api/tires', () => {
     const rec = body.records[0];
     expect(rec.TireId).toBe('42');
     expect(rec.Brand).toBe('Michelin');
-    for (const leaked of ['VaultName', 'Local', 'Trash', 'Amount', 'DOT', 'ModificationDate', 'ConditionId']) {
+    for (const leaked of [
+      'VaultName',
+      'Local',
+      'Trash',
+      'Amount',
+      'DOT',
+      'ModificationDate',
+      'ConditionId',
+    ]) {
       expect(rec).not.toHaveProperty(leaked);
     }
     expect(body.totalCount).toBe(1);

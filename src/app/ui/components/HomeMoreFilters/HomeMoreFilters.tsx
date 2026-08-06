@@ -21,11 +21,10 @@ interface HomeMoreFiltersProps {
   onApply: (filters: HomeExtraFilters) => void;
 }
 
-const conditionOptions =
-  filtersItems.find(s => s.id === 'condition')?.options ?? [
-    { value: 'new', label: 'New' },
-    { value: 'used', label: 'Used' },
-  ];
+const conditionOptions = filtersItems.find(s => s.id === 'condition')?.options ?? [
+  { value: 'new', label: 'New' },
+  { value: 'used', label: 'Used' },
+];
 
 const SlidersIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -159,8 +158,7 @@ const HomeMoreFilters: FC<HomeMoreFiltersProps> = ({ value, onApply }) => {
   );
 
   const apply = () => {
-    const touchedPrice =
-      bounds && price ? price[0] !== bounds[0] || price[1] !== bounds[1] : false;
+    const touchedPrice = bounds && price ? price[0] !== bounds[0] || price[1] !== bounds[1] : false;
     onApply({
       brands,
       condition,
@@ -212,7 +210,12 @@ const HomeMoreFilters: FC<HomeMoreFiltersProps> = ({ value, onApply }) => {
             className="rounded-md p-1 text-gray-400 hover:text-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-600"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path
+                d="M6 6l12 12M18 6L6 18"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
             </svg>
           </button>
         </div>

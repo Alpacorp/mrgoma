@@ -63,10 +63,8 @@ export async function insertOrder(input: InsertOrderInput): Promise<InsertOrderR
         : null;
 
     // Defaults required by business rules
-    const paymentMethodId =
-      typeof input.paymentMethodId === 'number' ? input.paymentMethodId : 3; // default 3
-    const paymentStatusId =
-      typeof input.paymentStatusId === 'number' ? input.paymentStatusId : 2; // default 2
+    const paymentMethodId = typeof input.paymentMethodId === 'number' ? input.paymentMethodId : 3; // default 3
+    const paymentStatusId = typeof input.paymentStatusId === 'number' ? input.paymentStatusId : 2; // default 2
 
     const stripeSessionId =
       typeof input.stripeSessionId === 'string' && input.stripeSessionId.trim()

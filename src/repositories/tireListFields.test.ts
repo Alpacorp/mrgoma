@@ -4,12 +4,33 @@ import { pickTireListFields } from '@/repositories/tireListFields';
 import type { DocumentRecord } from '@/repositories/tiresRepository';
 
 const WHITELIST = [
-  'TireId', 'Code', 'Brand', 'Model2', 'RealSize',
-  'Image1', 'Image2', 'Image3', 'Image4',
-  'Price', 'BrandId', 'ProductTypeId', 'Patched', 'RemainingLife', 'Tread', 'KindSaleId',
+  'TireId',
+  'Code',
+  'Brand',
+  'Model2',
+  'RealSize',
+  'Image1',
+  'Image2',
+  'Image3',
+  'Image4',
+  'Price',
+  'BrandId',
+  'ProductTypeId',
+  'Patched',
+  'RemainingLife',
+  'Tread',
+  'KindSaleId',
 ].sort();
 
-const INTERNAL = ['VaultName', 'Local', 'Trash', 'Amount', 'DOT', 'ModificationDate', 'ConditionId'];
+const INTERNAL = [
+  'VaultName',
+  'Local',
+  'Trash',
+  'Amount',
+  'DOT',
+  'ModificationDate',
+  'ConditionId',
+];
 
 // A raw record as it comes off `SELECT *` — includes internal columns that are
 // not even in the DocumentRecord type but exist at runtime.

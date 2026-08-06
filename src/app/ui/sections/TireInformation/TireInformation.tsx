@@ -93,33 +93,52 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
             } divide-x divide-y sm:divide-y-0 divide-gray-100 border border-gray-200 rounded-xl overflow-hidden`}
           >
             <div className="px-3 py-3 bg-gray-50">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Condition</p>
-              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${isNew ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                Condition
+              </p>
+              <span
+                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${isNew ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}
+              >
                 {isNew ? 'New' : 'Used'}
               </span>
             </div>
             <div className="px-3 py-3 bg-gray-50">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Life</p>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                Life
+              </p>
               <div className="flex items-center gap-1.5">
-                <span className="text-sm font-bold text-gray-900">{singleTire.remainingLife || '—'}</span>
+                <span className="text-sm font-bold text-gray-900">
+                  {singleTire.remainingLife || '—'}
+                </span>
                 {lifePct > 0 && (
                   <div className="flex-1 h-1.5 rounded-full bg-gray-200 overflow-hidden max-w-[36px]">
-                    <div className={`h-full rounded-full ${lifeColor}`} style={{ width: `${lifePct}%` }} />
+                    <div
+                      className={`h-full rounded-full ${lifeColor}`}
+                      style={{ width: `${lifePct}%` }}
+                    />
                   </div>
                 )}
               </div>
             </div>
             <div className="px-3 py-3 bg-gray-50">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Tread</p>
-              <span className="text-sm font-bold text-gray-900">{singleTire.treadDepth || '—'}</span>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                Tread
+              </p>
+              <span className="text-sm font-bold text-gray-900">
+                {singleTire.treadDepth || '—'}
+              </span>
             </div>
             <div className="px-3 py-3 bg-gray-50">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Patched</p>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                Patched
+              </p>
               <span className="text-sm font-bold text-gray-900">{singleTire.patched || '—'}</span>
             </div>
             {singleTire.runFlat && (
               <div className="col-span-2 sm:col-span-1 px-3 py-3 bg-gray-50">
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Run Flat</p>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                  Run Flat
+                </p>
                 <span className="text-sm font-bold text-gray-900">
                   {/^y/i.test(singleTire.runFlat) ? 'Yes' : 'No'}
                 </span>

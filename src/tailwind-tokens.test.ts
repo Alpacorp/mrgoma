@@ -31,7 +31,9 @@ function sourceFiles(dir: string): string[] {
 
 describe('brand green reconciliation', () => {
   it('has no lingering green-primary utility in source', () => {
-    const offenders = sourceFiles(SRC).filter(f => readFileSync(f, 'utf8').includes('green-primary'));
+    const offenders = sourceFiles(SRC).filter(f =>
+      readFileSync(f, 'utf8').includes('green-primary')
+    );
     expect(offenders).toEqual([]);
   });
 });

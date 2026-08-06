@@ -51,7 +51,8 @@ export function generateTireDescription(params: TireDescriptionParams): string {
   // Technical specs
   const specs: string[] = [];
   if (params.loadIndex && params.loadIndex !== '-') specs.push(`Load Index ${params.loadIndex}`);
-  if (params.speedIndex && params.speedIndex !== '-') specs.push(`Speed Index ${params.speedIndex}`);
+  if (params.speedIndex && params.speedIndex !== '-')
+    specs.push(`Speed Index ${params.speedIndex}`);
   if (specs.length > 0) sentences.push(`${specs.join(', ')}.`);
 
   sentences.push('Free shipping. Available at MrGoma Tires in Miami, FL.');

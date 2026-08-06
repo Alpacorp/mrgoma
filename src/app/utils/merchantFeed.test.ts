@@ -33,18 +33,36 @@ const usedRecord: FeedTireRecord = {
 
 describe('buildFeedTitle', () => {
   it('used: Brand + Size + Condition + tread', () => {
-    expect(buildFeedTitle({ brand: 'Michelin', size: '225/40/18', condition: 'Used', remainingLife: '80%' }))
-      .toBe('Michelin 225/40/18 Used Tire — 80% tread');
+    expect(
+      buildFeedTitle({
+        brand: 'Michelin',
+        size: '225/40/18',
+        condition: 'Used',
+        remainingLife: '80%',
+      })
+    ).toBe('Michelin 225/40/18 Used Tire — 80% tread');
   });
 
   it('new: no tread suffix', () => {
-    expect(buildFeedTitle({ brand: 'Pirelli', size: '205/55/16', condition: 'New', remainingLife: '100%' }))
-      .toBe('Pirelli 205/55/16 New Tire');
+    expect(
+      buildFeedTitle({
+        brand: 'Pirelli',
+        size: '205/55/16',
+        condition: 'New',
+        remainingLife: '100%',
+      })
+    ).toBe('Pirelli 205/55/16 New Tire');
   });
 
   it('used without known life: no tread suffix', () => {
-    expect(buildFeedTitle({ brand: 'Goodyear', size: '195/65/15', condition: 'Used', remainingLife: '-' }))
-      .toBe('Goodyear 195/65/15 Used Tire');
+    expect(
+      buildFeedTitle({
+        brand: 'Goodyear',
+        size: '195/65/15',
+        condition: 'Used',
+        remainingLife: '-',
+      })
+    ).toBe('Goodyear 195/65/15 Used Tire');
   });
 });
 
@@ -90,14 +108,25 @@ describe('buildFeedItem', () => {
 
   it('exposes ONLY whitelisted keys (no internal DB fields leak)', () => {
     expect(Object.keys(item).sort()).toEqual([...GMC_ITEM_KEYS].sort());
-    for (const leaked of ['VaultName', 'DOT', 'Local', 'Trash', 'Amount', 'ModificationDate', 'ConditionId']) {
+    for (const leaked of [
+      'VaultName',
+      'DOT',
+      'Local',
+      'Trash',
+      'Amount',
+      'ModificationDate',
+      'ConditionId',
+    ]) {
       expect(item).not.toHaveProperty(leaked);
     }
   });
 });
 
 describe('buildMerchantFeedXml', () => {
-  const xml = buildMerchantFeedXml([buildFeedItem(usedRecord), buildFeedItem({ ...usedRecord, TireId: '2' })]);
+  const xml = buildMerchantFeedXml([
+    buildFeedItem(usedRecord),
+    buildFeedItem({ ...usedRecord, TireId: '2' }),
+  ]);
 
   it('is a Google Merchant RSS 2.0 document', () => {
     expect(xml).toContain('<?xml version="1.0" encoding="UTF-8"?>');

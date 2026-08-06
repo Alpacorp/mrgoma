@@ -58,8 +58,7 @@ export default async function BrandCategoryPage({
   ]);
   const tires = (result.records as TiresData[]).map(transformTireData);
   const totalCount = result.totalCount;
-  const brandId =
-    result.records.length > 0 ? (result.records[0] as TiresData).BrandId : undefined;
+  const brandId = result.records.length > 0 ? (result.records[0] as TiresData).BrandId : undefined;
 
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     { name: 'Home', url: '/' },
@@ -81,9 +80,13 @@ export default async function BrandCategoryPage({
         {/* Breadcrumb */}
         <nav className="bg-gray-50 border-b border-gray-200" aria-label="Breadcrumb">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-2 text-sm text-gray-500 flex-wrap">
-            <Link href="/" className="hover:text-green-600 transition-colors">Home</Link>
+            <Link href="/" className="hover:text-green-600 transition-colors">
+              Home
+            </Link>
             <span>/</span>
-            <Link href="/tires" className="hover:text-green-600 transition-colors">Tires</Link>
+            <Link href="/tires" className="hover:text-green-600 transition-colors">
+              Tires
+            </Link>
             <span>/</span>
             <span className="text-gray-900 font-medium">{brandName} Tires</span>
           </div>

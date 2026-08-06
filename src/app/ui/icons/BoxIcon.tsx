@@ -12,27 +12,9 @@ export const BoxIcon = ({ className = '', size = 20 }: IconProps) => {
       focusable="false"
       className={className}
     >
-      <rect
-        x="7"
-        y="9"
-        width="22"
-        height="18"
-        rx="2"
-        stroke="currentColor"
-        strokeWidth="2.5"
-      />
-      <path
-        d="M7 15H29"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
-      <path
-        d="M15 9V27"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
+      <rect x="7" y="9" width="22" height="18" rx="2" stroke="currentColor" strokeWidth="2.5" />
+      <path d="M7 15H29" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M15 9V27" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
     </svg>
   );
 };

@@ -110,8 +110,7 @@ const heightToNormal = (height: HTMLCanvasElement, strength: number): HTMLCanvas
   const dst = img.data;
 
   // Tileable sampling (wrap on both axes).
-  const at = (x: number, y: number): number =>
-    src[(((y + H) % H) * W + ((x + W) % W)) * 4] / 255;
+  const at = (x: number, y: number): number => src[(((y + H) % H) * W + ((x + W) % W)) * 4] / 255;
 
   for (let y = 0; y < H; y++) {
     for (let x = 0; x < W; x++) {

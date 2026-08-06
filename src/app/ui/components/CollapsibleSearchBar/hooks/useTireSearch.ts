@@ -56,22 +56,25 @@ export const useTireSearch = (redirectBasePath: string) => {
    * Reset all tire dimension filters
    * Optionally avoid pushing to the router (for coordinated URL updates)
    */
-  const resetFilters = useCallback((shouldPush: boolean = true) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete('w');
-    params.delete('s');
-    params.delete('d');
+  const resetFilters = useCallback(
+    (shouldPush: boolean = true) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete('w');
+      params.delete('s');
+      params.delete('d');
 
-    setSelectedFilters({
-      w: '',
-      s: '',
-      d: '',
-    });
+      setSelectedFilters({
+        w: '',
+        s: '',
+        d: '',
+      });
 
-    if (shouldPush) {
-      router.push(`/${redirectBasePath}?${params.toString()}`);
-    }
-  }, [searchParams, router]);
+      if (shouldPush) {
+        router.push(`/${redirectBasePath}?${params.toString()}`);
+      }
+    },
+    [searchParams, router]
+  );
 
   return {
     selectedFilters,

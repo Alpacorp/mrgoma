@@ -18,7 +18,11 @@ function buildFiltersClause(filters: TireFilters): { clause: string; params: Sql
   if (filters.width || filters.sidewall || filters.diameter) {
     if (filters.width && filters.sidewall && filters.diameter) {
       clause += ' AND RealSize = @realSize';
-      params.push({ name: 'realSize', type: VarChar, value: `${filters.width}/${filters.sidewall}/${filters.diameter}` });
+      params.push({
+        name: 'realSize',
+        type: VarChar,
+        value: `${filters.width}/${filters.sidewall}/${filters.diameter}`,
+      });
     } else {
       if (filters.width) {
         clause += ' AND RealSize LIKE @widthPattern';
@@ -56,13 +60,17 @@ function buildFiltersClause(filters: TireFilters): { clause: string; params: Sql
   if (filters.brands && filters.brands.length > 0) {
     const brandParams = filters.brands.map((_, i) => `@brand${i}`).join(',');
     clause += ` AND Brand IN (${brandParams})`;
-    filters.brands.forEach((brand, i) => params.push({ name: `brand${i}`, type: VarChar, value: brand }));
+    filters.brands.forEach((brand, i) =>
+      params.push({ name: `brand${i}`, type: VarChar, value: brand })
+    );
   }
 
   if (filters.stores && filters.stores.length > 0) {
     const storeParams = filters.stores.map((_, i) => `@store${i}`).join(',');
     clause += ` AND VaultName IN (${storeParams})`;
-    filters.stores.forEach((store, i) => params.push({ name: `store${i}`, type: VarChar, value: store }));
+    filters.stores.forEach((store, i) =>
+      params.push({ name: `store${i}`, type: VarChar, value: store })
+    );
   }
 
   if (filters.kindSale && filters.kindSale.length > 0) {
@@ -306,7 +314,8 @@ async function fetchBrandsInternal(
 
 export async function fetchSizes(): Promise<string[]> {
   const pool = await getPool();
-  const baseWhere = "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND RemainingLife >= '50%' AND Price != 0";
+  const baseWhere =
+    "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND RemainingLife >= '50%' AND Price != 0";
   const query = `SELECT DISTINCT RealSize
     FROM dbo.View_Tires
     WHERE ${baseWhere} AND RealSize IS NOT NULL AND RealSize <> ''
@@ -369,12 +378,14 @@ export async function fetchActiveTireIds(
                  WHERE Local = '0' AND Trash = 'false' AND Condition != 'sold' AND Price != 0
                  ORDER BY ModificationDate DESC`;
   const result = await logQuery('tires.activeIds', () => request.query(query), { limit });
-  return (result.recordset || []).map((row: { TireId: string; ModificationDate?: Date; Brand?: string; RealSize?: string }) => ({
-    id: String(row.TireId),
-    modified: row.ModificationDate,
-    brand: row.Brand || undefined,
-    size: row.RealSize || undefined,
-  }));
+  return (result.recordset || []).map(
+    (row: { TireId: string; ModificationDate?: Date; Brand?: string; RealSize?: string }) => ({
+      id: String(row.TireId),
+      modified: row.ModificationDate,
+      brand: row.Brand || undefined,
+      size: row.RealSize || undefined,
+    })
+  );
 }
 
 /**

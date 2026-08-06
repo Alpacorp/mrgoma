@@ -3,7 +3,7 @@ export const terminology = [
     id: 1,
     title: 'Treadwear rating',
     description:
-      'A numerical indicator that predicts the tire\'s tread life. A higher number indicates a longer expected tread life. For example, a tire with a 400 treadwear rating should last twice as long as a tire with a 200 rating, under the same conditions.',
+      "A numerical indicator that predicts the tire's tread life. A higher number indicates a longer expected tread life. For example, a tire with a 400 treadwear rating should last twice as long as a tire with a 200 rating, under the same conditions.",
   },
   {
     id: 2,
@@ -15,13 +15,13 @@ export const terminology = [
     id: 3,
     title: 'Traction ratio',
     description:
-      'Indicates a tire\'s ability to stop on wet pavement. Rated from highest to lowest as AA, A, B, or C. This rating measures the tire\'s grip on wet surfaces, which is crucial for safe braking in rainy conditions.',
+      "Indicates a tire's ability to stop on wet pavement. Rated from highest to lowest as AA, A, B, or C. This rating measures the tire's grip on wet surfaces, which is crucial for safe braking in rainy conditions.",
   },
   {
     id: 4,
     title: 'Load index',
     description:
-      'A numerical code that corresponds to the maximum weight a tire can support when properly inflated. Higher numbers indicate higher carrying capacity. This rating is essential for ensuring your tires can safely support your vehicle\'s weight.',
+      "A numerical code that corresponds to the maximum weight a tire can support when properly inflated. Higher numbers indicate higher carrying capacity. This rating is essential for ensuring your tires can safely support your vehicle's weight.",
   },
   {
     id: 5,
@@ -33,12 +33,12 @@ export const terminology = [
     id: 6,
     title: 'Tire pressure',
     description:
-      'The amount of air pressure inside a tire, measured in PSI (pounds per square inch). Maintaining proper tire pressure is critical for optimal performance, fuel efficiency, and tire longevity. The recommended pressure can be found in your vehicle\'s manual or on the driver\'s door jamb.',
+      "The amount of air pressure inside a tire, measured in PSI (pounds per square inch). Maintaining proper tire pressure is critical for optimal performance, fuel efficiency, and tire longevity. The recommended pressure can be found in your vehicle's manual or on the driver's door jamb.",
   },
   {
     id: 7,
     title: 'Speed index',
     description:
-      'A letter code indicating the maximum speed a tire can safely sustain under optimal conditions. Common ratings include Q (99 mph), S (112 mph), H (130 mph), V (149 mph), W (168 mph), and Y (186+ mph). Always match or exceed your vehicle manufacturer\'s recommended speed index.',
+      "A letter code indicating the maximum speed a tire can safely sustain under optimal conditions. Common ratings include Q (99 mph), S (112 mph), H (130 mph), V (149 mph), W (168 mph), and Y (186+ mph). Always match or exceed your vehicle manufacturer's recommended speed index.",
   },
 ];

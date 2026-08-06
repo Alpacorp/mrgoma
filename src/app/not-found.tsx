@@ -30,8 +30,8 @@ export default function NotFound() {
 
           {/* Description */}
           <p className="mt-4 text-base text-gray-500 max-w-md leading-relaxed">
-            The page you&apos;re looking for doesn&apos;t exist or may have been moved.
-            Head back to our catalog and find the right tire for your ride.
+            The page you&apos;re looking for doesn&apos;t exist or may have been moved. Head back to
+            our catalog and find the right tire for your ride.
           </p>
 
           {/* CTAs */}
@@ -53,10 +53,7 @@ export default function NotFound() {
           {/* Subtle help text */}
           <p className="mt-8 text-xs text-gray-400">
             If you followed a link and ended up here, please{' '}
-            <Link
-              href="/contact"
-              className="underline hover:text-green-600 transition-colors"
-            >
+            <Link href="/contact" className="underline hover:text-green-600 transition-colors">
               let us know
             </Link>
             .

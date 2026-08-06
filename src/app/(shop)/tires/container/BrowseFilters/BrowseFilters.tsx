@@ -127,7 +127,14 @@ const RimSizesPlain: FC = () => (
 );
 
 const ClearIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3 h-3" aria-hidden="true">
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2.5}
+    className="w-3 h-3"
+    aria-hidden="true"
+  >
     <line x1="18" y1="6" x2="6" y2="18" />
     <line x1="6" y1="6" x2="18" y2="18" />
   </svg>
@@ -226,7 +233,10 @@ const BrandScroller: FC<BrandScrollerProps> = ({ brands, activeBrand }) => {
       </div>
 
       {hasOverflow && (
-        <div className="sm:hidden mt-1.5 h-1 rounded-full bg-gray-100 overflow-hidden" aria-hidden="true">
+        <div
+          className="sm:hidden mt-1.5 h-1 rounded-full bg-gray-100 overflow-hidden"
+          aria-hidden="true"
+        >
           <div
             className="h-full w-[28%] rounded-full bg-gray-400 transition-transform duration-100 ease-out"
             style={{ transform: `translateX(${thumbLeft}%)` }}
@@ -235,7 +245,10 @@ const BrandScroller: FC<BrandScrollerProps> = ({ brands, activeBrand }) => {
       )}
 
       {hasOverflow && progress < 0.98 && (
-        <div className="sm:hidden pointer-events-none absolute right-0 top-0 bottom-3 w-8 bg-gradient-to-l from-white to-transparent" aria-hidden="true" />
+        <div
+          className="sm:hidden pointer-events-none absolute right-0 top-0 bottom-3 w-8 bg-gradient-to-l from-white to-transparent"
+          aria-hidden="true"
+        />
       )}
     </div>
   );

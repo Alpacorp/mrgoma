@@ -82,8 +82,8 @@ describe('Home above-the-fold claims', () => {
 
     // A full sentence carrying the differentiators — a row of badge words gives
     // a search engine nothing to quote.
-    expect(
-      screen.getByText(/largest selections of like-new used tires/i)
-    ).toHaveTextContent(/30-day warranty/i);
+    expect(screen.getByText(/largest selections of like-new used tires/i)).toHaveTextContent(
+      /30-day warranty/i
+    );
   });
 });

@@ -81,7 +81,7 @@ const HeroVideo: FC<HeroVideoProps> = ({ src, poster, className }) => {
       target: EventTarget,
       type: string,
       handler: () => void,
-      options?: AddEventListenerOptions,
+      options?: AddEventListenerOptions
     ) => {
       target.addEventListener(type, handler, options);
       cleanups.push(() => target.removeEventListener(type, handler, options));
@@ -104,7 +104,7 @@ const HeroVideo: FC<HeroVideoProps> = ({ src, poster, className }) => {
           },
           () => {
             // Refused — leave the listeners armed for the next opportunity.
-          },
+          }
         );
       }
     };

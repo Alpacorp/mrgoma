@@ -184,7 +184,10 @@ export function buildMerchantFeedXml(items: GmcItem[]): string {
  * Timing-safe comparison of the provided `?key=` against the configured token.
  * Length-guarded so `timingSafeEqual` never throws on mismatched buffers.
  */
-export function isValidFeedToken(provided: string | null | undefined, expected: string | undefined): boolean {
+export function isValidFeedToken(
+  provided: string | null | undefined,
+  expected: string | undefined
+): boolean {
   if (!provided || !expected) return false;
   const a = Buffer.from(provided);
   const b = Buffer.from(expected);

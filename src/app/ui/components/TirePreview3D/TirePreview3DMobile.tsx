@@ -6,7 +6,6 @@ import dynamic from 'next/dynamic';
 
 import { createPortal } from 'react-dom';
 
-
 import { SelectedFiltersContext } from '@/app/context/SelectedFilters';
 import { ButtonSearch, XMarkIcon } from '@/app/ui/components';
 import { ArrowsToRight, CarFront } from '@/app/ui/icons';
@@ -101,53 +100,53 @@ const TirePreview3DMobile: FC<{
             aria-modal="true"
             aria-label="3D tire preview"
           >
-          <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setOpen(false)}
-            aria-hidden="true"
-          />
-          <div className="relative flex h-[75dvh] max-h-[600px] w-full max-w-md flex-col overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-black/5">
-            <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-              <span className="text-sm font-semibold text-gray-900">Tire preview</span>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="Close 3D preview"
-                className="rounded-md p-1 text-gray-400 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
-              >
-                <XMarkIcon className="h-6 w-6" aria-hidden />
-              </button>
-            </div>
+            <div
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => setOpen(false)}
+              aria-hidden="true"
+            />
+            <div className="relative flex h-[75dvh] max-h-[600px] w-full max-w-md flex-col overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-black/5">
+              <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
+                <span className="text-sm font-semibold text-gray-900">Tire preview</span>
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  aria-label="Close 3D preview"
+                  className="rounded-md p-1 text-gray-400 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+                >
+                  <XMarkIcon className="h-6 w-6" aria-hidden />
+                </button>
+              </div>
 
-            {/* Size selectors live inside the modal so changing Width/Sidewall/
+              {/* Size selectors live inside the modal so changing Width/Sidewall/
                 Diameter updates the model in view — making the link obvious. */}
-            <div className="border-b border-gray-100 px-4 py-3">
-              <SizeSelectors {...selector} showChips={false} />
-              <p className="mt-2 text-center text-[11px] font-medium text-green-700">
-                Change a size — the model updates live below.
-              </p>
-            </div>
+              <div className="border-b border-gray-100 px-4 py-3">
+                <SizeSelectors {...selector} showChips={false} />
+                <p className="mt-2 text-center text-[11px] font-medium text-green-700">
+                  Change a size — the model updates live below.
+                </p>
+              </div>
 
-            <div className="relative flex-1" aria-hidden="true">
-              <TireScene size={size} reducedMotion={reducedMotion} />
-              <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 rounded-full bg-neutral-800/90 px-4 py-1 shadow-xl">
-                <ArrowsToRight className="w-8" />
-                <span className="text-sm font-medium text-green-400">{sizeLabel}</span>
+              <div className="relative flex-1" aria-hidden="true">
+                <TireScene size={size} reducedMotion={reducedMotion} />
+                <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 rounded-full bg-neutral-800/90 px-4 py-1 shadow-xl">
+                  <ArrowsToRight className="w-8" />
+                  <span className="text-sm font-medium text-green-400">{sizeLabel}</span>
+                </div>
+              </div>
+
+              {/* Footer — search straight from the preview without closing it. */}
+              <div className="border-t border-gray-100 px-4 py-3">
+                <ButtonSearch onClick={onSearch} disabled={canSearch} />
+                <p className="mt-2 text-center text-[10px] leading-snug text-gray-400">
+                  Drag to rotate · Visual size aid only — not an exact representation of the
+                  tire&apos;s condition, measurements or physical aspects.
+                </p>
               </div>
             </div>
-
-            {/* Footer — search straight from the preview without closing it. */}
-            <div className="border-t border-gray-100 px-4 py-3">
-              <ButtonSearch onClick={onSearch} disabled={canSearch} />
-              <p className="mt-2 text-center text-[10px] leading-snug text-gray-400">
-                Drag to rotate · Visual size aid only — not an exact representation of the
-                tire&apos;s condition, measurements or physical aspects.
-              </p>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
+          </div>,
+          document.body
+        )}
     </>
   );
 };

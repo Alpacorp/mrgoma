@@ -19,12 +19,16 @@ const ProductMeta: React.FC<ProductMetaProps> = ({ brand, condition, className }
   const norm = normalizeCondition(condition);
   if (!brand && !norm) return null;
   return (
-    <p className={["mt-1 text-sm text-gray-600 flex items-center gap-2", className].filter(Boolean).join(' ')}>
+    <p
+      className={['mt-1 text-sm text-gray-600 flex items-center gap-2', className]
+        .filter(Boolean)
+        .join(' ')}
+    >
       {brand ? <span>{brand}</span> : null}
       {norm ? (
         <span
           className={
-            "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset " +
+            'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset ' +
             (norm === 'New'
               ? 'bg-green-50 text-green-700 ring-green-200'
               : 'bg-slate-50 text-slate-700 ring-slate-200')

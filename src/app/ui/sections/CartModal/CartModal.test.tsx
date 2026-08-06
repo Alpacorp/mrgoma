@@ -50,7 +50,14 @@ describe('CartModal', () => {
   it('lists items and removes one on click', async () => {
     const user = userEvent.setup();
     cart.value.cartItems = [
-      { id: '1', name: 'Michelin Pilot', price: 99, quantity: 1, brand: 'Michelin', condition: 'New' },
+      {
+        id: '1',
+        name: 'Michelin Pilot',
+        price: 99,
+        quantity: 1,
+        brand: 'Michelin',
+        condition: 'New',
+      },
     ];
     cart.value.cartTotal = 99;
 

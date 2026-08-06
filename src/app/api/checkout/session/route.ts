@@ -39,7 +39,7 @@ export const GET = withLogging('checkout.session.GET', async (req: NextRequest) 
       apiVersion: '2024-11-20.acacia',
     } as unknown as Stripe.StripeConfig);
 
-    const checkoutTestMode = ['true','1','yes','on'].includes(
+    const checkoutTestMode = ['true', '1', 'yes', 'on'].includes(
       String(process.env.CHECKOUT_TEST_MODE || process.env.TEST_MODE || '').toLowerCase()
     );
 
@@ -105,9 +105,9 @@ export const GET = withLogging('checkout.session.GET', async (req: NextRequest) 
         // Derive Store from VaultId of the purchased product(s)
         const productIds = Array.from(
           new Set(
-            (items.map(it => it.productId).filter(v => v && v !== 'tax') as Array<
-              string | number
-            >).map(v => String(v))
+            (
+              items.map(it => it.productId).filter(v => v && v !== 'tax') as Array<string | number>
+            ).map(v => String(v))
           )
         );
 
@@ -131,100 +131,104 @@ export const GET = withLogging('checkout.session.GET', async (req: NextRequest) 
         sc_order_store = store;
 
         if (checkoutTestMode) {
-          logger.info('Checkout test mode is enabled: skipping DB writes (SC_Order, SC_OrderDetail, Tires updates).');
+          logger.info(
+            'Checkout test mode is enabled: skipping DB writes (SC_Order, SC_OrderDetail, Tires updates).'
+          );
         } else {
           // Idempotency check: avoid creating duplicate orders if the user revisits the success URL
           const existing = await getOrderByStripeSessionId(sessionId as string);
           if (existing) {
             sc_order_id = existing.orderId;
             sc_order_guid = existing.orderGuid;
-            logger.info(`SC_Order already exists for session ${sessionId} (id=${sc_order_id}), skipping insert`);
+            logger.info(
+              `SC_Order already exists for session ${sessionId} (id=${sc_order_id}), skipping insert`
+            );
           } else {
-          // Compute order total in major currency units (decimal)
-          const orderTotal = (session.amount_total || 0) / 100;
-          const xff = req.headers.get('x-forwarded-for') || '';
-          const clientIp = xff.split(',')[0]?.trim() || null;
+            // Compute order total in major currency units (decimal)
+            const orderTotal = (session.amount_total || 0) / 100;
+            const xff = req.headers.get('x-forwarded-for') || '';
+            const clientIp = xff.split(',')[0]?.trim() || null;
 
-          const inserted = await insertOrder({
-            orderSatusId: 3,
-            store,
-            orderTotal,
-            customerIP: clientIp,
-            stripeSessionId: sessionId as string,
-          });
-          sc_order_id = inserted.orderId;
-          sc_order_guid = inserted.orderGuid;
-          logger.info(`Created SC_Order id=${sc_order_id} for session ${sessionId}`);
+            const inserted = await insertOrder({
+              orderSatusId: 3,
+              store,
+              orderTotal,
+              customerIP: clientIp,
+              stripeSessionId: sessionId as string,
+            });
+            sc_order_id = inserted.orderId;
+            sc_order_guid = inserted.orderGuid;
+            logger.info(`Created SC_Order id=${sc_order_id} for session ${sessionId}`);
 
-          // Insert SC_OrderDetail rows: one per tire unit purchased
-          try {
-            const detailItems = (lineItems.data || [])
-              .map(li => {
-                const product = li.price?.product as Stripe.Product | undefined;
-                const productId = product?.metadata?.productId || product?.id || null;
-                const quantity = li.quantity || 1;
-                const unitAmountCents =
-                  li.price && li.price.unit_amount != null
-                    ? Number(li.price.unit_amount)
-                    : li.amount_total && quantity
-                      ? Math.round(Number(li.amount_total) / Number(quantity))
-                      : null;
-                const unitPrice = unitAmountCents != null ? Number(unitAmountCents) / 100 : 0;
-                return productId
-                  ? { productId: String(productId), unitPrice, quantity: Number(quantity) }
-                  : null;
-              })
-              .filter(it => it && it.productId !== 'tax') as Array<{
-              productId: string;
-              unitPrice: number;
-              quantity: number;
-            }>;
+            // Insert SC_OrderDetail rows: one per tire unit purchased
+            try {
+              const detailItems = (lineItems.data || [])
+                .map(li => {
+                  const product = li.price?.product as Stripe.Product | undefined;
+                  const productId = product?.metadata?.productId || product?.id || null;
+                  const quantity = li.quantity || 1;
+                  const unitAmountCents =
+                    li.price && li.price.unit_amount != null
+                      ? Number(li.price.unit_amount)
+                      : li.amount_total && quantity
+                        ? Math.round(Number(li.amount_total) / Number(quantity))
+                        : null;
+                  const unitPrice = unitAmountCents != null ? Number(unitAmountCents) / 100 : 0;
+                  return productId
+                    ? { productId: String(productId), unitPrice, quantity: Number(quantity) }
+                    : null;
+                })
+                .filter(it => it && it.productId !== 'tax') as Array<{
+                productId: string;
+                unitPrice: number;
+                quantity: number;
+              }>;
 
-            if (detailItems.length > 0 && sc_order_id) {
-              const res = await insertOrderDetailsByOrderId(sc_order_id, detailItems);
-              logger.info(
-                `Inserted ${res.inserted} SC_OrderDetail rows for orderId=${sc_order_id} (OrdenNumber=${res.orderNumber ?? 'n/a'})`
-              );
-            } else {
-              logger.warn('No valid line items to insert into SC_OrderDetail');
+              if (detailItems.length > 0 && sc_order_id) {
+                const res = await insertOrderDetailsByOrderId(sc_order_id, detailItems);
+                logger.info(
+                  `Inserted ${res.inserted} SC_OrderDetail rows for orderId=${sc_order_id} (OrdenNumber=${res.orderNumber ?? 'n/a'})`
+                );
+              } else {
+                logger.warn('No valid line items to insert into SC_OrderDetail');
+              }
+            } catch (err) {
+              logger.error('Failed to insert SC_OrderDetail after payment', err);
             }
-          } catch (err) {
-            logger.error('Failed to insert SC_OrderDetail after payment', err);
-          }
 
-          // Update Tires.ConditionId to 7 for purchased TireIds
-          try {
-            if (productIds && productIds.length > 0) {
-              const upd = await setTiresConditionIdToSoldByIds(productIds, 7);
-              updated_sold = upd.updated;
-              logger.info(`Updated dbo.Tires ConditionId=7 for ${updated_sold} tire(s)`);
+            // Update Tires.ConditionId to 7 for purchased TireIds
+            try {
+              if (productIds && productIds.length > 0) {
+                const upd = await setTiresConditionIdToSoldByIds(productIds, 7);
+                updated_sold = upd.updated;
+                logger.info(`Updated dbo.Tires ConditionId=7 for ${updated_sold} tire(s)`);
+              }
+            } catch (err) {
+              logger.error('Failed to update dbo.Tires ConditionId after payment', err);
             }
-          } catch (err) {
-            logger.error('Failed to update dbo.Tires ConditionId after payment', err);
-          }
 
-          // Report the sale exactly once. This sits inside the `!existing`
-          // branch on purpose: `getOrderByStripeSessionId` above already
-          // guarantees one pass per order no matter how often the customer
-          // reloads or shares this URL, so the analytics event inherits that
-          // guarantee from a guard that protects the money path and will not be
-          // quietly removed. Being nested inside `!checkoutTestMode` likewise
-          // keeps test payments out of production analytics for free.
-          //
-          // `emitPurchase` never throws and never waits long — see its own
-          // comments for why both matter here.
-          await emitPurchase({
-            orderTotal,
-            currency,
-            fulfillmentMethod,
-            store,
-            // `items`, not `detailItems`: the latter is scoped to the try block
-            // above and is already gone by here. The synthetic tax line is not a
-            // product and must not be counted.
-            itemCount: items
-              .filter(it => it.productId && it.productId !== 'tax')
-              .reduce((n, it) => n + (it.quantity || 1), 0),
-          });
+            // Report the sale exactly once. This sits inside the `!existing`
+            // branch on purpose: `getOrderByStripeSessionId` above already
+            // guarantees one pass per order no matter how often the customer
+            // reloads or shares this URL, so the analytics event inherits that
+            // guarantee from a guard that protects the money path and will not be
+            // quietly removed. Being nested inside `!checkoutTestMode` likewise
+            // keeps test payments out of production analytics for free.
+            //
+            // `emitPurchase` never throws and never waits long — see its own
+            // comments for why both matter here.
+            await emitPurchase({
+              orderTotal,
+              currency,
+              fulfillmentMethod,
+              store,
+              // `items`, not `detailItems`: the latter is scoped to the try block
+              // above and is already gone by here. The synthetic tax line is not a
+              // product and must not be counted.
+              itemCount: items
+                .filter(it => it.productId && it.productId !== 'tax')
+                .reduce((n, it) => n + (it.quantity || 1), 0),
+            });
           } // end else (new order)
         }
       }

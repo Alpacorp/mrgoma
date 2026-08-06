@@ -53,8 +53,7 @@ export const servicesConfig: ServiceConfig[] = [
   {
     slug: 'wheel-alignment',
     title: 'Wheel Alignment',
-    shortDescription:
-      'Precise 2- or 4-wheel alignments using Hunter HawkEye Elite® technology.',
+    shortDescription: 'Precise 2- or 4-wheel alignments using Hunter HawkEye Elite® technology.',
     longDescription:
       'Proper wheel alignment protects your tires from premature wear, improves fuel efficiency, and keeps your vehicle tracking straight. We use the Hunter HawkEye Elite® alignment system — the same technology trusted by dealerships and top shops nationwide — for precise 2-wheel and 4-wheel alignments on all vehicle types.',
     whatIncluded: [
@@ -72,10 +71,10 @@ export const servicesConfig: ServiceConfig[] = [
       },
       {
         q: 'What is the Hunter HawkEye Elite®?',
-        a: 'It\'s a top-of-the-line computerized alignment system that measures all four wheel angles simultaneously with laser precision — the industry gold standard.',
+        a: "It's a top-of-the-line computerized alignment system that measures all four wheel angles simultaneously with laser precision — the industry gold standard.",
       },
       {
-        q: 'What\'s the difference between 2-wheel and 4-wheel alignment?',
+        q: "What's the difference between 2-wheel and 4-wheel alignment?",
         a: '2-wheel alignment adjusts only the front axle, while 4-wheel alignment corrects all four wheels. Most modern vehicles benefit from 4-wheel alignment.',
       },
       {
@@ -107,7 +106,7 @@ export const servicesConfig: ServiceConfig[] = [
     faqs: [
       {
         q: 'How often should I change my oil?',
-        a: 'With full synthetic oil, most modern vehicles can go 7,500–10,000 miles between changes. Check your owner\'s manual for your specific vehicle\'s recommendation.',
+        a: "With full synthetic oil, most modern vehicles can go 7,500–10,000 miles between changes. Check your owner's manual for your specific vehicle's recommendation.",
       },
       {
         q: 'Why full synthetic over conventional oil?',
@@ -119,7 +118,7 @@ export const servicesConfig: ServiceConfig[] = [
       },
       {
         q: 'Can I wait at the shop during my oil change?',
-        a: 'Yes, all our locations have a waiting area. You\'re welcome to wait or drop off your vehicle.',
+        a: "Yes, all our locations have a waiting area. You're welcome to wait or drop off your vehicle.",
       },
     ],
     metaTitle: 'Oil Change Service in Miami & Orlando | Full Synthetic | MrGoma Tires',
@@ -174,7 +173,7 @@ export const servicesConfig: ServiceConfig[] = [
     shortDescription:
       'Fast, affordable flat tire repair — or a replacement from our inventory if needed.',
     longDescription:
-      'A flat tire doesn\'t have to ruin your day. Our technicians assess whether your tire can be safely repaired or needs to be replaced. We follow industry-standard repair procedures for punctures in the repairable zone and can pull from our 15,000+ tire inventory if a replacement is needed — often getting you back on the road faster than ordering elsewhere.',
+      "A flat tire doesn't have to ruin your day. Our technicians assess whether your tire can be safely repaired or needs to be replaced. We follow industry-standard repair procedures for punctures in the repairable zone and can pull from our 15,000+ tire inventory if a replacement is needed — often getting you back on the road faster than ordering elsewhere.",
     whatIncluded: [
       'Tire removal and inspection for damage',
       'Puncture location and severity assessment',
@@ -194,7 +193,7 @@ export const servicesConfig: ServiceConfig[] = [
       },
       {
         q: 'Can you repair a run-flat tire?',
-        a: 'Most run-flat tires cannot be repaired after a puncture per manufacturer guidelines. We\'ll inspect it and advise on the safest course of action.',
+        a: "Most run-flat tires cannot be repaired after a puncture per manufacturer guidelines. We'll inspect it and advise on the safest course of action.",
       },
       {
         q: 'How long does a flat tire repair take?',
@@ -235,7 +234,7 @@ export const servicesConfig: ServiceConfig[] = [
       },
       {
         q: 'Can you rotate tires with different sizes front and rear?',
-        a: 'Staggered fitments (different front/rear sizes) typically cannot be rotated side-to-side. We\'ll advise on the best approach for your vehicle.',
+        a: "Staggered fitments (different front/rear sizes) typically cannot be rotated side-to-side. We'll advise on the best approach for your vehicle.",
       },
     ],
     metaTitle: 'Tire Rotation Service in Miami & Orlando | MrGoma Tires',
@@ -264,7 +263,7 @@ export const servicesConfig: ServiceConfig[] = [
       },
       {
         q: 'Can I add regular air to nitrogen-filled tires in an emergency?',
-        a: 'Yes, you can safely top off nitrogen tires with regular air in a pinch. It dilutes the nitrogen but won\'t harm your tires.',
+        a: "Yes, you can safely top off nitrogen tires with regular air in a pinch. It dilutes the nitrogen but won't harm your tires.",
       },
       {
         q: 'How often do nitrogen-filled tires need refilling?',
@@ -272,7 +271,7 @@ export const servicesConfig: ServiceConfig[] = [
       },
       {
         q: 'Is nitrogen inflation good for high-performance vehicles?',
-        a: 'Absolutely — it\'s standard in motorsports, aviation, and heavy equipment for its thermal stability and consistency.',
+        a: "Absolutely — it's standard in motorsports, aviation, and heavy equipment for its thermal stability and consistency.",
       },
     ],
     metaTitle: 'Nitrogen Tire Inflation in Miami & Orlando | MrGoma Tires',
@@ -284,10 +283,9 @@ export const servicesConfig: ServiceConfig[] = [
   {
     slug: 'tpms-service',
     title: 'TPMS Service',
-    shortDescription:
-      'Diagnose, replace, and program TPMS sensors for all makes and models.',
+    shortDescription: 'Diagnose, replace, and program TPMS sensors for all makes and models.',
     longDescription:
-      'The Tire Pressure Monitoring System (TPMS) is a federally required safety feature on all vehicles manufactured after 2008. When your TPMS warning light comes on, it means one or more sensors are detecting low pressure — or the sensor itself may need service. Our technicians diagnose the issue, replace faulty sensors, and program new sensors to communicate with your vehicle\'s computer.',
+      "The Tire Pressure Monitoring System (TPMS) is a federally required safety feature on all vehicles manufactured after 2008. When your TPMS warning light comes on, it means one or more sensors are detecting low pressure — or the sensor itself may need service. Our technicians diagnose the issue, replace faulty sensors, and program new sensors to communicate with your vehicle's computer.",
     whatIncluded: [
       'TPMS system diagnostic scan',
       'Sensor identification and fault code reading',
