@@ -76,12 +76,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
     async jwt({ token, user }) {
-      if(user){
+      if (user) {
         token.id = user.id;
-        token.name = user.name
+        token.name = user.name;
       }
       return token;
-    }
+    },
   },
   secret: process.env.NEXTAUTH_SECRET,
 });

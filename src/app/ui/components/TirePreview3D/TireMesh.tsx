@@ -68,7 +68,12 @@ const Rim = ({ rimR, halfWidth }: RimProps) => {
           spoke windows still see past it to the white backdrop. */}
       <mesh>
         <cylinderGeometry args={[rimR * 0.99, rimR * 0.99, halfWidth * 1.92, 64, 1, true]} />
-        <meshStandardMaterial color="#0e0f11" metalness={0} roughness={0.92} side={THREE.DoubleSide} />
+        <meshStandardMaterial
+          color="#0e0f11"
+          metalness={0}
+          roughness={0.92}
+          side={THREE.DoubleSide}
+        />
       </mesh>
 
       {/* Outer wheel lip / rim flange (chunky polished ring) */}

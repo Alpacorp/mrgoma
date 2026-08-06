@@ -64,9 +64,13 @@ export default async function UsedTiresPage() {
         {/* Breadcrumb */}
         <nav className="bg-gray-50 border-b border-gray-200" aria-label="Breadcrumb">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-2 text-sm text-gray-500 flex-wrap">
-            <Link href="/" className="hover:text-green-600 transition-colors">Home</Link>
+            <Link href="/" className="hover:text-green-600 transition-colors">
+              Home
+            </Link>
             <span>/</span>
-            <Link href="/tires" className="hover:text-green-600 transition-colors">Tires</Link>
+            <Link href="/tires" className="hover:text-green-600 transition-colors">
+              Tires
+            </Link>
             <span>/</span>
             <span className="text-gray-900 font-medium">Used Tires</span>
           </div>
@@ -111,7 +115,11 @@ export default async function UsedTiresPage() {
               </span>
               <span
                 className="border rounded-full px-4 py-2 text-sm font-semibold"
-                style={{ color: '#fbbf24', borderColor: 'rgba(251,191,36,0.3)', background: 'rgba(251,191,36,0.1)' }}
+                style={{
+                  color: '#fbbf24',
+                  borderColor: 'rgba(251,191,36,0.3)',
+                  background: 'rgba(251,191,36,0.1)',
+                }}
               >
                 30-Day Warranty
               </span>
@@ -129,7 +137,9 @@ export default async function UsedTiresPage() {
         {/* Why used tires */}
         <section className="py-16 border-b border-gray-100">
           <div className="max-w-5xl mx-auto px-4 sm:px-6">
-            <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">Why choose used</p>
+            <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">
+              Why choose used
+            </p>
             <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-10">
               Smart savings, zero compromise
             </h2>
@@ -178,7 +188,8 @@ export default async function UsedTiresPage() {
               Need help finding the right size?
             </h2>
             <p className="text-black/60 max-w-md">
-              Use our tire search or contact our ASE-certified team — they know tires inside and out.
+              Use our tire search or contact our ASE-certified team — they know tires inside and
+              out.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
               <Link

@@ -7,7 +7,6 @@ import { EditIcon, XMarkIcon } from '@/app/ui/components/Icons/Icons';
 import { TireSelector } from './TireSelector';
 import { TireFilters } from '../hooks/useTireSearch';
 
-
 interface CompactFormProps {
   selectedFilters: TireFilters;
   onFilterChangeAction: (value: string, type: keyof TireFilters) => void;

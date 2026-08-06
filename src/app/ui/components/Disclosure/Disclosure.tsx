@@ -45,7 +45,6 @@ export const Disclosure: React.FC<DisclosureProps> = ({
           intrinsic-element union (react-three-fiber augments it globally). */}
       {React.createElement(Component, { className, 'data-open': isOpen }, children)}
     </DisclosureContext.Provider>
-
   );
 };
 

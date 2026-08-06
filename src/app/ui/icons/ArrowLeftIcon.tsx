@@ -19,12 +19,7 @@ export const ArrowLeftIcon = ({ className = '', size = 20 }: IconProps) => {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path
-        d="M13 18H28"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
+      <path d="M13 18H28" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
     </svg>
   );
 };

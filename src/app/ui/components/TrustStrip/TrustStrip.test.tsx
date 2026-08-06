@@ -14,10 +14,7 @@ describe('TrustStrip', () => {
 
     const items = screen.getAllByRole('listitem');
     expect(items).toHaveLength(CLAIMS.length);
-    expect(items.map(li => li.textContent)).toEqual([
-      `✦${CLAIMS[0]}`,
-      `✦${CLAIMS[1]}`,
-    ]);
+    expect(items.map(li => li.textContent)).toEqual([`✦${CLAIMS[0]}`, `✦${CLAIMS[1]}`]);
   });
 
   it('exposes an accessible name for the list', () => {

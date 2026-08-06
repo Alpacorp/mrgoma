@@ -38,8 +38,8 @@ function normalizeProductImage(
   let candidate = /^https?:\/\//i.test(raw)
     ? raw
     : raw.startsWith('/')
-    ? `${origin}${raw}`
-    : `${origin}/${raw.replace(/^\.?\//, '')}`;
+      ? `${origin}${raw}`
+      : `${origin}/${raw.replace(/^\.?\//, '')}`;
 
   try {
     let u = new URL(candidate);
@@ -130,7 +130,7 @@ export const POST = withLogging('checkout.createSession.POST', async (req: NextR
 
     // Fulfillment parsing and validation
     const fulfillmentMethod: 'delivery' | 'pickup' =
-      (body.fulfillmentMethod === 'pickup' ? 'pickup' : 'delivery');
+      body.fulfillmentMethod === 'pickup' ? 'pickup' : 'delivery';
     const shippingState = (body.shippingState || '').toString().trim().toUpperCase();
     const pickupStoreId = (body.pickupStoreId || '').toString().trim();
     const pickupStoreName = (body.pickupStoreName || '').toString().trim() || null;
@@ -389,16 +389,16 @@ export const POST = withLogging('checkout.createSession.POST', async (req: NextR
           fulfillmentMethod,
           shippingState: fulfillmentMethod === 'delivery' ? shippingState : '',
           pickupStoreId: fulfillmentMethod === 'pickup' ? pickupStoreId : '',
-          pickupStoreName: fulfillmentMethod === 'pickup' ? (pickupStoreName || '') : '',
-          pickupStoreAddress: fulfillmentMethod === 'pickup' ? (pickupStoreAddress || '') : '',
+          pickupStoreName: fulfillmentMethod === 'pickup' ? pickupStoreName || '' : '',
+          pickupStoreAddress: fulfillmentMethod === 'pickup' ? pickupStoreAddress || '' : '',
         },
       },
       metadata: {
         fulfillmentMethod,
         shippingState: fulfillmentMethod === 'delivery' ? shippingState : '',
         pickupStoreId: fulfillmentMethod === 'pickup' ? pickupStoreId : '',
-        pickupStoreName: fulfillmentMethod === 'pickup' ? (pickupStoreName || '') : '',
-        pickupStoreAddress: fulfillmentMethod === 'pickup' ? (pickupStoreAddress || '') : '',
+        pickupStoreName: fulfillmentMethod === 'pickup' ? pickupStoreName || '' : '',
+        pickupStoreAddress: fulfillmentMethod === 'pickup' ? pickupStoreAddress || '' : '',
       },
       success_url: `${origin}/checkout?success=1&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/checkout?canceled=1`,

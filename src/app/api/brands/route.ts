@@ -6,11 +6,10 @@ import { withLogging } from '@/app/api/_lib/withLogging';
 import { buildBrandFilters } from '@/app/utils/filterUtils';
 import { TireFilters, fetchBrands } from '@/repositories/tiresRepository';
 
-const getCachedBrands = unstable_cache(
-  (filters: TireFilters) => fetchBrands(filters),
-  ['brands'],
-  { revalidate: 300, tags: ['brands'] }
-);
+const getCachedBrands = unstable_cache((filters: TireFilters) => fetchBrands(filters), ['brands'], {
+  revalidate: 300,
+  tags: ['brands'],
+});
 
 export const GET = withLogging('brands.GET', async (req: NextRequest) => {
   try {

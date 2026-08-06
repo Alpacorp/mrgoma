@@ -3,3 +3,9 @@ node_modules
 build
 dist
 public
+
+# SDD artefacts: spec.md, plan.md, tasks.md and the results written alongside
+# them are records of decisions already taken, kept so a future reader can see
+# what was known at the time. Reformatting them rewrites the record for no
+# benefit and buries real changes under dozens of reflowed paragraphs.
+spec

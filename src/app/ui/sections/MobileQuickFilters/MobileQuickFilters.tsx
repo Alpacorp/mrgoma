@@ -23,8 +23,14 @@ const MobileQuickFilters: FC<MobileQuickFiltersProps> = ({
   apiBasePath = '/api',
 }) => {
   const { setShowFilter } = useContext(ShowFilterContext);
-  const { isChecked, handleCheckboxChange, checkboxInputs, rangeInputs, rangeBounds, resetFilters } =
-    useFilters(redirectBasePath, apiBasePath, { enableStoreFilter: true });
+  const {
+    isChecked,
+    handleCheckboxChange,
+    checkboxInputs,
+    rangeInputs,
+    rangeBounds,
+    resetFilters,
+  } = useFilters(redirectBasePath, apiBasePath, { enableStoreFilter: true });
 
   const toggleChip = (category: 'condition' | 'patched', value: string, active: boolean) => {
     const fakeEvent = {

@@ -58,7 +58,9 @@ const Header: FC<{ compact?: boolean }> = ({ compact = false }): ReactNode => {
           aria-label="Global"
           className={`relative z-10 mx-auto flex max-w-7xl items-center justify-between transition-all duration-300 ${compact ? 'p-2' : 'p-4'}`}
         >
-          <div className={`w-full flex items-center justify-between gap-4 rounded-2xl bg-black/40 border border-white/10 px-4 shadow-sm backdrop-blur-md transition-all duration-300 ${compact ? 'py-1' : 'py-2'}`}>
+          <div
+            className={`w-full flex items-center justify-between gap-4 rounded-2xl bg-black/40 border border-white/10 px-4 shadow-sm backdrop-blur-md transition-all duration-300 ${compact ? 'py-1' : 'py-2'}`}
+          >
             <HamburgerMenu />
             <Link href="/" className="-m-1.5 p-1.5">
               <Image
@@ -92,14 +94,23 @@ const Header: FC<{ compact?: boolean }> = ({ compact = false }): ReactNode => {
                         aria-haspopup="true"
                       >
                         {item.name}
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3 h-3 transition-transform duration-200 group-hover:rotate-180" aria-hidden="true">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2.5}
+                          className="w-3 h-3 transition-transform duration-200 group-hover:rotate-180"
+                          aria-hidden="true"
+                        >
                           <polyline points="6 9 12 15 18 9" />
                         </svg>
                       </Link>
                       <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 w-[480px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                         <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl p-6 grid grid-cols-2 gap-6">
                           <div>
-                            <p className="text-[#9dfb40] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">Miami, FL</p>
+                            <p className="text-[#9dfb40] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
+                              Miami, FL
+                            </p>
                             <ul className="space-y-1.5">
                               {miamiKids.map(kid => (
                                 <li key={kid.href}>
@@ -114,7 +125,9 @@ const Header: FC<{ compact?: boolean }> = ({ compact = false }): ReactNode => {
                             </ul>
                           </div>
                           <div>
-                            <p className="text-[#9dfb40] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">Orlando, FL</p>
+                            <p className="text-[#9dfb40] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
+                              Orlando, FL
+                            </p>
                             <ul className="space-y-1.5">
                               {orlandoKids.map(kid => (
                                 <li key={kid.href}>

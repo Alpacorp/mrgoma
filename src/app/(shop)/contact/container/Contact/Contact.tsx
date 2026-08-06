@@ -100,7 +100,6 @@ function ArrowIcon() {
 export default function Contact() {
   return (
     <main className="bg-[#0a0a0a] text-white min-h-screen">
-
       {/* ── Hero ── */}
       <section className="relative border-b border-white/8 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
@@ -190,98 +189,88 @@ export default function Contact() {
 
       {/* ── Locations ── */}
       <section className="bg-[#111]">
-       <div className="max-w-6xl mx-auto px-6 lg:px-8 py-20">
-        <div className="flex items-center justify-between mb-12">
-          <div>
-            <p className="text-[#9dfb40] text-xs font-bold tracking-widest uppercase mb-2">
-              Our Locations
-            </p>
-            <h2 className="text-3xl font-black tracking-tight">
-              Find your nearest shop
-            </h2>
+        <div className="max-w-6xl mx-auto px-6 lg:px-8 py-20">
+          <div className="flex items-center justify-between mb-12">
+            <div>
+              <p className="text-[#9dfb40] text-xs font-bold tracking-widest uppercase mb-2">
+                Our Locations
+              </p>
+              <h2 className="text-3xl font-black tracking-tight">Find your nearest shop</h2>
+            </div>
+            <span className="text-6xl font-black text-white/5 select-none hidden sm:block">07</span>
           </div>
-          <span className="text-6xl font-black text-white/5 select-none hidden sm:block">
-            07
-          </span>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/8 border border-white/8 rounded-2xl overflow-hidden">
-          {locations.map(loc => (
-            <article
-              key={loc.id}
-              className="bg-[#0a0a0a] p-6 flex flex-col gap-4 group hover:bg-white/[0.03] transition-colors duration-200"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <span className="text-[#9dfb40] text-xs font-bold tracking-widest">
-                  {loc.id}
-                </span>
-                <span className="text-[10px] text-white/30 font-medium text-right leading-tight">
-                  {loc.area}
-                </span>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/8 border border-white/8 rounded-2xl overflow-hidden">
+            {locations.map(loc => (
+              <article
+                key={loc.id}
+                className="bg-[#0a0a0a] p-6 flex flex-col gap-4 group hover:bg-white/[0.03] transition-colors duration-200"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <span className="text-[#9dfb40] text-xs font-bold tracking-widest">{loc.id}</span>
+                  <span className="text-[10px] text-white/30 font-medium text-right leading-tight">
+                    {loc.area}
+                  </span>
+                </div>
 
-              <h3 className="font-bold text-base text-white leading-tight">
-                {loc.name}
-              </h3>
+                <h3 className="font-bold text-base text-white leading-tight">{loc.name}</h3>
 
-              <div className="flex flex-col gap-2 flex-1">
-                <div className="flex items-start gap-2 text-gray-400 text-sm">
-                  <MapPinIcon />
-                  <span>{loc.address}</span>
+                <div className="flex flex-col gap-2 flex-1">
+                  <div className="flex items-start gap-2 text-gray-400 text-sm">
+                    <MapPinIcon />
+                    <span>{loc.address}</span>
+                  </div>
+
+                  <a
+                    href={loc.tel}
+                    data-track="call_store"
+                    data-track-category="contact"
+                    data-track-label={loc.name}
+                    className="flex items-center gap-2 text-sm text-gray-400 hover:text-[#9dfb40] transition-colors duration-150 w-fit"
+                  >
+                    <PhoneIcon />
+                    {loc.phone}
+                  </a>
                 </div>
 
                 <a
-                  href={loc.tel}
-                  data-track="call_store"
-                  data-track-category="contact"
-                  data-track-label={loc.name}
-                  className="flex items-center gap-2 text-sm text-gray-400 hover:text-[#9dfb40] transition-colors duration-150 w-fit"
+                  href={loc.map}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#9dfb40] hover:gap-2.5 transition-all duration-200 mt-auto w-fit"
                 >
-                  <PhoneIcon />
-                  {loc.phone}
+                  Get Directions
+                  <ArrowIcon />
                 </a>
-              </div>
-
-              <a
-                href={loc.map}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#9dfb40] hover:gap-2.5 transition-all duration-200 mt-auto w-fit"
-              >
-                Get Directions
-                <ArrowIcon />
-              </a>
-            </article>
-          ))}
+              </article>
+            ))}
+          </div>
         </div>
-       </div>
       </section>
 
       {/* ── Hours + Email ── */}
       <section className="border-t border-white/8">
         <div className="max-w-6xl mx-auto px-6 lg:px-8 py-20 grid grid-cols-1 lg:grid-cols-2 gap-16">
-
           {/* Hours */}
           <div>
             <p className="text-[#9dfb40] text-xs font-bold tracking-widest uppercase mb-2">
               Store Hours
             </p>
-            <h2 className="text-3xl font-black tracking-tight mb-8">
-              When we&apos;re open
-            </h2>
+            <h2 className="text-3xl font-black tracking-tight mb-8">When we&apos;re open</h2>
 
             <ul className="divide-y divide-white/8">
               {hours.map(row => {
                 const isSunday = row.day === 'Sunday';
                 return (
-                  <li
-                    key={row.day}
-                    className="flex items-center justify-between py-3.5 gap-4"
-                  >
-                    <span className={`text-sm font-medium ${isSunday ? 'text-gray-400' : 'text-white'}`}>
+                  <li key={row.day} className="flex items-center justify-between py-3.5 gap-4">
+                    <span
+                      className={`text-sm font-medium ${isSunday ? 'text-gray-400' : 'text-white'}`}
+                    >
                       {row.day}
                     </span>
-                    <span className={`text-sm tabular-nums ${isSunday ? 'text-gray-500' : 'text-gray-300'}`}>
+                    <span
+                      className={`text-sm tabular-nums ${isSunday ? 'text-gray-500' : 'text-gray-300'}`}
+                    >
                       {row.time}
                     </span>
                   </li>
@@ -300,9 +289,7 @@ export default function Contact() {
               <p className="text-[#9dfb40] text-xs font-bold tracking-widest uppercase mb-2">
                 General Inquiries
               </p>
-              <h2 className="text-3xl font-black tracking-tight mb-6">
-                Other ways to reach us
-              </h2>
+              <h2 className="text-3xl font-black tracking-tight mb-6">Other ways to reach us</h2>
             </div>
 
             <div className="space-y-5">
@@ -340,18 +327,13 @@ export default function Contact() {
                 <span className="text-xs text-gray-500 uppercase tracking-widest font-medium">
                   Coverage
                 </span>
-                <span className="text-white font-medium text-lg">
-                  Miami & Orlando, FL
-                </span>
-                <span className="text-gray-500 text-sm">
-                  Shipping available nationwide
-                </span>
+                <span className="text-white font-medium text-lg">Miami & Orlando, FL</span>
+                <span className="text-gray-500 text-sm">Shipping available nationwide</span>
               </div>
             </div>
           </div>
         </div>
       </section>
-
     </main>
   );
 }

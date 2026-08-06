@@ -77,7 +77,9 @@ function main() {
   }
 
   if (!pass) {
-    console.error('\n✗ Performance budget exceeded. Trim JS or bump perf-budget.json deliberately.');
+    console.error(
+      '\n✗ Performance budget exceeded. Trim JS or bump perf-budget.json deliberately.'
+    );
     process.exit(1);
   }
   console.log('\n✓ Within performance budget.');

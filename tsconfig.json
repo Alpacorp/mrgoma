@@ -1,10 +1,6 @@
 {
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -22,27 +18,13 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@components/*": [
-        "./src/components/*"
-      ],
-      "@pages/*": [
-        "./src/pages/*"
-      ],
-      "@config/*": [
-        "./src/app/config/*"
-      ],
-      "@connection/*": [
-        "./src/app/connection/*"
-      ],
-      "@api/*": [
-        "./src/app/api/*"
-      ],
-      "#public/*": [
-        "./public/*"
-      ]
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@config/*": ["./src/app/config/*"],
+      "@connection/*": ["./src/app/connection/*"],
+      "@api/*": ["./src/app/api/*"],
+      "#public/*": ["./public/*"]
     },
     "target": "ES2017"
   },
@@ -53,7 +35,5 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

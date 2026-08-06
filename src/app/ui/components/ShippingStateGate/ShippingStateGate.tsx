@@ -26,7 +26,7 @@ const ShippingStateGate: React.FC<Props> = ({
       <select
         id="shipping-state"
         value={selectedState}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={e => onChange(e.target.value)}
         className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-500"
         aria-describedby={helpTextId}
       >

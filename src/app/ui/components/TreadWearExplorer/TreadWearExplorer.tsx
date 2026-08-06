@@ -25,13 +25,19 @@ const SceneSkeleton = () => (
 );
 
 // three.js loads only when this component mounts on a capable device.
-const TreadScene = dynamic(() => import('./TreadScene'), { ssr: false, loading: () => <SceneSkeleton /> });
+const TreadScene = dynamic(() => import('./TreadScene'), {
+  ssr: false,
+  loading: () => <SceneSkeleton />,
+});
 
 const Fallback2D = ({ current, newUnits }: { current: number; newUnits: number }) => (
   <div className="flex h-full items-end justify-center gap-3 p-8">
     {[0, 1, 2, 3].map(i => (
       <div key={i} className="relative flex w-7 items-end" style={{ height: '80%' }}>
-        <div className="absolute inset-x-0 top-0 rounded-t border-2 border-dashed border-green-400" style={{ height: '100%' }} />
+        <div
+          className="absolute inset-x-0 top-0 rounded-t border-2 border-dashed border-green-400"
+          style={{ height: '100%' }}
+        />
         <div
           className="w-full rounded-t bg-neutral-700"
           style={{ height: `${clamp((current / newUnits) * 100, 6, 100)}%` }}
@@ -103,7 +109,11 @@ const TreadWearExplorer: FC<TreadWearExplorerProps> = ({ singleTire }) => {
           {enabled ? (
             idleReady ? (
               <div className="absolute inset-0" aria-hidden="true">
-                <TreadScene currentUnits={current} newUnits={newUnits} reducedMotion={reducedMotion} />
+                <TreadScene
+                  currentUnits={current}
+                  newUnits={newUnits}
+                  reducedMotion={reducedMotion}
+                />
               </div>
             ) : (
               <SceneSkeleton />
@@ -126,7 +136,9 @@ const TreadWearExplorer: FC<TreadWearExplorerProps> = ({ singleTire }) => {
         <div className="flex flex-col justify-center gap-4">
           <div className="flex items-end gap-8">
             <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-gray-400">Tread depth</p>
+              <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                Tread depth
+              </p>
               <p className="text-3xl font-black text-gray-900">
                 {tread != null ? `${singleTire.treadDepth}/32"` : '—'}
               </p>

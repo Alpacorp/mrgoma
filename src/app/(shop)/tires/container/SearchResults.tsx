@@ -19,12 +19,7 @@ import {
 } from '@/app/ui/components';
 import { FiltersMobile, TopFilters, PromoBanner } from '@/app/ui/sections';
 import { promoBannerConfig } from '@/app/ui/sections/PromoBanner/config/promoBanner';
-import {
-  LOCATIONS_LABEL,
-  SHIPPING,
-  WARRANTY,
-  onlineInventoryLabel,
-} from '@/app/utils/brandClaims';
+import { LOCATIONS_LABEL, SHIPPING, WARRANTY, onlineInventoryLabel } from '@/app/utils/brandClaims';
 import {
   DEFAULT_PAGE,
   DEFAULT_PAGE_SIZE,
@@ -271,7 +266,6 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
   return (
     <Suspense fallback={<LoadingScreen message="Preparing your tire selection..." />}>
       <main className="bg-gray-50">
-
         {/* ── Hero ── */}
         <section className="bg-[#0a0a0a] text-white relative overflow-hidden border-b border-white/8">
           <div
@@ -299,10 +293,11 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-none mb-5">
               {getTireSize() ? (
                 <>
-                  Size{' '}
-                  <span className="text-[#9dfb40]">{getTireSize()}</span>
+                  Size <span className="text-[#9dfb40]">{getTireSize()}</span>
                   <br />
-                  <span className="text-3xl sm:text-4xl text-gray-400 font-bold">Tires in Miami</span>
+                  <span className="text-3xl sm:text-4xl text-gray-400 font-bold">
+                    Tires in Miami
+                  </span>
                 </>
               ) : (
                 <>
