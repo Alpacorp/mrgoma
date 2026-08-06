@@ -20,6 +20,17 @@ const locations = locationsConfig.map((l, i) => ({
 // letting this page quietly misinform.
 const hours = weeklyHours(DEFAULT_HOURS);
 
+/**
+ * When somebody is there to answer WhatsApp — **not** the stores' opening
+ * hours, which is why it is written here rather than derived from them.
+ *
+ * The two look alike and already disagree: the shops open on Sunday 10–4 and
+ * this does not. So the resemblance is a coincidence, and anyone tempted to
+ * "fix" the mismatch by pointing this at `DEFAULT_HOURS` would be promising a
+ * Sunday reply that nobody is there to send.
+ */
+const WHATSAPP_AVAILABILITY = 'Mon–Sat 8am–6pm';
+
 const trust = [
   { label: 'ASE Certified', icon: '✦' },
   { label: '30-Day Warranty', icon: '✦' },
@@ -169,7 +180,7 @@ export default function Contact() {
               Chat with us on WhatsApp
             </h2>
             <p className="text-black/70 mt-2 text-sm">
-              Available Mon–Sat 8am–6pm · Usually replies in minutes
+              Available {WHATSAPP_AVAILABILITY} · Usually replies in minutes
             </p>
           </div>
           <a
