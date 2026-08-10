@@ -4,6 +4,9 @@ import { useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
+import { trackEvent } from '@/app/utils/analytics';
+import { EVENTS } from '@/app/utils/analyticsEvents';
+
 export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
@@ -17,14 +20,27 @@ interface ApiMessage {
 }
 
 interface AiChatResponse {
-  type: 'filters' | 'message';
+  /**
+   * `no_results` renders exactly like `message` — the customer sees no
+   * difference — but it tells us a search ran and the catalogue had nothing,
+   * which is a different outcome from ordinary conversation and must not be
+   * counted as a successful one.
+   */
+  type: 'filters' | 'message' | 'no_results';
   filters?: Record<string, unknown>;
   message: string;
+  /** Names of what was filtered on, never the customer's own words. */
+  dimensions?: string;
 }
 
-export function useAiChat(options?: { apiEndpoint?: string; redirectBasePath?: string }) {
+export function useAiChat(options?: {
+  apiEndpoint?: string;
+  redirectBasePath?: string;
+  surface?: string;
+}) {
   const apiEndpoint = options?.apiEndpoint ?? '/api/dashboard/ai-chat';
   const redirectBasePath = options?.redirectBasePath ?? 'dashboard';
+  const surface = options?.surface ?? 'dashboard';
 
   const router = useRouter();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -54,6 +70,9 @@ export function useAiChat(options?: { apiEndpoint?: string; redirectBasePath?: s
     if (filters.kindSale !== undefined) params.set('kindSale', String(filters.kindSale));
     if (filters.local !== undefined) params.set('local', String(filters.local));
     if (filters.code !== undefined) params.set('code', String(filters.code));
+    // Without this the ordering the assistant chose is dropped on the way to the
+    // listing, and "cheapest first" silently returns the default order.
+    if (filters.sort !== undefined) params.set('sort', String(filters.sort));
 
     params.set('page', '1');
 
@@ -102,8 +121,21 @@ export function useAiChat(options?: { apiEndpoint?: string; redirectBasePath?: s
 
       setMessages(prev => [...prev, assistantMessage]);
 
+      // Reported on the outcome, never on the message being sent: a conversation
+      // that never produces a search is exactly what we want to be able to see.
       if (data.type === 'filters' && data.filters) {
+        trackEvent({
+          action: EVENTS.AI_CHAT_FILTERS_APPLIED,
+          category: 'ai_chat',
+          params: { surface, dimensions: data.dimensions ?? '' },
+        });
         applyFiltersToUrl(data.filters);
+      } else if (data.type === 'no_results') {
+        trackEvent({
+          action: EVENTS.AI_CHAT_NO_RESULTS,
+          category: 'ai_chat',
+          params: { surface, dimensions: data.dimensions ?? '' },
+        });
       }
     } catch (err) {
       const errorMessage =

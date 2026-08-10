@@ -101,7 +101,7 @@ const Dashboard = () => {
         </div>
       </section>
 
-      <AiChat />
+      <AiChat surface="dashboard" />
       <DashboardCartModal />
     </div>
   );

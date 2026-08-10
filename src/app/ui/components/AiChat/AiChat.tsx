@@ -59,31 +59,36 @@ function MessageContent({ content }: { content: string }) {
 
 import mrGomaAvatar from '#public/assets/images/mrgoma-avatar.svg';
 
+import { DASHBOARD_EXAMPLE_QUERIES } from './exampleQueries';
 import { useAiChat } from './hooks/useAiChat';
 
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-const DASHBOARD_EXAMPLE_QUERIES = [
-  '275/55/20',
-  'used tires under $80',
-  'new tires rim 17',
-  'Bridgestone 195/65/15',
-  'tires at Orlando store',
-  'used with more than 50% life',
-];
-
 interface AiChatProps {
   apiEndpoint?: string;
   redirectBasePath?: string;
   exampleQueries?: string[];
+  /**
+   * Which assistant this is — the public storefront one or the internal
+   * dashboard one. Rides along on every event so staff activity can be told
+   * apart from customers'.
+   *
+   * Required, deliberately. Both surfaces render this same component, and until
+   * 2026-08-06 they emitted identical events with nothing to distinguish them:
+   * every search a seller ran counted as a customer's. A default would let the
+   * next mount site inherit the wrong label just as silently; a missing prop is
+   * now a type error instead.
+   */
+  surface: string;
 }
 
 export default function AiChat({
   apiEndpoint,
   redirectBasePath,
   exampleQueries = DASHBOARD_EXAMPLE_QUERIES,
-}: AiChatProps = {}) {
+  surface,
+}: AiChatProps) {
   if (process.env.NEXT_PUBLIC_AI_CHAT_ENABLED !== 'true') return null;
 
   const [isOpen, setIsOpen] = useState(false);
@@ -94,6 +99,7 @@ export default function AiChat({
   const { messages, isLoading, sendMessage, clearChat } = useAiChat({
     apiEndpoint,
     redirectBasePath,
+    surface,
   });
 
   useEffect(() => {
@@ -276,6 +282,7 @@ export default function AiChat({
                       onClick={() => setInputValue(q)}
                       data-track="ai_chat_example"
                       data-track-category="ai_chat"
+                      data-track-surface={surface}
                       data-track-label={q}
                       className="cursor-pointer block w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-600 hover:border-green-600 hover:text-green-600 transition-colors"
                     >
@@ -356,6 +363,7 @@ export default function AiChat({
               disabled={isLoading || !inputValue.trim()}
               data-track="ai_chat_send"
               data-track-category="ai_chat"
+              data-track-surface={surface}
               className="cursor-pointer p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
               aria-label="Send"
             >
@@ -408,6 +416,7 @@ export default function AiChat({
             aria-label="Open AI assistant"
             data-track="open_ai_chat"
             data-track-category="ai_chat"
+            data-track-surface={surface}
           >
             {/* Animated AI gradient ring — slow spin, frozen for reduced motion */}
             <span

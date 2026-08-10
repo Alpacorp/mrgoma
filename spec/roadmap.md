@@ -133,7 +133,15 @@ To be resumed after the two tracks above; no fixed order yet.
   did. _Complete; awaiting merge._
 - ⬜ **TireCard redesign.** UX/UI improvements for the `/tires` cards (analysis
   done).
-- ⬜ **Dashboard AI chat improvements.**
+- 🟡 **AI chat: search on what was said (`018-ai-chat-filters-and-surface`).**
+  Ask the assistant for Michelin and it shows nothing: it demands a tire size
+  first, even though it can already filter by brand, rim, condition and price.
+  The home page filters by brand in two clicks, so the feature built to reduce
+  friction is the one place with more of it. Unblocks partial filters, makes
+  "cheapest first" expressible, and — because otherwise we could not tell whether
+  any of it worked — separates public from `/dashboard` activity in the events
+  (today both surfaces emit identical ones) and finally counts the moment filters
+  are actually applied, which nothing records. _Clarified; ready for `/plan`._
 - ⬜ **Document Stakeholders/Requirements** if formal sources appear.
 
 ## Recently delivered (context)
