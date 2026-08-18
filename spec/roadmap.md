@@ -183,6 +183,21 @@ To be resumed after the two tracks above; no fixed order yet.
   withdrawal, because unmounting a component cannot unload a script that has
   already run. Escape now dismisses the banner from anywhere, which it never
   did. _Complete; awaiting merge._
+- 🟡 **Headings that read as words (`023-heading-text`).** Block 3. The largest
+  text on most pages of this site is two words jammed together — `MICHELINTires`,
+  `235/50/20Tires in Miami`, `AboutMrGomaTires` — because the headings break
+  across two lines with a `<br />`, and a `<br />` is a line break, **not
+  whitespace**. It looks right and reads as one run-on token to Google, to a
+  screen reader, and to anyone who copies it. The audit counted thirteen pages;
+  it is **eleven templates covering ~400**, including all 272 size pages and all
+  113 brand pages — the routes `020` fought to keep indexed and `021` gave preview
+  cards to. The fix is already written: `022` hit this building the store headings
+  and replaced the `<br />` with a `block` span and a real space. Also folds in
+  three neighbours: the guides list marks section names and card names both as
+  `<h2>` (T092), the mobile menu carries a Spanish `aria-label` on an
+  English-declared site (T098), and one guide has three different names because
+  the config field called `title` drives the heading while the one called
+  `headline` drives the cards (T100). _Spec drafted; open clarifications._
 - ⬜ **Tire detail titles are truncated before the differentiators.** Found while
   analysing `021`, and not in the Screaming Frog audit, whose title tickets stop at
   section pages. `productTitle()` builds a title that reaches **100 characters** in
