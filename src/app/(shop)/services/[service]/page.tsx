@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import ServiceDetail from '@/app/(shop)/services/[service]/container/ServiceDetail/ServiceDetail';
 import { servicesConfig, getServiceBySlug } from '@/app/(shop)/services/servicesConfig';
 import { JsonLd } from '@/app/ui/components';
-import { canonical, buildBreadcrumbJsonLd } from '@/app/utils/seo';
+import { buildBreadcrumbJsonLd, serviceMetadata } from '@/app/utils/seo';
 
 export function generateStaticParams() {
   return servicesConfig.map(s => ({ service: s.slug }));
@@ -20,11 +20,11 @@ export async function generateMetadata({
   const service = getServiceBySlug(slug);
   if (!service) return { title: 'Service Not Found', robots: { index: false, follow: false } };
 
-  return {
-    title: service.metaTitle,
-    description: service.metaDescription,
-    alternates: { canonical: canonical(`/services/${slug}`) },
-  };
+  return serviceMetadata({
+    metaTitle: service.metaTitle,
+    metaDescription: service.metaDescription,
+    slug,
+  });
 }
 
 export default async function ServicePage({ params }: { params: Promise<{ service: string }> }) {

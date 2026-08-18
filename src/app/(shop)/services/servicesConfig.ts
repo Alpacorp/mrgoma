@@ -5,6 +5,16 @@ export interface ServiceConfig {
   longDescription: string;
   whatIncluded: string[];
   faqs: { q: string; a: string }[];
+  /**
+   * The page title **without the brand**. `serviceMetadata()` appends
+   * `TITLE_SUFFIX` once. Spelling "MrGoma Tires" here as well is what produced
+   * `… | MrGoma Tires | MrGoma Tires` on all eight pages, because the root
+   * template appends it to any title that is not `{ absolute }`.
+   *
+   * Keep it short enough that the title still fits `TITLE_MAX` with the suffix —
+   * `metadata.test.ts` fails loudly rather than truncating, so an over-long one
+   * cannot ship quietly.
+   */
   metaTitle: string;
   metaDescription: string;
   icon: string;
@@ -44,7 +54,7 @@ export const servicesConfig: ServiceConfig[] = [
         a: 'Vibration in the steering wheel or seat, uneven tire wear, or pulling to one side are common signs that balancing is needed.',
       },
     ],
-    metaTitle: 'Tire Mounting & Balancing in Miami & Orlando | MrGoma Tires',
+    metaTitle: 'Tire Mounting & Balancing in Miami & Orlando',
     metaDescription:
       'Professional tire mounting and high-speed balancing at 7 locations in Miami and Orlando, FL. ASE-certified technicians. Visit us or call today.',
     icon: 'tire',
@@ -82,7 +92,7 @@ export const servicesConfig: ServiceConfig[] = [
         a: 'In most cases, yes. Incorrect toe or camber angles are the most common cause of steering pull and can be corrected during alignment.',
       },
     ],
-    metaTitle: 'Wheel Alignment in Miami & Orlando | Hunter HawkEye Elite® | MrGoma Tires',
+    metaTitle: 'Wheel Alignment — Hunter HawkEye Elite®, Miami',
     metaDescription:
       'Professional 2 & 4-wheel alignment using Hunter HawkEye Elite® at 7 locations in Miami & Orlando. ASE-certified technicians. Call or visit today.',
     icon: 'alignment',
@@ -121,7 +131,7 @@ export const servicesConfig: ServiceConfig[] = [
         a: "Yes, all our locations have a waiting area. You're welcome to wait or drop off your vehicle.",
       },
     ],
-    metaTitle: 'Oil Change Service in Miami & Orlando | Full Synthetic | MrGoma Tires',
+    metaTitle: 'Oil Change — Full Synthetic, Miami & Orlando',
     metaDescription:
       'Fast, professional oil changes using premium full synthetic oil at 7 locations in Miami and Orlando, FL. ASE-certified technicians. No appointment needed.',
     icon: 'oil',
@@ -161,7 +171,7 @@ export const servicesConfig: ServiceConfig[] = [
         a: 'No. Worn pads can damage rotors (a much more expensive repair) and significantly reduce your stopping ability. Come in as soon as possible.',
       },
     ],
-    metaTitle: 'Brake Service in Miami & Orlando | Inspection & Repair | MrGoma Tires',
+    metaTitle: 'Brake Service — Inspection & Repair, Miami',
     metaDescription:
       'Professional brake inspections, pad replacement, and rotor service at 7 locations in Miami and Orlando, FL. ASE-certified. Visit or call today.',
     icon: 'brakes',
@@ -200,9 +210,9 @@ export const servicesConfig: ServiceConfig[] = [
         a: 'A standard plug-and-patch repair takes about 20–30 minutes. If a replacement is needed from our inventory, we can usually complete the full swap in under an hour.',
       },
     ],
-    metaTitle: 'Flat Tire Repair in Miami & Orlando | Fast Service | MrGoma Tires',
+    metaTitle: 'Flat Tire Repair in Miami & Orlando — Fast Service',
     metaDescription:
-      'Fast flat tire repair at 7 locations in Miami and Orlando, FL. Professional plug-and-patch repairs or replacement from 15,000+ tire inventory. No appointment needed.',
+      'Fast flat tire repair at 7 locations in Miami and Orlando, FL. Professional plug-and-patch repairs or replacement from our inventory. No appointment needed.',
     icon: 'repair',
     relatedServices: ['tire-mounting-balancing', 'tpms-service', 'tire-rotation'],
   },
@@ -237,7 +247,7 @@ export const servicesConfig: ServiceConfig[] = [
         a: "Staggered fitments (different front/rear sizes) typically cannot be rotated side-to-side. We'll advise on the best approach for your vehicle.",
       },
     ],
-    metaTitle: 'Tire Rotation Service in Miami & Orlando | MrGoma Tires',
+    metaTitle: 'Tire Rotation Service in Miami & Orlando',
     metaDescription:
       'Regular tire rotation at 7 locations in Miami and Orlando, FL. Extend tire life and maintain balanced handling. ASE-certified technicians. Visit us today.',
     icon: 'rotation',
@@ -274,7 +284,7 @@ export const servicesConfig: ServiceConfig[] = [
         a: "Absolutely — it's standard in motorsports, aviation, and heavy equipment for its thermal stability and consistency.",
       },
     ],
-    metaTitle: 'Nitrogen Tire Inflation in Miami & Orlando | MrGoma Tires',
+    metaTitle: 'Nitrogen Tire Inflation in Miami & Orlando',
     metaDescription:
       'Pure nitrogen tire inflation at 7 locations in Miami and Orlando, FL. More consistent pressure, better fuel efficiency, and reduced maintenance.',
     icon: 'nitrogen',
@@ -312,7 +322,7 @@ export const servicesConfig: ServiceConfig[] = [
         a: 'A basic sensor diagnosis takes 15–20 minutes. Full sensor replacement and programming typically takes 30–45 minutes.',
       },
     ],
-    metaTitle: 'TPMS Service & Sensor Replacement in Miami & Orlando | MrGoma Tires',
+    metaTitle: 'TPMS Service & Sensor Replacement in Miami',
     metaDescription:
       'TPMS diagnosis, sensor replacement, and programming at 7 locations in Miami and Orlando, FL. All makes and models. ASE-certified technicians.',
     icon: 'tpms',

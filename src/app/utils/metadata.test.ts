@@ -1,18 +1,29 @@
 import type { Metadata } from 'next';
 import { describe, expect, it } from 'vitest';
 
+import { guides } from '@/app/(shop)/guides/guidesConfig';
+import { servicesConfig } from '@/app/(shop)/services/servicesConfig';
 import { statesPrimaryDifferentiator } from '@/app/utils/brandClaims';
 import {
   DESCRIPTION_MAX,
   DESCRIPTION_MIN,
   TITLE_MAX,
+  aboutMetadata,
   absUrl,
   brandMetadata,
+  checkoutMetadata,
+  contactMetadata,
+  guideMetadata,
+  guidesMetadata,
+  instantQuoteMetadata,
+  legalPoliciesMetadata,
   homeMetadata,
   locationMetadata,
   getSiteUrl,
   locationsMetadata,
   newTiresMetadata,
+  serviceMetadata,
+  servicesMetadata,
   sizeMetadata,
   tiresMetadata,
   usedTiresMetadata,
@@ -50,6 +61,9 @@ const ENTRY_POINTS: [label: string, meta: Metadata][] = [
   ['/tires/used', usedTiresMetadata()],
   ['/tires/new', newTiresMetadata()],
   ['/locations', locationsMetadata()],
+  ['/about-us', aboutMetadata()],
+  ['/contact', contactMetadata()],
+  ['/instant-quote', instantQuoteMetadata()],
   ...(['Bridgestone', 'BFGoodrich', 'Kumho', 'Continental', 'Accelera'] as const).map(
     brand =>
       [`/tires/brands/${brand}`, brandMetadata({ brand, slug: brand.toLowerCase() })] as [
@@ -72,14 +86,77 @@ const ENTRY_POINTS: [label: string, meta: Metadata][] = [
   ),
 ];
 
+/**
+ * Pages that describe a *service* rather than a tire.
+ *
+ * They are held to every structural rule below — one brand, inside the width, a
+ * complete preview card, a canonical of their own — but **not** to
+ * `statesPrimaryDifferentiator`. A 30-day tire warranty is not a reason to pick
+ * an oil change, and requiring it here would push tire copy onto pages that are
+ * not selling tires. That distinction is why `ENTRY_POINTS` is named for the
+ * commercial entry points and not simply "every page".
+ */
+const SERVICE_PAGES: [label: string, meta: Metadata][] = [
+  ['/services', servicesMetadata()],
+  ...servicesConfig.map(
+    service =>
+      [
+        `/services/${service.slug}`,
+        serviceMetadata({
+          metaTitle: service.metaTitle,
+          metaDescription: service.metaDescription,
+          slug: service.slug,
+        }),
+      ] as [string, Metadata]
+  ),
+];
+
+/**
+ * The guides. Held to the structural rules, but not to
+ * `statesPrimaryDifferentiator` for the same reason as the service pages: an
+ * article about reading a sidewall is not selling a warranty.
+ */
+const GUIDE_PAGES: [label: string, meta: Metadata][] = [
+  ['/guides', guidesMetadata()],
+  ...guides.map(
+    guide =>
+      [
+        `/guides/${guide.slug}`,
+        guideMetadata({
+          metaTitle: guide.metaTitle,
+          metaDescription: guide.metaDescription,
+          slug: guide.slug,
+          publishedTime: guide.publishDate,
+        }),
+      ] as [string, Metadata]
+  ),
+];
+
+/**
+ * Pages that exist for a legal or procedural reason. Structural rules apply;
+ * `statesPrimaryDifferentiator` does not — a policies page is not a sales pitch,
+ * and forcing warranty copy into it would be worse than leaving it out.
+ */
+const UTILITY_PAGES: [label: string, meta: Metadata][] = [
+  ['/legal-policies', legalPoliciesMetadata()],
+];
+
+/** Every page whose metadata this feature owns. The structural rules apply to all. */
+const ALL_PAGES: [label: string, meta: Metadata][] = [
+  ...ENTRY_POINTS,
+  ...SERVICE_PAGES,
+  ...GUIDE_PAGES,
+  ...UTILITY_PAGES,
+];
+
 describe('commercial entry point metadata', () => {
-  it.each(ENTRY_POINTS)('%s has a title within the width Google displays', (_label, meta) => {
+  it.each(ALL_PAGES)('%s has a title within the width Google displays', (_label, meta) => {
     const title = absoluteTitle(meta);
     expect(title.length).toBeGreaterThan(0);
     expect(title.length).toBeLessThanOrEqual(TITLE_MAX);
   });
 
-  it.each(ENTRY_POINTS)('%s has a description Google will not truncate', (_label, meta) => {
+  it.each(ALL_PAGES)('%s has a description Google will not truncate', (_label, meta) => {
     const description = meta.description ?? '';
     expect(description.length).toBeGreaterThanOrEqual(DESCRIPTION_MIN);
     expect(description.length).toBeLessThanOrEqual(DESCRIPTION_MAX);
@@ -89,19 +166,132 @@ describe('commercial entry point metadata', () => {
     expect(statesPrimaryDifferentiator(meta.description ?? '')).toBe(true);
   });
 
-  it.each(ENTRY_POINTS)('%s declares a canonical URL', (_label, meta) => {
+  it.each(ALL_PAGES)('%s declares a canonical URL', (_label, meta) => {
     expect(meta.alternates?.canonical).toMatch(/^https?:\/\//);
   });
 
   // AC19 — "used tires" is what people search for; "like-new" is a qualifier
   // for body copy, never a replacement for the term in a title.
-  it.each(ENTRY_POINTS)('%s keeps "like-new" out of the title', (_label, meta) => {
+  it.each(ALL_PAGES)('%s keeps "like-new" out of the title', (_label, meta) => {
     expect(absoluteTitle(meta)).not.toMatch(/like-new/i);
   });
 
-  it.each(ENTRY_POINTS)('%s mirrors its title and description into OpenGraph', (_label, meta) => {
+  it.each(ALL_PAGES)('%s mirrors its title and description into OpenGraph', (_label, meta) => {
     expect(meta.openGraph?.title).toBe(absoluteTitle(meta));
     expect(meta.openGraph?.description).toBe(meta.description);
+  });
+
+  /**
+   * AC1 — the half of the Open Graph block that was missing everywhere.
+   *
+   * Next *replaces* the root layout's `openGraph` when a segment defines one, so
+   * every page built through `pageMetadata` shipped with no image and no locale
+   * at all. Sharing a size, a brand or a store produced bare text — the exact
+   * thing `019` opened a firewall rule to make possible.
+   */
+  it.each(ALL_PAGES)('%s declares a complete preview card', (_label, meta) => {
+    const images = meta.openGraph?.images;
+    expect(Array.isArray(images)).toBe(true);
+    const [image] = images as Array<{ url: string; width: number; height: number; alt: string }>;
+    expect(image.url).toMatch(/^https?:\/\//);
+    expect(image.width).toBe(1200);
+    expect(image.height).toBe(630);
+    expect(image.alt.length).toBeGreaterThan(0);
+    expect(meta.openGraph?.locale).toBe('en_US');
+  });
+
+  // AC2 — a page must name itself, in both places it says so.
+  it.each(ALL_PAGES)('%s points OpenGraph at its own canonical', (_label, meta) => {
+    expect(meta.openGraph?.url).toBe(meta.alternates?.canonical);
+  });
+
+  /**
+   * AC3 — the brand belongs in a title once.
+   *
+   * `pageMetadata` sets `title: { absolute }` precisely so the root
+   * `%s | MrGoma Tires` template stops appending a second copy to a title that
+   * already ends in one.
+   */
+  it.each(ALL_PAGES)('%s names the brand at most once', (_label, meta) => {
+    const occurrences = absoluteTitle(meta).split('MrGoma').length - 1;
+    expect(occurrences).toBeLessThanOrEqual(1);
+  });
+});
+
+/**
+ * AC5 and AC6 — the alignment page's differentiator, and eight distinct services.
+ *
+ * `Hunter HawkEye Elite®` is the one claim on that page a competitor cannot
+ * copy, and it used to sit past the 60 characters Google shows because 30 of the
+ * 88 were the brand printed twice. Shortening the title must never be done by
+ * dropping the rig.
+ */
+describe('service pages', () => {
+  const titleOf = (slug: string) => {
+    const service = servicesConfig.find(s => s.slug === slug)!;
+    return String(
+      (
+        serviceMetadata({
+          metaTitle: service.metaTitle,
+          metaDescription: service.metaDescription,
+          slug,
+        }).title as { absolute: string }
+      ).absolute
+    );
+  };
+
+  it('keeps the Hunter HawkEye rig inside the visible width', () => {
+    const title = titleOf('wheel-alignment');
+    expect(title).toContain('Hunter HawkEye Elite®');
+    expect(title.length).toBeLessThanOrEqual(TITLE_MAX);
+  });
+
+  it('gives each of the eight services a title of its own', () => {
+    const titles = servicesConfig.map(s => titleOf(s.slug));
+    expect(titles).toHaveLength(8);
+    expect(new Set(titles).size).toBe(8);
+    for (const service of servicesConfig) {
+      expect(titleOf(service.slug).toLowerCase()).toContain(
+        service.title.split(' ')[0].toLowerCase()
+      );
+    }
+  });
+});
+
+// AC — the guides stay articles. Losing this is invisible in the page itself.
+/**
+ * The two conversion pages, which the audit could not see: `robots.txt` blocks
+ * `/checkout` and both declared `noindex`, so the crawl never fetched them.
+ */
+describe('conversion pages', () => {
+  it('gives /checkout its own canonical while keeping it out of the index', () => {
+    const meta = checkoutMetadata();
+    expect(meta.alternates?.canonical).toBe(absUrl('/checkout'));
+    expect((meta.robots as { index: boolean }).index).toBe(false);
+  });
+
+  /**
+   * The reversal of "SEO phase 1" (commit `b754578`), decided by the owner on
+   * 2026-08-18 with the conflict in front of them. The sitemap had been
+   * publishing this page while the page said `noindex` — Search Console reports
+   * that as "Submitted URL marked 'noindex'".
+   */
+  it('makes /instant-quote indexable and gives it a title of its own', () => {
+    const meta = instantQuoteMetadata();
+    expect(meta.alternates?.canonical).toBe(absUrl('/instant-quote'));
+    expect(meta.robots).toBeUndefined();
+    expect(absoluteTitle(meta)).not.toContain('Used & New Tires in Miami & Orlando');
+  });
+});
+
+describe('guide pages', () => {
+  // The hub at `/guides` is a listing, not an article — only the seven are.
+  const ARTICLES = GUIDE_PAGES.filter(([label]) => label !== '/guides');
+
+  it.each(ARTICLES)('%s is still declared an article, with its date', (_label, meta) => {
+    expect(meta.openGraph).toMatchObject({ type: 'article' });
+    const og = meta.openGraph as { publishedTime?: string };
+    expect(og.publishedTime).toBeTruthy();
   });
 });
 
@@ -111,7 +301,13 @@ describe('home metadata', () => {
   it('matches the approved copy exactly', () => {
     const meta = homeMetadata();
 
-    expect(absoluteTitle(meta)).toBe('Used & New Tires Miami — 30-Day Warranty | MrGoma');
+    expect(absoluteTitle(meta)).toBe(
+      'Used & New Tires Miami & Orlando — 30-Day Warranty | MrGoma'
+    );
+    // Both halves of the decision, asserted separately so a future edit that
+    // drops one is named for what it dropped.
+    expect(absoluteTitle(meta)).toContain('Orlando');
+    expect(absoluteTitle(meta)).toContain('30-Day Warranty');
     expect(meta.description).toBe(
       '15,000+ like-new used and new tires, every used tire backed by a 30-day warranty. ' +
         '7 locations in Miami & Orlando. Free shipping. Since 2006.'
@@ -139,6 +335,35 @@ describe('home metadata', () => {
  * `sizeSlug` is what the route supplies after checking the catalog; absent, the
  * size is one we do not stock, whose landing page 404s.
  */
+/**
+ * AC8 — `/tires` and the home used to differ by the single word "in", which is
+ * two pages competing for one query. The catalog page now says what it is for.
+ */
+describe('/tires as a catalogue, not a second home page', () => {
+  it('reads differently from the home page', () => {
+    const tires = absoluteTitle(tiresMetadata());
+    const home = absoluteTitle(homeMetadata());
+    expect(tires).not.toBe(home);
+    const shared = tires.split(' ').filter(word => home.includes(word));
+    expect(shared.length).toBeLessThan(tires.split(' ').length - 2);
+  });
+
+  it('names the two things a visitor came to search by', () => {
+    const description = String(tiresMetadata().description);
+    expect(description.toLowerCase()).toContain('size');
+    expect(description.toLowerCase()).toContain('brand');
+  });
+
+  /**
+   * FR9 — no hardcoded stock figure. The audit proposed "Search 4,000+ tires";
+   * the live count is ~4,274 and moves daily, and `014` exists partly because
+   * the home once claimed a number the catalog contradicted.
+   */
+  it('claims no stock quantity it cannot keep', () => {
+    expect(String(tiresMetadata().description)).not.toMatch(/[\d,]+\+/);
+  });
+});
+
 describe('/tires canonicals', () => {
   const canonicalOf = (params: Parameters<typeof tiresMetadata>[0]) =>
     String(tiresMetadata(params).alternates?.canonical);

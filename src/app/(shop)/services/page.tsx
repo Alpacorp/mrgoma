@@ -6,14 +6,9 @@ import type { Metadata } from 'next';
 
 import { servicesConfig } from '@/app/(shop)/services/servicesConfig';
 import { LOCATIONS_LABEL, WARRANTY } from '@/app/utils/brandClaims';
-import { canonical } from '@/app/utils/seo';
+import { servicesMetadata } from '@/app/utils/seo';
 
-export const metadata: Metadata = {
-  title: 'Auto Services in Miami & Orlando | MrGoma Tires',
-  description:
-    'Professional tire and auto services at 7 locations in Miami and Orlando, FL. Tire mounting, wheel alignment, oil change, brake service, and more. ASE-certified technicians.',
-  alternates: { canonical: canonical('/services') },
-};
+export const metadata: Metadata = servicesMetadata();
 
 const iconMap: Record<string, ReactElement> = {
   tire: (

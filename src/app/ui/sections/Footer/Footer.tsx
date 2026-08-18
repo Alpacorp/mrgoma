@@ -30,6 +30,11 @@ const defaultSections: FooterSectionType[] = [
       { label: 'Contact', href: '/contact' },
       { label: 'Locations', href: '/locations' },
       { label: 'Store', href: '/tires' },
+      // `/instant-quote` had no inbound link anywhere in the site: it existed
+      // only in the sitemap, so nobody could reach it by navigating and it had
+      // nothing to rank on. It sits here, beside Contact, because asking for a
+      // quote is the same intent as asking a question.
+      { label: 'Instant Quote', href: '/instant-quote' },
     ],
   },
 ];

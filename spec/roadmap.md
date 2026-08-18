@@ -126,7 +126,7 @@ To be resumed after the two tracks above; no fixed order yet.
   59-character synthesis that adds Orlando and keeps it), and the audit's
   "current" titles for three of the four guides do not match production — their
   real defect is length, 69–73 characters, not the duplication the audit named.
-  _Clarified; ready for `/plan`._
+  _Implemented; awaiting the pre-merge Search Console baseline._
 - 🟡 **Crawl hygiene (`020-crawl-hygiene`).** A full Screaming Frog crawl on
   2026-08-18 found 2.106 real pages and **37.296 URLs that are not pages** — the
   `?_rsc=` addresses Next.js mints every time it prefetches a hovered link. The

@@ -1,6 +1,6 @@
 # Spec — One way to describe a page
 
-> Feature: `021-page-metadata-og` · Status: Planned — ready for `/tasks`
+> Feature: `021-page-metadata-og` · Status: Implemented — awaiting manual verification
 > Created: 2026-08-18 · Clarified: 2026-08-18
 > Roadmap: Backlog (SEO — Screaming Frog audit, block 1) · Branch: `feat/021-page-metadata-og`
 

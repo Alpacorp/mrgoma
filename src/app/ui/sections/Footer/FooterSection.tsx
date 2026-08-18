@@ -6,6 +6,12 @@ interface FooterSectionProps {
   section: FooterSectionType;
 }
 
+/**
+ * The focus ring matches `CookieSettingsLink`, the one footer control that
+ * already had one. These links relied on the browser default, which is visible
+ * but varies by browser; WCAG 2.1 AA asks for focus to be visible and the site
+ * already had a house style for it two components away.
+ */
 export const FooterSection = ({ section }: FooterSectionProps) => {
   return (
     <div>
@@ -18,14 +24,14 @@ export const FooterSection = ({ section }: FooterSectionProps) => {
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-300 hover:text-[#9dfb40] transition-colors duration-200"
+                className="text-gray-300 hover:text-[#9dfb40] transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#9dfb40] rounded"
               >
                 {link.label}
               </a>
             ) : (
               <Link
                 href={link.href}
-                className="text-gray-300 hover:text-[#9dfb40] transition-colors duration-200"
+                className="text-gray-300 hover:text-[#9dfb40] transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#9dfb40] rounded"
               >
                 {link.label}
               </Link>

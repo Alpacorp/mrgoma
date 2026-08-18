@@ -20,7 +20,7 @@ export async function generateMetadata({
   const loc = getLocationBySlug(slug);
   if (!loc) return { title: 'Location Not Found', robots: { index: false, follow: false } };
 
-  return locationMetadata({ name: loc.name, slug: loc.slug, city: loc.city });
+  return locationMetadata({ name: loc.name, slug: loc.slug, city: loc.city, image: loc.image });
 }
 
 export default async function LocationPage({ params }: { params: Promise<{ location: string }> }) {

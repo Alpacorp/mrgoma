@@ -198,31 +198,94 @@ function fitDescription(head: string, tails: readonly string[]): string {
   return candidates[candidates.length - 1].slice(0, DESCRIPTION_MAX).trimEnd();
 }
 
-function pageMetadata(params: { title: string; description: string; path: string }): Metadata {
+/** The site's default preview card, used by every page that has nothing better. */
+export const DEFAULT_OG_IMAGE = {
+  url: absUrl('/opengraph-image'),
+  width: 1200,
+  height: 630,
+  alt: `${SITE_NAME} – New & Used Tires in Miami & Orlando, FL`,
+};
+
+/**
+ * The one way to describe a page.
+ *
+ * **Everything here has to be declared, because Next does not merge.** A segment
+ * that defines `openGraph` *replaces* the root layout's rather than filling in
+ * around it, so a builder that sets three fields silently drops the other three.
+ * That is exactly what happened: ~400 pages asked through this function, got a
+ * correct `og:url`, and shipped with **no `og:image` and no `og:locale` at all** —
+ * every brand, size and store link shared as bare text, which is the capability
+ * `019` opened a firewall rule to enable.
+ *
+ * `title: { absolute }` is the other half. Without it the root
+ * `%s | MrGoma Tires` template appends a second brand to a title that already
+ * ends in one, which is how `/services` came to read
+ * `Auto Services in Miami & Orlando | MrGoma Tires | MrGoma Tires`.
+ *
+ * Pure by design — plain values in, `Metadata` out, no I/O — so
+ * `metadata.test.ts` can guard every entry point with no database and no mocks.
+ */
+function pageMetadata(params: {
+  title: string;
+  description: string;
+  path: string;
+  /** Overrides the site card. Stores pass their own storefront photo. */
+  image?: { url: string; alt: string };
+  /**
+   * `'article'` for the guides, which is what they already declare. Left to the
+   * caller because migrating them onto a hardcoded `'website'` would downgrade
+   * seven articles to generic pages, and nothing in the rendered page would show
+   * it — only a social debugger would.
+   */
+  type?: 'website' | 'article';
+  /** `article:published_time`. Only meaningful alongside `type: 'article'`. */
+  publishedTime?: string;
+}): Metadata {
   const url = canonical(params.path);
+  const images = params.image
+    ? [{ url: absUrl(params.image.url), width: 1200, height: 630, alt: params.image.alt }]
+    : [DEFAULT_OG_IMAGE];
+
   return {
     title: { absolute: params.title },
     description: params.description,
     alternates: { canonical: url },
     openGraph: {
-      type: 'website',
+      type: params.type ?? 'website',
       siteName: SITE_NAME,
       url,
       title: params.title,
       description: params.description,
+      locale: 'en_US',
+      images,
+      ...(params.publishedTime ? { publishedTime: params.publishedTime } : {}),
     },
     twitter: {
       card: 'summary_large_image',
       title: params.title,
       description: params.description,
+      images: images.map(image => image.url),
     },
   };
 }
 
-/** Home. The copy here is fixed by the approved decision in `spec.md` (AC3b). */
+/**
+ * Home. The copy is fixed by an approved decision — now two of them.
+ *
+ * `014` put `${WARRANTY}` in this title deliberately, as the differentiator the
+ * SERP was missing. The Screaming Frog audit (T035) then proposed
+ * `Used & New Tires in Miami & Orlando | MrGoma Tires`, which adds Orlando —
+ * where two of the seven stores are, and where the audit measured a visibility
+ * gap — but **drops the warranty** and spends six extra characters on the long
+ * brand.
+ *
+ * `021` takes the intent without the loss: both cities *and* the warranty, at 59
+ * of the 60 characters Google shows. Changing this belongs in a spec, not in a
+ * refactor.
+ */
 export function homeMetadata(): Metadata {
   return pageMetadata({
-    title: `Used & New Tires Miami — ${WARRANTY}${TITLE_SUFFIX}`,
+    title: `Used & New Tires Miami & Orlando — ${WARRANTY}${TITLE_SUFFIX}`,
     // The year comes from `SINCE` rather than the literal it used to be. That
     // copy was the one place a founding year lived outside `brandClaims`, so
     // when the owner corrected 2007 to 2006 the site would have kept claiming
@@ -270,13 +333,13 @@ export function tiresMetadata(
         `${size} Tires${paged}${TITLE_SUFFIX}`
       )
     : fitTitle(
-        `Used & New Tires in Miami — ${WARRANTY}${paged}${TITLE_SUFFIX}`,
-        `Used & New Tires in Miami${paged}${TITLE_SUFFIX}`
+        `Shop Tires by Size & Brand — Used & New${paged}${TITLE_SUFFIX}`,
+        `Shop Tires by Size & Brand${paged}${TITLE_SUFFIX}`
       );
 
   const head = size
     ? `Shop ${size} tires in Miami and Orlando — like-new used and new, every used tire backed by a 30-day warranty.`
-    : 'Browse like-new used and new tires in Miami and Orlando, every used tire backed by a 30-day warranty.';
+    : 'Search used and new tires by size or brand. Every used tire is ASE-inspected and backed by a 30-day warranty.';
 
   /**
    * The canonical keeps **only the parameters that describe a page we publish.**
@@ -326,6 +389,186 @@ export function tiresMetadata(
       'Free shipping.',
     ]),
     path,
+  });
+}
+
+/* ── Section pages that used to hand-roll their own metadata ──────────────────
+ *
+ * Each of these declared a plain `title` string ending in the brand, so the root
+ * `%s | MrGoma Tires` template printed it a second time, and none declared
+ * `openGraph`, so they inherited the root's — which names the **home page** as
+ * their `og:url`. Routing them through `pageMetadata` fixes both at once.
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+/** `/services` — the hub for the eight service pages. */
+export function servicesMetadata(): Metadata {
+  return pageMetadata({
+    title: `Auto Services in Miami & Orlando${TITLE_SUFFIX}`,
+    description: fitDescription(
+      `Tire mounting, alignment, oil changes, brakes and TPMS at ${LOCATIONS_LABEL_LONG}.`,
+      [
+        'ASE-certified technicians, no appointment needed.',
+        'ASE-certified technicians. No appointment needed.',
+        'ASE-certified technicians.',
+      ]
+    ),
+    path: '/services',
+  });
+}
+
+/**
+ * One service page.
+ *
+ * `metaTitle` arrives without the brand — see `servicesConfig` — so the suffix is
+ * added here, once. It is **not** run through `fitTitle`: with a single candidate
+ * that helper hard-truncates, and truncating this particular title is how you
+ * lose `Hunter HawkEye Elite®`, the one claim on the alignment page a competitor
+ * cannot copy. An over-long title fails `metadata.test.ts` loudly instead.
+ */
+export function serviceMetadata(params: {
+  metaTitle: string;
+  metaDescription: string;
+  slug: string;
+}): Metadata {
+  return pageMetadata({
+    title: `${params.metaTitle}${TITLE_SUFFIX}`,
+    description: params.metaDescription,
+    path: `/services/${params.slug}`,
+  });
+}
+
+/**
+ * `/about-us`.
+ *
+ * **No `TITLE_SUFFIX` here, deliberately.** "About MrGoma Tires" already carries
+ * the brand, so appending the suffix would print it twice — the very defect this
+ * feature exists to remove, reintroduced by habit. `metadata.test.ts` counts
+ * brand occurrences per title and catches it.
+ */
+export function aboutMetadata(): Metadata {
+  return pageMetadata({
+    title: `About ${SITE_NAME} — 7 Locations in Miami & Orlando`,
+    description: fitDescription(
+      `ASE-certified technicians, a ${WARRANTY.toLowerCase()} on every used tire, and ${LOCATIONS_LABEL_LONG}.`,
+      [
+        `Family-owned and off-lease return specialists since ${FOUNDED_YEAR}, with ${SHIPPING.toLowerCase()}.`,
+        `Family-owned off-lease return specialists since ${FOUNDED_YEAR}.`,
+        `Family-owned since ${FOUNDED_YEAR}.`,
+      ]
+    ),
+    path: '/about-us',
+  });
+}
+
+/** `/contact`. */
+export function contactMetadata(): Metadata {
+  return pageMetadata({
+    title: `Contact Us — 7 Locations in Miami & Orlando${TITLE_SUFFIX}`,
+    description: fitDescription(`Reach ${SITE_NAME} at any of our ${LOCATIONS_LABEL_LONG}.`, [
+      `Call, WhatsApp or walk in — ASE-certified technicians and a ${WARRANTY.toLowerCase()} on used tires.`,
+      `Call, WhatsApp or walk in. ASE-certified technicians, ${WARRANTY.toLowerCase()}.`,
+      `Call, WhatsApp or walk in. ${WARRANTY}.`,
+    ]),
+    path: '/contact',
+  });
+}
+
+/** `/guides` — the hub for the seven guides. */
+export function guidesMetadata(): Metadata {
+  return pageMetadata({
+    title: `Tire Guides: Buying, Safety & Maintenance${TITLE_SUFFIX}`,
+    description: fitDescription(
+      'How to buy used tires safely, read a tire size, and keep them lasting —',
+      [
+        'straight answers from the ASE-certified technicians who inspect them.',
+        'answers from the ASE-certified technicians who inspect them.',
+        'from ASE-certified technicians.',
+      ]
+    ),
+    path: '/guides',
+  });
+}
+
+/**
+ * One guide.
+ *
+ * **`type: 'article'` and `publishedTime` are passed through on purpose.** These
+ * pages already declared both, and `pageMetadata` defaults to `'website'`;
+ * migrating them without this would quietly demote seven articles to generic
+ * pages and drop their publication dates. Nothing in the rendered page would
+ * show it — only a social debugger would.
+ */
+export function guideMetadata(params: {
+  metaTitle: string;
+  metaDescription: string;
+  slug: string;
+  publishedTime?: string;
+}): Metadata {
+  return pageMetadata({
+    title: `${params.metaTitle}${TITLE_SUFFIX}`,
+    description: params.metaDescription,
+    path: `/guides/${params.slug}`,
+    type: 'article',
+    publishedTime: params.publishedTime,
+  });
+}
+
+/** `/legal-policies`. Its title used to print the brand twice. */
+export function legalPoliciesMetadata(): Metadata {
+  return pageMetadata({
+    title: `Website Legal Policies${TITLE_SUFFIX}`,
+    description: fitDescription(
+      'Terms & Conditions, Privacy Policy, Refund & Warranty Policy, Disclaimer and',
+      [
+        `Accessibility Statement for ${SITE_NAME}, plus how to reach us.`,
+        `Accessibility Statement for ${SITE_NAME}.`,
+      ]
+    ),
+    path: '/legal-policies',
+  });
+}
+
+/**
+ * `/checkout` — **stays `noindex`, and stays disallowed in `robots.txt`.**
+ *
+ * It only gains a canonical of its own. Until now it fell back to the root's,
+ * telling Google the checkout is a duplicate of the home page — harmless on a
+ * page Google is told to ignore, but wrong, and one line to correct.
+ */
+export function checkoutMetadata(): Metadata {
+  return {
+    ...pageMetadata({
+      title: `Checkout${TITLE_SUFFIX}`,
+      description: `Secure checkout at ${SITE_NAME}. ${SHIPPING} nationwide on every order.`,
+      path: '/checkout',
+    }),
+    robots: { index: false, follow: false, googleBot: { index: false, follow: false } },
+  };
+}
+
+/**
+ * `/instant-quote` — and this one **becomes indexable**.
+ *
+ * Commit `b754578` ("SEO phase 1") marked it `noindex` alongside `/dashboard`,
+ * treating it as a funnel step. The sitemap kept publishing it anyway, so the
+ * site asked Google to index a URL that then told it not to — reported as
+ * "Submitted URL marked 'noindex'". The owner resolved the contradiction the
+ * other way on 2026-08-18: it captures leads and has its own intent, so it is a
+ * real landing page. It gains a footer link in the same change, because nothing
+ * linked to it and a page only Google can find will not rank.
+ */
+export function instantQuoteMetadata(): Metadata {
+  return pageMetadata({
+    title: `Instant Tire Quote — Free, No Obligation${TITLE_SUFFIX}`,
+    description: fitDescription(
+      'Enter your tire size and vehicle details for a quick quote on used and new tires.',
+      [
+        `${WARRANTY} on used tires, ${SHIPPING.toLowerCase()} and 7 locations in Miami & Orlando.`,
+        `${WARRANTY} on used tires and 7 locations in Miami & Orlando.`,
+        `${WARRANTY}. 7 locations.`,
+      ]
+    ),
+    path: '/instant-quote',
   });
 }
 
@@ -421,6 +664,12 @@ export function locationMetadata(params: {
   slug: string;
   city: string;
   serving?: string;
+  /**
+   * The storefront photo from `locationsConfig`. Every one of the seven already
+   * has one, so a store shares as itself rather than as the site's generic card —
+   * and "the Hialeah shop" is what people actually send each other.
+   */
+  image?: string;
 }): Metadata {
   const { name, slug, city } = params;
   return pageMetadata({
@@ -429,6 +678,7 @@ export function locationMetadata(params: {
       `${name} Tire Shop, ${city}${TITLE_SUFFIX}`,
       `${name} Tire Shop${TITLE_SUFFIX}`
     ),
+    image: params.image ? { url: params.image, alt: `MrGoma Tires — ${name}` } : undefined,
     description: fitDescription(
       `MrGoma Tires ${name}: like-new used and new tires, every used tire backed by a 30-day warranty.`,
       [

@@ -23,7 +23,7 @@ Group A unblocks everything. B, C and D are independent of each other.
 
 ## A. Finish the helper
 
-- [ ] **T1** — Give `pageMetadata()` the fields it never emitted: an
+- [x] **T1** — Give `pageMetadata()` the fields it never emitted: an
       `images` entry (`/opengraph-image`, 1200×630, with alt text) and
       `locale: 'en_US'`, plus optional `image?: { url; alt }`, `type` and
       `publishedTime` for callers that need their own.
@@ -47,7 +47,7 @@ Each task deletes an inline `Metadata` object and replaces it with a
 `pageMetadata` sets `title: { absolute }`, so the root `%s | MrGoma Tires`
 template stops appending a second copy.
 
-- [ ] **T2** — `/services` and the 8 service pages. Add `servicesMetadata()` and
+- [x] **T2** — `/services` and the 8 service pages. Add `servicesMetadata()` and
       `serviceMetadata()`; strip the trailing ` | MrGoma Tires` from every
       `metaTitle` in `servicesConfig` so `TITLE_SUFFIX` supplies it once.
       · **`/services/wheel-alignment` needs a `fitTitle` ladder, not a string.**
@@ -61,7 +61,7 @@ template stops appending a second copy.
       `TITLE_MAX`, the eight service titles are pairwise distinct, and the
       wheel-alignment one still contains `Hunter HawkEye Elite®`.
 
-- [ ] **T3** — `/about-us` and `/contact`. Add `aboutMetadata()` and
+- [x] **T3** — `/about-us` and `/contact`. Add `aboutMetadata()` and
       `contactMetadata()` with the audit's copy.
       · **`/about-us` lands at exactly 60 characters.** `TITLE_MAX` is inclusive
       so it passes, but it has zero headroom — leave a comment at the call site,
@@ -71,7 +71,7 @@ template stops appending a second copy.
       `src/app/(shop)/contact/page.tsx`
       · check: `npm test` — both fit, brand once, `og:url` equals canonical.
 
-- [ ] **T4** — `/guides` and the 7 guide pages. Add `guidesMetadata()` and
+- [x] **T4** — `/guides` and the 7 guide pages. Add `guidesMetadata()` and
       `guideMetadata()`; take the audit's new titles and descriptions for the four
       it covers (`used-vs-new-tires`, `how-to-buy-used-tires`,
       `how-to-read-tire-size`, `used-tire-safety-checklist`).
@@ -96,12 +96,12 @@ template stops appending a second copy.
       the `DESCRIPTION_MIN`–`DESCRIPTION_MAX` window, and each guide still
       declares `og:type="article"` with its `publishedTime`.
 
-- [ ] **T5** — `/legal-policies`. Add `legalPoliciesMetadata()`; its title
+- [x] **T5** — `/legal-policies`. Add `legalPoliciesMetadata()`; its title
       currently prints the brand twice (`… – MrGoma Tires | MrGoma Tires`).
       · files: `src/app/utils/seo.ts`, `src/app/(shop)/legal-policies/page.tsx`
       · check: `npm test` — brand once, fits, canonical unchanged.
 
-- [ ] **T6** — The two conversion pages. `/checkout` gains
+- [x] **T6** — The two conversion pages. `/checkout` gains
       `checkoutMetadata()` — its own canonical, **still `noindex`, still
       disallowed in `robots.txt`**. `/instant-quote` gains
       `instantQuoteMetadata()` and **loses its `noindex`**.
@@ -117,7 +117,7 @@ template stops appending a second copy.
 
 ## C. The copy the audit proposed for pages that already had builders
 
-- [ ] **T7** — New copy for `/`, `/tires` and `/tires/used`, **and the test that
+- [x] **T7** — New copy for `/`, `/tires` and `/tires/used`, **and the test that
       pins it, in this same task.**
       · Home becomes `Used & New Tires Miami & Orlando — 30-Day Warranty | MrGoma`
       (59) — the synthesis from spec Decision 1. It adds Orlando, which was T035's
@@ -135,7 +135,7 @@ template stops appending a second copy.
 
 ## D. Give the stores their own preview card
 
-- [ ] **T8** — `locationMetadata()` passes the store's photo through T1's override
+- [x] **T8** — `locationMetadata()` passes the store's photo through T1's override
       so each store shares with its own storefront instead of the site default.
       The data already exists: all seven have `image:` in `locationsConfig`.
       · files: `src/app/utils/seo.ts`,
@@ -146,7 +146,7 @@ template stops appending a second copy.
 
 ## E. Make the page findable, and stop the drift
 
-- [ ] **T9** — One entry in the footer's `defaultSections`, "Customer Service"
+- [x] **T9** — One entry in the footer's `defaultSections`, "Customer Service"
       column: `{ label: 'Instant Quote', href: '/instant-quote' }`. No markup, no
       component, no styling — `FooterSection` already renders and styles these.
       Without it the new metadata cannot earn anything: nothing in `src/` links to
@@ -156,7 +156,7 @@ template stops appending a second copy.
       · check: `npm test` — a link with href `/instant-quote` renders, is
       keyboard reachable and shows a visible focus ring.
 
-- [ ] **T10** — The three guards. **Last, because two of them are red until B and
+- [x] **T10** — The three guards. **Last, because two of them are red until B and
       C are done.**
       · `pageMetadata.guard.test.ts` (new). **The rule is "no page spells the
       brand in a plain `title:`", not "every page must use the helper."** The
@@ -186,12 +186,12 @@ template stops appending a second copy.
 
 ## F. Close it out
 
-- [ ] **T11** — Definition of Done: `npx tsc --noEmit` + `npm run lint` +
+- [x] **T11** — Definition of Done: `npx tsc --noEmit` + `npm run lint` +
       `npm test` + `npm run build` + `npm run perf:budget`, all green.
       · check: the budget must read **166.0 KB / 617.2 KB**, unchanged from `020`.
       The footer link is a plain anchor and nothing else here reaches the browser.
 
-- [ ] **T12** — Manual, **before merge**: Search Console export of the affected
+- [x] **T12** — Manual, **before merge**: Search Console export of the affected
       pages — queries, clicks, impressions, average position — captured while the
       old titles are still live (AC18). Fifteen titles change in one deploy; after
       it, the "before" cannot be reconstructed. `020` showed this is worth doing:

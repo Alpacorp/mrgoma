@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 import { getGuideBySlug, guides, type GuideSection } from '@/app/(shop)/guides/guidesConfig';
 import { JsonLd } from '@/app/ui/components';
 import { INVENTORY_NETWORK } from '@/app/utils/brandClaims';
-import { buildBreadcrumbJsonLd, canonical } from '@/app/utils/seo';
+import { buildBreadcrumbJsonLd, canonical, guideMetadata } from '@/app/utils/seo';
 import { whatsAppLink } from '@/app/utils/whatsapp';
 
 export function generateStaticParams() {
@@ -22,25 +22,12 @@ export async function generateMetadata({
   const guide = getGuideBySlug(slug);
   if (!guide) return { title: 'Not Found', robots: { index: false, follow: true } };
 
-  const url = canonical(`/guides/${slug}`);
-  return {
-    title: guide.metaTitle,
-    description: guide.metaDescription,
-    alternates: { canonical: url },
-    openGraph: {
-      type: 'article',
-      siteName: 'MrGoma Tires',
-      url,
-      title: guide.metaTitle,
-      description: guide.metaDescription,
-      publishedTime: guide.publishDate,
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: guide.metaTitle,
-      description: guide.metaDescription,
-    },
-  };
+  return guideMetadata({
+    metaTitle: guide.metaTitle,
+    metaDescription: guide.metaDescription,
+    slug,
+    publishedTime: guide.publishDate,
+  });
 }
 
 export default async function GuidePage({ params }: { params: Promise<{ slug: string }> }) {
