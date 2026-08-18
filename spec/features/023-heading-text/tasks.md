@@ -73,19 +73,27 @@ Groups B, C, D and E are independent of A and of each other.
       this brings `/guides` in line rather than inventing a convention.
       · files: `src/app/(shop)/guides/page.tsx`,
       `src/app/(shop)/guides/guides.test.tsx` (new)
-      · check: `npm test` — one `<h1>`, the section and CTA `<h2>`s, seven
-      `<h3>`s, and no `<h3>` outside a section.
+      · check: `npm test` — one `<h1>`, **four `<h2>`s** (three sections plus the
+      call-to-action at line 112, which does not move) and seven `<h3>`s.
+      Counting three `<h2>`s is the mistake the ticket's wording invites.
 
 ## C. One string in the wrong language
 
 - [ ] **T5** — `aria-label="Abrir menú de navegación"` → `"Open navigation menu"`,
       matching `MenuHeader`'s existing `"Close menu"` two files away.
-      · Add the language assertion to `headings.guard.test.ts`: no `aria-label`,
-      `alt`, `title` or `sr-only` string under `src/app` in Spanish. **No
-      exemption for `/dashboard`** (spec Decision 4) — there is exactly one match
-      in the tree today and it is on the public site, so the guard costs nothing;
-      if the crew later wants the dashboard in Spanish, the exemption is added
-      then with the reason recorded.
+      · Add the language assertion to `headings.guard.test.ts`, and write it as
+      **two concrete rules, not "is it Spanish"**: no accented Spanish character
+      (`á é í ó ú ñ ¿ ¡`), and no word from a named list (`abrir`, `cerrar`,
+      `buscar`, `enviar`, `menú`, `siguiente`, `anterior`) in any `aria-label`,
+      `alt`, `title` or `sr-only` string under `src/app`.
+      · **Put the limit in the test's own doc comment.** `"Cerrar menu"` without
+      accents reads as English to a regex; claiming the guard detects Spanish is
+      the criterion `022` had to reject, written a second time. It catches what is
+      there and the likeliest next ones, and says what it misses.
+      · **No exemption for `/dashboard`** (spec Decision 4) — one match in the
+      tree today, on the public site, so the guard costs nothing; if the crew
+      later wants the dashboard in Spanish, the exemption is added then with the
+      reason recorded.
       · files: `src/app/ui/components/HamburgerMenu/HamburgerMenu.tsx`,
       `src/app/utils/headings.guard.test.ts`
       · check: `npm test`; **verify red** by putting the Spanish label back.

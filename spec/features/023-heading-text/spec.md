@@ -166,12 +166,23 @@ they were touching a heading.
       reads `{size} Tires in Miami` with the space.
 - [ ] **AC5:** Given every affected template, when the heading element's
       `className` is compared before and after, then it is unchanged (FR3).
-- [ ] **AC6:** Given `/guides`, when its headings are read, then the three section
-      names are `<h2>` and the seven card names are `<h3>`, and there is exactly
-      one `<h1>`.
+- [ ] **AC6:** Given `/guides`, when its headings are read, then there is exactly
+      one `<h1>`, **four `<h2>`s** — the three section names *and the call-to-action
+      further down the page*, which stays where it is — and **seven `<h3>`s**, the
+      guide cards. Counting three `<h2>`s would be wrong and is the mistake a test
+      written from the ticket alone would make.
 - [ ] **AC7:** Given every `aria-label`, `alt`, `title` and visually-hidden string
-      in `src/app`, when read, then none is in Spanish. A guard, so the next one
-      cannot ship either.
+      in `src/app`, when read, then none contains a Spanish accented character
+      (`á é í ó ú ñ ¿ ¡`) and none contains a word from a named list —
+      `abrir`, `cerrar`, `buscar`, `enviar`, `menú`, `siguiente`, `anterior`.
+
+      _Narrowed from "none is in Spanish", which no test can deliver:
+      `"Cerrar menu"` without accents is indistinguishable from English to a
+      regex. This is the same shape as the criterion rejected in `022`, written
+      again — so the limit is stated rather than implied. It catches the one
+      string in the tree today (`Abrir menú de navegación`, which trips both
+      rules) and the likeliest next ones; it will not catch unaccented Spanish
+      outside the list, and that is a known gap, not an oversight._
 - [ ] **AC8:** Given every guide, when its breadcrumb — both the visible trail and
       the `BreadcrumbList` JSON-LD — is compared with its `<h1>`, then the two are
       the same string. Checked across all seven, not only the one the audit found.
@@ -188,14 +199,20 @@ they were touching a heading.
 - [ ] **AC13:** Given `next.config.mjs`, when read, then `trailingSlash` is not
       enabled.
 
-      _Added at the owner's request, and it is a real gap rather than the one
-      they described. The home canonical has no trailing slash — verified in
-      production on three occasions — and `metadata.test.ts` has pinned that since
-      `020`. But that test asserts the value the **builder** produces; the slash
-      is stripped from the **rendered** tag by Next, because `trailingSlash`
-      defaults to `false`. Setting that one flag to `true` would put a slash on
-      the canonical of every page on the site, and every existing test would still
-      pass. Nothing guards it today._
+      _This began as a request to remove a trailing slash from the home
+      canonical. There is none: the tag reads `href="https://www.mrgomatires.com"`
+      in production, verified three times, and the owner has since confirmed the
+      slash they were seeing comes from a browser extension re-serialising the URL
+      — `new URL('https://x.com').href` returns `https://x.com/`, which is also
+      what made the original audit report it as T030._
+
+      _It stays because looking for the reported symptom found a real gap beside
+      it. `metadata.test.ts` has pinned the home canonical since `020`, but it
+      asserts what the **builder** returns; the slash is absent from the
+      **rendered** tag only because Next strips it, and Next strips it only
+      because `trailingSlash` defaults to `false`. Setting that one flag would put
+      a slash on the canonical of every page on the site, and every existing test
+      would still pass. That is worth a guard on its own merits._
 - [ ] **AC11 (manual):** On a phone at 360 px, each corrected heading still breaks
       where it did, with the same sizes — and selecting it copies a readable
       phrase.

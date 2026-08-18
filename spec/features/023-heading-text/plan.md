@@ -143,8 +143,8 @@ TypeScript. Every change is markup or config.
 | AC3 | `brands/[brand]` substitution | Guard, plus AC11 against the built page: `MICHELIN Tires` |
 | AC4 | `size/[size]` substitution, with the wrapper Shape B needs | Guard, plus AC11: `235/50/20 Tires in Miami` |
 | AC5 | Only the contents change | Render tests assert the `<h1>`'s `className` still carries its size and weight tokens; the diff shows no wrapper class touched |
-| AC6 | Card `<h2>` → `<h3>` | `guides/page` render test: exactly one `<h1>`, three `<h2>`s plus the CTA, seven `<h3>`s, and no `<h3>` outside a section |
-| AC7 | One `aria-label` corrected | `headings.guard.test.ts`: no `aria-label`, `alt`, `title` or `sr-only` string in `src/app` contains Spanish characters or a Spanish imperative. Verified red by putting the old label back |
+| AC6 | Card `<h2>` → `<h3>`, one edit in the local `GuideCard` | `guides/page` render test: exactly one `<h1>`, **four `<h2>`s** — three sections and the call-to-action at line 112, which does not move — and seven `<h3>`s |
+| AC7 | One `aria-label` corrected | `headings.guard.test.ts`: no assistive-technology string carries a Spanish accented character, and none carries a word from a named list. **Not "is it Spanish"** — `"Cerrar menu"` is indistinguishable from English to a regex, and promising otherwise is the criterion `022` had to reject. The limit is written into the test's own doc comment. Verified red by restoring the old label |
 | AC8 | Breadcrumbs fed from `heading` | `guideNames.test.ts`: for all seven, the breadcrumb JSON-LD name and the visible trail equal the `<h1>` |
 | AC9 | Article JSON-LD already used the heading field | Same test: `headline` in the Article node equals the `<h1>`. Holds today and must survive the rename |
 | AC9b | Card names left alone | Same test: **asserts at least one guide's `cardName` differs from its `heading`**, so a later flattening has to argue with a test |
@@ -179,7 +179,8 @@ different string on the same guide.
 | A heading breaks differently than before, because `block` and `<br />` are not identical in edge cases | Medium | `block` on a span produces the same break for these layouts; AC11 checks all eleven at 360 px, which is where a difference would show first |
 | `/contact` or `/about-us` regress, being the two non-mechanical ones | Medium | Called out above; both get render tests, and `/about-us` has an inline stroke style that must survive |
 | The rename misses a call site | Low | TypeScript fails on every one — the fields are required on a typed config, so a missed site cannot compile |
-| The Spanish guard false-positives on a proper noun or an address | Low–Medium | It checks assistive-technology strings only, not body copy, and there is exactly one match in the tree today |
+| The Spanish guard false-positives on a proper noun or an address | Low | It checks assistive-technology strings only, never body copy, and there is exactly one match in the tree today |
+| The Spanish guard **false-negatives** on unaccented Spanish | **Certain** | Accepted and stated: no regex tells `"Cerrar menu"` from English. The guard catches accented Spanish and a named word list, which covers the string that exists and the likeliest next ones. Written into the test so nobody reads it as full coverage |
 | `Home.tsx` switching to `cardName` changes what the home page shows | **Certain, and intended** | The home page shows the heading in a card today while `/guides` shows the card name. AC11 includes looking at it |
 
 ## Out of scope
