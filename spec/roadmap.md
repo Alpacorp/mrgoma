@@ -183,6 +183,22 @@ To be resumed after the two tracks above; no fixed order yet.
   withdrawal, because unmounting a component cannot unload a script that has
   already run. Escape now dismisses the banner from anywhere, which it never
   did. _Complete; awaiting merge._
+- 🟡 **Seven stores that read like one (`022-store-pages`).** Block 2 of the
+  Screaming Frog audit, and the block with the largest number attached to it — and
+  the largest caveat. The seven store pages drew **20.376 impressions in the top
+  four positions and fifty clicks** in three months (0,25% CTR); Miami Airport was
+  shown 2.757 times and clicked **zero**, and Orlando West Colonial does not
+  appear in Search Console at all. Their seven meta descriptions are one template
+  differing by a name, their seven `<h1>`s are the name of a suburb, no title says
+  "used tires" while `used tires near me` is the site's biggest non-brand query,
+  and East Orlando tells people it is near Orlando **International** when it is
+  beside Orlando **Executive**, 20 km away. The audit projects +30% of site
+  traffic from fixing the copy; the query data disagrees — `mr goma tires us1`
+  sits at position **1.1** with a **0,78%** CTR, which no title can explain and
+  the local pack can. So this ships as a fix *and* a measurement: the airport
+  error and the templating are worth correcting regardless, and a flat CTR at 28
+  days is the finding that sends the next effort to `017` (Google Business
+  Profile) instead of more copy. _Spec drafted; open clarifications._
 - ⬜ **Tire detail titles are truncated before the differentiators.** Found while
   analysing `021`, and not in the Screaming Frog audit, whose title tickets stop at
   section pages. `productTitle()` builds a title that reaches **100 characters** in

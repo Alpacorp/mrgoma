@@ -78,7 +78,6 @@ way the contradiction resolves, a page no one links to and no one can find is no
 doing anything today.
 
 ### Why this is one feature and not nineteen
-### Why this is one feature and not nineteen
 
 The audit lists nineteen tickets here — T023–T029 for the Open Graph tags,
 T038–T046 for the service titles, T054 and T055 for `/about-us` and `/guides`.
