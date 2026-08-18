@@ -1,6 +1,6 @@
 # Spec — Seven stores that read like one
 
-> Feature: `022-store-pages` · Status: Clarified — ready for `/plan`
+> Feature: `022-store-pages` · Status: Planned — ready for `/tasks`
 > Created: 2026-08-18 · Clarified: 2026-08-18
 > Roadmap: Backlog (SEO — Screaming Frog audit, block 2) · Branch: `feat/022-store-pages`
 
