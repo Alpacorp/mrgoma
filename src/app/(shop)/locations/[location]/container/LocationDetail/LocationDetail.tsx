@@ -142,8 +142,26 @@ export default function LocationDetail({ location }: Props) {
               {location.city}, FL
             </span>
           </div>
+          {/*
+           * The heading used to be the name of a suburb — `Cutler Bay` — which
+           * spent the largest element on the page saying neither what the
+           * business is nor what it sells.
+           *
+           * The second line is a `block` span with a real space before it, and
+           * **deliberately not a `<br />`**. `ServiceDetail` builds its two-line
+           * heading with one, and that is exactly why thirteen pages report
+           * headings like `Wheel AlignmentMiami & Orlando, FL`: a `<br />` is a
+           * line break, not whitespace, so the text content runs together for
+           * anything that reads text rather than pixels. Here CSS does the
+           * breaking and the string keeps its space.
+           *
+           * The wrapper's classes are unchanged; only the contents differ.
+           */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight mb-4 drop-shadow-lg">
-            {location.h1}
+            MrGoma Tires {location.name}{' '}
+            <span className="block text-2xl sm:text-3xl font-bold text-gray-300">
+              Used &amp; New Tires
+            </span>
           </h1>
           <p className="text-gray-300 text-lg max-w-2xl leading-relaxed drop-shadow-md">
             {location.description}
