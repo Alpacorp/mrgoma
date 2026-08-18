@@ -29,7 +29,11 @@ const AddToCartButton: FC<AddToCartButtonProps> = ({ product }) => {
       <CtaButton
         product={product}
         text={productInCart ? 'In Cart' : 'Add to Cart'}
-        style="primary"
+        // Filled brand green while it is the thing to do, outlined once the tire
+        // is in the cart. `CtaButton`'s disabled styles force `!text-gray-500`,
+        // which over a `bg-green-600` at 50% opacity is unreadable — so the fill
+        // is dropped exactly when the button stops being actionable.
+        style={productInCart ? 'primary' : 'filled'}
         onClick={handleAddToCart}
         disabled={productInCart}
         isLink={false}

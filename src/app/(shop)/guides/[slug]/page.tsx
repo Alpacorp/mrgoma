@@ -7,6 +7,7 @@ import { getGuideBySlug, guides, type GuideSection } from '@/app/(shop)/guides/g
 import { JsonLd } from '@/app/ui/components';
 import { INVENTORY_NETWORK } from '@/app/utils/brandClaims';
 import { buildBreadcrumbJsonLd, canonical } from '@/app/utils/seo';
+import { whatsAppLink } from '@/app/utils/whatsapp';
 
 export function generateStaticParams() {
   return guides.map(g => ({ slug: g.slug }));
@@ -222,7 +223,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
                   Have a question? Our ASE-certified team answers quickly on WhatsApp.
                 </p>
                 <a
-                  href="https://wa.me/14073644016"
+                  href={whatsAppLink()}
                   target="_blank"
                   rel="noopener noreferrer"
                   data-track="open_whatsapp"

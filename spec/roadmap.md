@@ -142,6 +142,21 @@ To be resumed after the two tracks above; no fixed order yet.
   any of it worked — separates public from `/dashboard` activity in the events
   (today both surfaces emit identical ones) and finally counts the moment filters
   are actually applied, which nothing records. _Clarified; ready for `/plan`._
+- 🟡 **Ask about this tire on WhatsApp (`019-whatsapp-tire-enquiry`).** The detail
+  page offers one way forward — Add to cart — and nothing smaller for the buyer
+  who is nearly convinced but still has a question. WhatsApp is already this
+  business's primary contact channel everywhere except the page where the
+  customer is actually looking at a product. Adds a one-tap enquiry carrying the
+  stock number, size, real condition and displayed price, plus the canonical link
+  — which makes WhatsApp render the tire's photo as a preview card from the Open
+  Graph metadata we have published since `003` and never used. Also collapses the
+  WhatsApp number's eleven hand-written copies into one source of truth, the same
+  fix `018` applied to store hours. **Depends on a Vercel firewall rule**: Bot
+  Protection currently answers `facebookexternalhit` with `429`, so every link
+  from this site shared on WhatsApp or Facebook arrives today as bare text.
+  The firewall rule was published on 2026-08-17 and verified: preview crawlers
+  now get `200` while ordinary non-browser clients still get `429`.
+  _Planned; ready for `/tasks`._
 - ⬜ **Document Stakeholders/Requirements** if formal sources appear.
 
 ## Recently delivered (context)

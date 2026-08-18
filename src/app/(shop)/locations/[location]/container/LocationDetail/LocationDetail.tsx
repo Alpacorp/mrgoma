@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import { LocationConfig } from '@/app/(shop)/locations/locationsConfig';
 import { formatHours } from '@/app/utils/storeHours';
+import { whatsAppLink } from '@/app/utils/whatsapp';
 
 const services = [
   { label: 'Tire Mounting & Balancing', slug: 'tire-mounting-balancing' },
@@ -268,7 +269,7 @@ export default function LocationDetail({ location }: Props) {
                 <p className="text-black font-black text-lg mb-1">Contact This Location</p>
                 <p className="text-black/60 text-sm mb-4">Fastest reply via WhatsApp</p>
                 <a
-                  href="https://wa.me/14073644016"
+                  href={whatsAppLink()}
                   target="_blank"
                   rel="noopener noreferrer"
                   data-track="open_whatsapp"

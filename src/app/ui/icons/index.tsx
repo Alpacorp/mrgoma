@@ -33,3 +33,4 @@ export * from './CircleSpinner';
 export * from './WarningIcon';
 export * from './EyeIcon';
 export * from './EyeOffIcon';
+export * from './WhatsAppIcon';

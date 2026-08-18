@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import { locationsConfig } from '@/app/(shop)/locations/locationsConfig';
 import { ServiceConfig } from '@/app/(shop)/services/servicesConfig';
+import { whatsAppLink } from '@/app/utils/whatsapp';
 
 const SERVICE_IMAGES: Record<string, string> = {
   tire: '/assets/images/bg-service-card.jpg',
@@ -213,7 +214,7 @@ export default function ServiceDetail({ service }: Props) {
                 <p className="text-black font-black text-lg mb-1">Book via WhatsApp</p>
                 <p className="text-black/60 text-sm mb-4">Fastest way to schedule</p>
                 <a
-                  href="https://wa.me/14073644016"
+                  href={whatsAppLink()}
                   target="_blank"
                   rel="noopener noreferrer"
                   data-track="open_whatsapp"

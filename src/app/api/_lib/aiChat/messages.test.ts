@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { whatsAppLink } from '@/app/utils/whatsapp';
+
 import { buildNarrowingHint, buildNoResultsMessage, buildUnknownBrandMessage } from './messages';
 
 describe('buildNoResultsMessage', () => {
@@ -7,7 +9,7 @@ describe('buildNoResultsMessage', () => {
     const msg = buildNoResultsMessage(false, { w: 225, s: 45, d: 17 });
 
     expect(msg).toContain('225/45R17');
-    expect(msg).toContain('https://wa.me/14073644016');
+    expect(msg).toContain(whatsAppLink());
     expect(msg).toContain('Chat on WhatsApp');
   });
 
@@ -77,7 +79,7 @@ describe('buildUnknownBrandMessage', () => {
   });
 
   it('still offers WhatsApp', () => {
-    expect(buildUnknownBrandMessage(false, ['Nokian'])).toContain('https://wa.me/14073644016');
+    expect(buildUnknownBrandMessage(false, ['Nokian'])).toContain(whatsAppLink());
   });
 
   it('lists several brands readably', () => {

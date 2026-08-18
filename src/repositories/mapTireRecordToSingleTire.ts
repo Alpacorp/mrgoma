@@ -29,6 +29,9 @@ export function mapTireRecordToSingleTire(record: DocumentRecord): SingleTire {
 
   return {
     id: String(record.TireId ?? ''),
+    // The stock code as its own field, not only folded into `name`. It is what
+    // staff search by, so anything quoting a tire back to them needs it whole.
+    code: record.Code || undefined,
     status: record.Condition,
     name: `(${record.Code || ''}) | ${record.Brand || 'Unknown'} | ${record.RealSize || ''}`.trim(),
     color: 'Black',

@@ -25,6 +25,17 @@ const baseRecord: DocumentRecord = {
 };
 
 describe('mapTireRecordToSingleTire', () => {
+  it('carries the stock code as its own field, not only inside the name', () => {
+    const t = mapTireRecordToSingleTire(baseRecord);
+    expect(t.code).toBe('ABC');
+    // It stays in the display name too — nothing about that changed.
+    expect(t.name).toContain('(ABC)');
+  });
+
+  it('omits the code rather than emitting an empty one', () => {
+    expect(mapTireRecordToSingleTire({ ...baseRecord, Code: '' }).code).toBeUndefined();
+  });
+
   it('maps core fields to the SingleTire shape', () => {
     const t = mapTireRecordToSingleTire(baseRecord);
     expect(t.id).toBe('42');
