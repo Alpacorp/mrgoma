@@ -185,6 +185,17 @@ they were touching a heading.
       argue with a test before flattening them.
 - [ ] **AC10:** Given the full suite, build and performance budget, when run, then
       all are green and the JS budget is unchanged.
+- [ ] **AC13:** Given `next.config.mjs`, when read, then `trailingSlash` is not
+      enabled.
+
+      _Added at the owner's request, and it is a real gap rather than the one
+      they described. The home canonical has no trailing slash — verified in
+      production on three occasions — and `metadata.test.ts` has pinned that since
+      `020`. But that test asserts the value the **builder** produces; the slash
+      is stripped from the **rendered** tag by Next, because `trailingSlash`
+      defaults to `false`. Setting that one flag to `true` would put a slash on
+      the canonical of every page on the site, and every existing test would still
+      pass. Nothing guards it today._
 - [ ] **AC11 (manual):** On a phone at 360 px, each corrected heading still breaks
       where it did, with the same sizes — and selecting it copies a readable
       phrase.
