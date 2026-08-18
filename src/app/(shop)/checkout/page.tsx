@@ -4,16 +4,9 @@ import type { Metadata, NextPage } from 'next';
 
 import Checkout from '@/app/(shop)/checkout/container/Checkout/Checkout';
 import { LoadingScreen } from '@/app/ui/components';
+import { checkoutMetadata } from '@/app/utils/seo';
 
-export const metadata: Metadata = {
-  title: 'Checkout',
-  description: 'Secure checkout at MrGoma Tires.',
-  robots: {
-    index: false,
-    follow: false,
-    googleBot: { index: false, follow: false },
-  },
-};
+export const metadata: Metadata = checkoutMetadata();
 
 const CheckoutPage: NextPage = () => {
   return (

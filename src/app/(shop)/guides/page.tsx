@@ -4,14 +4,9 @@ import type { Metadata } from 'next';
 
 import { guides } from '@/app/(shop)/guides/guidesConfig';
 import { INVENTORY_NETWORK } from '@/app/utils/brandClaims';
-import { canonical } from '@/app/utils/seo';
+import { guidesMetadata } from '@/app/utils/seo';
 
-export const metadata: Metadata = {
-  title: 'Tire Guides & Tips | MrGoma Tires',
-  description:
-    'Expert tire guides from MrGoma Tires — how to buy used tires safely, rideshare driver maintenance schedules, how to read tire size codes, and more.',
-  alternates: { canonical: canonical('/guides') },
-};
+export const metadata: Metadata = guidesMetadata();
 
 export default function GuidesPage() {
   const buyingGuides = guides.filter(g => g.category === 'buying-guide');

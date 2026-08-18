@@ -48,3 +48,13 @@ next-env.d.ts
 !.claude/commands/
 .agents
 skills-lock.json
+
+# Local SEO working files, kept in the repo root but never committed.
+# The Screaming Frog control sheet and the Search Console baselines are the
+# owner's working documents, not project artefacts — they are opened in Excel
+# (which leaves ~$ lock files) and are exported afresh each time. What matters
+# from them is written into spec/features/ instead.
+mrgoma-control-implementacion-seo.xlsx
+~$*.xlsx
+gsc-baseline-*.zip
+gsc-baseline-*.csv

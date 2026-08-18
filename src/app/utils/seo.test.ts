@@ -11,6 +11,7 @@ import {
   buildProductJsonLd,
   canonical,
   getSiteUrl,
+  locationMetadata,
   organizationJsonLd,
   productDescription,
   productTitle,
@@ -179,6 +180,36 @@ describe('buildItemListJsonLd', () => {
     expect(ld.numberOfItems).toBe(4342);
     expect(ld.url).toBe(absUrl('/tires/used'));
   });
+});
+
+/**
+ * AC15 — a store shares as itself.
+ *
+ * Every one of the seven already carries a storefront photo in `locationsConfig`,
+ * so this costs nothing but was never wired up. The file check matters: a bad
+ * path would ship a preview card that silently fails to load, and nothing in the
+ * rendered page would show it.
+ */
+describe('store preview cards', () => {
+  it.each(locationsConfig.map(l => [l.slug, l] as const))(
+    '%s shares its own storefront photo, and the file exists',
+    async (_slug, store) => {
+      const { existsSync } = await import('node:fs');
+      const { join } = await import('node:path');
+
+      const meta = locationMetadata({
+        name: store.name,
+        slug: store.slug,
+        city: store.city,
+        image: store.image,
+      });
+      const [image] = meta.openGraph?.images as Array<{ url: string; alt: string }>;
+
+      expect(image.url).toBe(absUrl(store.image));
+      expect(image.alt).toContain(store.name);
+      expect(existsSync(join(process.cwd(), 'public', store.image))).toBe(true);
+    }
+  );
 });
 
 describe('buildLocationsJsonLd', () => {
