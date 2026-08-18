@@ -6,9 +6,11 @@ import {
   DESCRIPTION_MAX,
   DESCRIPTION_MIN,
   TITLE_MAX,
+  absUrl,
   brandMetadata,
   homeMetadata,
   locationMetadata,
+  getSiteUrl,
   locationsMetadata,
   newTiresMetadata,
   sizeMetadata,
@@ -116,22 +118,91 @@ describe('home metadata', () => {
     );
   });
 
-  it('canonicalises to the site root', () => {
-    // `absUrl('/')` keeps the trailing slash — same behaviour as before this
-    // feature, and the form Google already has indexed.
-    expect(homeMetadata().alternates?.canonical).toMatch(/^https?:\/\/[^/]+\/?$/);
+  // AC15b — one spelling of the root, asserted exactly.
+  //
+  // This used to accept either form via a regex, which is how the breadcrumb
+  // drifted to the slashed spelling without anything going red. The canonical
+  // and `absUrl('/')` must now be the same string.
+  it('canonicalises to the site root, with no trailing slash', () => {
+    expect(homeMetadata().alternates?.canonical).toBe(absUrl('/'));
+    expect(homeMetadata().alternates?.canonical).toBe(getSiteUrl());
   });
 });
 
-describe('paginated and filtered /tires canonicals', () => {
-  it('keeps the size filter and page in the canonical URL', () => {
-    const meta = tiresMetadata({ w: '225', s: '40', d: '18', page: 3 });
-    expect(meta.alternates?.canonical).toContain('/tires?w=225&s=40&d=18&page=3');
+/**
+ * AC3–AC7 — the canonical of a filtered catalog view.
+ *
+ * A crawl found 47 filter URLs each declaring itself an original while carrying
+ * `/tires`' own title. The rule now is: keep only the parameters that describe a
+ * page we publish.
+ *
+ * `sizeSlug` is what the route supplies after checking the catalog; absent, the
+ * size is one we do not stock, whose landing page 404s.
+ */
+describe('/tires canonicals', () => {
+  const canonicalOf = (params: Parameters<typeof tiresMetadata>[0]) =>
+    String(tiresMetadata(params).alternates?.canonical);
+
+  const root = `${getSiteUrl()}/tires`;
+
+  // AC4 — every proper subset of the three size parameters, not one example.
+  const PARTIAL: [label: string, params: Parameters<typeof tiresMetadata>[0]][] = [
+    ['w only', { w: '225' }],
+    ['s only', { s: '40' }],
+    ['d only', { d: '18' }],
+    ['w+s', { w: '225', s: '40' }],
+    ['w+d', { w: '225', d: '18' }],
+    ['s+d', { s: '40', d: '18' }],
+    // The `?w=&s=&d=` form the audit names by URL: all three present, none valued.
+    ['all three empty', { w: '', s: '', d: '' }],
+    ['all three whitespace', { w: ' ', s: ' ', d: ' ' }],
+  ];
+
+  it.each(PARTIAL)('drops a partial size (%s) from the canonical', (_label, params) => {
+    expect(canonicalOf(params)).toBe(root);
   });
 
-  it('drops an incomplete size from the canonical URL', () => {
-    const meta = tiresMetadata({ w: '225' });
-    expect(meta.alternates?.canonical).toContain('/tires?w=225');
-    expect(absoluteTitle(meta)).not.toContain('225/');
+  // AC3 — the single most duplicated facet in the crawl.
+  it('canonicalises ?d=20 to /tires, not to itself', () => {
+    expect(canonicalOf({ d: '20' })).toBe(root);
+    // And the title it carries is the generic one, which is why it was a
+    // duplicate in the first place.
+    expect(absoluteTitle(tiresMetadata({ d: '20' }))).toBe(absoluteTitle(tiresMetadata()));
+  });
+
+  // AC5 — a complete size we stock consolidates onto its landing page.
+  it('sends a complete, stocked size to its /tires/size page', () => {
+    expect(canonicalOf({ w: '235', s: '50', d: '20', sizeSlug: '235-50-20' })).toBe(
+      `${getSiteUrl()}/tires/size/235-50-20`
+    );
+  });
+
+  // AC5 — a complete size we do NOT stock. After the fabricating fallback was
+  // removed its landing page 404s, and a canonical must never point at one.
+  it('sends a complete but unstocked size to /tires, never to a 404', () => {
+    expect(canonicalOf({ w: '999', s: '999', d: '999' })).toBe(root);
+    expect(canonicalOf({ w: '999', s: '999', d: '999', sizeSlug: null })).toBe(root);
+  });
+
+  // AC6 — parameters we build no pages for. Already correct; pinned so it stays.
+  it('ignores filter parameters that have no page of their own', () => {
+    expect(canonicalOf({})).toBe(root);
+  });
+
+  // AC7 — pagination keeps its own canonical. Folding page 2 into page 1 hides
+  // everything only page 2 links to.
+  it('keeps the page number, and never folds a page into the size landing page', () => {
+    expect(canonicalOf({ page: 2 })).toBe(`${root}?page=2`);
+    expect(canonicalOf({ w: '235', s: '50', d: '20', sizeSlug: '235-50-20', page: 2 })).toBe(
+      `${root}?w=235&s=50&d=20&page=2`
+    );
+  });
+
+  it('drops a partial size but keeps the page', () => {
+    expect(canonicalOf({ d: '20', page: 2 })).toBe(`${root}?page=2`);
+  });
+
+  it('treats page 1 as no page at all', () => {
+    expect(canonicalOf({ page: 1 })).toBe(root);
   });
 });

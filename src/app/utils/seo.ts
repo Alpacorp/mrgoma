@@ -59,7 +59,27 @@ export function getSiteUrl(): string {
 export function absUrl(pathOrUrl: string): string {
   try {
     const site = getSiteUrl();
-    if (!pathOrUrl) return site;
+    /**
+     * `''` and `'/'` are the same place, and the site has to spell it one way.
+     *
+     * They used to differ, and the difference escaped through two exits. As
+     * `alternates.canonical` the slashed form passes through Next's metadata
+     * resolver, which strips the slash because `trailingSlash` is `false`; as the
+     * `item` of a `BreadcrumbList` it goes straight into JSON-LD, which Next does
+     * not touch. So one page told Google the site was `…com` in its canonical,
+     * `og:url`, `Organization.url` and `WebSite.url`, and `…com/` in its
+     * breadcrumb — eight templates emit that breadcrumb.
+     *
+     * Unslashed wins because it is what the other five emitters already publish
+     * and what the server redirects to: with `trailingSlash: false`, every
+     * non-root path with a trailing slash is 308'd to the form without one.
+     *
+     * `organizationId()` and the `#website` `@id` build their slash literally and
+     * deliberately do not come through here. An `@id` is a stable key Google uses
+     * to merge an entity across crawls, not a claim about a URL; changing one
+     * re-mints the entity for no gain.
+     */
+    if (!pathOrUrl || pathOrUrl === '/') return site;
     // If already absolute
     if (/^https?:\/\//i.test(pathOrUrl)) return pathOrUrl;
     if (!pathOrUrl.startsWith('/')) return `${site}/${pathOrUrl}`;
@@ -213,7 +233,22 @@ export function homeMetadata(): Metadata {
  * Takes the route's own `w`/`s`/`d` param names rather than inventing new ones.
  */
 export function tiresMetadata(
-  params: { w?: string; s?: string; d?: string; page?: number } = {}
+  params: {
+    w?: string;
+    s?: string;
+    d?: string;
+    page?: number;
+    /**
+     * The `/tires/size/{slug}` landing page this facet belongs to, when we
+     * publish one — resolved by the route, because deciding it needs the
+     * catalog and these builders stay pure so `metadata.test.ts` can run with no
+     * database and no mocks.
+     *
+     * Absent or `null` means "not a size we stock", and the canonical falls back
+     * to `/tires`.
+     */
+    sizeSlug?: string | null;
+  } = {}
 ): Metadata {
   const w = (params.w || '').trim();
   const s = (params.s || '').trim();
@@ -238,11 +273,45 @@ export function tiresMetadata(
     ? `Shop ${size} tires in Miami and Orlando — like-new used and new, every used tire backed by a 30-day warranty.`
     : 'Browse like-new used and new tires in Miami and Orlando, every used tire backed by a 30-day warranty.';
 
-  const query = new URLSearchParams();
-  if (w) query.set('w', w);
-  if (s) query.set('s', s);
-  if (d) query.set('d', d);
-  if (page > 1) query.set('page', String(page));
+  /**
+   * The canonical keeps **only the parameters that describe a page we publish.**
+   *
+   * It used to keep whichever of `w`, `s` and `d` happened to be present, while
+   * the title above only treats a size as distinct when **all three** are. So
+   * `/tires?d=20` got the generic `/tires` title and a canonical of its own —
+   * the exact combination that manufactures duplicates, and there were 47 of
+   * them. It also made the rule look arbitrary from outside: `?condition=new`
+   * pointed at `/tires` (it is not in this list) while `?d=20` pointed at itself.
+   *
+   * Three cases, in order:
+   *
+   *  - **Partial size** — any subset of `w`/`s`/`d` short of all three, and the
+   *    `?w=&s=&d=` empty-value form too, since each is trimmed above. Not a page
+   *    we publish, so the parameters are dropped.
+   *  - **Complete size we stock** — `/tires/size/{slug}` is the page we publish
+   *    for it, one of the 272 already in the sitemap, so the facet consolidates
+   *    onto it instead of competing with it. A complete size we do *not* stock
+   *    arrives with no `sizeSlug` and falls back to `/tires`: its landing page
+   *    404s, and a canonical must never point at one.
+   *  - **Pagination** — kept whenever `page > 1`, and never folded into the size
+   *    page. Google's own guidance: collapsing page 2 into page 1 hides
+   *    everything only page 2 links to.
+   */
+  const publishedSize = size && params.sizeSlug ? params.sizeSlug : null;
+
+  let path: string;
+  if (publishedSize && page === 1) {
+    path = `/tires/size/${publishedSize}`;
+  } else {
+    const query = new URLSearchParams();
+    if (publishedSize) {
+      query.set('w', w);
+      query.set('s', s);
+      query.set('d', d);
+    }
+    if (page > 1) query.set('page', String(page));
+    path = query.toString() ? `/tires?${query.toString()}` : '/tires';
+  }
 
   return pageMetadata({
     title,
@@ -251,7 +320,7 @@ export function tiresMetadata(
       `${SHIPPING}. 7 locations.`,
       'Free shipping.',
     ]),
-    path: query.toString() ? `/tires?${query.toString()}` : '/tires',
+    path,
   });
 }
 

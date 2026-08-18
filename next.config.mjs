@@ -30,10 +30,49 @@ const ALTERNATE_HOST = CANONICAL_HOST.startsWith('www.')
   ? CANONICAL_HOST.slice('www.'.length)
   : `www.${CANONICAL_HOST}`;
 
+/**
+ * Store URLs that were indexed after the May migration and then renamed by a
+ * later deploy without a redirect. They ranked in positions 3–4, Google still
+ * shows them, and every click has been landing on a 404 since — so the ranking
+ * those pages earned is being discarded instead of inherited by the pages that
+ * replaced them.
+ *
+ * `/locations/miami-north-441` is **deliberately absent**. None of the seven
+ * current addresses is on that road, so there is no destination anyone can
+ * confirm, and a redirect pointed at the wrong store is worse than the 404 it
+ * replaces. It goes in once the owner says which store "441" was.
+ *
+ * Every destination is checked against `locationsConfig` by
+ * `src/app/(shop)/locations/legacySlugs.guard.test.ts`, so renaming a store
+ * without updating this list fails the build rather than creating a redirect
+ * loop into a 404.
+ */
+const LEGACY_LOCATION_SLUGS = {
+  'miami-hialeah': 'hialeah',
+  'miami-coral-gables': 'coral-gables',
+  'orlando-semoran': 'east-orlando',
+  'miami-south-us1': 'cutler-bay',
+};
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   async redirects() {
     return [
+      /**
+       * These come **first, and without a host condition**, and both of those
+       * are the requirement rather than style.
+       *
+       * Next matches in array order, first rule wins. Placed after the host rule
+       * below, a legacy URL arriving on the bare domain would spend one redirect
+       * becoming `www` and a second becoming the new slug — two hops for a link
+       * Google is still serving. Matching here first, with an absolute
+       * destination, gets both hosts to the final URL in one.
+       */
+      ...Object.entries(LEGACY_LOCATION_SLUGS).map(([from, to]) => ({
+        source: `/locations/${from}`,
+        destination: `https://${CANONICAL_HOST}/locations/${to}`,
+        permanent: true,
+      })),
       {
         source: '/:path*',
         has: [{ type: 'host', value: ALTERNATE_HOST }],

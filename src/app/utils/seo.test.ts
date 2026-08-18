@@ -26,6 +26,13 @@ describe('absUrl / canonical', () => {
     expect(canonical('/about-us')).toBe(`${site}/about-us`);
   });
 
+  // AC15a — `''` and `'/'` name the same place, so they must produce one string.
+  it('treats the bare root and "/" as the same address', () => {
+    expect(absUrl('/')).toBe(getSiteUrl());
+    expect(absUrl('/')).toBe(absUrl(''));
+    expect(absUrl('/').endsWith('/')).toBe(false);
+  });
+
   it('leaves already-absolute URLs untouched', () => {
     expect(absUrl('https://example.com/x')).toBe('https://example.com/x');
   });
@@ -101,6 +108,18 @@ describe('buildBreadcrumbJsonLd', () => {
     expect(items[0].position).toBe(1);
     expect(items[1].name).toBe('Tires');
   });
+
+  // AC15a — the site root has one spelling, and the breadcrumb uses it.
+  //
+  // This is the emitter that used to disagree. `absUrl('/')` returned the
+  // slashed form; Next strips it on the way to a canonical tag but not on the
+  // way into JSON-LD, so a page claimed `…com` in four places and `…com/` here.
+  it('spells the site root the same way the canonical does', () => {
+    const ld = buildBreadcrumbJsonLd([{ name: 'Home', url: '/' }]);
+    const items = ld.itemListElement as Array<Record<string, unknown>>;
+    expect(items[0].item).toBe(getSiteUrl());
+    expect(String(items[0].item).endsWith('/')).toBe(false);
+  });
 });
 
 describe('site-wide JSON-LD', () => {
@@ -117,6 +136,20 @@ describe('site-wide JSON-LD', () => {
     expect(ld.slogan).toBeTruthy();
     expect(ld.description).toBeTruthy();
     expect(ld['@id']).toMatch(/#organization$/);
+  });
+
+  /**
+   * AC15c — the `@id` values keep their slash, deliberately.
+   *
+   * Unifying how the site spells its own root (AC15a) stops at the entity
+   * identifiers. An `@id` is the stable key Google uses to merge an entity
+   * across pages and crawls; it is not a claim about a URL and nothing resolves
+   * it as one. Changing it re-mints the entity for no gain, so this pins them.
+   */
+  it('leaves the entity @id values alone — they are keys, not URLs', () => {
+    const site = getSiteUrl();
+    expect(organizationJsonLd()['@id']).toBe(`${site}/#organization`);
+    expect(websiteJsonLd()['@id']).toBe(`${site}/#website`);
   });
 
   it('organizationJsonLd survives serialization with an ampersand in its description', () => {

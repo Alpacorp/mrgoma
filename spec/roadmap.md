@@ -102,6 +102,33 @@ To be resumed after the two tracks above; no fixed order yet.
   `011`. _In progress._
 - ⬜ **SEO — phased plan.** 4 phases from the WJM audit; Phase 1 ready to
   implement.
+- 🟡 **Crawl hygiene (`020-crawl-hygiene`).** A full Screaming Frog crawl on
+  2026-08-18 found 2.106 real pages and **37.296 URLs that are not pages** — the
+  `?_rsc=` addresses Next.js mints every time it prefetches a hovered link. The
+  home page has generated 7.657 copies of itself and `/legal-policies` 5.923, all
+  answering `200` with no instruction not to index them, so Google spends its
+  visit on copies instead of on the catalog that changes daily. Same shape twice
+  more: `/tires` filter URLs declare themselves canonical while carrying `/tires`'
+  own title (47 variants, and the rule is self-contradictory — `?condition=new`
+  points at `/tires`, `?d=20` points at itself), and five store URLs renamed after
+  the May migration still rank in positions 3–4 while returning `404`. Four of the
+  five have a confirmed destination and are redirected here; `miami-north-441`
+  does not and stays a `404` until the owner says which store it was. Verifying
+  the audit turned up a fourth leak it never saw and the worst of them:
+  `/tires/size/` **fabricates a page for any three-part slug**, so
+  `/tires/size/foo-bar-baz` answers `200` with an indexable title and a canonical
+  pointing at itself — an unbounded URL space anyone can add to. Also unifies the
+  two spellings of the site's own root: `absUrl('/')` returns the slashed form,
+  which Next strips on the way to the canonical but not on the way into JSON-LD,
+  so eight templates emit a `BreadcrumbList` "Home" of `…com/` while the canonical,
+  `og:url`, sitemap and `Organization.url` all say `…com`. Block 0 of the
+  audit: the only near-subtractive one — nothing a visitor sees changes except
+  the invented pages, which stop existing — so it ships ahead of the metadata,
+  content and URL-architecture blocks that do change what people see. Two audit
+  items are deliberately dropped with the reasoning recorded: the `noindex` header
+  on `?_rsc=` (inert behind a `robots.txt` block, and the canonical already
+  handles indexation) and `Disallow: /_next/image` (would remove the catalog from
+  Google Images to treat an inventory problem). _Implemented; awaiting manual verification._
 - 🟡 **SERP differentiators (`014-serp-differentiators`).** We rank for
   "tires miami" but the snippet says nothing a competitor couldn't. Puts the
   owner's real differentiators (30-day warranty, 15,000+ across 7 locations,
@@ -141,7 +168,7 @@ To be resumed after the two tracks above; no fixed order yet.
   "cheapest first" expressible, and — because otherwise we could not tell whether
   any of it worked — separates public from `/dashboard` activity in the events
   (today both surfaces emit identical ones) and finally counts the moment filters
-  are actually applied, which nothing records. _Clarified; ready for `/plan`._
+  are actually applied, which nothing records. _Implemented; awaiting manual verification._
 - 🟡 **Ask about this tire on WhatsApp (`019-whatsapp-tire-enquiry`).** The detail
   page offers one way forward — Add to cart — and nothing smaller for the buyer
   who is nearly convinced but still has a question. WhatsApp is already this
