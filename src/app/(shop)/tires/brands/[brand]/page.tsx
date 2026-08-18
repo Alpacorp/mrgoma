@@ -11,7 +11,7 @@ import { TiresData } from '@/app/interfaces/tires';
 import { BrandImage, JsonLd } from '@/app/ui/components';
 import { LOCATIONS_LABEL, SHIPPING, WARRANTY, onlineInventoryLabel } from '@/app/utils/brandClaims';
 import { brandMetadata, buildBreadcrumbJsonLd, buildItemListJsonLd } from '@/app/utils/seo';
-import { slugify } from '@/app/utils/tireSlug';
+import { matchSlug, slugify } from '@/app/utils/tireSlug';
 import { transformTireData } from '@/app/utils/transformTireData';
 import { fetchBrands, fetchTires } from '@/repositories/tiresRepository';
 
@@ -27,8 +27,7 @@ export async function generateStaticParams() {
 }
 
 async function getBrandName(brandSlug: string): Promise<string | null> {
-  const brands = await fetchBrands();
-  return brands.find(b => slugify(b) === brandSlug) ?? null;
+  return matchSlug(await fetchBrands(), brandSlug);
 }
 
 export async function generateMetadata({

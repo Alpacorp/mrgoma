@@ -4,49 +4,58 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 
 import { TireGrid } from '@/app/(shop)/tires/container/TireGrid/TireGrid';
+import { getStockedSizes, resolveSizeSlug } from '@/app/(shop)/tires/utils/sizeCatalog';
 import { TiresData } from '@/app/interfaces/tires';
 import { JsonLd } from '@/app/ui/components';
 import { LOCATIONS_LABEL, SHIPPING, WARRANTY, onlineInventoryLabel } from '@/app/utils/brandClaims';
 import { buildBreadcrumbJsonLd, buildItemListJsonLd, sizeMetadata } from '@/app/utils/seo';
 import { slugify } from '@/app/utils/tireSlug';
 import { transformTireData } from '@/app/utils/transformTireData';
-import { fetchSizes, fetchTires } from '@/repositories/tiresRepository';
+import { fetchTires } from '@/repositories/tiresRepository';
 
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
   try {
-    const sizes = await fetchSizes();
+    const sizes = await getStockedSizes();
     return sizes.map(size => ({ size: slugify(size) }));
   } catch {
     return [];
   }
 }
 
+/**
+ * The size behind the URL segment, or `null` — and `null` means 404.
+ *
+ * There used to be a fallback here: when the slug matched no size we stock, it
+ * split the slug on hyphens and **invented** a size from the three pieces. That
+ * turned every three-segment slug into a live page. `/tires/size/foo-bar-baz`
+ * answered `200` with `<title>foo/bar/baz Tires in Miami — 30-Day Warranty</title>`
+ * and a canonical pointing at itself; so did `/tires/size/999-999-999`, and so
+ * did `/tires/size/235-50-r20`, which is why the site appeared to publish two
+ * URLs for every size. An unbounded, indexable, self-canonicalising URL space
+ * that any broken link, typo or scraper could add to.
+ *
+ * It also got real sizes wrong in the other direction: `31/10.50/15` slugifies
+ * to four segments, so the fallback would have rejected it while happily
+ * inventing `foo/bar/baz`. Exact matching against the catalog handles both.
+ *
+ * The brand route never had the bug — it always matched exactly — and both now
+ * call the same `matchSlug`.
+ */
 async function getSizeData(sizeSlug: string): Promise<{
   originalSize: string;
   width: string;
   sidewall: string;
   diameter: string;
 } | null> {
-  const sizes = await fetchSizes();
-  const originalSize = sizes.find(s => slugify(s) === sizeSlug);
+  const originalSize = await resolveSizeSlug(sizeSlug);
+  if (!originalSize) return null;
 
-  if (originalSize) {
-    const parts = originalSize.split('/');
-    if (parts.length === 3) {
-      return { originalSize, width: parts[0], sidewall: parts[1], diameter: parts[2] };
-    }
-  }
+  const parts = originalSize.split('/');
+  if (parts.length !== 3) return null;
 
-  // Fallback: parse slug as "w-s-d"
-  const parts = sizeSlug.split('-');
-  if (parts.length === 3) {
-    const [w, s, d] = parts;
-    return { originalSize: `${w}/${s}/${d}`, width: w, sidewall: s, diameter: d };
-  }
-
-  return null;
+  return { originalSize, width: parts[0], sidewall: parts[1], diameter: parts[2] };
 }
 
 export async function generateMetadata({
