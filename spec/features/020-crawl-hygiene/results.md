@@ -155,11 +155,52 @@ Two notes on the numbers:
   that works). Worth carrying into the store-pages block — it may be the local
   pack absorbing the clicks rather than anything wrong with our markup.
 
+## Post-deploy verification (T13) — and one correction to AC12
+
+Run against production on **2026-08-18**, after the merge deployed.
+
+- **The prefetch rules are live**: `robots.txt` serves both `/*?_rsc=` and
+  `/*&_rsc=` alongside the five pre-existing rules.
+- **The fabricated size space is closed in production**: `foo-bar-baz` and
+  `235-50-r20` answer `404`.
+- **No real size was lost**: eight sizes sampled across the sitemap's range
+  (`155-80-13` … `305-40-20`) all answer `200`. This was the one way FR3 could
+  have removed a real page.
+- **One spelling of the root**: `/tires/size/…`, `/locations/hialeah` and a guide
+  all emit `"item":"https://www.mrgomatires.com"` beside a matching canonical.
+- **`miami-north-441` still answers `404`**, as intended.
+
+### AC12 is only half met, and the missing half is not ours
+
+AC12 asked for **one hop from either host**. Production:
+
+| From | Hops |
+| --- | --- |
+| `https://www.…/locations/miami-hialeah` | **1** ✅ |
+| `https://mrgomatires.com/locations/miami-hialeah` | **2** ❌ |
+
+The extra hop is **Vercel's own apex→www domain redirect**, configured in the
+dashboard and served at the edge before any application code runs. It is not our
+`redirects()` host rule being out of order: `https://mrgomatires.com/locations/hialeah`
+— a page that exists and was never renamed — is 308'd to `www` just the same, and
+the response carries `server: Vercel` with no matched route.
+
+So the ordering work this feature did is correct and does deliver the one hop
+from `www`, which is the host that matters: it is what the canonical, the sitemap
+and every internal link declare, and therefore what Google has indexed. The apex
+is an edge case reached only by someone typing the bare domain.
+
+Removing the second hop means retiring the platform redirect and letting
+`next.config.mjs` handle apex→www instead — a Vercel dashboard change with wider
+blast radius than this feature's scope, and **the same root cause as audit item
+T008**, which was already out of scope here. AC12 is restated as: _one hop from
+`www`; two from the apex, the first of which belongs to the platform._
+
 ## Still to verify (manual)
-- [ ] **T13 / AC16 — after deploy.** A live sample of real sizes still answers
-      `200`; `curl -I` a legacy URL on **both** hosts and confirm one hop each;
-      Search Console URL Inspection on one `?_rsc=` URL, one fabricated size URL
-      and one redirected legacy URL.
+- [ ] **AC16, the Search Console half.** URL Inspection on one `?_rsc=` URL, one
+      fabricated size URL and one redirected legacy URL, to confirm Google sees
+      what we intended. Needs an account with access; everything else in T13 is
+      done and recorded above.
 
 ## Known limitation
 

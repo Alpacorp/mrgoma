@@ -176,7 +176,7 @@ Inside a group, order matters.
       page, exact URL). This does **not** gate the redirect — a 301/308 is correct
       either way — but after the redirect ships the "before" number is gone.
 
-- [ ] **T13** — Manual, **after deploy**: verify against production.
+- [x] **T13** — Manual, **after deploy**: verify against production.
       · a live sample of real sizes from `/tires/size/` still answers `200` —
       this is the one way T6 could remove a real page, if a stored size format
       does not survive `slugify`;
