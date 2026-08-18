@@ -659,6 +659,38 @@ export function locationsMetadata(): Metadata {
 }
 
 /** `/locations/[location]` — one store. */
+/**
+ * The street a store is on, from its full address.
+ *
+ * `18200 S Dixie Hwy, Miami, FL 33157` → `S Dixie Hwy`. The house number is
+ * dropped because a description says where the shop *is*, not its postal
+ * address, and all seven addresses share the "number then street" shape.
+ */
+export function storeStreet(address: string): string {
+  return (address.split(',')[0] || '').replace(/^\d+\s+/, '').trim();
+}
+
+/**
+ * The neighbourhoods a store's description should name.
+ *
+ * Two things are dropped, both because of how the sentence reads:
+ *
+ *  - **The store's own name.** "Cutler Bay serves Cutler Bay" spends characters
+ *    saying nothing, in a description with 160 of them.
+ *  - **Anything beginning `Near `.** These are orientation hints for a card, not
+ *    places served, and *"Serving Allapattah, Midtown Miami and Near Miami
+ *    International Airport"* is not English.
+ */
+export function storeServes(name: string, neighborhoods: readonly string[]): string[] {
+  return neighborhoods.filter(area => area !== name && !area.startsWith('Near '));
+}
+
+/** `A`, `A and B`, `A, B and C` — an English list, not a comma run. */
+function andList(items: readonly string[]): string {
+  if (items.length <= 1) return items[0] ?? '';
+  return `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`;
+}
+
 export function locationMetadata(params: {
   name: string;
   slug: string;
@@ -670,22 +702,55 @@ export function locationMetadata(params: {
    * and "the Hialeah shop" is what people actually send each other.
    */
   image?: string;
+  /** Full postal address; the street is derived from it. */
+  address?: string;
+  /** The store's own areas; filtered by {@link storeServes} before use. */
+  neighborhoods?: readonly string[];
 }): Metadata {
   const { name, slug, city } = params;
+  const street = storeStreet(params.address ?? '');
+  const serves = storeServes(name, params.neighborhoods ?? []);
+
   return pageMetadata({
+    /**
+     * `used tires near me` is the highest-volume non-brand query the site has —
+     * 2.697 impressions — and **no store title contained "used tires"**. They
+     * read `{name} Tire Shop — 30-Day Warranty`, which names neither the product
+     * people search for nor the state that local queries carry.
+     *
+     * The audit proposes a second phrasing (`Tires & Auto Service`) for Hialeah
+     * and East Orlando, with headings naming "MrGoma Tires Automotive" — a string
+     * that appears nowhere in this repository and is presumably those stores'
+     * Business Profile names. It may well be right, but putting a possibly-wrong
+     * business name on two pages is not something to ship unverified, so all
+     * seven share one phrasing and the question is with the owner.
+     */
     title: fitTitle(
-      `${name} Tire Shop — ${WARRANTY}${TITLE_SUFFIX}`,
-      `${name} Tire Shop, ${city}${TITLE_SUFFIX}`,
-      `${name} Tire Shop${TITLE_SUFFIX}`
+      `Used & New Tires in ${name}, FL${TITLE_SUFFIX}`,
+      `Used & New Tires in ${name}${TITLE_SUFFIX}`,
+      `Tires in ${name}, FL${TITLE_SUFFIX}`
     ),
     image: params.image ? { url: params.image, alt: `MrGoma Tires — ${name}` } : undefined,
+    /**
+     * **This is the defect the whole feature exists for.** All seven read from
+     * one template, differing only by store name and city — so the sentence
+     * Google showed for Cutler Bay was the sentence it showed for Hialeah, and a
+     * search result gave no reason to pick one shop over another. Orlando West
+     * Colonial may be missing from the index entirely because of it.
+     *
+     * Composed instead from facts the config already held and never published:
+     * the **street** the shop is on, and the **areas it serves**. Nothing is
+     * written per store, so the seven cannot drift back into agreement, and an
+     * eighth store gets a description of its own for free.
+     */
     description: fitDescription(
-      `MrGoma Tires ${name}: like-new used and new tires, every used tire backed by a 30-day warranty.`,
+      `Used and new tires on ${street}, every used tire with a ${WARRANTY.toLowerCase()}.`,
       [
-        `Walk-ins welcome, ${SHIPPING.toLowerCase()}, and same-day installation in ${city}.`,
+        `Serving ${andList(serves.slice(0, 3))}. Walk-ins welcome, same-day installation.`,
+        `Serving ${andList(serves.slice(0, 3))}. Walk-ins welcome.`,
+        `Serving ${andList(serves.slice(0, 2))}. Walk-ins welcome, same-day installation.`,
+        `Serving ${andList(serves.slice(0, 2))}. Walk-ins welcome.`,
         `Walk-ins welcome and same-day installation in ${city}.`,
-        'Walk-ins welcome, same-day installation.',
-        `Walk-ins welcome in ${city}.`,
       ]
     ),
     path: `/locations/${slug}`,

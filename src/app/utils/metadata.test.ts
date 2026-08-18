@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { describe, expect, it } from 'vitest';
 
 import { guides } from '@/app/(shop)/guides/guidesConfig';
+import { locationsConfig } from '@/app/(shop)/locations/locationsConfig';
 import { servicesConfig } from '@/app/(shop)/services/servicesConfig';
 import { statesPrimaryDifferentiator } from '@/app/utils/brandClaims';
 import {
@@ -25,6 +26,8 @@ import {
   serviceMetadata,
   servicesMetadata,
   sizeMetadata,
+  storeServes,
+  storeStreet,
   tiresMetadata,
   usedTiresMetadata,
 } from '@/app/utils/seo';
@@ -74,15 +77,28 @@ const ENTRY_POINTS: [label: string, meta: Metadata][] = [
   ...(['225/40/18', '31/10.50/15', '265/70/17'] as const).map(
     size => [`/tires/size/${size}`, sizeMetadata({ size, slug: 'x' })] as [string, Metadata]
   ),
-  ...(
-    [
-      { name: 'Cutler Bay', city: 'Miami' },
-      { name: 'Orlando West Colonial', city: 'Orlando' },
-      { name: 'Miami Airport', city: 'Miami' },
-      { name: 'Hialeah', city: 'Miami' },
-    ] as const
-  ).map(
-    loc => [`/locations/${loc.name}`, locationMetadata({ ...loc, slug: 'x' })] as [string, Metadata]
+  /**
+   * All seven stores, from the config the site actually renders.
+   *
+   * This used to be four stores written by hand with `slug: 'x'`. Every
+   * store-wide assertion below — "all seven titles are distinct", "each
+   * description names its own street" — was really a statement about four
+   * stores standing in for seven, and could not have caught a defect in the
+   * other three.
+   */
+  ...locationsConfig.map(
+    store =>
+      [
+        `/locations/${store.slug}`,
+        locationMetadata({
+          name: store.name,
+          slug: store.slug,
+          city: store.city,
+          image: store.image,
+          address: store.address,
+          neighborhoods: store.neighborhoods,
+        }),
+      ] as [string, Metadata]
   ),
 ];
 
@@ -226,6 +242,81 @@ describe('commercial entry point metadata', () => {
  * 88 were the brand printed twice. Shortening the title must never be done by
  * dropping the rig.
  */
+/**
+ * AC1–AC4 — seven stores that must stop reading like one.
+ *
+ * Twenty thousand impressions in the top four positions produced fifty clicks in
+ * three months, on seven pages whose descriptions differed only by a name.
+ */
+describe('store pages', () => {
+  const metaFor = (store: (typeof locationsConfig)[number]) =>
+    locationMetadata({
+      name: store.name,
+      slug: store.slug,
+      city: store.city,
+      image: store.image,
+      address: store.address,
+      neighborhoods: store.neighborhoods,
+    });
+
+  // AC1
+  it.each(locationsConfig.map(l => [l.slug, l] as const))(
+    '%s names the product and the state',
+    (_slug, store) => {
+      const title = absoluteTitle(metaFor(store));
+      expect(title).toMatch(/Tires/);
+      expect(title).toContain('FL');
+      expect(title.length).toBeLessThanOrEqual(TITLE_MAX);
+    }
+  );
+
+  // AC2 — seven pages, seven titles.
+  it('gives every store a title of its own', () => {
+    const titles = locationsConfig.map(store => absoluteTitle(metaFor(store)));
+    expect(titles).toHaveLength(7);
+    expect(new Set(titles).size).toBe(7);
+  });
+
+  // AC3 — the facts the config held and never published.
+  it.each(locationsConfig.map(l => [l.slug, l] as const))(
+    '%s names its own street and the areas it serves',
+    (_slug, store) => {
+      const description = String(metaFor(store).description);
+      expect(description).toContain(storeStreet(store.address));
+      expect(storeServes(store.name, store.neighborhoods).some(a => description.includes(a))).toBe(
+        true
+      );
+    }
+  );
+
+  /**
+   * AC4 — the templating test, and the reason this feature exists.
+   *
+   * Take store A's description and substitute B's name, city and street for A's.
+   * If the result is B's description, the two were the same sentence with the
+   * nouns swapped — which is exactly what the seven were, and what Google is
+   * thought to have filed Orlando West Colonial away as a duplicate of.
+   *
+   * It passes now because the descriptions differ in the **areas served** too,
+   * which no substitution of name, city or street can reach.
+   */
+  it('has no two stores whose description is the other with the nouns swapped', () => {
+    for (const a of locationsConfig) {
+      for (const b of locationsConfig) {
+        if (a.slug === b.slug) continue;
+        const swapped = String(metaFor(a).description)
+          .split(storeStreet(a.address))
+          .join(storeStreet(b.address))
+          .split(a.name)
+          .join(b.name)
+          .split(a.city)
+          .join(b.city);
+        expect(swapped).not.toBe(String(metaFor(b).description));
+      }
+    }
+  });
+});
+
 describe('service pages', () => {
   const titleOf = (slug: string) => {
     const service = servicesConfig.find(s => s.slug === slug)!;
@@ -301,9 +392,7 @@ describe('home metadata', () => {
   it('matches the approved copy exactly', () => {
     const meta = homeMetadata();
 
-    expect(absoluteTitle(meta)).toBe(
-      'Used & New Tires Miami & Orlando — 30-Day Warranty | MrGoma'
-    );
+    expect(absoluteTitle(meta)).toBe('Used & New Tires Miami & Orlando — 30-Day Warranty | MrGoma');
     // Both halves of the decision, asserted separately so a future edit that
     // drops one is named for what it dropped.
     expect(absoluteTitle(meta)).toContain('Orlando');

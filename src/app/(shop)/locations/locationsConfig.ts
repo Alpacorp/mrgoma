@@ -59,7 +59,6 @@ export interface LocationConfig {
   serving: string;
   neighborhoods: string[];
   city: 'Miami' | 'Orlando';
-  h1: string;
   description: string;
 }
 
@@ -78,7 +77,6 @@ export const locationsConfig: LocationConfig[] = [
     serving: 'Cutler Bay • Palmetto Bay • South Miami • Kendall • Pinecrest',
     neighborhoods: ['Cutler Bay', 'Palmetto Bay', 'South Miami', 'Kendall', 'Pinecrest'],
     city: 'Miami',
-    h1: 'Cutler Bay',
     description:
       'Our South Dixie Highway location serves the communities of Cutler Bay, Palmetto Bay, South Miami, Kendall, and Pinecrest. Stop in for new or used tires, wheel alignment, oil changes, brake service, and more — no appointment needed.',
   },
@@ -96,7 +94,6 @@ export const locationsConfig: LocationConfig[] = [
     serving: 'Allapattah • Midtown • Near Miami Int’l Airport',
     neighborhoods: ['Allapattah', 'Midtown Miami', 'Wynwood', 'Near Miami International Airport'],
     city: 'Miami',
-    h1: 'Miami Airport',
     description:
       'Conveniently located near Miami International Airport on NW 27th Ave, this location serves Allapattah, Midtown Miami, and Wynwood. We carry new and used tires for all makes and models, plus a full menu of automotive services.',
   },
@@ -114,7 +111,6 @@ export const locationsConfig: LocationConfig[] = [
     serving: 'Miami Gardens • Hollywood • Aventura',
     neighborhoods: ['Miami Gardens', 'Hollywood', 'Aventura', 'Opa-locka', 'North Miami'],
     city: 'Miami',
-    h1: 'Miami Gardens',
     description:
       'Our North Miami location on NW 2nd Ave serves Miami Gardens, Hollywood, Aventura, and North Miami. With 15,000+ tires across our 7 locations, we can quickly find the right tire for your vehicle.',
   },
@@ -137,7 +133,6 @@ export const locationsConfig: LocationConfig[] = [
       'Near Miami International Airport',
     ],
     city: 'Miami',
-    h1: 'Coral Gables',
     description:
       'Located on South Le Jeune Road, our Coral Gables shop serves the upscale communities of Coral Gables, Westchester, and West Miami. Quality tire service from ASE-certified technicians.',
   },
@@ -155,7 +150,6 @@ export const locationsConfig: LocationConfig[] = [
     serving: 'Hialeah • Miami Springs • East Hialeah',
     neighborhoods: ['Hialeah', 'Miami Springs', 'East Hialeah', 'Medley'],
     city: 'Miami',
-    h1: 'Hialeah',
     description:
       'Our Hialeah location on E 10th Court serves Hialeah, Miami Springs, and East Hialeah. We offer the same full menu of tire and automotive services as all our locations — with the same ASE-certified technicians and 30-day warranty on used tires.',
   },
@@ -173,7 +167,6 @@ export const locationsConfig: LocationConfig[] = [
     serving: 'Winter Garden • Metrowest • West Orlando',
     neighborhoods: ['Winter Garden', 'Metrowest', 'West Orlando'],
     city: 'Orlando',
-    h1: 'Orlando West Colonial',
     description:
       'Our West Colonial Drive location serves Winter Garden, Metrowest, and West Orlando. Same quality tires and services as our Miami locations — now serving Central Florida drivers.',
   },
@@ -188,17 +181,27 @@ export const locationsConfig: LocationConfig[] = [
     geo: { latitude: 28.5519878, longitude: -81.3103062 },
     hours: DEFAULT_HOURS,
     image: '/assets/images/Locations/575.jpg',
-    serving: "Azalea Park • Winter Park • East Orlando • Near Orlando Int'l Airport",
-    neighborhoods: [
-      'Azalea Park',
-      'Winter Park',
-      'East Orlando',
-      'Near Orlando International Airport',
-    ],
+    // Executive, not International. See the `description` below — the same
+    // mistake lived in three fields and this one renders on the home page.
+    serving: 'Azalea Park • Winter Park • East Orlando • Near Orlando Executive Airport',
+    neighborhoods: ['Azalea Park', 'Winter Park', 'East Orlando', 'Near Orlando Executive Airport'],
     city: 'Orlando',
-    h1: 'East Orlando',
     description:
-      'Located on N Semoran Blvd near Orlando International Airport, our East Orlando location serves Azalea Park, Winter Park, and surrounding communities. Walk in for new or used tires, mounting, balancing, alignment, and more.',
+      /**
+       * This said **Orlando International** until 2026-08-18. The shop is at
+       * 575 N Semoran Blvd, beside Orlando **Executive** — about 20 km from MCO.
+       * Anyone searching for tires near the International and driving here made
+       * a wasted trip.
+       *
+       * The same error sat in `serving` and in `neighborhoods` above: one fact,
+       * three copies, rendered on four surfaces including the home page's
+       * locations slider. `storeFacts.guard.test.ts` now fails if the three ever
+       * disagree again.
+       *
+       * Semoran Blvd leads because that is what someone nearby navigates by;
+       * Executive is named behind it for accuracy.
+       */
+      'Located on N Semoran Blvd, minutes from Orlando Executive Airport, our East Orlando location serves Azalea Park, Winter Park, and surrounding communities. Walk in for new or used tires, mounting, balancing, alignment, and more.',
   },
 ];
 

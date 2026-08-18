@@ -15,6 +15,8 @@ import {
   organizationJsonLd,
   productDescription,
   productTitle,
+  storeServes,
+  storeStreet,
   websiteJsonLd,
 } from './seo';
 
@@ -210,6 +212,40 @@ describe('store preview cards', () => {
       expect(existsSync(join(process.cwd(), 'public', store.image))).toBe(true);
     }
   );
+});
+
+/**
+ * The two derivations that let seven store descriptions differ in substance
+ * rather than in a name. Driven from `locationsConfig` itself, so they are
+ * assertions about the real stores rather than about examples chosen to pass.
+ */
+describe('store facts derived from config', () => {
+  it.each(locationsConfig.map(l => [l.slug, l] as const))(
+    '%s yields a street from its address',
+    (_slug, store) => {
+      const street = storeStreet(store.address);
+      expect(street.length).toBeGreaterThan(3);
+      // The house number belongs to the postal address, not to "where the shop is".
+      expect(street).not.toMatch(/^\d/);
+      expect(store.address).toContain(street);
+    }
+  );
+
+  it.each(locationsConfig.map(l => [l.slug, l] as const))(
+    '%s yields at least two areas to name',
+    (_slug, store) => {
+      const serves = storeServes(store.name, store.neighborhoods);
+      expect(serves.length).toBeGreaterThanOrEqual(2);
+      expect(serves).not.toContain(store.name);
+      expect(serves.every(area => !area.startsWith('Near '))).toBe(true);
+    }
+  );
+
+  it('drops the store name and the orientation hints, and nothing else', () => {
+    expect(storeServes('Cutler Bay', ['Cutler Bay', 'Kendall', 'Near MIA Airport'])).toEqual([
+      'Kendall',
+    ]);
+  });
 });
 
 describe('buildLocationsJsonLd', () => {

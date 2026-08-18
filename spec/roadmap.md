@@ -126,7 +126,11 @@ To be resumed after the two tracks above; no fixed order yet.
   59-character synthesis that adds Orlando and keeps it), and the audit's
   "current" titles for three of the four guides do not match production — their
   real defect is length, 69–73 characters, not the duplication the audit named.
-  _Implemented; awaiting the pre-merge Search Console baseline._
+  **✅ Merged (#187) 2026-08-18.** The pre-change baseline is recorded in its
+  results: **81.082 impressions and 1.454 clicks** across the affected pages, a
+  1,79% aggregate CTR, with `/tires` at position **5,09** and a **0,51%** CTR —
+  ranking fine and earning nothing. The 28-day comparison is due, and is the first
+  real test of whether metadata is what costs these clicks.
 - 🟡 **Crawl hygiene (`020-crawl-hygiene`).** A full Screaming Frog crawl on
   2026-08-18 found 2.106 real pages and **37.296 URLs that are not pages** — the
   `?_rsc=` addresses Next.js mints every time it prefetches a hovered link. The
@@ -153,7 +157,11 @@ To be resumed after the two tracks above; no fixed order yet.
   items are deliberately dropped with the reasoning recorded: the `noindex` header
   on `?_rsc=` (inert behind a `robots.txt` block, and the canonical already
   handles indexation) and `Disallow: /_next/image` (would remove the catalog from
-  Google Images to treat an inventory problem). _Implemented; awaiting manual verification._
+  Google Images to treat an inventory problem). **✅ Merged (#186) and deployed
+  2026-08-18.** Post-deploy verified: both prefetch rules live, fabricated size
+  slugs 404, eight real sizes sampled across the sitemap all 200. `AC12` was
+  corrected — one hop from `www`, two from the apex, the extra one being Vercel's
+  own domain redirect, served before any application code runs.
 - 🟡 **SERP differentiators (`014-serp-differentiators`).** We rank for
   "tires miami" but the snippet says nothing a competitor couldn't. Puts the
   owner's real differentiators (30-day warranty, 15,000+ across 7 locations,
@@ -183,6 +191,26 @@ To be resumed after the two tracks above; no fixed order yet.
   withdrawal, because unmounting a component cannot unload a script that has
   already run. Escape now dismisses the banner from anywhere, which it never
   did. _Complete; awaiting merge._
+- 🟡 **Seven stores that read like one (`022-store-pages`).** Block 2 of the
+  Screaming Frog audit, and the block with the largest number attached to it — and
+  the largest caveat. The seven store pages drew **20.376 impressions in the top
+  four positions and fifty clicks** in three months (0,25% CTR); Miami Airport was
+  shown 2.757 times and clicked **zero**, and Orlando West Colonial does not
+  appear in Search Console at all. Their seven meta descriptions are one template
+  differing by a name, their seven `<h1>`s are the name of a suburb, no title says
+  "used tires" while `used tires near me` is the site's biggest non-brand query,
+  and East Orlando tells people it is near Orlando **International** when it is
+  beside Orlando **Executive**, 20 km away. The audit projects +30% of site
+  traffic from fixing the copy; the query data disagrees — `mr goma tires us1`
+  sits at position **1.1** with a **0,78%** CTR, which no title can explain and
+  the local pack can. So this ships as a fix *and* a measurement: the airport
+  error and the templating are worth correcting regardless, and a flat CTR at 28
+  days is the finding that sends the next effort to `017` (Google Business
+  Profile) instead of more copy. **✅ Merged (#188) 2026-08-18.** The pre-change
+  baseline is in its spec. Two manual steps remain: URL Inspection on
+  `/locations/orlando-west-colonial`, which has never appeared in Search Console
+  and may be unindexed as a duplicate of the other six, and the 28-day comparison
+  — where **a flat CTR is the finding**, not a failure.
 - 🟡 **Headings that read as words (`023-heading-text`).** Block 3. The largest
   text on most pages of this site is two words jammed together — `MICHELINTires`,
   `235/50/20Tires in Miami`, `AboutMrGomaTires` — because the headings break
@@ -197,8 +225,7 @@ To be resumed after the two tracks above; no fixed order yet.
   `<h2>` (T092), the mobile menu carries a Spanish `aria-label` on an
   English-declared site (T098), and one guide has three different names because
   the config field called `title` drives the heading while the one called
-  `headline` drives the cards (T100). _Implemented; awaiting manual verification._
-- ⬜ **Tire detail titles are truncated before the differentiators.** Found while
+  `headline` drives the cards (T100). _Implemented; awaiting manual verification._- ⬜ **Tire detail titles are truncated before the differentiators.** Found while
   analysing `021`, and not in the Screaming Frog audit, whose title tickets stop at
   section pages. `productTitle()` builds a title that reaches **100 characters** in
   production —
