@@ -78,15 +78,23 @@ Groups B and C are independent of A and of each other.
 ## B. Stop sending people to the wrong airport
 
 - [ ] **T5** — East Orlando is at 575 N Semoran Blvd, beside Orlando **Executive**
-      Airport. Two edits, because the error is in two places:
-      `neighborhoods` (`Near Orlando International Airport` → `Near Orlando
-      Executive Airport`) and the visible `description`, which is reworded to lead
-      with **Semoran Blvd** and name Executive behind it (spec Decision 2).
-      · This is a correctness fix, not an SEO one. Someone searching for tires
-      near MCO who drives here has made a 20 km wasted trip.
+      Airport. **Three** fields carry the wrong airport, not two:
+      - `serving` → `Near Orlando Int'l Airport`. **This one renders on the home
+        page**, through `LocationsSlider`, and on `/contact`. Verified live on
+        2026-08-18: the front page serves `Near Orlando Int'l Airport` today.
+      - `neighborhoods` → `Near Orlando International Airport`.
+      - the visible `description`, reworded to lead with **Semoran Blvd** and name
+        Executive behind it (spec Decision 2).
+
+      · This is a correctness fix, not an SEO one, and it is **not confined to a
+      store page**: someone reading the home page is being told the wrong airport.
+      Someone searching for tires near MCO who drives here has made a 20 km wasted
+      trip. It is the part of this feature whose value does not depend on CTR.
       · files: `src/app/(shop)/locations/locationsConfig.ts`
-      · check: `npm run dev` — `/locations/east-orlando` names Executive and no
-      longer names International, in the hero copy and in the areas-served list.
+      · check: `grep -rn "Orlando International\|Orlando Int'l" src/` returns
+      nothing; then `npm run dev` — Executive appears, and International does not,
+      on **all four** surfaces: the store hero, its areas-served list, the home
+      slider card and `/contact`.
 
 ## C. Give the heading something to say
 
@@ -118,15 +126,20 @@ Groups B and C are independent of A and of each other.
 - [ ] **T7** — `storeFacts.guard.test.ts` (new). **Last in this group, because it
       is red until T5 lands.**
       · No file pairs `east-orlando` with `Orlando International` (AC7).
-      · No store claims a landmark its own `city` contradicts — an Orlando store
-      may not name a Miami airport, or the reverse (AC8).
+      · Each store names **at most one airport**, and the **same one** across
+      `serving`, `neighborhoods` and `description` (AC8). A city-matching rule was
+      considered and rejected as unenforceable: "Orlando International" *is* an
+      Orlando airport, so such a rule would pass the exact bug being fixed. What
+      catches it is cross-field consistency — which is how this error survived in
+      the first place, as three copies of one fact.
       · Every store yields a derivable street and at least two served areas after
       filtering, so an eighth store added without an address or neighbourhoods
       fails the build instead of shipping a generic description (AC9).
       · files: `src/app/(shop)/locations/storeFacts.guard.test.ts` (new)
       · check: `npm test`; and **verify each assertion red** — put the wrong
-      airport back, give a store a landmark from the other city, and blank an
-      address, one at a time. A guard only ever seen passing proves nothing.
+      airport back in **one** of the three fields (which is precisely the drift
+      being guarded), and blank an address, one at a time. A guard only ever seen
+      passing proves nothing.
 
 ## E. Close it out
 

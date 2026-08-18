@@ -20,8 +20,11 @@ builder. The work is to pass it through and to compose from it.
 3. **The `<h1>` (FR3).** Composed in `LocationDetail` from `name`, in two visual
    lines. **Not with `<br />`** — see below, this is the one real trap.
 
-4. **East Orlando (FR4).** Two edits in config, plus a guard so no store can claim
-   a landmark its address contradicts.
+4. **East Orlando (FR4).** **Three** edits in config, not two — `serving` carries
+   the same wrong airport as `neighborhoods` and `description`, and it renders on
+   the **home page's** locations slider and on `/contact`, not only on the store
+   page. Four surfaces, one fact, three copies. Plus a guard that makes those
+   three unable to drift apart again (AC8).
 
 ## Reuse first
 
@@ -30,6 +33,7 @@ builder. The work is to pass it through and to compose from it.
 | `locationMetadata()` in `seo.ts` | FR1, FR2 | A second metadata path for stores |
 | `fitTitle(...)` / `fitDescription(head, tails)` | FR1, FR2 | Hand-counting characters |
 | `locationsConfig[].address` / `.neighborhoods` / `.city` | FR2, FR7 | New copy fields per store |
+| `locationsConfig[].serving` | AC8 | Leaving the home-card copy outside the guard |
 | `TITLE_SUFFIX`, `WARRANTY`, `SHIPPING` in `brandClaims` | FR1, FR2 | Literal brand strings |
 | `getLocationBySlug()` | tests | Repeating the store list |
 | `metadata.test.ts`'s location entries | AC1–AC4 | A new test file |
@@ -113,6 +117,11 @@ Two derivations do the work:
   `Near ` — because *"Serving Allapattah, Midtown Miami and Near Miami
   International Airport"* does not read as English.
 
+`serving` is **not** an input to the description: it is separate copy, rendered on
+the home slider and `/contact`. It is in this feature only because it carries the
+third copy of the airport error, and it comes under AC8's guard so the three
+fields cannot disagree again.
+
 ## Files to add / change
 
 **`src/app/utils/seo.ts`** — `locationMetadata()` gains `address` and
@@ -125,8 +134,11 @@ it already has `loc` in hand.
 **`src/app/(shop)/locations/[location]/container/LocationDetail/LocationDetail.tsx`**
 — the two-line `<h1>`, wrapper classes unchanged.
 
-**`src/app/(shop)/locations/locationsConfig.ts`** — three changes:
+**`src/app/(shop)/locations/locationsConfig.ts`** — four changes:
 
+- East Orlando's `serving`: `Near Orlando Int'l Airport` → `Near Orlando
+  Executive Airport`. **This is the one that shows on the home page** —
+  `LocationsSlider` renders `Serving {serving}` — and on `/contact`.
 - East Orlando's `neighborhoods`: `Near Orlando International Airport` →
   `Near Orlando Executive Airport`.
 - East Orlando's visible `description`: leads with Semoran Blvd and names
@@ -156,7 +168,7 @@ mocks — the property the spec names as a constraint.
 | AC5 | `<h1>` composed from `name` plus a product line | `LocationDetail.test.tsx`: heading text contains the brand and `Tires`, and is not equal to `name` |
 | AC6 | One heading element, as today | `LocationDetail.test.tsx`: exactly one `role="heading"` at level 1 |
 | AC7 | Config edited in both places | `storeFacts.guard.test.ts`: no file pairs `east-orlando` with `Orlando International`; covers the visible copy and `neighborhoods` |
-| AC8 | Guard over config, not a manual review | `storeFacts.guard.test.ts`: for each store, every `Near …` neighbourhood and every landmark in its description is checked against its own `city`; an Orlando store may not claim a Miami landmark or the reverse |
+| AC8 | Guard over the three fields that can disagree | `storeFacts.guard.test.ts`: for each store, collect every airport named in `serving`, `neighborhoods` and `description`; assert the set has at most one member. **A city-matching rule was rejected as unenforceable** — "Orlando International" is an Orlando airport, so it would pass the very bug being fixed. Cross-field consistency is what actually catches it |
 | AC9 | The builder needs both fields | `storeFacts.guard.test.ts`: every store has a non-empty `address` with a derivable street, and ≥2 neighbourhoods after filtering — a new store missing either fails |
 | AC10 | Wrapper classes untouched; the break is CSS | `LocationDetail.test.tsx`: the `<h1>`'s `className` still contains `text-4xl`, `sm:text-5xl`, `lg:text-6xl` and `font-black`; and **the heading's text contains a space between the name and the product line** — the block-3 defect, asserted so it cannot be introduced here |
 | AC11 | No client code | tsc + lint + test + build + `perf:budget`, expected unchanged |
@@ -193,6 +205,7 @@ authoritative.
 | --- | --- | --- |
 | An address stops matching the "number then street" shape and the street derives wrong | Low | AC9 fails the build for any store whose street cannot be derived; all seven match today |
 | A store has too few neighbourhoods once its own name and `Near …` are filtered | Low–Medium | Coral Gables and East Orlando already drop to two; `fitDescription`'s ladder handles two, and AC9 fails below that |
+| A fourth copy of a store fact exists somewhere this analysis did not look | Medium | Three were found where the audit reported one. AC8 guards the three known fields; a `grep` for the corrected string across `src/` is part of T5's check |
 | The longer `<h1>` wraps badly on a narrow phone | Medium | Second line is a smaller `block` span, which is what T085–T091 asks for; **this is the one thing worth checking with real eyes at 360 px** |
 | The `Automotive` naming is real and we are dropping a correct business name | Medium | Not adopted, not discarded — recorded here and put to the owner. Reversible in one field |
 | CTR does not move and the block looks like wasted effort | **Likely** | Anticipated in spec Decision 1: the airport error and the templating are worth fixing regardless, and AC14's flat result is the finding that redirects effort to `017` |

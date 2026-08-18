@@ -49,12 +49,18 @@ Warranty | MrGoma`, while the highest-volume non-brand query on the whole site i
 `used tires near me` at 2.697 impressions. The state abbreviation is missing too,
 which local queries use.
 
-**And one page sends people twenty kilometres the wrong way.** East Orlando is at
-575 N Semoran Blvd, beside Orlando **Executive** Airport. The page — in its
-visible copy *and* in its "areas served" list — says **Orlando International**.
+**And the site sends people twenty kilometres the wrong way — from the home
+page.** East Orlando is at 575 N Semoran Blvd, beside Orlando **Executive**
+Airport. Three separate fields in `locationsConfig` say **Orlando
+International**: `serving`, `neighborhoods` and the visible `description`. Those
+three render on **four surfaces** — the store page's hero and its areas-served
+list, the **home page's** locations slider, and `/contact`'s area list. Verified
+live on 2026-08-18: the home page serves `Near Orlando Int'l Airport` today.
+
 Someone searching for tires near MCO who drives to this shop has made a wasted
-trip. That is not a metadata defect; it is wrong information about a physical
-place.
+trip. This is not a metadata defect and not a store-page defect: it is wrong
+information about a physical place, on the front door. It is the one part of this
+feature whose value does not depend on what CTR does.
 
 ### The honest counter-evidence, before anyone promises a number
 
@@ -144,10 +150,12 @@ whole store back into the index. That is not a CTR bet.
   store's by swapping a name.
 - **FR3:** Each store `<h1>` must state the business and what it sells, not only
   the area name, **without changing the visual design of the hero**.
-- **FR4:** The East Orlando page must name Orlando **Executive** Airport wherever
-  it names an airport.
-- **FR5:** No store page may claim a landmark, neighbourhood or road that its
-  address does not support.
+- **FR4:** The East Orlando store must name Orlando **Executive** Airport
+  wherever it names an airport — in all three config fields that carry it, and
+  therefore on all four surfaces that render them, the home page included.
+- **FR5:** A store's facts must agree with themselves. Where the same fact is
+  stated in more than one field, the fields must not be able to drift apart —
+  which is the failure that produced FR4's bug.
 - **FR6:** All seven stores are treated alike — no store may be left on the old
   template.
 - **FR7:** Copy comes from `locationsConfig`, which already holds the street,
@@ -175,9 +183,16 @@ whole store back into the index. That is not a CTR bet.
 - [ ] **AC7:** Given the whole source tree, when searched, then no file pairs East
       Orlando with "Orlando International Airport"; the guard covers the visible
       copy and the `neighborhoods` list, the two places it appears today.
-- [ ] **AC8:** Given every store, when its `neighborhoods` and description are
-      checked against its `address`, then no store claims an airport, road or city
-      that its own address contradicts.
+- [ ] **AC8:** Given every store, when its `serving`, `neighborhoods` and
+      `description` are read together, then they name **at most one airport**, and
+      **the same one** in every field that names any.
+
+      _This replaces a criterion that could not be enforced. "No store claims a
+      landmark its address contradicts" reads well and is untestable: Orlando
+      International **is** an Orlando airport, so any city-matching rule passes the
+      exact bug being fixed. What a test can enforce is consistency across the
+      three fields — which is how this error survived, as three copies of one
+      fact, of which the audit found one and the plan found two._
 - [ ] **AC9:** Given `locationsConfig`, when a new store is added without a street
       or neighbourhoods, then the build fails rather than emitting a generic
       description (FR7).
