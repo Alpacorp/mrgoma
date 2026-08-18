@@ -1,7 +1,7 @@
 # Spec — Headings that read as words
 
-> Feature: `023-heading-text` · Status: Draft — open clarifications
-> Created: 2026-08-18
+> Feature: `023-heading-text` · Status: Clarified — ready for `/plan`
+> Created: 2026-08-18 · Clarified: 2026-08-18
 > Roadmap: Backlog (SEO — Screaming Frog audit, block 3) · Branch: `feat/023-heading-text`
 
 ## Why — problem & value
@@ -72,19 +72,22 @@ serves a US market. A screen reader announces it in the wrong language, and the
 sibling control two files away already says `Close menu` in English — so this is
 one outlier, not a convention (T098).
 
-**One guide has three names.** *How to Buy Used Tires* is called three different
-things depending where you look:
+**A breadcrumb that disagrees with the heading above it.** On
+`/guides/how-to-buy-used-tires` the breadcrumb reads *The Complete Buyer's Guide
+to Used Tires* and the `<h1>`, three lines below it, reads *How to Buy Used
+Tires: The Complete Guide*. A breadcrumb exists to tell you where you are; one
+that names a different article than the heading does the opposite.
 
-| Where | What it says |
-| --- | --- |
-| Search result | `How to Buy Used Tires: What to Check First` |
-| `<h1>` and Article JSON-LD | `How to Buy Used Tires: The Complete Guide` |
-| Card and breadcrumb | `The Complete Buyer's Guide to Used Tires` |
+The audit reports this as one guide with three names (T100). Checking the config
+showed **all seven guides carry two names** — a `title` and a `headline` — which
+on inspection is not a defect: a card in a grid wants a short name and an `<h1>`
+can afford a longer one, and that is what the field pair is for. **The defect is
+that the breadcrumb is fed from the card name.**
 
-The reason it drifted is visible in the config: the field called **`title`** is
-used for the `<h1>`, and the field called **`headline`** is used for cards and
-breadcrumbs. The two are named the opposite of what they do, so nobody editing one
-had any reason to think they were editing a heading (T100).
+Why it went unnoticed is still worth fixing: the field called **`title`** drives
+the `<h1>`, and the field called **`headline`** drives cards and breadcrumbs. They
+are named the opposite of what they do, so nobody editing one had reason to think
+they were touching a heading.
 
 ## User stories
 
@@ -108,8 +111,10 @@ had any reason to think they were editing a heading (T100).
   reach).
 - The guides list's heading levels (T092).
 - The Spanish `aria-label` on the mobile menu (T098).
-- One name for the guide that has three (T100), and renaming the two config fields
-  so the next editor can tell which is which.
+- Making each guide's breadcrumb agree with its heading (T100), and renaming the
+  two config fields so the next editor can tell which drives which.
+- Shortening `how-to-buy-used-tires` to **`How to Buy Used Tires`** in its
+  heading, card and breadcrumb (Decision 2).
 - A guard that fails the build if a `<br />` appears inside a heading again.
 
 **Out:**
@@ -119,6 +124,9 @@ had any reason to think they were editing a heading (T100).
 - Heading *copy* — what the headings say is not revisited here, only how it is
   spelled out. `/tires`, `/services` and the rest keep their words.
 - `<br />` outside headings, which is not a defect.
+- **Flattening the seven guides' card names into their headings.** They are
+  deliberately shorter and stay that way — `AC9b` asserts it, so a later
+  "consistency" pass has to argue with a test.
 - The remaining audit blocks: structured data (block 4), URL consolidation
   (block 5), the tire detail titles, and Google Business Profile (`017`).
 
@@ -134,9 +142,11 @@ had any reason to think they were editing a heading (T100).
   section's.
 - **FR5:** Every `aria-label` and every other assistive-technology string must be
   in English, matching the document's declared language.
-- **FR6:** A guide is called one thing. Where its name appears — search result,
-  heading, card, breadcrumb, structured data — it is the same name.
-- **FR7:** The config fields behind FR6 must be named for what they do.
+- **FR6:** A page's breadcrumb must name the page the way its heading does. A
+  card may carry a shorter name — that is deliberate — but the trail that says
+  *where you are* has to agree with the heading you are looking at.
+- **FR7:** The config fields behind FR6 must be named for what they do, so that
+  editing a heading is recognisable as editing a heading.
 - **FR8:** Each requirement is covered by a test that fails if it is undone,
   following the guard pattern used for the WhatsApp number, the retired event
   names, the founding year and the store facts.
@@ -162,11 +172,17 @@ had any reason to think they were editing a heading (T100).
 - [ ] **AC7:** Given every `aria-label`, `alt`, `title` and visually-hidden string
       in `src/app`, when read, then none is in Spanish. A guard, so the next one
       cannot ship either.
-- [ ] **AC8:** Given the guide `how-to-buy-used-tires`, when its name is read from
-      its heading, its card, its breadcrumb and its Article JSON-LD, then all four
-      agree.
-- [ ] **AC9:** Given every guide, when the same four surfaces are compared, then
-      each guide has one name — not only the one the audit found.
+- [ ] **AC8:** Given every guide, when its breadcrumb — both the visible trail and
+      the `BreadcrumbList` JSON-LD — is compared with its `<h1>`, then the two are
+      the same string. Checked across all seven, not only the one the audit found.
+- [ ] **AC9:** Given every guide, when its Article JSON-LD `headline` is compared
+      with its `<h1>`, then they agree — Google treats a mismatch there as a
+      misdescribed article. This holds today and must keep holding through the
+      rename.
+- [ ] **AC9b:** Given every guide, when its card name is read, then it may still
+      differ from the heading. **This is asserted, not merely allowed**: the seven
+      short card names were chosen, and a later "consistency" pass should have to
+      argue with a test before flattening them.
 - [ ] **AC10:** Given the full suite, build and performance budget, when run, then
       all are green and the JS budget is unchanged.
 - [ ] **AC11 (manual):** On a phone at 360 px, each corrected heading still breaks
@@ -187,31 +203,42 @@ had any reason to think they were editing a heading (T100).
 - **No visual change.** If a sighted user can tell, something is wrong.
 - **English-only.** The site declares `lang="en"` and serves a US market.
 
+## Decisions taken during `/clarify`
+
+**Decision 1 — the breadcrumb follows the heading; the cards keep their short
+names.** The first framing of this was wrong and is recorded rather than quietly
+replaced. The spec initially asked for *one name everywhere*, on the audit's
+reading that one guide had three. Checking the config showed **all seven** carry
+two names — and that this is a reasonable editorial choice, not drift: a card in
+a grid wants brevity, an `<h1>` does not. Collapsing them would have flattened
+fourteen deliberate pieces of copy to fix a problem that was somewhere else.
+
+The real defect is narrower and worse: **the breadcrumb is fed from the card
+name**, so a page's trail names a different article than its own heading. That is
+what changes. `AC9b` asserts the cards may keep differing, so this cannot be
+"tidied" later by someone who reads only the requirement.
+
+**Decision 2 — the guide is called `How to Buy Used Tires`.** The audit's
+proposal. The long form stays in the search-result title, where the extra words
+buy a differentiator; the heading, breadcrumb and card get the short name.
+
+**Decision 3 — the two config fields are renamed:** `title` → `heading`,
+`headline` → `cardName`. Seven guides and seven call sites. They are currently
+named the opposite of what they drive, which is the mechanism by which a
+breadcrumb came to disagree with the heading three lines below it.
+
+**Decision 4 — the language guard covers all of `src/app`, with no exemption.**
+There is exactly **one** Spanish accessibility string in the entire tree today —
+`aria-label="Abrir menú de navegación"` — and it is on the public site, so the
+guard costs nothing and has nothing to clean up. `/dashboard` is not exempted
+now: if the crew later wants it in Spanish, the exemption is added then, with the
+reason written down, rather than assumed in advance.
+
 ## Open questions
 
-- [NEEDS CLARIFICATION: **What should the guide be called?** Its three names are
-  `How to Buy Used Tires: What to Check First` (the search result, set in `021`),
-  `How to Buy Used Tires: The Complete Guide` (the heading), and
-  `The Complete Buyer's Guide to Used Tires` (the card and breadcrumb). The audit
-  proposes collapsing all four to **`How to Buy Used Tires`**, keeping the longer
-  form only in the search result where the extra words earn their space.
-  Recommendation: **take the audit's proposal** — a card and a breadcrumb want the
-  short name, a title tag wants the differentiator. Confirm.]
-
-- [NEEDS CLARIFICATION: **Should the two config fields be renamed, and to what?**
-  `title` drives the `<h1>` and the Article JSON-LD; `headline` drives cards and
-  breadcrumbs. They are named the opposite of what they do, which is the
-  mechanism by which three names drifted apart. Renaming them costs a rename
-  across seven guides and four call sites and makes the next drift much less
-  likely. Recommendation: **rename** — `title` → `heading`, `headline` → `cardName`
-  — or say if you would rather not churn the config now.]
-
-- [NEEDS CLARIFICATION: **How far should the Spanish guard reach?** AC7 as written
-  covers `aria-label`, `alt`, `title` and visually-hidden text in `src/app`. The
-  dashboard (`/dashboard`) is a staff-facing area where Spanish may be
-  deliberate — the crew works in it — and `noindex`. Recommendation: **guard the
-  public site and exempt `/dashboard`**, stating the exemption, rather than
-  forcing English on a tool the staff use in Spanish. Confirm.]
+_None. All three markers were resolved, and a fourth question — raised by
+checking the other six guides — corrected the first answer's premise before it
+reached the plan._
 
 ---
 
