@@ -102,6 +102,31 @@ To be resumed after the two tracks above; no fixed order yet.
   `011`. _In progress._
 - ⬜ **SEO — phased plan.** 4 phases from the WJM audit; Phase 1 ready to
   implement.
+- 🟡 **One way to describe a page (`021-page-metadata-og`).** The site describes
+  itself twice over and the two descriptions disagree; which one a page gets
+  depends on whether it happens to call a helper. `pageMetadata()` in `seo.ts`
+  already gives a page an absolute title, its own canonical and its own `og:url` —
+  **~400 pages use it, 15 do not** — and it emits no `og:image` and no
+  `og:locale`, because a segment that declares `openGraph` in Next *replaces* the
+  root's rather than merging. So the half that uses it has the right `og:url` and
+  no preview image at all (every brand, size and store link still shares as bare
+  text, the capability `019` unblocked the firewall for), while the half that does
+  not keeps the image but claims the home page as its own `og:url` and prints the
+  brand twice in the title — 30 of `/services/wheel-alignment`'s 88 characters are
+  the brand repeated, pushing `Hunter HawkEye Elite®` to the edge of what Google
+  shows. Also fixes two conversion pages the audit could not see: `/checkout`
+  canonicalises to the site root (Screaming Frog never fetched it, `robots.txt`
+  blocks the path) and `/instant-quote` has no metadata at all — it serves the
+  root title and canonical **while sitting in the sitemap**, so we are asking
+  Google to index a lead form that says it is the front page. Block 1 of the
+  audit: nineteen tickets that are two edits to one helper plus a migration.
+  Clarification pulled the audit's title and description copy in with it, and
+  turned up two conflicts worth recording: T035 would have dropped the "30-Day
+  Warranty" that `014` was built to put in the home title (resolved with a
+  59-character synthesis that adds Orlando and keeps it), and the audit's
+  "current" titles for three of the four guides do not match production — their
+  real defect is length, 69–73 characters, not the duplication the audit named.
+  _Clarified; ready for `/plan`._
 - 🟡 **Crawl hygiene (`020-crawl-hygiene`).** A full Screaming Frog crawl on
   2026-08-18 found 2.106 real pages and **37.296 URLs that are not pages** — the
   `?_rsc=` addresses Next.js mints every time it prefetches a hovered link. The
