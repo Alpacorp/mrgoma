@@ -132,7 +132,7 @@ describe('site-wide JSON-LD', () => {
   it('organizationJsonLd carries the contact and history fields a complete entity needs', () => {
     const ld = organizationJsonLd();
     expect(ld.telephone).toBe(WHATSAPP_TEL);
-    expect(ld.foundingDate).toBe('2007');
+    expect(ld.foundingDate).toBe('2006');
     expect(ld.slogan).toBeTruthy();
     expect(ld.description).toBeTruthy();
     expect(ld['@id']).toMatch(/#organization$/);

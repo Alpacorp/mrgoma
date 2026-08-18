@@ -76,7 +76,39 @@ describe('claim wording', () => {
   });
 
   it('states the founding year once, as a number', () => {
-    expect(FOUNDED_YEAR).toBe(2007);
+    // Corrected from 2007 on 2026-08-18: the owner confirmed 2006, which is what
+    // the brand document and the external directories had said all along. The
+    // SEO audit flagged the discrepancy and could not settle it on its own.
+    expect(FOUNDED_YEAR).toBe(2006);
+  });
+
+  /**
+   * The founding year is a claim about the business, and it just changed. When
+   * it did, one copy of it was living outside this file — a hardcoded
+   * "Since 2007." inside the home page's meta description — so the site would
+   * have gone on claiming both years at once: 2006 in the Organization schema
+   * and on `/about-us`, 2007 in the snippet Google shows.
+   *
+   * This is the same guard `whatsapp.guard.test.ts` puts on the phone number,
+   * and for the same reason: a value stated in two places eventually disagrees
+   * with itself, and nothing tells you until a customer reads both.
+   */
+  it('is the only place in the source that spells the founding year out', () => {
+    // Only lines that pair a year with founding language. A copyright notice or
+    // a DOT date is not a claim about when the business opened.
+    const FOUNDING_LINE = /(since|founded|founding|established)[^\n]*\b(19\d{2}|20[0-2]\d)\b/i;
+
+    const offenders = sourceFiles(SRC)
+      .flatMap(file =>
+        readFileSync(file, 'utf8')
+          .split('\n')
+          .filter(line => FOUNDING_LINE.test(line))
+          .map(line => `${file.replace(process.cwd(), '')}: ${line.trim()}`)
+      )
+      // Test files quote the old year to explain the correction.
+      .filter(entry => !/\.(test|spec)\.tsx?:/.test(entry));
+
+    expect(offenders).toEqual([]);
   });
 
   it('has four primary differentiators, all non-empty', () => {

@@ -20,7 +20,7 @@ describe('JsonLd', () => {
     const data = {
       '@type': 'Organization',
       name: 'MrGoma Tires',
-      description: '7 locations in Miami & Orlando, FL — "like-new" used tires <since 2007>',
+      description: '7 locations in Miami & Orlando, FL — "like-new" used tires <since 2006>',
     };
 
     const markup = renderToStaticMarkup(<JsonLd data={data} />);

@@ -6,6 +6,7 @@ import {
   INVENTORY_NETWORK,
   LOCATIONS_LABEL_LONG,
   SHIPPING,
+  SINCE,
   SLOGAN,
   WARRANTY,
 } from '@/app/utils/brandClaims';
@@ -222,8 +223,12 @@ function pageMetadata(params: { title: string; description: string; path: string
 export function homeMetadata(): Metadata {
   return pageMetadata({
     title: `Used & New Tires Miami — ${WARRANTY}${TITLE_SUFFIX}`,
-    description:
-      '15,000+ like-new used and new tires, every used tire backed by a 30-day warranty. 7 locations in Miami & Orlando. Free shipping. Since 2007.',
+    // The year comes from `SINCE` rather than the literal it used to be. That
+    // copy was the one place a founding year lived outside `brandClaims`, so
+    // when the owner corrected 2007 to 2006 the site would have kept claiming
+    // both — the schema and `/about-us` from the constant, this description from
+    // its own hardcoded copy. `brandClaims.test.ts` now fails on a second copy.
+    description: `15,000+ like-new used and new tires, every used tire backed by a 30-day warranty. 7 locations in Miami & Orlando. Free shipping. ${SINCE}.`,
     path: '/',
   });
 }

@@ -59,7 +59,20 @@ export const LOCATIONS_LABEL = '7 locations Miami & Orlando';
 /** Locations claim, prose form. */
 export const LOCATIONS_LABEL_LONG = '7 locations in Miami & Orlando, FL';
 
-export const FOUNDED_YEAR = 2007;
+/**
+ * Confirmed by the owner on 2026-08-18.
+ *
+ * The site said 2007 until then, while the brand document and the external
+ * directories said 2006 — a discrepancy the SEO audit flagged and could not
+ * settle on its own. 2006 is the answer.
+ *
+ * Stated **once**, here. Everything that shows a founding year derives from it:
+ * {@link SINCE}, the "Trusted since" claim below, `foundingDate` in the
+ * Organization schema, the home hero strip, the home meta description and the
+ * four places `/about-us` shows it. `brandClaims.test.ts` fails the build if a
+ * second copy appears anywhere in `src/`.
+ */
+export const FOUNDED_YEAR = 2006;
 
 /** Trust claim built from {@link FOUNDED_YEAR} so the year is stated once. */
 export const SINCE = `Since ${FOUNDED_YEAR}`;

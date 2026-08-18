@@ -114,7 +114,7 @@ describe('home metadata', () => {
     expect(absoluteTitle(meta)).toBe('Used & New Tires Miami — 30-Day Warranty | MrGoma');
     expect(meta.description).toBe(
       '15,000+ like-new used and new tires, every used tire backed by a 30-day warranty. ' +
-        '7 locations in Miami & Orlando. Free shipping. Since 2007.'
+        '7 locations in Miami & Orlando. Free shipping. Since 2006.'
     );
   });
 
