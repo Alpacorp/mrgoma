@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { locationsConfig } from '@/app/(shop)/locations/locationsConfig';
+import { WHATSAPP_TEL } from '@/app/utils/whatsapp';
 
 import {
   absUrl,
@@ -111,7 +112,7 @@ describe('site-wide JSON-LD', () => {
 
   it('organizationJsonLd carries the contact and history fields a complete entity needs', () => {
     const ld = organizationJsonLd();
-    expect(ld.telephone).toBe('+14073644016');
+    expect(ld.telephone).toBe(WHATSAPP_TEL);
     expect(ld.foundingDate).toBe('2007');
     expect(ld.slogan).toBeTruthy();
     expect(ld.description).toBeTruthy();

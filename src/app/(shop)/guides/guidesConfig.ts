@@ -1,3 +1,5 @@
+import { WHATSAPP_DISPLAY } from '@/app/utils/whatsapp';
+
 export type GuideSection = {
   heading?: string;
   type: 'text' | 'list' | 'keyFacts' | 'callout';
@@ -609,7 +611,7 @@ export const guides: Guide[] = [
         heading: 'Managing Costs: Used Tires for Rideshare',
         type: 'callout',
         content:
-          "At 40,000+ annual miles, new tires that cost $600 and last 8 months cost more per mile than quality used tires at $150 that last 6 months. MrGoma's rideshare pricing makes this math work in your favor. Ask about our rideshare discount at any of our 7 locations in Miami and Orlando — or contact us via WhatsApp at +1 (407) 364-4016.",
+          `At 40,000+ annual miles, new tires that cost $600 and last 8 months cost more per mile than quality used tires at $150 that last 6 months. MrGoma's rideshare pricing makes this math work in your favor. Ask about our rideshare discount at any of our 7 locations in Miami and Orlando — or contact us via WhatsApp at ${WHATSAPP_DISPLAY}.`,
       },
       {
         heading: 'Quick Monthly Inspection: 5-Minute Checklist',

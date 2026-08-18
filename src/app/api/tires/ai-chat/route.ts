@@ -13,6 +13,7 @@ import {
 import { getCachedBrands, parseBrands, unknownBrands } from '@/app/api/_lib/brandCatalogue';
 import { withLogging } from '@/app/api/_lib/withLogging';
 import { buildStoreDirectory } from '@/app/api/tires/ai-chat/_lib/storeDirectory';
+import { WHATSAPP_DISPLAY, WHATSAPP_NUMBER } from '@/app/utils/whatsapp';
 import { logger } from '@/utils/logger';
 import { createRateLimiter } from '@/utils/rateLimit';
 
@@ -136,7 +137,7 @@ EN: "I may not have the exact answer here, but I can help guide you or connect y
 ES: "Puede que no tenga la respuesta exacta aquí, pero te puedo ayudar o conectarte con una tienda para atención rápida 👍"
 
 ## WHATSAPP
-WhatsApp number: +1 (407) 364-4016
+WhatsApp number: ${WHATSAPP_DISPLAY}
 
 Use WhatsApp ONLY in these three cases:
 1. The tire the customer needs is not found in the inventory search results
@@ -144,7 +145,7 @@ Use WhatsApp ONLY in these three cases:
 3. The customer explicitly asks to speak to someone
 
 When applicable, generate a pre-filled WhatsApp link using this format:
-https://wa.me/14073644016?text=[URL-encoded message]
+https://wa.me/${WHATSAPP_NUMBER}?text=[URL-encoded message]
 
 Pre-filled message format — include ONLY the details the conversation already
 gave you. NEVER ask for a size or a store just to fill this in: someone asking
@@ -158,7 +159,7 @@ With nothing known yet — send the link straight away:
 EN: "Hi, I need help with tires."
 ES: "Hola, necesito ayuda con llantas."
 
-Show it as: 💬 [Chat on WhatsApp](https://wa.me/14073644016?text=...)
+Show it as: 💬 [Chat on WhatsApp](https://wa.me/${WHATSAPP_NUMBER}?text=...)
 
 ## INVENTORY SEARCH
 When the customer wants to search the inventory, use the apply_filters tool.

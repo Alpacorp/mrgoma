@@ -1,3 +1,5 @@
+import { whatsAppLink } from '@/app/utils/whatsapp';
+
 import type { Dimension } from './dimensions';
 
 /**
@@ -12,12 +14,6 @@ import type { Dimension } from './dimensions';
  * two follow it.
  */
 
-const WHATSAPP_NUMBER = '14073644016';
-
-function whatsappLink(text: string): string {
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
-}
-
 export function buildNoResultsMessage(
   spanish: boolean,
   filterParams: Record<string, unknown>
@@ -26,7 +22,7 @@ export function buildNoResultsMessage(
   const s = filterParams.s;
   const d = filterParams.d;
   const sizeStr = w && s && d ? ` ${w}/${s}R${d}` : '';
-  const waUrl = whatsappLink(
+  const waUrl = whatsAppLink(
     spanish
       ? `Hola, busco llantas${sizeStr} y no encontré disponibilidad en el sitio web.`
       : `Hi, I'm looking for tires${sizeStr} and didn't find availability on the website.`
@@ -95,7 +91,7 @@ export function buildNarrowingHint(spanish: boolean, dimensions: Dimension[]): s
  */
 export function buildUnknownBrandMessage(spanish: boolean, brands: string[]): string {
   const list = joinWords(brands, spanish);
-  const waUrl = whatsappLink(
+  const waUrl = whatsAppLink(
     spanish ? `Hola, pregunto por llantas ${list}.` : `Hi, I'm asking about ${list} tires.`
   );
 

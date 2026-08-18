@@ -9,6 +9,7 @@ import {
   FreeShippingBadge,
 } from '@/app/ui/components';
 import AddToCartButton from '@/app/ui/components/AddToCartButton/AddToCartButton';
+import { WhatsAppEnquiryButton } from '@/app/ui/components/WhatsAppEnquiryButton/WhatsAppEnquiryButton';
 import { generateTireDescription } from '@/app/utils/tireDescription';
 
 // Server Component: renders the product info from props. The only interactive
@@ -86,6 +87,12 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
               <AddToCartButton product={singleTire} />
             )}
           </div>
+          {/* Beneath the primary action, never beside it: Add to cart already
+              renders as an outlined green button, so a second outlined button on
+              the same row would read as an equal choice rather than a quieter
+              one. Present on a sold tire too — that is the moment a customer is
+              most likely to want to ask for another in the same size. */}
+          <WhatsAppEnquiryButton product={singleTire} />
           <div
             aria-label="Key specifications"
             className={`mt-4 grid grid-cols-2 ${

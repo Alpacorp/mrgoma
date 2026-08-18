@@ -75,6 +75,11 @@ export interface SingleTireDetails {
 
 export interface SingleTire {
   id: string | number;
+  /**
+   * The stock code staff search by — the value the product name shows in
+   * parentheses. Distinct from `id`, which is the internal TireId in the URL.
+   */
+  code?: string;
   // DB Condition, e.g., 'sold' when already sold; used for availability checks
   status?: string;
   name: string;

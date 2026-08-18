@@ -9,6 +9,7 @@ import {
   SLOGAN,
   WARRANTY,
 } from '@/app/utils/brandClaims';
+import { WHATSAPP_TEL } from '@/app/utils/whatsapp';
 
 export const SITE_NAME = 'MrGoma Tires';
 
@@ -477,7 +478,7 @@ export function organizationJsonLd() {
     logo: absUrl('/favicon.png'),
     // The WhatsApp line: already the primary contact CTA on /contact, so the
     // structured data now matches what the site actually pushes.
-    telephone: '+14073644016',
+    telephone: WHATSAPP_TEL,
     description: DEFAULT_DESCRIPTION,
     slogan: SLOGAN,
     foundingDate: String(FOUNDED_YEAR),
