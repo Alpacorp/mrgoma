@@ -183,6 +183,17 @@ To be resumed after the two tracks above; no fixed order yet.
   withdrawal, because unmounting a component cannot unload a script that has
   already run. Escape now dismisses the banner from anywhere, which it never
   did. _Complete; awaiting merge._
+- ⬜ **Tire detail titles are truncated before the differentiators.** Found while
+  analysing `021`, and not in the Screaming Frog audit, whose title tickets stop at
+  section pages. `productTitle()` builds a title that reaches **100 characters** in
+  production —
+  `Used BRIDGESTONE ALENZA A/S 02 RSC RFT 235/50/20 Tire in Miami | $135 | Free Shipping | MrGoma Tires`
+  — so Google shows `…Tire in Mia…` and **the price and "Free Shipping" never
+  appear**, which are the two differentiators `014` added to that builder
+  specifically to lift CTR. It affects **1.622 pages**, more than everything in
+  `021` combined, and is kept out of `021` on purpose: that many titles deserve
+  their own Search Console baseline, and folding them in would make the effect of
+  `021`'s fifteen unattributable.
 - ⬜ **TireCard redesign.** UX/UI improvements for the `/tires` cards (analysis
   done).
 - 🟡 **AI chat: search on what was said (`018-ai-chat-filters-and-surface`).**

@@ -100,6 +100,12 @@ call site.
 - New builders: `servicesMetadata()`, `serviceMetadata()`, `aboutMetadata()`,
   `guidesMetadata()`, `guideMetadata()`, `contactMetadata()`,
   `legalPoliciesMetadata()`, `checkoutMetadata()`, `instantQuoteMetadata()`.
+- **`pageMetadata()` also gains an optional `type` and `publishedTime`.** The
+  guide pages emit `og:type="article"` and `article:published_time` today —
+  verified in production — and `pageMetadata` hardcodes `type: 'website'`.
+  Migrating them without this would silently downgrade seven articles to generic
+  pages and drop their publication dates, which is a regression dressed as a
+  refactor. `guideMetadata()` passes both through.
 - `homeMetadata()`, `tiresMetadata()` and `usedTiresMetadata()` take the new copy.
 
 **Pages that lose their inline object and call a builder** — `/services`,
@@ -147,10 +153,11 @@ The store image is the only new indirection: `locationMetadata()` receives the
 | AC9 | Copy draws numbers from `brandClaims` | `brandClaims.test.ts`'s existing inventory guard already walks `src/`; extended to catch a bare `N,000+` in a description |
 | AC10 | `checkoutMetadata()` | `metadata.test.ts`: canonical is `/checkout`; `robots.index === false` still |
 | AC11 | `instantQuoteMetadata()`, `noindex` removed | `metadata.test.ts`: canonical is `/instant-quote`, title ≠ root default, no `noindex` |
-| AC11b | Guard | New guard: every path in `sitemap.ts`'s static list resolves to a builder whose `robots.index` is not `false` |
+| AC11b | Guard | New guard over `sitemap.ts`'s **static** list — the ~17 fixed paths, not the dynamic groups: every one resolves to a builder whose `robots.index` is not `false` |
 | AC12 | One entry in `defaultSections` | `Footer.test.tsx`: a link with href `/instant-quote` renders; existing focus/keyboard assertions cover the rest since it reuses `FooterSection` |
-| AC13 | Builders derive canonical from the same path the sitemap publishes | Guard: for each static sitemap path, the corresponding builder's canonical equals `absUrl(path)` |
-| AC14 | Every page module delegates to `seo.ts` | Guard: walks `src/app/**/page.tsx`; any `title:` in a metadata export that is not `{ absolute }` and not a builder call fails |
+| AC13 | Builders derive canonical from the same path the sitemap publishes | Guard: for each **static** sitemap path, the builder's canonical equals `absUrl(path)`. The dynamic groups — 2.000 tires, 272 sizes, 113 brands, and the service, location and guide slug lists — are covered structurally instead: each derives its canonical from the same slug the sitemap publishes, which `020` established for sizes |
+| AC14 | No page spells the brand in a plain `title:` | Guard: walks `src/app/**/page.tsx` and fails a plain `title:` containing `MrGoma`. `/login`'s bare `'Seller Portal'` must pass — it is the correct pattern and is documented as such at its call site |
+| AC14b | Indexable pages delegate to `seo.ts` | Same guard: a page that does **not** declare `noindex` and hand-rolls a metadata object fails. The exemption is read from the page's own `robots` declaration, not from a list someone maintains |
 | AC15 | `locationMetadata()` override | `seo.test.ts`: each of the seven produces an `og:image` equal to `absUrl(store.image)`, and the file exists on disk |
 | AC16 | Only `<head>` and the footer change | Reviewed in the diff; no page component is touched except `instant-quote/page.tsx` (metadata only) and `Footer.tsx` |
 | AC17 | No client code | `npx tsc --noEmit` + `npm run lint` + `npm test` + `npm run build` + `npm run perf:budget`, budget expected at **166.0 / 617.2 KB** |
@@ -200,7 +207,10 @@ earlier reasoning, so the reversal is legible.
 - Structured data (T009–T022) — block 4.
 - URL consolidation (T006, T007, T017) — block 5.
 - Per-page images for brand and size pages.
-- The tire detail page, which already builds correct metadata and its own image.
+- **The tire detail page.** Left alone deliberately, not because it is correct:
+  its title is **100 characters** in production and Google truncates it before the
+  price and "Free Shipping" that `014` added. 1.622 pages, worse than anything in
+  this feature, and it needs its own baseline — see spec, *Out*.
 
 ---
 

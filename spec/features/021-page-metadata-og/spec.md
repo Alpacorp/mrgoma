@@ -133,8 +133,22 @@ gain a picture; the pages themselves render exactly as they do now.
 - The H1 spacing defect (T072–T084) — block 3.
 - Structured data (T009–T022) — block 4.
 - The `/tires/{id}-…` URL consolidation (T006, T007, T017) — block 5.
-- The tire detail page, which already builds correct metadata and its own
-  `og:image` and is not touched.
+- **The tire detail page (1.622 of them), which is left as it is — but not
+  because it is correct.** This spec first claimed it "already builds correct
+  metadata". It does not: its title runs to **100 characters** in production —
+
+  ```
+  Used BRIDGESTONE ALENZA A/S 02 RSC RFT 235/50/20 Tire in Miami | $135 | Free Shipping | MrGoma Tires
+  ```
+
+  Google shows about 60, so it renders as `…Tire in Mia…` and **the price and
+  "Free Shipping" never appear** — the two differentiators `014` added to
+  `productTitle()` specifically to lift CTR. It is the worst title defect on the
+  site and it affects more pages than everything in this feature combined. It is
+  out of scope here on purpose: 1.622 titles deserve their own baseline, and
+  folding them in would make the effect of these fifteen unattributable. Tracked
+  as its own item. The audit does not cover it — its title tickets stop at
+  section pages.
 
 ## Decisions taken during `/clarify`
 
@@ -221,9 +235,16 @@ feature.
   (Decision 2). `/checkout` stays `noindex` and stays disallowed.
 - **FR5b:** The sitemap must never publish a URL that declares `noindex`. Today it
   publishes `/instant-quote`, which does.
-- **FR6:** There must be **one** way to build page metadata. A page added after
-  this feature must get FR1–FR4 by using the shared path, not by remembering to
-  repeat it.
+- **FR6:** A page module must never spell the brand inside a plain `title:`
+  string. The root template appends ` | MrGoma Tires` to any title that is not
+  `{ absolute }`, so writing the brand as well is what prints it twice — that is
+  the defect, not "failing to use the helper". `/login` already does this
+  correctly and carries a comment explaining why; the rule must permit that
+  pattern rather than ban it.
+- **FR6b:** Every **indexable** page must build its metadata through the shared
+  helper, so that FR1–FR4 come by default rather than by memory. Pages that are
+  `noindex` — `/login`, `/dashboard`, `not-found`, error boundaries — may keep a
+  bare title, since none of FR1–FR4 applies to a page Google is told to ignore.
 - **FR7:** No page's rendered content changes, with the single exception of the
   footer link in FR5. Only what pages declare about themselves changes.
 - **FR8:** The seven store pages declare their own photo as `og:image`; every
@@ -244,12 +265,14 @@ feature.
       dimensions and alt text, and an `og:locale`.
 - [ ] **AC2:** Given each of the fifteen pages that bypass the helper today, when
       the page is rendered, then its `og:url` equals its own canonical.
-- [ ] **AC3:** Given every page in the site's metadata surface, when its title is
-      read, then the brand name appears **at most once**. Tested over the whole
-      set, not a sample.
-- [ ] **AC4:** Given every page in that set, when its title is read, then it is no
-      longer than `TITLE_MAX`; and when its description is read, then it falls
-      inside `DESCRIPTION_MIN`–`DESCRIPTION_MAX`.
+- [ ] **AC3:** Given every page **this feature touches**, when its title is read,
+      then the brand name appears **at most once**. Tested over that whole set,
+      not a sample. The set is the fifteen migrated pages plus the builders that
+      already existed — it deliberately excludes the tire detail page, which is
+      out of scope and stated as such above.
+- [ ] **AC4:** Given every page in that same set, when its title is read, then it
+      is no longer than `TITLE_MAX`; and when its description is read, then it
+      falls inside `DESCRIPTION_MIN`–`DESCRIPTION_MAX`.
 - [ ] **AC5:** Given `/services/wheel-alignment`, when its title is read, then it
       still contains `Hunter HawkEye Elite®` — the differentiator must survive the
       shortening, not be what gets cut.
@@ -280,9 +303,14 @@ feature.
 - [ ] **AC13:** Given the sitemap, when each URL it publishes is fetched, then that
       page's canonical is that same URL. We must never ask Google to index a page
       that names something else as itself.
-- [ ] **AC14:** Given any page module in the repository, when a test inspects how
-      it declares metadata, then it goes through the shared helper — a page
-      hand-rolling a `title` string fails the build (FR6).
+- [ ] **AC14:** Given any page module in the repository, when a test inspects its
+      metadata, then no plain `title:` string contains the brand — the pattern
+      that prints it twice. `/login`'s bare `'Seller Portal'` must **pass**: it is
+      the correct pattern and is documented as such at the call site.
+- [ ] **AC14b:** Given any **indexable** page module, when a test inspects how it
+      declares metadata, then it goes through the shared helper (FR6b). Pages that
+      declare `noindex` are exempt, by that declaration rather than by a
+      hand-maintained list.
 - [ ] **AC15:** Given each of the seven store pages, when it is rendered, then its
       `og:image` is that store's own photo from `locationsConfig`, and that file
       exists.
