@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 import { preload } from 'react-dom';
 
+import { guides } from '@/app/(shop)/guides/guidesConfig';
 import { servicesConfig } from '@/app/(shop)/services/servicesConfig';
 import { HeroVideo, TrustStrip } from '@/app/ui/components';
 import { InfoCardsSection, PromoBanner, SearchContainer } from '@/app/ui/sections';
@@ -34,29 +35,24 @@ const SERVICE_IMAGES: Record<string, string> = {
   tpms: '/assets/images/tpms.webp',
 };
 
-const FEATURED_GUIDES = [
-  {
-    slug: 'how-to-buy-used-tires',
-    title: 'How to Buy Used Tires: The Complete Guide',
-    readTime: '7 min read',
-    intro:
-      'Used tires can save you 30–70% compared to new, and when properly inspected they are just as safe.',
-  },
-  {
-    slug: 'used-vs-new-tires',
-    title: 'Used vs. New Tires: Which Should You Buy?',
-    readTime: '6 min read',
-    intro:
-      'The used-vs-new debate comes down to your budget, how many miles you drive, and what kind of driving you do.',
-  },
-  {
-    slug: 'best-tires-for-uber-lyft-drivers',
-    title: 'Best Tires for Uber and Lyft Drivers in Miami & Orlando',
-    readTime: '6 min read',
-    intro:
-      'Rideshare drivers in Florida go through tires twice as fast as average drivers — every dollar saved on tires goes to your pocket.',
-  },
-];
+/**
+ * The three guides the home page features, **by slug**.
+ *
+ * This was a hand-copied list carrying each guide's title, read time and intro —
+ * a second copy of `guidesConfig`, which is why the home page still showed
+ * `How to Buy Used Tires: The Complete Guide` after that name was retired, and
+ * why one guide appeared under two names across two card grids. Naming the slugs
+ * and reading the rest from the config leaves one source for a guide's facts.
+ */
+const FEATURED_GUIDE_SLUGS = [
+  'how-to-buy-used-tires',
+  'used-vs-new-tires',
+  'best-tires-for-uber-lyft-drivers',
+] as const;
+
+const FEATURED_GUIDES = FEATURED_GUIDE_SLUGS.map(
+  slug => guides.find(guide => guide.slug === slug)!
+);
 
 const STATS = [
   { n: '7', label: 'Locations in Miami & Orlando' },
@@ -349,7 +345,8 @@ const Home: FC = () => {
                   {guide.readTime}
                 </p>
                 <h3 className="text-base font-bold text-gray-900 mb-2 group-hover:text-green-700 transition-colors leading-snug">
-                  {guide.title}
+                  {/* A card, so the card name — not the heading. */}
+                  {guide.cardName}
                 </h3>
                 <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">{guide.intro}</p>
                 <span className="mt-4 inline-flex items-center text-green-600 text-sm font-bold">

@@ -149,7 +149,7 @@ TypeScript. Every change is markup or config.
 | AC9 | Article JSON-LD already used the heading field | Same test: `headline` in the Article node equals the `<h1>`. Holds today and must survive the rename |
 | AC9b | Card names left alone | Same test: **asserts at least one guide's `cardName` differs from its `heading`**, so a later flattening has to argue with a test |
 | AC10 | No client code added | tsc + lint + test + build + `perf:budget`, expected unchanged |
-| AC11 | — | Manual: 360 px, each heading breaks where it did; select and copy one |
+| AC11 | — | Manual: 360 px, each heading breaks where it did, at the same sizes. **Not a copy-and-paste check** — a `<br />` and a block-level span both produce newlines on copy; the difference is in `textContent`, which the render tests assert |
 | AC12 | — | Manual: screen reader on the mobile menu button and one heading |
 
 ## Tradeoffs / alternatives

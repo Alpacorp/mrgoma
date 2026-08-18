@@ -21,7 +21,7 @@ Groups B, C, D and E are independent of A and of each other.
 
 ## A. Eleven headings that read as one word
 
-- [ ] **T1** — The eight mechanical ones. Each is `{text}` `<br />`
+- [x] **T1** — The eight mechanical ones. Each is `{text}` `<br />`
       `<span className="…">`; each becomes `{text}{' '}` and `className="block …"`
       on the span.
       · files: `src/app/(shop)/tires/brands/[brand]/page.tsx`,
@@ -38,7 +38,7 @@ Groups B, C, D and E are independent of A and of each other.
       `/locations` reads `Our Locations Miami & Orlando`, and each still breaks
       onto two lines exactly where it did.
 
-- [ ] **T2** — The three that need more than the swap:
+- [x] **T2** — The three that need more than the swap:
       - **`tires/size/[size]`** is the other shape — `<span>` `<br />` *bare
         text*. There is no element on the second line to put `block` on, so the
         text needs wrapping.
@@ -56,7 +56,7 @@ Groups B, C, D and E are independent of A and of each other.
       `MrGoma Tires` on **two** lines, not three; `/about-us` still shows three
       lines with the middle one outlined.
 
-- [ ] **T3** — `headings.guard.test.ts` (new). **After T1 and T2.**
+- [x] **T3** — `headings.guard.test.ts` (new). **After T1 and T2.**
       · Walks `src/app/**/*.tsx`, extracts the body of every `<h1>`–`<h6>`, and
       fails on a `<br`. **All six levels**, not only `<h1>` — the next one is as
       likely to arrive in a section heading.
@@ -65,7 +65,7 @@ Groups B, C, D and E are independent of A and of each other.
 
 ## B. A list with a shape
 
-- [ ] **T4** — On `/guides`, the card's `<h2>` becomes `<h3>`. One edit covers all
+- [x] **T4** — On `/guides`, the card's `<h2>` becomes `<h3>`. One edit covers all
       seven cards.
       · **The three section `<h2>`s stay**, and so does the CTA `<h2>` further
       down the page. Only the card inside a section moves a level.
@@ -79,7 +79,7 @@ Groups B, C, D and E are independent of A and of each other.
 
 ## C. One string in the wrong language
 
-- [ ] **T5** — `aria-label="Abrir menú de navegación"` → `"Open navigation menu"`,
+- [x] **T5** — `aria-label="Abrir menú de navegación"` → `"Open navigation menu"`,
       matching `MenuHeader`'s existing `"Close menu"` two files away.
       · Add the language assertion to `headings.guard.test.ts`, and write it as
       **two concrete rules, not "is it Spanish"**: no accented Spanish character
@@ -100,7 +100,7 @@ Groups B, C, D and E are independent of A and of each other.
 
 ## D. One guide, one name in the places that name it
 
-- [ ] **T6** — Rename the config fields and fix what they feed:
+- [x] **T6** — Rename the config fields and fix what they feed:
       `title` → `heading`, `headline` → `cardName`, across seven guides and seven
       call sites. `how-to-buy-used-tires` becomes **`How to Buy Used Tires`** in
       both fields.
@@ -121,7 +121,7 @@ Groups B, C, D and E are independent of A and of each other.
       · check: `npx tsc --noEmit` — the fields are required on a typed config, so
       a missed call site cannot compile.
 
-- [ ] **T7** — `guideNames.test.ts` (new).
+- [x] **T7** — `guideNames.test.ts` (new).
       · For all seven: the breadcrumb JSON-LD name, the visible trail and the
       `<h1>` are the same string (AC8); the Article JSON-LD `headline` equals the
       `<h1>` (AC9).
@@ -134,7 +134,7 @@ Groups B, C, D and E are independent of A and of each other.
 
 ## E. The canonical, and the flag that could put a slash on every page
 
-- [ ] **T8** — Guard `trailingSlash` in `next.config.mjs`.
+- [x] **T8** — Guard `trailingSlash` in `next.config.mjs`.
       · **The home canonical has no trailing slash** — verified in production
       three times, and `metadata.test.ts` has pinned it since `020`. But that test
       asserts what the **builder** returns; the slash is absent from the
@@ -148,7 +148,7 @@ Groups B, C, D and E are independent of A and of each other.
 
 ## F. Close it out
 
-- [ ] **T9** — Definition of Done: `npx tsc --noEmit` + `npm run lint` +
+- [x] **T9** — Definition of Done: `npx tsc --noEmit` + `npm run lint` +
       `npm test` + `npm run build` + `npm run perf:budget`, all green.
       · The budget must not move: this is markup and config, and the one client
       component touched (`SearchResults`) gains no code.
@@ -158,8 +158,11 @@ Groups B, C, D and E are independent of A and of each other.
       at the same sizes, with nothing overflowing.
       · `/about-us` (three lines, middle one outlined) and `/contact` (two lines,
       not three) are the two most likely to have moved.
-      · On one of them, select the heading and copy it — it must paste as a
-      phrase.
+      · **Do not judge this by copying and pasting.** A `<br />` and a
+      block-level span both make the browser insert a newline at the boundary, so
+      the clipboard looked the same before and after. The change is in
+      `textContent` — what Google parses and a screen reader announces — and the
+      render tests assert that.
       · Also look at the home page's guide cards, which now show the short card
       name instead of the heading (T6).
 

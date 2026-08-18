@@ -293,17 +293,14 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-none mb-5">
               {getTireSize() ? (
                 <>
-                  Size <span className="text-[#9dfb40]">{getTireSize()}</span>
-                  <br />
-                  <span className="text-3xl sm:text-4xl text-gray-400 font-bold">
+                  Size <span className="text-[#9dfb40]">{getTireSize()}</span>{' '}
+                  <span className="block text-3xl sm:text-4xl text-gray-400 font-bold">
                     Tires in Miami
                   </span>
                 </>
               ) : (
                 <>
-                  New & Used
-                  <br />
-                  <span className="text-[#9dfb40]">Tires in Miami</span>
+                  New & Used <span className="block text-[#9dfb40]">Tires in Miami</span>
                 </>
               )}
             </h1>

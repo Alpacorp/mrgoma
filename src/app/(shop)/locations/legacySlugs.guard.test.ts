@@ -95,3 +95,25 @@ describe('legacy store redirects', () => {
     expect(redirects.some(r => r.source.includes('miami-north-441'))).toBe(false);
   });
 });
+
+/**
+ * One flag away from a slash on every canonical on the site.
+ *
+ * This started as a report that the home page's canonical carried a trailing
+ * slash. It does not — the tag reads `href="https://www.mrgomatires.com"`, and
+ * the slash being seen came from a browser extension re-serialising the URL
+ * (`new URL('https://x.com').href` returns `https://x.com/`). That same artifact
+ * is what made the original audit report it as T030.
+ *
+ * Looking for it found a real gap beside it. `metadata.test.ts` has pinned the
+ * home canonical since `020`, but it asserts what the **builder** returns. The
+ * slash is absent from the **rendered** tag only because Next strips it, and Next
+ * strips it only because `trailingSlash` defaults to `false`. Setting that one
+ * flag would put a slash on the canonical of every page on this site — and every
+ * existing test would still pass.
+ */
+describe('trailing slashes', () => {
+  it('does not enable trailingSlash', () => {
+    expect((nextConfig as { trailingSlash?: boolean }).trailingSlash).toBeFalsy();
+  });
+});

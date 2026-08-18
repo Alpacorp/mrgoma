@@ -133,9 +133,7 @@ export default function ServicesPage() {
             </span>
           </div>
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-none mb-6">
-            Auto Services
-            <br />
-            <span className="text-[#9dfb40]">Miami & Orlando</span>
+            Auto Services <span className="block text-[#9dfb40]">Miami & Orlando</span>
           </h1>
           <p className="text-gray-400 text-lg max-w-xl leading-relaxed">
             8 professional services at 7 locations — all performed by ASE-certified technicians with

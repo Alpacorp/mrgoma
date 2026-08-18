@@ -102,13 +102,11 @@ export default function AboutUs() {
           </div>
 
           <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black leading-[0.9] tracking-tight mb-8">
-            About
-            <br />
-            <span className="text-transparent" style={{ WebkitTextStroke: '2px #9dfb40' }}>
+            About{' '}
+            <span className="block text-transparent" style={{ WebkitTextStroke: '2px #9dfb40' }}>
               MrGoma
-            </span>
-            <br />
-            <span className="text-white">Tires</span>
+            </span>{' '}
+            <span className="block text-white">Tires</span>
           </h1>
 
           <p className="text-gray-400 text-xl max-w-lg leading-relaxed">
@@ -132,9 +130,7 @@ export default function AboutUs() {
               Who we are
             </p>
             <h2 className="text-4xl sm:text-5xl font-black tracking-tight mb-8 leading-tight">
-              Built in Miami.
-              <br />
-              <span className="text-gray-500">Driven by trust.</span>
+              Built in Miami. <span className="block text-gray-500">Driven by trust.</span>
             </h2>
             <div className="space-y-5 text-gray-400 leading-relaxed text-lg">
               {/* Hidden until confirmed — founding year & founder name. Restore once confirmed:

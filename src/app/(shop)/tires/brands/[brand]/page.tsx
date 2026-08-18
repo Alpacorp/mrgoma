@@ -111,9 +111,7 @@ export default async function BrandCategoryPage({
                 </span>
               </div>
               <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-none mb-4">
-                {brandName}
-                <br />
-                <span className="text-[#9dfb40]">Tires</span>
+                {brandName} <span className="block text-[#9dfb40]">Tires</span>
               </h1>
               <p className="text-gray-400 text-lg">
                 {totalCount > 0

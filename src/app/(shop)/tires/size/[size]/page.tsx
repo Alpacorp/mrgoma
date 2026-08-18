@@ -133,9 +133,8 @@ export default async function SizeCategoryPage({ params }: { params: Promise<{ s
               </span>
             </div>
             <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-none mb-4">
-              <span className="text-[#9dfb40]">{originalSize}</span>
-              <br />
-              Tires in Miami
+              <span className="text-[#9dfb40]">{originalSize}</span>{' '}
+              <span className="block">Tires in Miami</span>
             </h1>
             <p className="text-gray-400 text-lg">
               {totalCount > 0

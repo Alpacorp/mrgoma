@@ -197,7 +197,7 @@ To be resumed after the two tracks above; no fixed order yet.
   `<h2>` (T092), the mobile menu carries a Spanish `aria-label` on an
   English-declared site (T098), and one guide has three different names because
   the config field called `title` drives the heading while the one called
-  `headline` drives the cards (T100). _Planned; ready for `/tasks`._
+  `headline` drives the cards (T100). _Implemented; awaiting manual verification._
 - ⬜ **Tire detail titles are truncated before the differentiators.** Found while
   analysing `021`, and not in the Screaming Frog audit, whose title tickets stop at
   section pages. `productTitle()` builds a title that reaches **100 characters** in

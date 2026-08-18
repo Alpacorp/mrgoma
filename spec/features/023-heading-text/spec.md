@@ -1,6 +1,6 @@
 # Spec — Headings that read as words
 
-> Feature: `023-heading-text` · Status: Planned — ready for `/tasks`
+> Feature: `023-heading-text` · Status: Implemented — awaiting manual verification
 > Created: 2026-08-18 · Clarified: 2026-08-18
 > Roadmap: Backlog (SEO — Screaming Frog audit, block 3) · Branch: `feat/023-heading-text`
 
@@ -22,9 +22,18 @@ jammed together.
 ```
 
 On screen they look right. The heading is split across two lines with a `<br />`,
-and a `<br />` is a line break — **not whitespace**. So anything reading the text
-rather than the pixels sees one run-on word: Google, a screen reader, and anyone
-who selects the heading and copies it.
+and a `<br />` is a line break — **not whitespace**. So anything reading the
+element's text sees one run-on word:
+
+```
+textContent of /about-us' heading:  "AboutMrGomaTires"
+```
+
+That is what Google parses and what a screen reader announces. **The clipboard is
+not affected** — a browser inserts a newline at a `<br />` when you copy, so
+selecting the heading has always pasted three lines. Correcting that claim here
+because this spec first made it: the symptom is in the text content, not in
+copy-and-paste.
 
 ### The audit counted thirteen pages. It is closer to four hundred
 
@@ -93,8 +102,9 @@ they were touching a heading.
 
 - As **someone using a screen reader**, I want a page's heading to be a phrase, so
   that jumping by heading tells me what the page is.
-- As **someone copying a heading**, I want the words separated, so that what I
-  paste is not `MICHELINTires`.
+- As **Google or a screen reader**, I want the heading's text to contain the
+  spaces it appears to have, so that I read `MICHELIN Tires` rather than
+  `MICHELINTires`.
 - As **someone navigating the guides by structure**, I want a card to sit below
   its section, so that the list has a shape rather than eleven equal items.
 - As **Google**, I want the strongest on-page signal to contain the words people
@@ -214,8 +224,7 @@ they were touching a heading.
       a slash on the canonical of every page on the site, and every existing test
       would still pass. That is worth a guard on its own merits._
 - [ ] **AC11 (manual):** On a phone at 360 px, each corrected heading still breaks
-      where it did, with the same sizes — and selecting it copies a readable
-      phrase.
+      where it did, with the same sizes.
 - [ ] **AC12 (manual):** With a screen reader, the mobile menu button announces in
       English and one page's heading reads as a phrase.
 
