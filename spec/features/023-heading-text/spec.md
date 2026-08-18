@@ -1,6 +1,6 @@
 # Spec — Headings that read as words
 
-> Feature: `023-heading-text` · Status: Clarified — ready for `/plan`
+> Feature: `023-heading-text` · Status: Planned — ready for `/tasks`
 > Created: 2026-08-18 · Clarified: 2026-08-18
 > Roadmap: Backlog (SEO — Screaming Frog audit, block 3) · Branch: `feat/023-heading-text`
 
