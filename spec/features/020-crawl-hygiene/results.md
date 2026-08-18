@@ -114,12 +114,48 @@ Two further deviations from the audit's wording are in [plan.md](./plan.md) →
 _Amendments_: the prefetch rule needs **two** patterns, not one, and the
 redirects emit `308` rather than `301` to match the rule already in the file.
 
-## Still to verify (manual)
+## The pre-redirect baseline (T12 / AC17) — and what it changes
 
-- [ ] **T12 / AC17 — before merge.** Search Console → Performance → filter by
-      page, for the four legacy URLs. Records whether they still receive
-      impressions today. It does not gate the redirect, which is correct either
-      way, but once the redirect ships the "before" number is gone.
+Captured from Search Console on **2026-08-18**, 3-month window (17 May – 18 Aug),
+exact-URL filter, before anything shipped. Once the redirect is live this cannot
+be reconstructed.
+
+| Legacy URL | Clicks | Impressions | Avg. position |
+| --- | --- | --- | --- |
+| `/locations/miami-hialeah` | 0 | **0** | — |
+| `/locations/miami-coral-gables` | 0 | **98** | 3.5 |
+| `/locations/orlando-semoran` | 0 | **0** | — |
+| `/locations/miami-south-us1` | 0 | **101** | 3.4 |
+| `/locations/miami-north-441` (not redirected) | 0 | **101** | 3.4 |
+
+**The totals are the less interesting half. The shape of the line is the finding:**
+in all three URLs with data, every impression falls in a single spike around
+**23 June**, and the series is flat at zero from then until today — roughly eight
+weeks without one.
+
+**So these URLs have already left the index, and the redirect will not recover
+ranking.** This is the case the audit itself anticipated for T101–T104: *"if the
+impressions stopped in June/July the URL has already left the index and the 301
+recovers little."* Shipping it is still correct — it stops sending anyone holding
+the link to an error page, and consolidates any residual signal on the next crawl
+— but it should not be expected to move anything in Search Console, and it is not
+the priority the audit's "Medio" rating implied. Two of the four
+(`miami-hialeah`, `orlando-semoran`) have literally nothing to recover.
+
+Two notes on the numbers:
+
+- **`miami-south-us1` and `miami-north-441` report identical figures** (101 / 3.4)
+  with the same spike. Re-checked and unchanged, but the filter chip truncates the
+  URL, so identical-to-the-digit values for two different pages could not be
+  ruled out visually. It does not change any decision: with everything at zero
+  since June, `441` is not urgent whether it held 101 impressions or none.
+- **0 clicks on ~100 impressions at position 3.4** is a 0% CTR. Partly explained
+  by these being 404s, but the pattern closely resembles audit item **T034**
+  (`/locations/miami-airport`: 2.778 impressions, 1 click, position 3.2, on a page
+  that works). Worth carrying into the store-pages block — it may be the local
+  pack absorbing the clicks rather than anything wrong with our markup.
+
+## Still to verify (manual)
 - [ ] **T13 / AC16 — after deploy.** A live sample of real sizes still answers
       `200`; `curl -I` a legacy URL on **both** hosts and confirm one hop each;
       Search Console URL Inspection on one `?_rsc=` URL, one fabricated size URL

@@ -171,7 +171,7 @@ Inside a group, order matters.
       `019`. This feature adds no client code, so any movement means something
       reached the bundle that should not have.
 
-- [ ] **T12** — Manual, **before merge**: record whether the four legacy URLs
+- [x] **T12** — Manual, **before merge**: record whether the four legacy URLs
       still receive impressions today (Search Console → Performance → filter by
       page, exact URL). This does **not** gate the redirect — a 301/308 is correct
       either way — but after the redirect ships the "before" number is gone.
