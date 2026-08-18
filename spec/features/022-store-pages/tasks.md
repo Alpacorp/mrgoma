@@ -24,7 +24,7 @@ Groups B and C are independent of A and of each other.
 
 ## A. Make the builder say something specific
 
-- [ ] **T1** — Two pure derivations, no config and no builder changes yet:
+- [x] **T1** — Two pure derivations, no config and no builder changes yet:
       `storeStreet(address)` strips the house number from the first
       comma-separated part (`18200 S Dixie Hwy, Miami, FL 33157` → `S Dixie Hwy`),
       and `storeServes(name, neighborhoods)` drops the store's own name and every
@@ -38,7 +38,7 @@ Groups B and C are independent of A and of each other.
       address yields a street and every real store yields at least two served
       areas. Not from hand-written examples.
 
-- [ ] **T2** — Drive the location entries in `metadata.test.ts` from
+- [x] **T2** — Drive the location entries in `metadata.test.ts` from
       `locationsConfig` instead of the four hand-written stores with `slug: 'x'`.
       **No production code changes in this task** — it only widens what is
       already asserted from four stores to seven.
@@ -46,7 +46,7 @@ Groups B and C are independent of A and of each other.
       · check: `npm test` still green with seven stores under the *current*
       builder. If it goes red here, that is a defect this table was hiding.
 
-- [ ] **T3** — The new title: `Used & New Tires in {name}, FL` + `TITLE_SUFFIX`,
+- [x] **T3** — The new title: `Used & New Tires in {name}, FL` + `TITLE_SUFFIX`,
       through `fitTitle`. Replaces `{name} Tire Shop — 30-Day Warranty`.
       · Computed: 40–54 characters, all seven inside `TITLE_MAX`.
       · **Do not adopt the audit's second variant.** T049 and T052 propose
@@ -60,7 +60,7 @@ Groups B and C are independent of A and of each other.
       · check: `npm test` — each of the seven contains `Tires` and `FL`, fits
       `TITLE_MAX`, and all seven are distinct.
 
-- [ ] **T4** — The new description. `locationMetadata()` takes `address` and
+- [x] **T4** — The new description. `locationMetadata()` takes `address` and
       `neighborhoods`, and feeds `fitDescription` with
       `Used and new tires on {street}, every used tire with a 30-day warranty.` +
       a `Serving …` tail. The caller already holds both fields.
@@ -77,7 +77,7 @@ Groups B and C are independent of A and of each other.
 
 ## B. Stop sending people to the wrong airport
 
-- [ ] **T5** — East Orlando is at 575 N Semoran Blvd, beside Orlando **Executive**
+- [x] **T5** — East Orlando is at 575 N Semoran Blvd, beside Orlando **Executive**
       Airport. **Three** fields carry the wrong airport, not two:
       - `serving` → `Near Orlando Int'l Airport`. **This one renders on the home
         page**, through `LocationsSlider`, and on `/contact`. Verified live on
@@ -98,7 +98,7 @@ Groups B and C are independent of A and of each other.
 
 ## C. Give the heading something to say
 
-- [ ] **T6** — The two-line `<h1>`: `MrGoma Tires {name}` large, `Used & New
+- [x] **T6** — The two-line `<h1>`: `MrGoma Tires {name}` large, `Used & New
       Tires` as a smaller second line **inside the same heading**. Remove the now
       redundant `h1` field from `locationsConfig` — it equals `name` in all seven
       and is read in one place, and a second name per store is what FR7 exists to
@@ -123,7 +123,7 @@ Groups B and C are independent of A and of each other.
 
 ## D. Make the facts checkable
 
-- [ ] **T7** — `storeFacts.guard.test.ts` (new). **Last in this group, because it
+- [x] **T7** — `storeFacts.guard.test.ts` (new). **Last in this group, because it
       is red until T5 lands.**
       · No file pairs `east-orlando` with `Orlando International` (AC7).
       · Each store names **at most one airport**, and the **same one** across
@@ -143,7 +143,7 @@ Groups B and C are independent of A and of each other.
 
 ## E. Close it out
 
-- [ ] **T8** — Definition of Done: `npx tsc --noEmit` + `npm run lint` +
+- [x] **T8** — Definition of Done: `npx tsc --noEmit` + `npm run lint` +
       `npm test` + `npm run build` + `npm run perf:budget`, all green.
       · check: the budget should not move — this feature is config, a pure
       builder and heading text. Report it if it does rather than rounding.
