@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { LocationConfig } from '@/app/(shop)/locations/locationsConfig';
 import { formatHours } from '@/app/utils/storeHours';
 import { whatsAppLink } from '@/app/utils/whatsapp';
- 
+
 const services = [
   { label: 'Tire Mounting & Balancing', slug: 'tire-mounting-balancing' },
   { label: 'Wheel Alignment', slug: 'wheel-alignment' },
