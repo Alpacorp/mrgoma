@@ -1,6 +1,6 @@
 # Spec — One way to describe a page
 
-> Feature: `021-page-metadata-og` · Status: Clarified — ready for `/plan`
+> Feature: `021-page-metadata-og` · Status: Planned — ready for `/tasks`
 > Created: 2026-08-18 · Clarified: 2026-08-18
 > Roadmap: Backlog (SEO — Screaming Frog audit, block 1) · Branch: `feat/021-page-metadata-og`
 
@@ -55,20 +55,29 @@ Elite®**, the actual alignment rig — sits right at the edge of what gets show
 The site is spending its most valuable characters saying its own name a second
 time.
 
-### Two conversion pages tell Google they are the home page
+### The sitemap and `/instant-quote` contradict each other
 
-Neither is in the audit, because Screaming Frog could not see them.
+Neither of the two conversion pages is in the audit, because Screaming Frog could
+not reach them. Checking them directly turned up something different from what
+their canonicals suggested.
 
-**`/checkout`** declares `rel="canonical"` pointing at the site root. The audit
-missed it because `robots.txt` disallows the path, so the crawl never fetched it —
-but Google still receives the tag.
+**Both already declare `noindex, nofollow`.** `/checkout` has done so since the
+WJM audit's Phase 1 (commit `b754578`), which also marked `/instant-quote`,
+grouping it with `/dashboard` as a page that should not be an entry point. So the
+root canonical both serve is a consequence of having no metadata of their own, and
+on a page Google is told not to index it is cosmetic rather than harmful. This
+spec originally called `/checkout`'s canonical serious; it is not, and that is
+recorded here so the correction is not lost.
 
-**`/instant-quote` is worse.** It has no metadata of its own at all: it serves the
-root default title, *"Used & New Tires in Miami & Orlando | MrGoma"*, and the root
-canonical. It is **in the sitemap**, and it is not robots-blocked. So we are
-actively asking Google to index a lead-capture page that then says it is a
-duplicate of the front page.
+**The real defect is that the sitemap publishes `/instant-quote` anyway.** We ask
+Google to index a URL that then tells it not to — which Search Console reports as
+*"Submitted URL marked 'noindex'"*. One of the two statements has to go.
 
+`/instant-quote` is also **orphaned**: nothing in `src/` links to it. Whichever
+way the contradiction resolves, a page no one links to and no one can find is not
+doing anything today.
+
+### Why this is one feature and not nineteen
 ### Why this is one feature and not nineteen
 
 The audit lists nineteen tickets here — T023–T029 for the Open Graph tags,
@@ -149,13 +158,26 @@ pages are in scope alongside the structural fix. Two carve-outs:
   half of T061 is "by size or brand", which is what the visitor came to do; the
   number must come from the existing inventory claims or be dropped.
 
-**Decision 2 — `/instant-quote` is treated as a real landing page, and gets a
-footer link.** It captures leads and has its own intent, so it keeps its place in
-the sitemap and gains its own title, description and canonical. But it is
-**orphaned** — no link anywhere in `src/` points at it — and a page only Google
-can find will not rank. A link in the footer is the cheapest fix that makes the
-new metadata able to earn something. This is the one visible change in the
-feature.
+**Decision 2 — `/instant-quote` becomes a real landing page, which means
+deliberately reversing an earlier SEO decision.** It captures leads and has its
+own intent, so it keeps its place in the sitemap and gains its own title,
+description and canonical — and its `noindex, nofollow` is **removed**.
+
+That last part is not a bug fix. Commit `b754578` ("SEO phase 1") marked this
+page `noindex` on purpose, alongside `/dashboard`, treating it as a funnel step
+rather than an entry point. The owner has decided otherwise, with the conflict
+put in front of them. Recorded here so that nobody later reads the reversal as an
+oversight, and so that if it is reconsidered the earlier reasoning is still
+findable.
+
+Two things follow. The sitemap and the page stop contradicting each other, which
+removes a live Search Console error either way. And the page needs a **footer
+link**: nothing in `src/` points at it, and a page only Google can find will not
+rank. That anchor is the one visible change in this feature.
+
+`/checkout` is left `noindex` and keeps its `robots.txt` block; it only gains its
+own canonical, which is a one-line tidy rather than the serious defect this spec
+first claimed.
 
 **Decision 3 — the guides' proposed titles are adopted, though the audit's
 baseline for them was wrong.** Three of the four "current" titles it recorded do
@@ -194,8 +216,11 @@ feature.
   differentiator is inside it rather than truncated after it. Every description
   must fit the window Google shows without truncating.
 - **FR5:** `/checkout` and `/instant-quote` must describe themselves.
-  `/instant-quote` must additionally be reachable by a link from the site, so that
-  its metadata can earn something (Decision 2).
+  `/instant-quote` must additionally become indexable, stay in the sitemap and be
+  reachable by a link from the site, so that its metadata can earn something
+  (Decision 2). `/checkout` stays `noindex` and stays disallowed.
+- **FR5b:** The sitemap must never publish a URL that declares `noindex`. Today it
+  publishes `/instant-quote`, which does.
 - **FR6:** There must be **one** way to build page metadata. A page added after
   this feature must get FR1–FR4 by using the shared path, not by remembering to
   repeat it.
@@ -241,9 +266,14 @@ feature.
       searched for a stock quantity, then any figure present comes from
       `brandClaims` and passes its existing guard (FR9).
 - [ ] **AC10:** Given `/checkout`, when it is rendered, then its canonical is
-      `https://www.mrgomatires.com/checkout` and not the site root.
+      `https://www.mrgomatires.com/checkout` and not the site root, and it still
+      declares `noindex` and is still disallowed in `robots.txt`.
 - [ ] **AC11:** Given `/instant-quote`, when it is rendered, then its canonical is
-      its own URL and its title is not the root default.
+      its own URL, its title is not the root default, and it **no longer declares
+      `noindex`** (Decision 2).
+- [ ] **AC11b:** Given the sitemap, when it is generated, then no URL it publishes
+      declares `noindex`. The contradiction Search Console reports as "Submitted
+      URL marked 'noindex'" must be impossible to reintroduce.
 - [ ] **AC12:** Given the footer, when it is rendered on any page, then it contains
       a link to `/instant-quote`, and the link is keyboard reachable with a visible
       focus ring.
