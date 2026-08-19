@@ -5,6 +5,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { dimensionsParam } from '@/app/api/_lib/aiChat/dimensions';
 import { withLogging } from '@/app/api/_lib/withLogging';
 import { auth } from '@/app/utils/authOptions';
+import { fetchDashboardLocations, fetchDashboardStores } from '@/repositories/tiresRepository';
 import { logger } from '@/utils/logger';
 import { createRateLimiter } from '@/utils/rateLimit';
 
@@ -25,6 +26,9 @@ When the user greets you or asks a tire-related question that doesn't need filte
 Tire size format in Colombia: width/profile/diameter (e.g., "205/55/16" means width=205, profile=55, diameter=16)
 Common abbreviations: "llantas" = tires, "usadas" = used, "nuevas" = new, "parcheadas" = patched, "kindSale" / "kind sale" = KindSale filter (yes/no), "local" / "locales" = Local filter (yes = local tires, no = non-local tires)
 Store/branch: tires belong to a store (called "sucursal" or "tienda" in Spanish). Use the stores filter with the exact store name the user mentions (e.g., "sucursal norte" → stores="sucursal norte").
+Shelf location: within a store, each tire sits on a shelf identified by a short code such as "+703C+", "-507D-", "{IN}" or ":410D:" (called "ubicación", "estante" or "posición" in Spanish). Use the locations filter, giving each code together with its store.
+NEVER invent a shelf code, and never add or remove the symbols around one. Real codes are decorated (=653A=, "663A", +703C+, {IN}) and people say only the middle part. Pass exactly the text the user gave you — the server matches it against the codes that store really holds, so "653A" finds "=653A=" on its own. Adding your own decoration breaks that match.
+A shelf code without a store is not a filter: the same code exists in several stores. If the user names a code but no store, ask which store they mean instead of using the tool.
 Price context: prices in the database are in USD. Apply price filters directly using the USD amounts the user mentions.
 Tire code: each tire has a unique numeric code (called "código" or "code"). When the user mentions a specific code number, use the code filter (e.g., "busca el código 12345" → code="12345").
 
@@ -91,6 +95,19 @@ const APPLY_FILTERS_TOOL: Anthropic.Tool = {
         description:
           'Comma-separated list of store/branch names to filter by (e.g., "Sucursal Norte,Sucursal Sur")',
       },
+      locations: {
+        type: 'array',
+        description:
+          'Shelf locations to filter by. Each entry pairs a shelf code with the store that holds it, because the same code exists in more than one store. Only use codes the user typed — never invent one.',
+        items: {
+          type: 'object',
+          properties: {
+            store: { type: 'string', description: 'The store that holds this shelf' },
+            code: { type: 'string', description: 'The shelf code exactly as the user typed it' },
+          },
+          required: ['store', 'code'],
+        },
+      },
       kindSale: {
         type: 'string',
         enum: ['yes', 'no'],
@@ -127,6 +144,90 @@ const APPLY_FILTERS_TOOL: Anthropic.Tool = {
 interface ApiMessage {
   role: 'user' | 'assistant';
   content: string;
+}
+
+/**
+ * Turns what the user *said* into shelf codes that exist.
+ *
+ * Real codes are decorated — `=653A=`, `"663A"`, `+703C+`, `{IN}` — and nobody
+ * says the decoration out loud. Asked for "653A" the assistant passes `653A`,
+ * which matches nothing, and the table comes back empty looking like missing
+ * stock rather than a near miss. The dropdown has never had this problem because
+ * its type-to-filter input matches on substring; this gives the chat the same
+ * resolution.
+ *
+ * Exact matches win. Otherwise every code in that store containing the text is
+ * taken — the same rule the input uses — and the store name is matched
+ * case-insensitively, because "clifton" is what people type.
+ *
+ * **This is the one place this route touches the catalogue.** Everywhere else it
+ * deliberately does not (see the note by the tool response), so the cost is one
+ * scoped lookup on the only filter whose values cannot be guessed.
+ */
+const MAX_RESOLVED_CODES = 25;
+
+async function resolveLocations(
+  raw: unknown
+): Promise<{ store: string; code: string }[] | undefined> {
+  if (!Array.isArray(raw) || raw.length === 0) return undefined;
+
+  const asked = raw.filter(
+    (entry): entry is { store: string; code: string } =>
+      !!entry &&
+      typeof entry === 'object' &&
+      typeof (entry as { store?: unknown }).store === 'string' &&
+      typeof (entry as { code?: unknown }).code === 'string'
+  );
+  if (asked.length === 0) return undefined;
+
+  const knownStores = await fetchDashboardStores();
+  const storeOf = (name: string) =>
+    knownStores.find(store => store.toLowerCase() === name.trim().toLowerCase());
+
+  const stores = [...new Set(asked.map(pair => storeOf(pair.store)).filter(Boolean))] as string[];
+  if (stores.length === 0) return undefined;
+
+  const real = await fetchDashboardLocations(stores);
+  const seen = new Set<string>();
+  const resolved: { store: string; code: string }[] = [];
+
+  const take = (pair: { store: string; code: string }) => {
+    const key = `${pair.store}\u0000${pair.code}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    resolved.push(pair);
+  };
+
+  for (const pair of asked) {
+    const store = storeOf(pair.store);
+    if (!store) continue;
+
+    const inStore = real.filter(candidate => candidate.store === store);
+    const exact = inStore.find(candidate => candidate.code === pair.code);
+    if (exact) {
+      take(exact);
+      continue;
+    }
+
+    const needle = pair.code.trim().toLowerCase();
+    if (!needle) continue;
+    for (const candidate of inStore) {
+      if (candidate.code.toLowerCase().includes(needle)) take(candidate);
+    }
+  }
+
+  if (resolved.length === 0) return undefined;
+
+  if (resolved.length > MAX_RESOLVED_CODES) {
+    // Not silent: a request this broad is worth seeing in the logs rather than
+    // quietly becoming a URL with hundreds of pairs in it.
+    logger.warn(
+      `Shelf lookup matched ${resolved.length} codes; using the first ${MAX_RESOLVED_CODES}`
+    );
+    return resolved.slice(0, MAX_RESOLVED_CODES);
+  }
+
+  return resolved;
 }
 
 export const POST = withLogging('dashboard.aiChat.POST', async (req: NextRequest) => {
@@ -169,6 +270,14 @@ export const POST = withLogging('dashboard.aiChat.POST', async (req: NextRequest
     if (toolUseBlock && toolUseBlock.type === 'tool_use') {
       const filters = toolUseBlock.input as Record<string, unknown>;
       const { confirmationMessage, ...filterParams } = filters;
+
+      // Shelf codes are the one filter whose values cannot be guessed, so what
+      // the assistant produced is resolved against what the store actually holds.
+      if ('locations' in filterParams) {
+        const resolved = await resolveLocations(filterParams.locations);
+        if (resolved) filterParams.locations = resolved;
+        else delete filterParams.locations;
+      }
 
       return NextResponse.json({
         type: 'filters',

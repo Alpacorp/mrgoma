@@ -109,3 +109,42 @@ describe('navigating to the results', () => {
     expect(h.push).not.toHaveBeenCalled();
   });
 });
+
+/**
+ * The shelf filter travels as store-and-code pairs, and the encoding is not
+ * cosmetic: most codes look like `+703C+`, and a bare `+` in a query string
+ * decodes to a space. Encoding it here — through the same helper the server
+ * parses with — is what keeps the assistant's answer and the table in agreement.
+ */
+describe('shelf locations in the URL', () => {
+  it('encodes each pair so a plus sign does not become a space', async () => {
+    respondWith({
+      type: 'filters',
+      filters: { stores: 'Hialeah', locations: [{ store: 'Hialeah', code: '+703C+' }] },
+      message: 'Searching…',
+      dimensions: 'store,location',
+    });
+
+    await send('shelf +703C+ in Hialeah');
+
+    const url = new URL(h.push.mock.calls[0][0], 'http://localhost');
+    const raw = url.searchParams.get('locations') ?? '';
+
+    expect(raw).not.toContain('+');
+    expect(raw).toBe('Hialeah~%2B703C%2B');
+  });
+
+  it('sets no locations param when the assistant produced none', async () => {
+    respondWith({
+      type: 'filters',
+      filters: { brands: 'Michelin' },
+      message: 'Searching…',
+      dimensions: 'brand',
+    });
+
+    await send('Michelin');
+
+    const url = new URL(h.push.mock.calls[0][0], 'http://localhost');
+    expect(url.searchParams.get('locations')).toBeNull();
+  });
+});

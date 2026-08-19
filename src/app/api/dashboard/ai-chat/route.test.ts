@@ -12,20 +12,35 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const h = vi.hoisted(() => ({
   toolInput: null as Record<string, unknown> | null,
   session: { user: { name: 'seller' } } as unknown,
+  // What we actually sent Claude: the tool schema and the system prompt.
+  sent: null as Record<string, unknown> | null,
 }));
 
 vi.mock('@/app/utils/authOptions', () => ({ auth: async () => h.session }));
+vi.mock('@/repositories/tiresRepository', () => ({
+  fetchDashboardStores: async () => ['Clifton', 'Hialeah'],
+  fetchDashboardLocations: async (stores: string[]) =>
+    [
+      { store: 'Clifton', code: '=653A=' },
+      { store: 'Clifton', code: '=653B=' },
+      { store: 'Clifton', code: '"663A"' },
+      { store: 'Hialeah', code: '+703C+' },
+    ].filter(pair => stores.includes(pair.store)),
+}));
 vi.mock('@/utils/logger', () => ({
   logger: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn(), log: vi.fn() },
 }));
 vi.mock('@anthropic-ai/sdk', () => ({
   default: class {
     messages = {
-      create: async () => ({
-        content: h.toolInput
-          ? [{ type: 'tool_use', input: { confirmationMessage: 'Filtering…', ...h.toolInput } }]
-          : [{ type: 'text', text: 'Which size?' }],
-      }),
+      create: async (payload: Record<string, unknown>) => (
+        (h.sent = payload),
+        {
+          content: h.toolInput
+            ? [{ type: 'tool_use', input: { confirmationMessage: 'Filtering…', ...h.toolInput } }]
+            : [{ type: 'text', text: 'Which size?' }],
+        }
+      ),
     };
   },
 }));
@@ -102,5 +117,120 @@ describe('access', () => {
     const res = await POST(ask('Michelin'));
 
     expect(res.status).toBe(401);
+  });
+});
+
+/**
+ * A shelf code is the one filter value the assistant cannot reason about.
+ *
+ * It can recognise `Michelin` and `Hialeah` as things that plausibly exist. It
+ * has no way to know that `+703C+` is a real shelf and `+703Z+` is not — and a
+ * guessed code returns an empty table, which a seller reads as missing stock
+ * rather than a bad guess. So the prompt has to forbid inventing one, and the
+ * schema has to make a code inseparable from its store.
+ */
+describe('the shelf filter', () => {
+  const tool = () => {
+    const tools = h.sent?.tools as { name: string; input_schema: Record<string, never> }[];
+    return tools.find(t => t.name === 'apply_filters')!;
+  };
+
+  // AC10
+  it('offers locations as store-and-code pairs, never bare codes', async () => {
+    await POST(ask('anything'));
+
+    const locations = (tool().input_schema as unknown as { properties: Record<string, never> })
+      .properties.locations as unknown as {
+      type: string;
+      items: { properties: Record<string, unknown>; required: string[] };
+    };
+
+    expect(locations.type).toBe('array');
+    expect(Object.keys(locations.items.properties).sort()).toEqual(['code', 'store']);
+    expect(locations.items.required.sort()).toEqual(['code', 'store']);
+  });
+
+  it('tells the assistant never to invent a code, and that one needs a store', async () => {
+    await POST(ask('anything'));
+
+    const system = String(h.sent?.system);
+    expect(system).toMatch(/NEVER invent a shelf code/i);
+    expect(system).toMatch(/without a store is not a filter/i);
+  });
+
+  it('passes a pair straight through when the assistant produces one', async () => {
+    h.toolInput = { locations: [{ store: 'Hialeah', code: '+703C+' }] };
+
+    const body = await (await POST(ask('shelf +703C+ in Hialeah'))).json();
+
+    expect(body.filters.locations).toEqual([{ store: 'Hialeah', code: '+703C+' }]);
+  });
+});
+
+/**
+ * Reported from the dashboard: the filter worked by hand and not through the
+ * assistant. Real shelf codes are decorated — `=653A=`, `"663A"` — and nobody
+ * says the decoration out loud, so asking for "653A" produced `653A`, matched
+ * nothing, and returned an empty table that reads as missing stock.
+ *
+ * The dropdown never had the problem because its type-to-filter input matches on
+ * substring. This gives the assistant the same resolution.
+ */
+describe('resolving what the user said into codes that exist', () => {
+  it('finds the decorated code from the bare one', async () => {
+    h.toolInput = { locations: [{ store: 'Clifton', code: '653A' }] };
+
+    const body = await (await POST(ask('shelf 653A in Clifton'))).json();
+
+    expect(body.filters.locations).toEqual([{ store: 'Clifton', code: '=653A=' }]);
+  });
+
+  it('takes every code containing the text, as the dropdown input does', async () => {
+    h.toolInput = { locations: [{ store: 'Clifton', code: '653' }] };
+
+    const body = await (await POST(ask('shelf 653 in Clifton'))).json();
+
+    expect(body.filters.locations).toEqual([
+      { store: 'Clifton', code: '=653A=' },
+      { store: 'Clifton', code: '=653B=' },
+    ]);
+  });
+
+  it('keeps an exact code exactly, without widening it', async () => {
+    h.toolInput = { locations: [{ store: 'Clifton', code: '=653A=' }] };
+
+    const body = await (await POST(ask('shelf =653A= in Clifton'))).json();
+
+    expect(body.filters.locations).toEqual([{ store: 'Clifton', code: '=653A=' }]);
+  });
+
+  it('matches the store however the user capitalised it', async () => {
+    h.toolInput = { locations: [{ store: 'clifton', code: '663A' }] };
+
+    const body = await (await POST(ask('shelf 663A in clifton'))).json();
+
+    expect(body.filters.locations).toEqual([{ store: 'Clifton', code: '"663A"' }]);
+  });
+
+  /**
+   * Dropped rather than passed through. A code that matches nothing would filter
+   * the table to empty, which reads as "we have none" instead of "that shelf does
+   * not exist".
+   */
+  it('drops a shelf filter that matches nothing', async () => {
+    h.toolInput = { brands: 'Michelin', locations: [{ store: 'Clifton', code: 'ZZZZ' }] };
+
+    const body = await (await POST(ask('shelf ZZZZ in Clifton'))).json();
+
+    expect(body.filters.locations).toBeUndefined();
+    expect(body.filters.brands).toBe('Michelin');
+  });
+
+  it('drops it when the store is not one of ours', async () => {
+    h.toolInput = { locations: [{ store: 'Nowhere', code: '653A' }] };
+
+    const body = await (await POST(ask('shelf 653A in Nowhere'))).json();
+
+    expect(body.filters.locations).toBeUndefined();
   });
 });

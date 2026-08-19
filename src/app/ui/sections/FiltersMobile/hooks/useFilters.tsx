@@ -4,6 +4,8 @@ import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
+import { parseLocationPairs } from '@/app/utils/filterUtils';
+
 // Global cache to avoid duplicate simultaneous requests from different hook instances
 const brandsRequestCache: Record<string, Promise<string[]> | undefined> = {};
 
@@ -25,6 +27,16 @@ interface CheckboxInputs {
   kindSale: string[];
   brands: string[];
   stores: string[];
+  /**
+   * Shelf codes, held as **already-encoded `store~code` pairs**.
+   *
+   * A pair rather than a code because seven codes exist in more than one store.
+   * Encoded rather than structured so this stays a `string[]` like every other
+   * entry here — `isChecked`, `setOrDelete` and the `join(',')` that writes the
+   * URL all keep working untouched, and the URL format is exactly what
+   * `parseLocationPairs` reads back.
+   */
+  locations: string[];
   local: string[];
 }
 
@@ -44,9 +56,13 @@ export const useFilters = (
 
   const [availableBrands, setAvailableBrands] = useState<string[]>([]);
   const [availableStores, setAvailableStores] = useState<string[]>([]);
+  const [availableLocations, setAvailableLocations] = useState<
+    { store: string; code: string }[]
+  >([]);
   const [isLoadingRanges, setIsLoadingRanges] = useState(true);
   const [isLoadingBrands, setIsLoadingBrands] = useState(true);
   const [isLoadingStores, setIsLoadingStores] = useState(options?.enableStoreFilter ?? false);
+  const [isLoadingLocations, setIsLoadingLocations] = useState(false);
 
   // Initialize range inputs from URL parameters or defaults
   const [rangeInputs, setRangeInputs] = useState<RangeInputs>({
@@ -71,6 +87,7 @@ export const useFilters = (
     kindSale: searchParams.get('kindSale')?.split(',').filter(Boolean) || [],
     brands: searchParams.get('brands')?.split(',').filter(Boolean) || [],
     stores: searchParams.get('stores')?.split(',').filter(Boolean) || [],
+    locations: searchParams.get('locations')?.split(',').filter(Boolean) || [],
     local: searchParams.get('local')?.split(',').filter(Boolean) || [],
   });
 
@@ -225,6 +242,69 @@ export const useFilters = (
     void fetchStores();
   }, [apiBasePath, options?.enableStoreFilter]);
 
+  /**
+   * Shelf codes, scoped to the stores currently selected.
+   *
+   * Unlike the stores effect above this one keys on the **selection**, not on
+   * mount: unscoped the catalog holds 675 codes, which is not a menu, and a code
+   * means nothing without its store. With nothing selected we ask for nothing —
+   * the control is disabled in that state.
+   *
+   * It also prunes: deselecting a store must drop the codes that belonged only to
+   * it, or the filter goes on matching a shelf the user can no longer see. Since
+   * this writes state derived from its own dependency, it returns `prev`
+   * untouched when nothing was dropped — the same guard the stores effect uses to
+   * avoid a render loop.
+   */
+  const selectedStoresKey = checkboxInputs.stores.join(',');
+
+  useEffect(() => {
+    if (!options?.enableStoreFilter) return;
+
+    const stores = selectedStoresKey.split(',').filter(Boolean);
+
+    if (stores.length === 0) {
+      setAvailableLocations([]);
+      setIsLoadingLocations(false);
+      setCheckboxInputs(prev => (prev.locations.length ? { ...prev, locations: [] } : prev));
+      return;
+    }
+
+    // Drop selections whose store is gone before the request resolves, so the
+    // table never sits filtered by a shelf the user can no longer choose.
+    setCheckboxInputs(prev => {
+      if (!prev.locations.length) return prev;
+      const kept = prev.locations.filter(entry => {
+        const [pair] = parseLocationPairs(entry);
+        return pair ? stores.includes(pair.store) : false;
+      });
+      return kept.length === prev.locations.length ? prev : { ...prev, locations: kept };
+    });
+
+    let cancelled = false;
+
+    const fetchLocations = async () => {
+      try {
+        setIsLoadingLocations(true);
+        const query = new URLSearchParams({ stores: stores.join(',') });
+        const res = await fetch(`${apiBasePath}/locations?${query.toString()}`);
+        if (!res.ok || cancelled) return;
+        const data = (await res.json()) as { store: string; code: string }[];
+        if (!cancelled) setAvailableLocations(data);
+      } catch (err) {
+        console.error('Failed to fetch locations', err);
+      } finally {
+        if (!cancelled) setIsLoadingLocations(false);
+      }
+    };
+
+    void fetchLocations();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [apiBasePath, options?.enableStoreFilter, selectedStoresKey]);
+
   // Cargar las marcas iniciales y cuando cambien los filtros
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -263,6 +343,7 @@ export const useFilters = (
       kindSale: searchParams.get('kindSale')?.split(',').filter(Boolean) || [],
       brands: searchParams.get('brands')?.split(',').filter(Boolean) || [],
       stores: searchParams.get('stores')?.split(',').filter(Boolean) || [],
+      locations: searchParams.get('locations')?.split(',').filter(Boolean) || [],
       local: searchParams.get('local')?.split(',').filter(Boolean) || [],
     } as CheckboxInputs;
 
@@ -335,6 +416,11 @@ export const useFilters = (
     setOrDelete('kindSale', checkboxInputs.kindSale.length > 0, checkboxInputs.kindSale.join(','));
     setOrDelete('brands', checkboxInputs.brands.length > 0, checkboxInputs.brands.join(','));
     setOrDelete('stores', checkboxInputs.stores.length > 0, checkboxInputs.stores.join(','));
+    setOrDelete(
+      'locations',
+      checkboxInputs.locations.length > 0,
+      checkboxInputs.locations.join(',')
+    );
     setOrDelete('local', checkboxInputs.local.length > 0, checkboxInputs.local.join(','));
 
     // Only reset pagination when filters actually changed
@@ -366,6 +452,7 @@ export const useFilters = (
     checkboxInputs.kindSale.join(','),
     checkboxInputs.brands.join(','),
     checkboxInputs.stores.join(','),
+    checkboxInputs.locations.join(','),
     checkboxInputs.local.join(','),
     redirectBasePath,
     router,
@@ -444,6 +531,7 @@ export const useFilters = (
       kindSale: [],
       brands: [],
       stores: [],
+      locations: [],
       local: [],
     };
     setCheckboxInputs(defaultCheckboxInputs);
@@ -465,6 +553,7 @@ export const useFilters = (
     params.delete('kindSale');
     params.delete('brands');
     params.delete('stores');
+    params.delete('locations');
     params.delete('local');
 
     // Also remove tire size parameters to ensure a full reset
@@ -495,6 +584,8 @@ export const useFilters = (
   return {
     availableBrands,
     availableStores,
+    availableLocations,
+    isLoadingLocations,
     rangeInputs,
     rangeBounds,
     checkboxInputs,

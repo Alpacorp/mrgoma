@@ -98,7 +98,8 @@ function ExpandedRow({ row }: { row: DocumentRecord }) {
 
   const fields = [
     { label: 'Price', value: price },
-    { label: 'Location', value: row.VaultName },
+    { label: 'Store', value: row.VaultName },
+    { label: 'Location', value: row.Location },
     { label: 'Model', value: row.Model2 },
     { label: 'Load', value: row.LoadIndexId },
     { label: 'Patched', value: row.Patched },
@@ -128,7 +129,10 @@ const columns: ColumnDef<DocumentRecord>[] = [
   },
   { accessorKey: 'Code', header: 'Tire Code' },
   { accessorKey: 'Brand', header: 'Brand' },
-  { accessorKey: 'VaultName', header: 'Location', meta: { className: 'hidden md:table-cell' } },
+  { accessorKey: 'VaultName', header: 'Store', meta: { className: 'hidden md:table-cell' } },
+  // The shelf code. Already present on every row — the list query is `SELECT *`
+  // and the recordset is cast, not projected — it simply was never rendered.
+  { accessorKey: 'Location', header: 'Location', meta: { className: 'hidden md:table-cell' } },
   { accessorKey: 'Model2', header: 'Model', meta: { className: 'hidden md:table-cell' } },
   { accessorKey: 'Height', header: 'Width', meta: { className: 'hidden md:table-cell' } },
   { accessorKey: 'Width', header: 'Sidewall', meta: { className: 'hidden md:table-cell' } },

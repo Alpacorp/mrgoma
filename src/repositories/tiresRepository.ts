@@ -73,6 +73,23 @@ function buildFiltersClause(filters: TireFilters): { clause: string; params: Sql
     );
   }
 
+  /**
+   * Store-and-code pairs, not `Location IN (…)`.
+   *
+   * The neighbouring `stores` branch above is the obvious model and the wrong
+   * one here: `IN`, `stkCesar`, `+690A+`, `+692A+`, `+706D+`, `[183B]` and
+   * `+IN+` each exist in more than one store, so a flat match would return
+   * another store's shelf of the same name without saying so.
+   */
+  if (filters.locations && filters.locations.length > 0) {
+    const pairs = filters.locations.map((pair, i) => {
+      params.push({ name: `locStore${i}`, type: VarChar, value: pair.store });
+      params.push({ name: `locCode${i}`, type: VarChar, value: pair.code });
+      return `(VaultName = @locStore${i} AND Location = @locCode${i})`;
+    });
+    clause += ` AND (${pairs.join(' OR ')})`;
+  }
+
   if (filters.kindSale && filters.kindSale.length > 0) {
     const normalized = filters.kindSale.map(k => k.toLowerCase());
     if (normalized.includes('yes') && !normalized.includes('no')) {
@@ -150,6 +167,8 @@ export type DocumentRecord = {
   Tread?: string;
   RealSize?: string;
   VaultName?: string;
+  /** The shelf code within a store — NOT a geographic location. See `026`. */
+  Location?: string;
   KindSale?: string;
   KindSaleId?: number;
   Height?: string | number;
@@ -172,6 +191,11 @@ export type TireFilters = {
   sidewall?: string; // Relación de aspecto (s)
   diameter?: string; // Diámetro (d)
   stores?: string[];
+  /**
+   * Shelf codes, each bound to the store it belongs to. A bare code would be
+   * ambiguous — seven of them exist in more than one store.
+   */
+  locations?: { store: string; code: string }[];
   kindSale?: string[];
   local?: string[];
   tireCode?: string;
@@ -332,6 +356,52 @@ export async function fetchDashboardStores(): Promise<string[]> {
     ORDER BY VaultName DESC`;
   const result = await logQuery('tires.stores', () => pool.request().query(query));
   return result.recordset.map(row => row.VaultName as string);
+}
+
+/**
+ * The shelf codes held by the given stores, each paired with its store.
+ *
+ * **Pairs, not codes.** A code is only unique inside a store: `IN`, `stkCesar`,
+ * `+690A+`, `+692A+`, `+706D+`, `[183B]` and `+IN+` each exist in more than one.
+ * Returning bare codes would let the caller build a filter that quietly matches
+ * another store's shelf.
+ *
+ * With no store there is nothing to ask for, so this returns `[]` **without
+ * querying** — the filter that consumes it is disabled in that state anyway, and
+ * the unscoped list would be 675 values.
+ *
+ * The code is returned exactly as stored, not trimmed. No value in the catalog
+ * has edge whitespace today, and trimming here while `buildFiltersClause`
+ * compares with `=` is how an option would stop matching the rows it names.
+ */
+export async function fetchDashboardLocations(
+  stores: string[]
+): Promise<{ store: string; code: string }[]> {
+  const wanted = Array.from(new Set(stores.map(store => store.trim()).filter(Boolean)));
+  if (wanted.length === 0) return [];
+
+  const pool = await getPool();
+  const request = pool.request();
+  const storeParams = wanted.map((store, i) => {
+    request.input(`store${i}`, VarChar, store);
+    return `@store${i}`;
+  });
+
+  const query = `SELECT DISTINCT VaultName, Location
+    FROM dbo.View_Tires
+    WHERE Trash = 'false'
+      AND VaultName IN (${storeParams.join(',')})
+      AND Location IS NOT NULL AND LTRIM(RTRIM(Location)) <> ''
+    ORDER BY VaultName, Location`;
+
+  const result = await logQuery('tires.locations', () => request.query(query), {
+    stores: wanted.length,
+  });
+
+  return result.recordset.map(row => ({
+    store: row.VaultName as string,
+    code: row.Location as string,
+  }));
 }
 
 export async function fetchTireById(tireId: string): Promise<DocumentRecord | null> {
