@@ -3,8 +3,9 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 
 import { guides } from '@/app/(shop)/guides/guidesConfig';
+import { JsonLd } from '@/app/ui/components';
 import { INVENTORY_NETWORK } from '@/app/utils/brandClaims';
-import { guidesMetadata } from '@/app/utils/seo';
+import { buildBreadcrumbJsonLd, buildPageTypeJsonLd, guidesMetadata } from '@/app/utils/seo';
 
 export const metadata: Metadata = guidesMetadata();
 
@@ -14,122 +15,137 @@ export default function GuidesPage() {
   const maintenanceGuides = guides.filter(g => g.category === 'maintenance');
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white">
-      {/* Hero */}
-      <section className="relative border-b border-white/8 overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-[0.03] pointer-events-none"
-          style={{
-            backgroundImage:
-              'linear-gradient(#9dfb40 1px, transparent 1px), linear-gradient(90deg, #9dfb40 1px, transparent 1px)',
-            backgroundSize: '60px 60px',
-          }}
-        />
-        <div className="relative max-w-6xl mx-auto px-6 lg:px-8 pt-20 pb-16">
-          <div className="flex items-center gap-3 mb-6">
-            <span className="w-8 h-px bg-[#9dfb40]" />
-            <span className="text-[#9dfb40] text-xs font-bold tracking-[0.2em] uppercase">
-              Expert Advice
-            </span>
+    <>
+      <JsonLd
+        data={[
+          buildPageTypeJsonLd({
+            type: 'CollectionPage',
+            path: '/guides',
+            name: 'Tire Guides',
+          }),
+          buildBreadcrumbJsonLd([
+            { name: 'Home', url: '/' },
+            { name: 'Guides', url: '/guides' },
+          ]),
+        ]}
+      />
+      <main className="min-h-screen bg-[#0a0a0a] text-white">
+        {/* Hero */}
+        <section className="relative border-b border-white/8 overflow-hidden">
+          <div
+            className="absolute inset-0 opacity-[0.03] pointer-events-none"
+            style={{
+              backgroundImage:
+                'linear-gradient(#9dfb40 1px, transparent 1px), linear-gradient(90deg, #9dfb40 1px, transparent 1px)',
+              backgroundSize: '60px 60px',
+            }}
+          />
+          <div className="relative max-w-6xl mx-auto px-6 lg:px-8 pt-20 pb-16">
+            <div className="flex items-center gap-3 mb-6">
+              <span className="w-8 h-px bg-[#9dfb40]" />
+              <span className="text-[#9dfb40] text-xs font-bold tracking-[0.2em] uppercase">
+                Expert Advice
+              </span>
+            </div>
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-none mb-6">
+              Tire Guides <span className="block text-[#9dfb40]">& Tips</span>
+            </h1>
+            <p className="text-gray-400 text-lg max-w-xl leading-relaxed">
+              Straight answers from ASE-certified technicians. No fluff — just what you need to know
+              about buying, maintaining, and getting the most out of your tires.
+            </p>
           </div>
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-none mb-6">
-            Tire Guides <span className="block text-[#9dfb40]">& Tips</span>
-          </h1>
-          <p className="text-gray-400 text-lg max-w-xl leading-relaxed">
-            Straight answers from ASE-certified technicians. No fluff — just what you need to know
-            about buying, maintaining, and getting the most out of your tires.
-          </p>
-        </div>
-      </section>
+        </section>
 
-      {/* Guides sections */}
-      <div className="bg-[#111] max-w-none">
-        <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16 space-y-20">
-          {/* Buying guides */}
-          {buyingGuides.length > 0 && (
-            <section>
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-6 h-px bg-[#9dfb40]" />
-                <h2 className="text-2xl font-black tracking-tight text-white">Buying Guides</h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {buyingGuides.map(guide => (
-                  <GuideCard key={guide.slug} guide={guide} />
-                ))}
-              </div>
-            </section>
-          )}
+        {/* Guides sections */}
+        <div className="bg-[#111] max-w-none">
+          <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16 space-y-20">
+            {/* Buying guides */}
+            {buyingGuides.length > 0 && (
+              <section>
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-6 h-px bg-[#9dfb40]" />
+                  <h2 className="text-2xl font-black tracking-tight text-white">Buying Guides</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {buyingGuides.map(guide => (
+                    <GuideCard key={guide.slug} guide={guide} />
+                  ))}
+                </div>
+              </section>
+            )}
 
-          {/* Rideshare guides */}
-          {rideshareGuides.length > 0 && (
-            <section>
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-6 h-px bg-amber-400" />
-                <h2 className="text-2xl font-black tracking-tight text-white">
-                  Rideshare Driver Guides
-                </h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {rideshareGuides.map(guide => (
-                  <GuideCard key={guide.slug} guide={guide} />
-                ))}
-              </div>
-            </section>
-          )}
+            {/* Rideshare guides */}
+            {rideshareGuides.length > 0 && (
+              <section>
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-6 h-px bg-amber-400" />
+                  <h2 className="text-2xl font-black tracking-tight text-white">
+                    Rideshare Driver Guides
+                  </h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {rideshareGuides.map(guide => (
+                    <GuideCard key={guide.slug} guide={guide} />
+                  ))}
+                </div>
+              </section>
+            )}
 
-          {/* Maintenance guides */}
-          {maintenanceGuides.length > 0 && (
-            <section>
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-6 h-px bg-blue-400" />
-                <h2 className="text-2xl font-black tracking-tight text-white">
-                  Maintenance Guides
-                </h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {maintenanceGuides.map(guide => (
-                  <GuideCard key={guide.slug} guide={guide} />
-                ))}
-              </div>
-            </section>
-          )}
-        </div>
-      </div>
-
-      {/* CTA */}
-      <section className="bg-[#9dfb40] relative overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-[0.04] pointer-events-none"
-          style={{
-            backgroundImage:
-              'repeating-linear-gradient(45deg, #000 0, #000 1px, transparent 0, transparent 50%)',
-            backgroundSize: '12px 12px',
-          }}
-        />
-        <div className="relative max-w-6xl mx-auto px-6 lg:px-8 py-16 flex flex-col items-center text-center gap-6">
-          <h2 className="text-black text-3xl sm:text-4xl font-black tracking-tight">
-            Ready to find your tire?
-          </h2>
-          <p className="text-black/60 max-w-md">
-            Browse {INVENTORY_NETWORK} or contact our ASE-certified team at any of them.
-          </p>
-          <div className="flex flex-wrap gap-4 justify-center">
-            <Link
-              href="/tires"
-              className="bg-black text-[#9dfb40] font-bold px-10 py-4 rounded-full hover:bg-zinc-900 transition-colors duration-200"
-            >
-              Shop Tires
-            </Link>
-            <Link
-              href="/contact"
-              className="border-2 border-black text-black font-bold px-10 py-4 rounded-full hover:bg-black hover:text-[#9dfb40] transition-colors duration-200"
-            >
-              Contact Us
-            </Link>
+            {/* Maintenance guides */}
+            {maintenanceGuides.length > 0 && (
+              <section>
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-6 h-px bg-blue-400" />
+                  <h2 className="text-2xl font-black tracking-tight text-white">
+                    Maintenance Guides
+                  </h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {maintenanceGuides.map(guide => (
+                    <GuideCard key={guide.slug} guide={guide} />
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
         </div>
-      </section>
-    </main>
+
+        {/* CTA */}
+        <section className="bg-[#9dfb40] relative overflow-hidden">
+          <div
+            className="absolute inset-0 opacity-[0.04] pointer-events-none"
+            style={{
+              backgroundImage:
+                'repeating-linear-gradient(45deg, #000 0, #000 1px, transparent 0, transparent 50%)',
+              backgroundSize: '12px 12px',
+            }}
+          />
+          <div className="relative max-w-6xl mx-auto px-6 lg:px-8 py-16 flex flex-col items-center text-center gap-6">
+            <h2 className="text-black text-3xl sm:text-4xl font-black tracking-tight">
+              Ready to find your tire?
+            </h2>
+            <p className="text-black/60 max-w-md">
+              Browse {INVENTORY_NETWORK} or contact our ASE-certified team at any of them.
+            </p>
+            <div className="flex flex-wrap gap-4 justify-center">
+              <Link
+                href="/tires"
+                className="bg-black text-[#9dfb40] font-bold px-10 py-4 rounded-full hover:bg-zinc-900 transition-colors duration-200"
+              >
+                Shop Tires
+              </Link>
+              <Link
+                href="/contact"
+                className="border-2 border-black text-black font-bold px-10 py-4 rounded-full hover:bg-black hover:text-[#9dfb40] transition-colors duration-200"
+              >
+                Contact Us
+              </Link>
+            </div>
+          </div>
+        </section>
+      </main>
+    </>
   );
 }
 

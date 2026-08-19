@@ -6,8 +6,9 @@ import Link from 'next/link';
 import { preload } from 'react-dom';
 
 import { guides } from '@/app/(shop)/guides/guidesConfig';
+import { locationsConfig } from '@/app/(shop)/locations/locationsConfig';
 import { servicesConfig } from '@/app/(shop)/services/servicesConfig';
-import { HeroVideo, TrustStrip } from '@/app/ui/components';
+import { HeroVideo, JsonLd, TrustStrip } from '@/app/ui/components';
 import { InfoCardsSection, PromoBanner, SearchContainer } from '@/app/ui/sections';
 import { LocationsSlider } from '@/app/ui/sections/LocationsSlider/LocationsSlider';
 import { promoBannerConfig } from '@/app/ui/sections/PromoBanner/config/promoBanner';
@@ -23,6 +24,7 @@ import {
   SHIPPING,
   WARRANTY,
 } from '@/app/utils/brandClaims';
+import { buildItemListJsonLd } from '@/app/utils/seo';
 
 const SERVICE_IMAGES: Record<string, string> = {
   tire: '/assets/images/bg-service-card.jpg',
@@ -178,270 +180,293 @@ const Home: FC = () => {
   preload('/assets/images/banner-hero.webp', { as: 'image', fetchPriority: 'high' });
 
   return (
-    <main className="bg-white">
-      {/* ── Hero ── */}
-      <section aria-label="Tire search" className="px-4 sm:px-6 lg:px-8 relative">
-        <div className="absolute inset-0 overflow-hidden">
-          <HeroVideo
-            className="absolute inset-0 h-full w-full object-cover"
-            src="/assets/images/banner-hero.mp4"
-            poster="/assets/images/banner-hero.webp"
-          />
-        </div>
-        <div className="relative pt-12 sm:pt-16">
-          {/* The page's single <h1>. Server-rendered on purpose: it is what
+    <>
+      {/*
+       * The home page shows all seven stores and declared none of them. This
+       * names each by its own URL and repeats nothing: the phone numbers,
+       * addresses and coordinates live on the store pages, and copying them
+       * here would be one more place for them to drift.
+       */}
+      <JsonLd
+        data={buildItemListJsonLd({
+          url: '/locations',
+          name: 'MrGoma Tires locations',
+          count: locationsConfig.length,
+          items: locationsConfig.map(store => ({
+            name: `MrGoma Tires — ${store.name}`,
+            url: `/locations/${store.slug}`,
+          })),
+        })}
+      />
+      <main className="bg-white">
+        {/* ── Hero ── */}
+        <section aria-label="Tire search" className="px-4 sm:px-6 lg:px-8 relative">
+          <div className="absolute inset-0 overflow-hidden">
+            <HeroVideo
+              className="absolute inset-0 h-full w-full object-cover"
+              src="/assets/images/banner-hero.mp4"
+              poster="/assets/images/banner-hero.webp"
+            />
+          </div>
+          <div className="relative pt-12 sm:pt-16">
+            {/* The page's single <h1>. Server-rendered on purpose: it is what
               Google reads to build the result's title link, so it must be in the
               raw HTML rather than inside the client search component (which
               paints at opacity-0 until hydration). Tires-only by decision — the
               wider service range lives on /services and would dilute our
               strongest query. */}
-          <h1 className="text-center text-3xl sm:text-5xl font-black tracking-tight text-white uppercase [text-shadow:_0px_4px_10px_rgb(0_0_0_/_0.6)]">
-            New &amp; Used Tires in <span className="text-[#9dfb40]">Miami &amp; Orlando</span>
-          </h1>
+            <h1 className="text-center text-3xl sm:text-5xl font-black tracking-tight text-white uppercase [text-shadow:_0px_4px_10px_rgb(0_0_0_/_0.6)]">
+              New &amp; Used Tires in <span className="text-[#9dfb40]">Miami &amp; Orlando</span>
+            </h1>
 
-          {/* The claims Google turns into the snippet. Plain server-rendered
+            {/* The claims Google turns into the snippet. Plain server-rendered
               text — no image, no extra font, no client JS. */}
-          <TrustStrip
-            items={HOME_TRUST_CLAIMS}
-            variant="onMedia"
-            className="justify-center mt-5 sm:mt-6"
-          />
+            <TrustStrip
+              items={HOME_TRUST_CLAIMS}
+              variant="onMedia"
+              className="justify-center mt-5 sm:mt-6"
+            />
 
-          <SearchContainer />
-        </div>
-      </section>
+            <SearchContainer />
+          </div>
+        </section>
 
-      {/* ── Stats strip ── */}
-      <section className="bg-[#0a0a0a]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-          {/* The differentiators as a full sentence, not just badge words —
+        {/* ── Stats strip ── */}
+        <section className="bg-[#0a0a0a]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+            {/* The differentiators as a full sentence, not just badge words —
               Google needs prose it can lift into a description. */}
-          <p className="text-gray-300 text-base sm:text-lg leading-relaxed max-w-3xl mx-auto text-center mb-10 sm:mb-14">
-            {SELECTION_CLAIM}, every one backed by a {WARRANTY.toLowerCase()}. Shop{' '}
-            {INVENTORY_NETWORK}, with {SHIPPING.toLowerCase()} and expert installation across{' '}
-            {LOCATIONS_LABEL_LONG}. {FAMILY_OWNED} since {FOUNDED_YEAR}.
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 sm:gap-0 sm:divide-x sm:divide-white/10">
-            {STATS.map(s => (
-              <div key={s.n} className="text-center sm:px-8">
-                <p className="text-4xl sm:text-5xl font-black text-[#9dfb40] leading-none">{s.n}</p>
-                <p className="text-gray-400 text-sm mt-2 leading-snug">{s.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Services ── */}
-      <section id="services" className="bg-gray-50 py-16 sm:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <PromoBanner content={promoBannerConfig.home} className="mb-10" storageKey="home" />
-          <div className="mb-10">
-            <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">
-              What we offer
+            <p className="text-gray-300 text-base sm:text-lg leading-relaxed max-w-3xl mx-auto text-center mb-10 sm:mb-14">
+              {SELECTION_CLAIM}, every one backed by a {WARRANTY.toLowerCase()}. Shop{' '}
+              {INVENTORY_NETWORK}, with {SHIPPING.toLowerCase()} and expert installation across{' '}
+              {LOCATIONS_LABEL_LONG}. {FAMILY_OWNED} since {FOUNDED_YEAR}.
             </p>
-            <h2 className="text-3xl sm:text-4xl font-black text-gray-900">Our Services</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {servicesConfig.map(service => {
-              const img = SERVICE_IMAGES[service.icon];
-              return (
-                <Link
-                  key={service.slug}
-                  href={`/services/${service.slug}`}
-                  className="group relative isolate border border-white/10 rounded-2xl p-7 hover:border-[#9dfb40]/50 transition-all duration-300 flex flex-col gap-5 overflow-hidden bg-[#0a0a0a] min-h-[260px]"
-                >
-                  {img && (
-                    <>
-                      <Image
-                        src={img}
-                        alt=""
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                        className="object-cover -z-10 opacity-70 transform-gpu transition-[scale,opacity] duration-500 ease-out group-hover:opacity-90 group-hover:scale-105"
-                      />
-                      <div
-                        className="absolute inset-0 -z-10 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/70 to-[#0a0a0a]/20"
-                        aria-hidden="true"
-                      />
-                    </>
-                  )}
-                  <div className="text-[#9dfb40] shrink-0">
-                    {SERVICE_ICONS[service.icon] ?? SERVICE_ICONS.tire}
-                  </div>
-                  <div className="flex flex-col gap-2 flex-1">
-                    <h3 className="text-base font-bold text-white leading-snug group-hover:text-[#9dfb40] transition-colors duration-200 drop-shadow-md">
-                      {service.title}
-                    </h3>
-                    <p className="text-gray-300 text-sm leading-relaxed drop-shadow">
-                      {service.shortDescription}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-[#9dfb40] mt-auto">
-                    Learn more
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                      className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200"
-                      aria-hidden="true"
-                    >
-                      <line x1="7" y1="17" x2="17" y2="7" />
-                      <polyline points="7 7 17 7 17 17" />
-                    </svg>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-          <div className="mt-10 text-center">
-            <Link
-              href="/services"
-              className="inline-flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-gray-900 transition-colors"
-            >
-              See all services & pricing →
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Why MrGoma ── */}
-      <section id="about" className="bg-[#0a0a0a]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-6">
-          <p className="text-[#9dfb40] text-xs font-bold tracking-[0.2em] uppercase mb-2">
-            The MrGoma difference
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-black text-white">Why choose us</h2>
-        </div>
-        <InfoCardsSection className="bg-[#0a0a0a] pb-20" />
-      </section>
-
-      {/* ── Featured Guides ── */}
-      <section className="bg-white py-16 sm:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-end justify-between mb-10">
-            <div>
-              <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">
-                Learn & save
-              </p>
-              <h2 className="text-3xl sm:text-4xl font-black text-gray-900">From our guides</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 sm:gap-0 sm:divide-x sm:divide-white/10">
+              {STATS.map(s => (
+                <div key={s.n} className="text-center sm:px-8">
+                  <p className="text-4xl sm:text-5xl font-black text-[#9dfb40] leading-none">
+                    {s.n}
+                  </p>
+                  <p className="text-gray-400 text-sm mt-2 leading-snug">{s.label}</p>
+                </div>
+              ))}
             </div>
-            <Link
-              href="/guides"
-              className="hidden sm:inline-flex items-center text-sm font-bold text-gray-400 hover:text-green-600 transition-colors"
-            >
-              All guides →
-            </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {FEATURED_GUIDES.map(guide => (
+        </section>
+
+        {/* ── Services ── */}
+        <section id="services" className="bg-gray-50 py-16 sm:py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <PromoBanner content={promoBannerConfig.home} className="mb-10" storageKey="home" />
+            <div className="mb-10">
+              <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">
+                What we offer
+              </p>
+              <h2 className="text-3xl sm:text-4xl font-black text-gray-900">Our Services</h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {servicesConfig.map(service => {
+                const img = SERVICE_IMAGES[service.icon];
+                return (
+                  <Link
+                    key={service.slug}
+                    href={`/services/${service.slug}`}
+                    className="group relative isolate border border-white/10 rounded-2xl p-7 hover:border-[#9dfb40]/50 transition-all duration-300 flex flex-col gap-5 overflow-hidden bg-[#0a0a0a] min-h-[260px]"
+                  >
+                    {img && (
+                      <>
+                        <Image
+                          src={img}
+                          alt=""
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                          className="object-cover -z-10 opacity-70 transform-gpu transition-[scale,opacity] duration-500 ease-out group-hover:opacity-90 group-hover:scale-105"
+                        />
+                        <div
+                          className="absolute inset-0 -z-10 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/70 to-[#0a0a0a]/20"
+                          aria-hidden="true"
+                        />
+                      </>
+                    )}
+                    <div className="text-[#9dfb40] shrink-0">
+                      {SERVICE_ICONS[service.icon] ?? SERVICE_ICONS.tire}
+                    </div>
+                    <div className="flex flex-col gap-2 flex-1">
+                      <h3 className="text-base font-bold text-white leading-snug group-hover:text-[#9dfb40] transition-colors duration-200 drop-shadow-md">
+                        {service.title}
+                      </h3>
+                      <p className="text-gray-300 text-sm leading-relaxed drop-shadow">
+                        {service.shortDescription}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-xs font-semibold text-[#9dfb40] mt-auto">
+                      Learn more
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200"
+                        aria-hidden="true"
+                      >
+                        <line x1="7" y1="17" x2="17" y2="7" />
+                        <polyline points="7 7 17 7 17 17" />
+                      </svg>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+            <div className="mt-10 text-center">
               <Link
-                key={guide.slug}
-                href={`/guides/${guide.slug}`}
-                className="group block rounded-xl border border-gray-200 p-6 hover:border-green-500 hover:shadow-md transition-all duration-200"
+                href="/services"
+                className="inline-flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-gray-900 transition-colors"
               >
-                <p className="text-green-600 text-xs font-bold tracking-widest uppercase mb-3">
-                  {guide.readTime}
+                See all services & pricing →
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Why MrGoma ── */}
+        <section id="about" className="bg-[#0a0a0a]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-6">
+            <p className="text-[#9dfb40] text-xs font-bold tracking-[0.2em] uppercase mb-2">
+              The MrGoma difference
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-black text-white">Why choose us</h2>
+          </div>
+          <InfoCardsSection className="bg-[#0a0a0a] pb-20" />
+        </section>
+
+        {/* ── Featured Guides ── */}
+        <section className="bg-white py-16 sm:py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-end justify-between mb-10">
+              <div>
+                <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">
+                  Learn & save
                 </p>
-                <h3 className="text-base font-bold text-gray-900 mb-2 group-hover:text-green-700 transition-colors leading-snug">
-                  {/* A card, so the card name — not the heading. */}
-                  {guide.cardName}
+                <h2 className="text-3xl sm:text-4xl font-black text-gray-900">From our guides</h2>
+              </div>
+              <Link
+                href="/guides"
+                className="hidden sm:inline-flex items-center text-sm font-bold text-gray-400 hover:text-green-600 transition-colors"
+              >
+                All guides →
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {FEATURED_GUIDES.map(guide => (
+                <Link
+                  key={guide.slug}
+                  href={`/guides/${guide.slug}`}
+                  className="group block rounded-xl border border-gray-200 p-6 hover:border-green-500 hover:shadow-md transition-all duration-200"
+                >
+                  <p className="text-green-600 text-xs font-bold tracking-widest uppercase mb-3">
+                    {guide.readTime}
+                  </p>
+                  <h3 className="text-base font-bold text-gray-900 mb-2 group-hover:text-green-700 transition-colors leading-snug">
+                    {/* A card, so the card name — not the heading. */}
+                    {guide.cardName}
+                  </h3>
+                  <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">
+                    {guide.intro}
+                  </p>
+                  <span className="mt-4 inline-flex items-center text-green-600 text-sm font-bold">
+                    Read guide →
+                  </span>
+                </Link>
+              ))}
+            </div>
+            <div className="mt-8 text-center sm:hidden">
+              <Link
+                href="/guides"
+                className="text-sm font-bold text-gray-500 hover:text-green-600 transition-colors"
+              >
+                See all guides →
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Shop by Category ── */}
+        <section className="bg-[#0a0a0a] py-16 sm:py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-10">
+              <p className="text-[#9dfb40] text-xs font-bold tracking-[0.2em] uppercase mb-2">
+                Ready to shop?
+              </p>
+              <h2 className="text-3xl sm:text-4xl font-black text-white">Find your tire</h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <Link
+                href="/tires/used"
+                className="group relative rounded-2xl border border-amber-400/20 bg-amber-400/5 p-8 hover:border-amber-400/50 hover:bg-amber-400/10 transition-all duration-200"
+              >
+                <span className="text-amber-400 text-xs font-bold tracking-widest uppercase block mb-3">
+                  Used Tires
+                </span>
+                <h3 className="text-2xl font-black text-white mb-2 group-hover:text-amber-400 transition-colors">
+                  Quality Pre-Owned
                 </h3>
-                <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">{guide.intro}</p>
-                <span className="mt-4 inline-flex items-center text-green-600 text-sm font-bold">
-                  Read guide →
+                <p className="text-gray-500 text-sm leading-relaxed">
+                  Inspected by ASE-certified techs. 30-day warranty included.
+                </p>
+                <span className="mt-6 inline-flex items-center text-amber-400 text-sm font-bold gap-1">
+                  Shop Used →
                 </span>
               </Link>
-            ))}
+              <Link
+                href="/tires/new"
+                className="group relative rounded-2xl border border-green-500/20 bg-green-500/5 p-8 hover:border-green-500/50 hover:bg-green-500/10 transition-all duration-200"
+              >
+                <span className="text-green-400 text-xs font-bold tracking-widest uppercase block mb-3">
+                  New Tires
+                </span>
+                <h3 className="text-2xl font-black text-white mb-2 group-hover:text-green-400 transition-colors">
+                  Brand New Stock
+                </h3>
+                <p className="text-gray-500 text-sm leading-relaxed">
+                  Full manufacturer warranty. Free shipping nationwide.
+                </p>
+                <span className="mt-6 inline-flex items-center text-green-400 text-sm font-bold gap-1">
+                  Shop New →
+                </span>
+              </Link>
+              <Link
+                href="/tires"
+                className="group relative rounded-2xl border border-[#9dfb40]/20 bg-[#9dfb40]/5 p-8 hover:border-[#9dfb40]/50 hover:bg-[#9dfb40]/10 transition-all duration-200"
+              >
+                <span className="text-[#9dfb40] text-xs font-bold tracking-widest uppercase block mb-3">
+                  All Tires
+                </span>
+                <h3 className="text-2xl font-black text-white mb-2 group-hover:text-[#9dfb40] transition-colors">
+                  Browse Catalog
+                </h3>
+                <p className="text-gray-500 text-sm leading-relaxed">
+                  15,000+ tires across 7 Miami & Orlando locations.
+                </p>
+                <span className="mt-6 inline-flex items-center text-[#9dfb40] text-sm font-bold gap-1">
+                  Browse All →
+                </span>
+              </Link>
+            </div>
           </div>
-          <div className="mt-8 text-center sm:hidden">
-            <Link
-              href="/guides"
-              className="text-sm font-bold text-gray-500 hover:text-green-600 transition-colors"
-            >
-              See all guides →
-            </Link>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── Shop by Category ── */}
-      <section className="bg-[#0a0a0a] py-16 sm:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-10">
-            <p className="text-[#9dfb40] text-xs font-bold tracking-[0.2em] uppercase mb-2">
-              Ready to shop?
+        {/* ── Locations ── */}
+        <section id="locations" className="bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-2">
+            <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">
+              Find us near you
             </p>
-            <h2 className="text-3xl sm:text-4xl font-black text-white">Find your tire</h2>
+            <h2 className="text-3xl sm:text-4xl font-black text-gray-900">Our Locations</h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Link
-              href="/tires/used"
-              className="group relative rounded-2xl border border-amber-400/20 bg-amber-400/5 p-8 hover:border-amber-400/50 hover:bg-amber-400/10 transition-all duration-200"
-            >
-              <span className="text-amber-400 text-xs font-bold tracking-widest uppercase block mb-3">
-                Used Tires
-              </span>
-              <h3 className="text-2xl font-black text-white mb-2 group-hover:text-amber-400 transition-colors">
-                Quality Pre-Owned
-              </h3>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                Inspected by ASE-certified techs. 30-day warranty included.
-              </p>
-              <span className="mt-6 inline-flex items-center text-amber-400 text-sm font-bold gap-1">
-                Shop Used →
-              </span>
-            </Link>
-            <Link
-              href="/tires/new"
-              className="group relative rounded-2xl border border-green-500/20 bg-green-500/5 p-8 hover:border-green-500/50 hover:bg-green-500/10 transition-all duration-200"
-            >
-              <span className="text-green-400 text-xs font-bold tracking-widest uppercase block mb-3">
-                New Tires
-              </span>
-              <h3 className="text-2xl font-black text-white mb-2 group-hover:text-green-400 transition-colors">
-                Brand New Stock
-              </h3>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                Full manufacturer warranty. Free shipping nationwide.
-              </p>
-              <span className="mt-6 inline-flex items-center text-green-400 text-sm font-bold gap-1">
-                Shop New →
-              </span>
-            </Link>
-            <Link
-              href="/tires"
-              className="group relative rounded-2xl border border-[#9dfb40]/20 bg-[#9dfb40]/5 p-8 hover:border-[#9dfb40]/50 hover:bg-[#9dfb40]/10 transition-all duration-200"
-            >
-              <span className="text-[#9dfb40] text-xs font-bold tracking-widest uppercase block mb-3">
-                All Tires
-              </span>
-              <h3 className="text-2xl font-black text-white mb-2 group-hover:text-[#9dfb40] transition-colors">
-                Browse Catalog
-              </h3>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                15,000+ tires across 7 Miami & Orlando locations.
-              </p>
-              <span className="mt-6 inline-flex items-center text-[#9dfb40] text-sm font-bold gap-1">
-                Browse All →
-              </span>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Locations ── */}
-      <section id="locations" className="bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-2">
-          <p className="text-green-600 text-xs font-bold tracking-[0.2em] uppercase mb-2">
-            Find us near you
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-black text-gray-900">Our Locations</h2>
-        </div>
-        <LocationsSlider />
-      </section>
-    </main>
+          <LocationsSlider />
+        </section>
+      </main>
+    </>
   );
 };
 
