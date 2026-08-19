@@ -70,7 +70,8 @@ and `/locations` (which already emits its store nodes but has no page type and n
 breadcrumb). Each gets its page type plus a `BreadcrumbList`.
 
 **`src/app/(home)/container/Home/Home.tsx`** — an `ItemList` of the seven stores,
-by URL. The home already imports `locationsConfig` for its slider.
+by URL. The page renders `<LocationsSlider />`, which imports `locationsConfig`;
+the page itself does not, so that import is new here.
 
 **`src/app/(shop)/guides/[slug]/page.tsx`** — the inline Article object is deleted
 and replaced by the emitter call.
