@@ -8,7 +8,7 @@
 | --- | --- |
 | `npx tsc --noEmit` | ✅ |
 | `npm run lint` | ✅ |
-| `npm test` | ✅ **1.162 passed** (baseline 1.120, +42) in 91 files (was 84) |
+| `npm test` | ✅ **1.172 passed** (baseline 1.120, +52) in 91 files (was 84) |
 | `npm run build` | ✅ (after the fix below) |
 | `npm run perf:budget` | ✅ 166.0 KB / 180 · **619.7** KB / 680 |
 
@@ -128,11 +128,36 @@ already right, rather than inventing a name.
 `FiltersMobile → FilterMobileContent`. The new control renders on that same flag,
 so the wiring task turned out to be a manual check only.
 
-## One component, two surfaces
+## Store and Location ended up as one group
 
-`LocationFilter` is shared by the desktop bar and the mobile panel rather than
-mirrored in both. Two hand-kept copies of a filter drifting apart is precisely how
-`Location` came to mean two things, and this feature should not plant the next one.
+First shipped as two separate controls in the filter bar, then regrouped after
+review. They belong together because they *are* one thing: a shelf code means
+nothing without its store, so Location stays disabled until a Store is chosen.
+
+The bar already had that exact pattern — the **Size** group, where no sidewall is
+offered until a width is chosen and no diameter until a sidewall. So the pair
+borrows its clothes rather than inventing a look:
+
+```
+Size      [ Select ▾ ] [ Sele ▾ ] [ Sele ▾ ]        ← existing
+Store [ Select ▾ ]  Location [ Select a store ▾ ]   ← now the same container,
+                                                       label and select shape
+```
+
+The container, label and control classes are the same strings as
+`TireSelector`/`SelectDropdown`, including the disabled treatment
+(`cursor-not-allowed opacity-50`, chevron `text-gray-300`), so a shelf waiting for
+a store greys out exactly like a sidewall waiting for a width.
+
+**This changed the Store control too**, which `026`'s spec had scoped to a label
+rename. It went from a standalone pill to a select inside the group — an
+appearance change, not a behaviour one: the same checkbox panel, the same
+`stores[]` values, the same URL param.
+
+`StoreLocationFilter` is shared by the desktop bar and the mobile panel rather
+than mirrored in both. Two hand-kept copies of a filter drifting apart is
+precisely how `Location` came to mean two things, and this feature should not
+plant the next one.
 
 ## The dropdown will show values that look like bugs
 
@@ -144,10 +169,41 @@ migration's — but the first person to open the menu will read them as a defect
 Also present: 1.057 units with no code at all, which are excluded from the options
 (a blank choice would filter to nothing).
 
+## The assistant needed the dropdown's own trick
+
+Reported after the first pass: the filter worked by hand and did nothing through
+the chat. Asked for "653A" the assistant sent `653A`, and the real code is
+`=653A=`. Others are `"663A"`, `+703C+`, `{IN}`.
+
+Nobody says the decoration out loud, and the model cannot know it — the spec
+already said a shelf code is the one filter value it cannot reason about. What the
+spec got wrong was the remedy: forbidding invention is necessary but not
+sufficient, because the honest answer (`653A`) still matches nothing and returns
+an empty table that reads as missing stock.
+
+**The dropdown never had this problem**, because its type-to-filter input matches
+on substring. So the fix gives the chat the same resolution rather than a new one:
+the route now resolves what the user said against the codes that store actually
+holds — exact match wins, otherwise every code containing the text, with the store
+name matched case-insensitively because people type `clifton`.
+
+Two deliberate choices in it:
+
+- **A shelf that resolves to nothing is dropped**, not passed through. Passing it
+  filters the table to empty, which says "we have none" instead of "that shelf
+  does not exist" — and leaves the rest of the filters working.
+- **This is the one place this route touches the catalogue.** It carried a comment
+  saying it never does; that comment now has an exception with a reason, because
+  this is the only filter whose values cannot be guessed. Over 25 matches it takes
+  the first 25 and **logs** that it did, rather than building a URL with hundreds
+  of pairs in silence.
+
 ## Still to verify (manual)
 
+- [ ] **The grouping.** Store and Location sit in one green-bordered box that
+      matches the Size group beside it.
 - [ ] **The disabled state.** With no store selected the Location control is
-      visible, greyed, and reads `Location — select a store`. It must not open.
+      visible, greyed, and reads `Select a store`. It must not open.
 - [ ] **The scoping.** Pick Hialeah: the control enables and lists only Hialeah's
       codes, grouped under its name. Add 441: a second group appears.
 - [ ] **The prune.** With a code chosen in each of two stores, deselect one store —
@@ -156,8 +212,10 @@ Also present: 1.057 units with no code at all, which are excluded from the optio
       no match disappears with them. Clear it: the list returns and the selection
       is untouched.
 - [ ] **Mobile.** The same behaviour in the mobile filter panel.
-- [ ] **The AI chat.** Ask for a shelf naming its store; the table narrows. Ask for
-      a shelf **without** a store; it should ask which store rather than guess.
+- [ ] **The AI chat.** Ask for a shelf by the bare code — "653A in Clifton" — and
+      the table should narrow on `=653A=`. Ask for a shelf **without** a store; it
+      should ask which store rather than guess. Ask for one that does not exist;
+      the other filters should still apply.
 
 ---
 

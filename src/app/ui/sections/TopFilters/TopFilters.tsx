@@ -9,7 +9,7 @@ import { useTireSearch } from '@/app/ui/components/CollapsibleSearchBar/hooks/us
 import { FilterBody } from '@/app/ui/sections/';
 import { filtersItems } from '@/app/ui/sections/FiltersMobile/FiltersItems';
 import { useFilters } from '@/app/ui/sections/FiltersMobile/hooks/useFilters';
-import { LocationFilter } from '@/app/ui/sections/TopFilters/LocationFilter';
+import { StoreLocationFilter } from '@/app/ui/sections/TopFilters/StoreLocationFilter';
 
 export const CodeFilterInput: FC<{ redirectBasePath: string; fullWidth?: boolean }> = ({
   redirectBasePath,
@@ -167,7 +167,6 @@ export const TopFilters: FC<{
   };
 
   const isBrandsActive = () => (checkboxInputs?.brands || []).length > 0;
-  const isStoresActive = () => (checkboxInputs?.stores || []).length > 0;
 
   const isFilterActive = (id: string) => {
     if (id === 'price' || id === 'treadDepth' || id === 'remainingLife') return isRangeActive(id);
@@ -296,91 +295,25 @@ export const TopFilters: FC<{
             );
           })}
 
-          {showStoreFilter && (availableStores.length > 0 || isLoadingStores) && (
-            <div className="relative">
-              {(() => {
-                const isOpen = openMenu === 'stores';
-                const isActive = isStoresActive();
-                return (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => setOpenMenu(prev => (prev === 'stores' ? null : 'stores'))}
-                      className={`px-3 py-2 text-sm rounded-md border cursor-pointer flex items-center gap-2 ${isOpen || isActive ? activeClass : defaultClass}`}
-                    >
-                      <span>Store</span>
-                      <svg
-                        className={`h-4 w-4 text-current transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                    {isOpen && (
-                      <div className="absolute left-0 mt-2 z-50 w-80 md:w-96 bg-white border border-gray-200 rounded-lg shadow-lg p-4">
-                        {isLoadingStores ? (
-                          <div className="flex justify-center items-center h-20">
-                            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-green-600"></div>
-                            <span className="ml-2 text-sm text-gray-500">Loading stores...</span>
-                          </div>
-                        ) : (
-                          <div className="space-y-4 max-h-96 overflow-y-auto pr-1">
-                            {availableStores.map((store, idx) => (
-                              <div key={store} className="flex items-center">
-                                <input
-                                  id={`filter-stores-${idx}`}
-                                  name="stores[]"
-                                  value={store}
-                                  type="checkbox"
-                                  checked={isChecked('stores', store)}
-                                  onChange={handleCheckboxChange}
-                                  className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-600"
-                                />
-                                <label
-                                  htmlFor={`filter-stores-${idx}`}
-                                  className="ml-3 text-gray-600 text-sm"
-                                >
-                                  {store}
-                                </label>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </>
-                );
-              })()}
-            </div>
-          )}
-
           {/*
-            Rendered whenever the Store filter is, disabled until a store is
-            picked — a hidden control teaches nobody it exists. See LocationFilter.
+            Store and Location as one group, dressed like the Size block beside
+            it: they are one dependent pair — a shelf code means nothing without
+            its store — exactly as no sidewall is offered without a width.
           */}
           {showStoreFilter && (
-            <div className="relative">
-              <LocationFilter
-                available={availableLocations}
-                selected={checkboxInputs?.locations || []}
-                hasStore={(checkboxInputs?.stores || []).length > 0}
-                isLoading={isLoadingLocations}
-                isOpen={openMenu === 'locations'}
-                onToggleAction={() =>
-                  setOpenMenu(prev => (prev === 'locations' ? null : 'locations'))
-                }
-                onChangeAction={handleCheckboxChange}
-                activeClass={activeClass}
-                defaultClass={defaultClass}
-              />
-            </div>
+            <StoreLocationFilter
+              stores={availableStores}
+              selectedStores={checkboxInputs?.stores || []}
+              isLoadingStores={isLoadingStores}
+              locations={availableLocations}
+              selectedLocations={checkboxInputs?.locations || []}
+              isLoadingLocations={isLoadingLocations}
+              openMenu={openMenu}
+              onOpenAction={setOpenMenu}
+              onChangeAction={handleCheckboxChange}
+              activeClass={activeClass}
+              defaultClass={defaultClass}
+            />
           )}
 
           {(availableBrands.length > 0 || isLoadingBrands) && (
