@@ -225,7 +225,25 @@ To be resumed after the two tracks above; no fixed order yet.
   `<h2>` (T092), the mobile menu carries a Spanish `aria-label` on an
   English-declared site (T098), and one guide has three different names because
   the config field called `title` drives the heading while the one called
-  `headline` drives the cards (T100). _Implemented; awaiting manual verification._- ⬜ **Tire detail titles are truncated before the differentiators.** Found while
+  `headline` drives the cards (T100). _Implemented; awaiting manual verification._- 🟡 **Telling Google what these pages are (`024-structured-data`).** Block 4.
+  Five of the site's most important pages — the home, `/tires`, `/guides`,
+  `/about-us` and `/contact` — declare **only** the `Organization` and `WebSite`
+  the root layout gives every page, which means none of them says anything about
+  itself: the catalog does not say it is a catalog, and the home page shows seven
+  stores and declares none. A store page and a guide already do this properly, so
+  the pattern exists and simply is not applied. What the site does declare, it
+  declares badly: `Organization.logo` is a **32×32 favicon** while a 512×512 asset
+  sits unused, and every guide's `publisher` inlines a second, worse copy of the
+  organisation instead of referencing the `@id` the site mints for exactly that —
+  the same duplication shape as the WhatsApp number, the founding year and the
+  airport. Three tickets are closed rather than built: T009 was fixed on 18 Aug,
+  and **T014 is not applicable** — `SearchAction` needs a free-text query
+  parameter and this site has none, only structured filters. T011 and T013 stay
+  blocked on the owner. Worth stating plainly: structured data does not raise
+  rankings, it changes how a result renders — which is the right lever here, since
+  `021` and `022` measured a site that ranks well and is not chosen.
+  _Spec drafted; open clarifications._
+- ⬜ **Tire detail titles are truncated before the differentiators.** Found while
   analysing `021`, and not in the Screaming Frog audit, whose title tickets stop at
   section pages. `productTitle()` builds a title that reaches **100 characters** in
   production —
