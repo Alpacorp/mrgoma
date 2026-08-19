@@ -8,8 +8,8 @@ Ordered, **very small, independently verifiable** tasks. Baseline before startin
 **Two ordering rules:**
 
 1. **The guard lands last (T6 after T2).** Its central assertion is that nothing
-   outside `seo.ts` defines an organisation, and that is false until the guide's
-   Article moves. Writing it first means a red suite through the middle of the
+   outside `seo.ts` describes this business, and that is false until **both**
+   nodes move — the guide's `Article` and the service pages' `Service`. Writing it first means a red suite through the middle of the
    feature — the same reason `019`, `022` and `023` all landed their guards after
    the call sites.
 2. **T5 is about one line, and the task is mostly about what not to touch.**
@@ -32,14 +32,22 @@ Groups A, B and C are independent of each other.
       · check: `npm test` — `@type` is `ImageObject`, width and height are
       present, **the file exists on disk**, and its shorter side is ≥ 112 px.
 
-- [ ] **T2** — Move the guide's `Article` node out of
-      `guides/[slug]/page.tsx` and into `seo.ts` as `buildArticleJsonLd()`.
-      · **Move it; do not patch it in place.** The two inline copies of the
-      organisation in that file are the only two in the whole app, and they exist
-      *because* this node is built outside `seo.ts`. Every other node is emitted
-      from there and none of them drifted. Swapping the two objects for `@id`s
-      while leaving the node in the page satisfies the criterion and preserves the
+- [ ] **T2** — Move **both** nodes that are built inside a page into `seo.ts`:
+      the guide's `Article` (`buildArticleJsonLd`) and the service pages'
+      `Service` (`buildServiceJsonLd`).
+      · **Move them; do not patch them in place.** The business is described
+      inline in exactly these two files, and it is described there *because* the
+      nodes are built outside `seo.ts`. Every node that does come from `seo.ts`
+      references the `@id` correctly. Swapping the objects for `@id`s while
+      leaving the nodes in the pages satisfies the criterion and preserves the
       condition that caused it.
+      · The `Service` node's `provider` is
+      `{ '@type': 'AutoRepair', name: 'MrGoma Tires', url: 'https://www.mrgomatires.com' }`
+      on **eight pages** — a third description of the business, under a different
+      type, with the site URL as a literal. It becomes
+      `{ '@id': organizationId() }`, and the hardcoded URL goes with it.
+      · Neither node was in the audit's list. Both were found by checking what
+      FR2 actually had to cover.
       · `author` and `publisher` both become `{ '@id': organizationId() }`, with
       no inline `logo`.
       · Add `image`: the `/opengraph-image` at 1200×630.
@@ -48,10 +56,10 @@ Groups A, B and C are independent of each other.
       `guidesConfig` holds no edit date. A field nobody maintains becomes a lie
       the first time a guide is edited.
       · files: `src/app/utils/seo.ts`, `src/app/(shop)/guides/[slug]/page.tsx`,
-      `src/app/utils/seo.test.ts`
-      · check: `npm test` — `author` and `publisher` are both `@id` references,
-      `image` has dimensions, and the `dateModified` key is **absent** rather than
-      equal to `datePublished`.
+      `src/app/(shop)/services/[service]/page.tsx`, `src/app/utils/seo.test.ts`
+      · check: `npm test` — the Article's `author` and `publisher` and the
+      Service's `provider` are all `@id` references, `image` has dimensions, and
+      the `dateModified` key is **absent** rather than equal to `datePublished`.
 
 ## B. Five pages that say nothing about themselves
 
@@ -91,29 +99,39 @@ Groups A, B and C are independent of each other.
 - [ ] **T5** — In `buildLocationsJsonLd()`, `'@type': 'AutoPartsStore'` becomes
       `['TireShop', 'AutoRepair']`, for **all seven** (spec Decision 1).
       · **This is the task where the danger is everything you do not change.**
-      `geo`, `hasMap`, `openingHours`, `areaServed` and `address` in that function
-      were verified store by store on 2026-08-04, after a Miami Gardens pin was
-      found holding the coordinates of a locksmith in the same plaza. A wrong pin
-      sends a customer to the wrong place.
+      `geo`, `hasMap`, `openingHoursSpecification`, `areaServed` and `address` in
+      that function were verified store by store on 2026-08-04, after a Miami
+      Gardens pin was found holding the coordinates of a locksmith in the same
+      plaza. A wrong pin sends a customer to the wrong place.
+      · The field is `openingHoursSpecification`. Naming it `openingHours` — as
+      this feature's plan first did — produces a test that asserts `undefined` and
+      passes.
       · All seven alike, not the audit's five/two split: `/services` says the
       eight services run at **7 locations**, and Hialeah's own description says it
       offers "the same full menu … **as all our locations**".
       · files: `src/app/utils/seo.ts`, `src/app/utils/seo.test.ts`
       · check: `npm test` — the type is right on all seven, **and the five
-      verified fields are asserted individually**, not merely "unchanged".
+      verified fields are asserted individually against `locationsConfig`** — not
+      "unchanged from before", which no test can express.
 
 ## D. Make it impossible to drift
 
 - [ ] **T6** — `structuredData.guard.test.ts` (new). **Last, because its main
       assertion is false until T2 lands.**
-      · **No file outside `seo.ts` defines an organisation** — no
-      `'@type': 'Organization'` anywhere else in `src/app` (AC2). That is the
-      enforceable form of "nothing duplicates the organisation".
+      · **No file outside `seo.ts` describes this business**, under any of the
+      business types: `Organization`, `LocalBusiness`, `Store`, `AutoPartsStore`,
+      `AutoRepair`, `TireShop` (AC2). Written over `Organization` alone it would
+      pass the `provider: { '@type': 'AutoRepair', … }` that exists on eight
+      service pages today — the same business, a different type.
       · **Every `'@type'` string is on the recorded list** (AC10). This is the
       failure mode with no signal: an invalid type gives no build error, no visual
       change, and silent omission by Google. `TireShop` was doubted during
       `/specify` and turned out to be real — the reverse mistake would never have
       announced itself.
+      · **The list must include `Brand` and `Service`**, both emitted today and
+      both missing from the plan's first draft — a guard shipped without them
+      would have been red on arrival, which is the mirror of the mistake it
+      prevents. `AutoPartsStore` should **not** be on it: T5 removes its last use.
       · **Every emitter round-trips through `JSON.parse(JSON.stringify(…))`**, and
       no page hand-writes `<script type="application/ld+json">` (AC11).
       · files: `src/app/utils/structuredData.guard.test.ts` (new)

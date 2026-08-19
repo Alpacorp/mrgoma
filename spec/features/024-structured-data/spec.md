@@ -44,10 +44,26 @@ rather than pointing at the `@id` the site already publishes:
                          "url": ".../favicon.png" } }
 ```
 
+**And the eight service pages describe the business a third time.** Each declares
+its `provider` inline, under a different type, with the site's URL written as a
+literal:
+
+```json
+"provider": { "@type": "AutoRepair", "name": "MrGoma Tires",
+              "url": "https://www.mrgomatires.com" }
+```
+
 The site mints a stable `@id` — `…/#organization` — exactly so other nodes can
-reference it, and then does not. This is the same shape as every duplication this
-audit has turned up: the WhatsApp number in eleven files, the founding year, the
-airport in three fields, the guides list copied into the home page.
+reference it, and then does not, in two places. Both are nodes **built inside a
+page rather than through an emitter in `seo.ts`**; every node that does come from
+`seo.ts` references the `@id` correctly. This is the same shape as every
+duplication this audit has turned up: the WhatsApp number in eleven files, the
+founding year, the airport in three fields, the guides list copied into the home
+page.
+
+One useful consequence: `AutoRepair` is **already** declared for this business, so
+typing the stores with it (Decision 1) states nothing new — it connects a claim
+the site already makes.
 
 **Every guide claims it was last modified the day it was published**, and none
 declares an image. `dateModified` is set to `datePublished` for all seven.
@@ -86,6 +102,9 @@ from pages that do not call it.
   `AboutPage` (T019), `ContactPage` (T020).
 - The guides' `Article` node: reference the organisation by `@id`, add an `image`,
   and tell the truth about `dateModified` (T021).
+- The service pages' `Service` node, moved into `seo.ts` so its `provider`
+  references the `@id` instead of describing the business a third time. Not in the
+  audit; found while checking FR2's real scope.
 - The stores' `@type` (T022) — all seven alike, see Decision 1.
 
 **Out:**
@@ -112,8 +131,10 @@ from pages that do not call it.
 
 - **FR1:** The organisation must declare a logo Google can use — a real image with
   declared dimensions, not a favicon.
-- **FR2:** Nothing may inline a second copy of the organisation. Where a node
-  needs to name the publisher, it references the `@id` the site already mints.
+- **FR2:** Nothing outside `seo.ts` may describe this business — under **any**
+  type. `Organization` is not the only way to do it: the service pages do it as
+  `AutoRepair`. Where a node names the business, it references the `@id` the site
+  already mints.
 - **FR3:** Each of the five bare pages must declare what kind of page it is.
 - **FR4:** Each of those pages must declare a breadcrumb consistent with its own
   URL and with the trail a visitor sees.
@@ -135,9 +156,14 @@ from pages that do not call it.
       `ImageObject` pointing at `desk-logo.png` with its width and height
       declared, the file exists on disk, and it is at least 112 px on its shorter
       side.
-- [ ] **AC2:** Given every JSON-LD node the site emits, when searched for an
-      inlined organisation, then only the root `Organization` defines one; every
-      other reference is `{ "@id": … }`.
+- [ ] **AC2:** Given every file under `src/app` other than `seo.ts`, when searched
+      for a node describing this business, then none defines one — checked against
+      the **business types**, not only `Organization`: `Organization`,
+      `LocalBusiness`, `Store`, `AutoPartsStore`, `AutoRepair`, `TireShop`.
+
+      _Narrowed to `Organization` this criterion would pass today's third copy:
+      the service pages inline `provider: { "@type": "AutoRepair", … }`, which is
+      the same business under a different type._
 - [ ] **AC3:** Given `/tires`, `/guides`, `/about-us`, `/contact` and `/locations`,
       when each is rendered, then each declares a page type appropriate to it.
 - [ ] **AC4:** Given the same five pages, when each is rendered, then each declares
@@ -155,8 +181,12 @@ from pages that do not call it.
       absence.
 - [ ] **AC9:** Given each of the seven stores, when its node is read, then its
       `@type` is `["TireShop", "AutoRepair"]` — all seven alike (Decision 1) — and
-      its `geo`, `hasMap`, `openingHours`, `areaServed` and `address` are
-      unchanged.
+      its `geo`, `hasMap`, `openingHoursSpecification`, `areaServed` and `address`
+      **match `locationsConfig`**, field by field.
+
+      _Asserted against the config rather than "unchanged from before", which no
+      test can express. Those values were verified store by store on 2026-08-04,
+      after a Miami Gardens pin was found holding a locksmith's coordinates._
 - [ ] **AC9b:** Given the store type and the site's own copy, when compared, then
       the claim holds: `/services` states the eight services are available at all
       seven locations. If that copy ever narrows to fewer stores, this criterion
