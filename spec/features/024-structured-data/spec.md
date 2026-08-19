@@ -1,7 +1,7 @@
 # Spec — Telling Google what these pages are
 
-> Feature: `024-structured-data` · Status: Draft — open clarifications
-> Created: 2026-08-18
+> Feature: `024-structured-data` · Status: Clarified — ready for `/plan`
+> Created: 2026-08-18 · Clarified: 2026-08-18
 > Roadmap: Backlog (SEO — Screaming Frog audit, block 4) · Branch: `feat/024-structured-data`
 
 ## Why — problem & value
@@ -31,8 +31,8 @@ simply not applied.
 
 **The organisation's logo is a 32×32 favicon.** `Organization.logo` points at
 `/favicon.png`. Google's knowledge panel uses that field, and a 32-pixel square
-is not a logo. Real assets exist and are unused: `icons/icon-512.png` at
-**512×512**, and the brand's own `logo-mrgoma.webp`.
+is not a logo. The real logotype sits unused two directories away:
+`desk-logo.png`, the chevrons plus **MrGoma TIRES** on white at 513×512.
 
 **Every guide's `publisher` is a second, worse copy of the organisation.** The
 Article node inlines a fresh `Organization` with the same favicon as its logo,
@@ -52,10 +52,11 @@ airport in three fields, the guides list copied into the home page.
 **Every guide claims it was last modified the day it was published**, and none
 declares an image. `dateModified` is set to `datePublished` for all seven.
 
-**The seven stores are typed as `AutoPartsStore`.** They sell tires and fit them;
-schema.org has `TireShop` for precisely this. (The audit proposes it and the
-proposal was doubted before being checked — `TireShop` is a real `rdfs:Class`,
-verified against schema.org.)
+**The seven stores are typed as `AutoPartsStore`.** They sell tires, fit them, and
+— by the site's own account — perform eight services including oil changes and
+brakes. schema.org has `TireShop` and `AutoRepair` for precisely that. (The audit
+proposes `TireShop` and the proposal was doubted before being checked; it is a
+real `rdfs:Class`, verified against schema.org.)
 
 ### Why it matters, stated honestly
 
@@ -85,7 +86,7 @@ from pages that do not call it.
   `AboutPage` (T019), `ContactPage` (T020).
 - The guides' `Article` node: reference the organisation by `@id`, add an `image`,
   and tell the truth about `dateModified` (T021).
-- The stores' `@type` (T022).
+- The stores' `@type` (T022) — all seven alike, see Decision 1.
 
 **Out:**
 
@@ -131,8 +132,9 @@ from pages that do not call it.
 ## Acceptance criteria (testable)
 
 - [ ] **AC1:** Given `organizationJsonLd()`, when read, then `logo` is an
-      `ImageObject` with a URL, a width and a height, the file exists on disk, and
-      it is at least 112 px on its shorter side.
+      `ImageObject` pointing at `desk-logo.png` with its width and height
+      declared, the file exists on disk, and it is at least 112 px on its shorter
+      side.
 - [ ] **AC2:** Given every JSON-LD node the site emits, when searched for an
       inlined organisation, then only the root `Organization` defines one; every
       other reference is `{ "@id": … }`.
@@ -147,11 +149,18 @@ from pages that do not call it.
       is a reference to the organisation `@id` and carries no inline `logo`.
 - [ ] **AC7:** Given every guide, when its `Article` node is read, then it declares
       an `image` with dimensions.
-- [ ] **AC8:** Given every guide, when its `Article` node is read, then it declares
-      no `dateModified` the site cannot substantiate — see Open question 2.
+- [ ] **AC8:** Given every guide, when its `Article` node is read, then it
+      declares **no `dateModified` at all** (Decision 2). The site holds no edit
+      date, and asserting one it cannot substantiate is the defect, not the
+      absence.
 - [ ] **AC9:** Given each of the seven stores, when its node is read, then its
-      `@type` is `TireShop`, and its `geo`, `hasMap`, `openingHours`, `areaServed`
-      and `address` are unchanged.
+      `@type` is `["TireShop", "AutoRepair"]` — all seven alike (Decision 1) — and
+      its `geo`, `hasMap`, `openingHours`, `areaServed` and `address` are
+      unchanged.
+- [ ] **AC9b:** Given the store type and the site's own copy, when compared, then
+      the claim holds: `/services` states the eight services are available at all
+      seven locations. If that copy ever narrows to fewer stores, this criterion
+      is what should send someone back to the type.
 - [ ] **AC10:** Given every `@type` string the site emits, when checked against a
       recorded list of the schema.org types this site uses, then each is on it.
       The list is the point: `TireShop` was doubted and turned out to be real, and
@@ -179,35 +188,42 @@ from pages that do not call it.
   performance budget must not move.
 - **Nothing a visitor sees changes.**
 
+## Decisions taken during `/clarify`
+
+**Decision 1 — all seven stores are `["TireShop", "AutoRepair"]`.** T022 proposes
+that split only for Hialeah and East Orlando. **The site's own copy contradicts
+it**: `/services` says *"8 professional services at 7 locations"*, and Hialeah's
+description says it offers *"the same full menu of tire and automotive services
+**as all our locations**"* — while East Orlando's description does not mention
+services at all. Nothing in the repository distinguishes the pair, and this is the
+**third** time the audit has singled them out (T049 and T052 proposed calling them
+"MrGoma Tires Automotive" in `022`, left unadopted for the same reason).
+
+Two of the eight services — oil change and brake service — are mechanical
+maintenance, so `AutoRepair` is true of the business the site describes. Declaring
+it for seven stores and not five is what the public copy already claims.
+
+**Decision 2 — `dateModified` is omitted.** All seven guides currently assert they
+were modified on the day they were published, and `guidesConfig` holds no edit
+date to replace it with. Adding a field nobody maintains would become a lie the
+first time a guide is edited. Google infers freshness by other means. This is the
+same rule that keeps T011 and T013 out: **a claim we cannot substantiate is worse
+than a missing one.**
+
+**Decision 3 — the logo is `desk-logo.png`, correcting this spec's own
+recommendation.** The spec first proposed `icons/icon-512.png` on the strength of
+its dimensions. Looking at the three candidates changed that: `icon-512.png` is
+the chevron mark alone on a green field — an app icon that names nobody.
+`desk-logo.png` is the actual logotype, chevrons plus **MrGoma TIRES**, on white
+at 513×512. `Organization.logo` is what Google may show beside a result and in the
+knowledge panel, so it has to identify the business, not decorate it.
+
 ## Open questions
 
-- [NEEDS CLARIFICATION: **Are Hialeah and East Orlando full service centres?**
-  T022 proposes `TireShop` for five stores and `["TireShop", "AutoRepair"]` for
-  those two. This is the **third** time the audit has singled out the same pair —
-  T049 and T052 proposed calling them "MrGoma Tires Automotive" in `022`, and that
-  claim was left unadopted for the same reason: nothing in this repository
-  distinguishes them, and the name appears nowhere in it. `TireShop` for all seven
-  is safe and strictly better than today's `AutoPartsStore`. Recommendation:
-  **ship `TireShop` for all seven now**, and add the second type for those two if
-  the owner confirms they perform mechanical repair. Confirm.]
-
-- [NEEDS CLARIFICATION: **What should `dateModified` say?** Today every guide
-  claims it was modified the day it was published, which is a claim the site
-  cannot support — `guidesConfig` has `publishDate` and nothing else. Three
-  options: (a) **omit `dateModified`** entirely, which is honest and loses
-  nothing, since Google infers freshness by other means; (b) add an
-  `updatedDate` field per guide and have someone maintain it; (c) leave it
-  equal to `publishDate`, which is what the audit calls a defect.
-  Recommendation: **(a) omit it** until there is a real edit date to state. A
-  field nobody updates becomes a lie the first time a guide is edited.]
-
-- [NEEDS CLARIFICATION: **Which logo should the organisation declare?** Three
-  candidates exist: `icons/icon-512.png` (512×512, square, already part of the
-  icon set), `desk-logo.png` (513×512) and `assets/images/Logo/logo-mrgoma.webp`
-  (the brand wordmark). Google wants a logo it can show beside a result and
-  prefers a clear, square-ish image. Recommendation: **`icons/icon-512.png`**,
-  because it is already maintained as an icon and its dimensions are known.
-  Confirm, or say if the wordmark is the brand's preferred mark.]
+_None. All three markers were resolved. Two items remain deferred rather than
+unknown — T011 (`telephone` and `address`) and T013 (`sameAs`) — because both need
+facts only the owner holds, and the audit is explicit that they must not be
+implemented from assumptions._
 
 ---
 
