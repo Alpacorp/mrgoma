@@ -225,7 +225,8 @@ To be resumed after the two tracks above; no fixed order yet.
   `<h2>` (T092), the mobile menu carries a Spanish `aria-label` on an
   English-declared site (T098), and one guide has three different names because
   the config field called `title` drives the heading while the one called
-  `headline` drives the cards (T100). _Implemented; awaiting manual verification._- 🟡 **Telling Google what these pages are (`024-structured-data`).** Block 4.
+  `headline` drives the cards (T100). _Implemented; awaiting manual verification._
+- 🟡 **Telling Google what these pages are (`024-structured-data`).** Block 4.
   Five of the site's most important pages — the home, `/tires`, `/guides`,
   `/about-us` and `/contact` — declare **only** the `Organization` and `WebSite`
   the root layout gives every page, which means none of them says anything about
@@ -243,17 +244,22 @@ To be resumed after the two tracks above; no fixed order yet.
   rankings, it changes how a result renders — which is the right lever here, since
   `021` and `022` measured a site that ranks well and is not chosen.
   _Implemented; awaiting the Rich Results check after deploy._
-- ⬜ **Tire detail titles are truncated before the differentiators.** Found while
+- 🟡 **Titles that fit in a search result (`025-tire-detail-titles`).** Found while
   analysing `021`, and not in the Screaming Frog audit, whose title tickets stop at
   section pages. `productTitle()` builds a title that reaches **100 characters** in
   production —
   `Used BRIDGESTONE ALENZA A/S 02 RSC RFT 235/50/20 Tire in Miami | $135 | Free Shipping | MrGoma Tires`
   — so Google shows `…Tire in Mia…` and **the price and "Free Shipping" never
   appear**, which are the two differentiators `014` added to that builder
-  specifically to lift CTR. It affects **1.622 pages**, more than everything in
-  `021` combined, and is kept out of `021` on purpose: that many titles deserve
-  their own Search Console baseline, and folding them in would make the effect of
-  `021`'s fifteen unattributable.
+  specifically to lift CTR. Measured over 1.400 real units, **100% of titles
+  exceed 60 characters** (median 96) and **not one** keeps its price inside the
+  visible portion. The route also still returns a plain `title` string, so the
+  root template appends the brand a second time — the `021` defect surviving on
+  the one route `021` did not convert. It affects **1.622 pages**, more than
+  everything in `021` combined, and was kept out of `021` on purpose: that many
+  titles deserve their own Search Console baseline, and folding them in would make
+  the effect of `021`'s fifteen unattributable. This is path "C" of block 5 — it
+  changes what searchers see without touching a single URL.
 - ⬜ **TireCard redesign.** UX/UI improvements for the `/tires` cards (analysis
   done).
 - 🟡 **AI chat: search on what was said (`018-ai-chat-filters-and-surface`).**

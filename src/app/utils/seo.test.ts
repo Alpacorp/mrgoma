@@ -2,10 +2,16 @@ import { describe, expect, it } from 'vitest';
 
 import { locationsConfig } from '@/app/(shop)/locations/locationsConfig';
 import { servicesConfig } from '@/app/(shop)/services/servicesConfig';
+import { SHIPPING, WARRANTY } from '@/app/utils/brandClaims';
 import { WHATSAPP_TEL } from '@/app/utils/whatsapp';
 
 import {
   absUrl,
+  TITLE_MAX,
+  DESCRIPTION_MAX,
+  DEFAULT_OG_IMAGE,
+  productMetadata,
+  brandName,
   buildBreadcrumbJsonLd,
   buildItemListJsonLd,
   buildLocationsJsonLd,
@@ -50,30 +56,267 @@ describe('absUrl / canonical', () => {
   });
 });
 
-describe('productTitle', () => {
-  it('composes a title and includes the price when valid', () => {
-    expect(
-      productTitle({ brand: 'Michelin', size: '225/40/18', condition: 'New', price: 120 })
-    ).toBe('New Michelin 225/40/18 Tire in Miami | $120 | Free Shipping');
+// AC5
+describe('brandName', () => {
+  it('renders a stored ALL-CAPS brand for display', () => {
+    expect(brandName('BRIDGESTONE')).toBe('Bridgestone');
+    expect(brandName('YOKOHAMA')).toBe('Yokohama');
   });
 
-  it('omits the price when it is zero or invalid', () => {
-    expect(productTitle({ brand: 'Toyo', price: 0 })).toBe('Toyo Tire in Miami | Free Shipping');
+  /**
+   * `'BACK COUNTRY '` is stored with a trailing space. Left alone it renders a
+   * double space before the model in every title for that brand.
+   */
+  it('trims a brand the catalog stores with a trailing space', () => {
+    expect(brandName('BACK COUNTRY ')).toBe('Back Country');
+    expect(brandName('BACK COUNTRY ')).not.toMatch(/ {2}/);
+  });
+
+  it('keeps the spelling of a brand that title case would get wrong', () => {
+    expect(brandName('BFGOODRICH')).toBe('BFGoodrich');
+  });
+
+  it('degrades to title case for a brand it has never seen', () => {
+    expect(brandName('NEWBRAND')).toBe('Newbrand');
+    expect(brandName('Unknown')).toBe('Unknown');
+    expect(brandName(undefined)).toBe('');
+    expect(brandName('')).toBe('');
+  });
+});
+
+describe('productTitle', () => {
+  // AC1, AC3 — rung 1: everything fits, including the brand suffix.
+  it('keeps model, price and the brand suffix when they all fit', () => {
+    expect(
+      productTitle({
+        brand: 'BRIDGESTONE',
+        model: 'WEATHERPEAK',
+        size: '225/55/18',
+        condition: 'Used',
+        price: 145,
+      })
+    ).toBe('Used Bridgestone WEATHERPEAK 225/55/18 — $145 | MrGoma');
+  });
+
+  /**
+   * AC3 — rung 2. The suffix is sacrificed *before* the price: it is identical on
+   * all 1.622 product pages, so it differentiates nothing, while the price is the
+   * reason `014` touched this builder at all.
+   */
+  it('drops the brand suffix before it drops the price', () => {
+    const title = productTitle({
+      brand: 'GOODYEAR',
+      model: 'EAGLE F1 ASYMMETRIC 5 NF0 XL',
+      size: '265/35/21',
+      condition: 'Used',
+      price: 260,
+    });
+
+    expect(title).toContain('$260');
+    expect(title).not.toContain(' | MrGoma');
+    expect(title.length).toBeLessThanOrEqual(TITLE_MAX);
+  });
+
+  // AC3 — rung 4: a 51-character model cannot fit, so the model goes last.
+  it('drops the model only when nothing shorter will do', () => {
+    const title = productTitle({
+      brand: 'GOODYEAR',
+      model: 'EAGLE F1 ASYMMETRIC SUV 4X4 AT J LR XL SOUNDCOMFORT',
+      size: '235/50/20',
+      condition: 'Used',
+      price: 120,
+    });
+
+    expect(title).toBe('Used Goodyear 235/50/20 — $120 | MrGoma');
+    expect(title).toContain('$120');
+  });
+
+  // AC6 — the manufacturer's spelling of a model is never rewritten.
+  it('passes acronyms in a model through untouched', () => {
+    expect(
+      productTitle({
+        brand: 'BRIDGESTONE',
+        model: 'ALENZA A/S 02 RSC RFT',
+        size: '235/50/20',
+        condition: 'Used',
+      })
+    ).toContain('ALENZA A/S 02 RSC RFT');
+  });
+
+  /**
+   * The price arrives as the string `'-'` for a tire that has none — the sentinel
+   * `mapTireRecordToSingleTire` writes. `Number('-')` is `NaN`.
+   */
+  it('omits the price when it is zero, absent or the catalog sentinel', () => {
+    for (const price of [0, undefined, '-', 'n/a'] as const) {
+      expect(productTitle({ brand: 'Toyo', size: '225/40/18', condition: 'Used', price })).toBe(
+        'Used Toyo 225/40/18 | MrGoma'
+      );
+    }
+  });
+
+  // AC10 — `fitTitle` selects by length; it does not normalise what it selects.
+  it('leaves no gap where an absent field would have gone', () => {
+    const cases = [
+      { brand: 'Toyo', size: '225/40/18', condition: 'Used', price: 120 },
+      { brand: 'Toyo', condition: 'Used', price: 120 },
+      { brand: 'Toyo', model: 'PROXES', condition: 'Used' },
+      { brand: 'BACK COUNTRY ', model: 'A/T', size: '265/70/17', condition: 'Used' },
+      { brand: 'Toyo' },
+    ];
+
+    for (const params of cases) {
+      expect(productTitle(params)).not.toMatch(/ {2}/);
+      expect(productTitle(params)).toBe(productTitle(params).trim());
+    }
+  });
+
+  // AC1, AC2 — the budget holds, and nothing supplied is silently discarded.
+  it('fits the budget and keeps every field it was given', () => {
+    const params = {
+      brand: 'PIRELLI',
+      model: 'SCORPION TM ZERO ALL SEASON MOE-S ELECT PNCS RFT XL',
+      size: '275/45/21',
+      condition: 'New',
+      price: 310,
+    };
+    const title = productTitle(params);
+
+    expect(title.length).toBeLessThanOrEqual(TITLE_MAX);
+    expect(title).toContain('New');
+    expect(title).toContain('Pirelli');
+    expect(title).toContain('275/45/21');
   });
 });
 
 describe('productDescription', () => {
-  it('describes a new tire', () => {
-    expect(
-      productDescription({ brand: 'Michelin', size: '225/40/18', condition: 'new' })
-    ).toContain('New tire by Michelin 225/40/18 available in Miami, Florida.');
+  const USED = {
+    brand: 'BRIDGESTONE',
+    model: 'WEATHERPEAK',
+    size: '225/55/18',
+    condition: 'Used',
+    remainingLife: '90%',
+    patched: 'No',
+    price: 145,
+  };
+
+  // AC7 — the price is inside the window, not appended past it.
+  it('states the price where Google will still be rendering', () => {
+    const d = productDescription(USED);
+    expect(d.indexOf('$145')).toBeGreaterThan(-1);
+    expect(d.indexOf('$')).toBeLessThan(DESCRIPTION_MAX);
+    expect(d.length).toBeLessThanOrEqual(DESCRIPTION_MAX);
   });
 
-  it('adds remaining life and patched status only for used tires', () => {
-    const d = productDescription({ condition: 'used', remainingLife: '70%', patched: 'No' });
-    expect(d).toContain('Used tire');
-    expect(d).toContain('Approx. remaining life: 70%.');
-    expect(d).toContain('Patched: No.');
+  it('describes the real state of a used tire', () => {
+    const d = productDescription(USED);
+    expect(d).toContain('Used Bridgestone WEATHERPEAK 225/55/18');
+    expect(d).toContain('90% tread life left');
+    expect(d).toContain('never patched');
+    expect(d).toContain(WARRANTY);
+    expect(d).toContain(SHIPPING);
+  });
+
+  /**
+   * `WARRANTY_LONG` is "30-Day Warranty **on Like-New Used Tires**". Attaching it
+   * to a new tire would claim something the constant does not support.
+   */
+  it('makes no used-tire warranty claim about a new tire', () => {
+    const d = productDescription({ ...USED, condition: 'New' });
+    expect(d).toContain('Brand new');
+    expect(d).toContain(SHIPPING);
+    expect(d).not.toContain(WARRANTY);
+    expect(d).not.toContain('tread life');
+    expect(d.length).toBeLessThanOrEqual(DESCRIPTION_MAX);
+  });
+
+  // The `'-'` sentinel again: `remainingLife` is `'-'` when the record has none.
+  it('says nothing about tread life it does not know', () => {
+    const d = productDescription({ ...USED, remainingLife: '-', patched: undefined });
+    expect(d).not.toContain('tread life');
+    expect(d).not.toContain('-.');
+    expect(d).not.toMatch(/ {2}/);
+    expect(d.length).toBeLessThanOrEqual(DESCRIPTION_MAX);
+  });
+
+  // AC7 — the ceiling holds even for the catalog's longest model.
+  it('drops the model rather than overflow the window', () => {
+    const d = productDescription({
+      ...USED,
+      model: 'EAGLE F1 ASYMMETRIC SUV 4X4 AT J LR XL SOUNDCOMFORT',
+    });
+    expect(d.length).toBeLessThanOrEqual(DESCRIPTION_MAX);
+    expect(d).toContain('$145');
+  });
+});
+
+describe('productMetadata', () => {
+  const TIRE = {
+    brand: 'BRIDGESTONE',
+    model: 'ALENZA A/S 02 RSC RFT',
+    size: '235/50/20',
+    condition: 'Used',
+    remainingLife: '99%',
+    patched: 'No',
+    price: 135,
+    path: '/tires/1234-bridgestone-235-50-20',
+    images: ['/uploads/tire-1.jpg'],
+  };
+
+  /**
+   * AC4 — the `021` defect this route still carried. A plain `title` string lets
+   * the root `%s | MrGoma Tires` template append the brand on top of the one the
+   * string already ends with.
+   */
+  it('sets an absolute title so the root template cannot append the brand again', () => {
+    const title = productMetadata(TIRE).title as { absolute: string };
+
+    expect(title.absolute).toBeTypeOf('string');
+    expect(title.absolute.length).toBeLessThanOrEqual(TITLE_MAX);
+
+    // "At most once", not "exactly once": this fixture's model is long enough
+    // that the suffix is sacrificed, which is the ladder working. What must never
+    // happen is twice — the brand in the string *and* the brand from the template.
+    for (const fixture of [TIRE, { ...TIRE, model: 'WEATHERPEAK' }]) {
+      const absolute = (productMetadata(fixture).title as { absolute: string }).absolute;
+      expect((absolute.match(/MrGoma/g) ?? []).length).toBeLessThanOrEqual(1);
+    }
+
+    // …and the short-model fixture proves the suffix is reachable at all.
+    const shortModel = (
+      productMetadata({ ...TIRE, model: 'WEATHERPEAK' }).title as { absolute: string }
+    ).absolute;
+    expect(shortModel).toContain('MrGoma');
+  });
+
+  // AC9 — social cards are not cut at 60, so they keep what `014` added.
+  it('keeps the price and the shipping promise on the social cards', () => {
+    const meta = productMetadata(TIRE);
+
+    for (const social of [meta.openGraph?.title, meta.twitter?.title]) {
+      expect(String(social)).toContain('$135');
+      expect(String(social)).toContain('Free Shipping');
+    }
+  });
+
+  it('gives the search result and the social card different titles', () => {
+    const meta = productMetadata(TIRE);
+    const search = (meta.title as { absolute: string }).absolute;
+
+    expect(String(meta.openGraph?.title).length).toBeGreaterThan(search.length);
+  });
+
+  it('declares its own canonical and the tire photo', () => {
+    const meta = productMetadata(TIRE);
+
+    expect(meta.alternates?.canonical).toBe(canonical(TIRE.path));
+    expect(String(meta.openGraph?.url)).toBe(canonical(TIRE.path));
+    expect(JSON.stringify(meta.openGraph?.images)).toContain(absUrl('/uploads/tire-1.jpg'));
+  });
+
+  it('falls back to the site card when the tire has no photo', () => {
+    const meta = productMetadata({ ...TIRE, images: [] });
+    expect(JSON.stringify(meta.openGraph?.images)).toContain(DEFAULT_OG_IMAGE.url);
   });
 });
 
