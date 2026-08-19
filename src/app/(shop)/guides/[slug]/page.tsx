@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 import { getGuideBySlug, guides, type GuideSection } from '@/app/(shop)/guides/guidesConfig';
 import { JsonLd } from '@/app/ui/components';
 import { INVENTORY_NETWORK } from '@/app/utils/brandClaims';
-import { buildBreadcrumbJsonLd, canonical, guideMetadata } from '@/app/utils/seo';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd, guideMetadata } from '@/app/utils/seo';
 import { whatsAppLink } from '@/app/utils/whatsapp';
 
 export function generateStaticParams() {
@@ -35,8 +35,6 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
   const guide = getGuideBySlug(slug);
   if (!guide) notFound();
 
-  const url = canonical(`/guides/${slug}`);
-
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     { name: 'Home', url: '/' },
     { name: 'Guides', url: '/guides' },
@@ -56,21 +54,12 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
     })),
   };
 
-  const articleJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: guide.heading,
+  const articleJsonLd = buildArticleJsonLd({
+    heading: guide.heading,
     description: guide.metaDescription,
-    url,
-    author: { '@type': 'Organization', name: 'MrGoma Tires' },
-    publisher: {
-      '@type': 'Organization',
-      name: 'MrGoma Tires',
-      logo: { '@type': 'ImageObject', url: canonical('/favicon.png') },
-    },
-    datePublished: guide.publishDate,
-    dateModified: guide.publishDate,
-  };
+    slug,
+    publishDate: guide.publishDate,
+  });
 
   return (
     <>

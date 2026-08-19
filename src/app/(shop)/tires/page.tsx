@@ -5,8 +5,8 @@ import type { Metadata } from 'next';
 import SearchResults from '@/app/(shop)/tires/container/SearchResults';
 import { fetchTiresServer } from '@/app/(shop)/tires/utils/fetchTiresServer';
 import { sizePageSlug } from '@/app/(shop)/tires/utils/sizeCatalog';
-import { LoadingScreen } from '@/app/ui/components';
-import { tiresMetadata } from '@/app/utils/seo';
+import { JsonLd, LoadingScreen } from '@/app/ui/components';
+import { buildBreadcrumbJsonLd, buildPageTypeJsonLd, tiresMetadata } from '@/app/utils/seo';
 import { fetchBrands } from '@/repositories/tiresRepository';
 
 export async function generateMetadata({
@@ -53,8 +53,30 @@ export default async function TiresPage({
   ]);
 
   return (
-    <Suspense fallback={<LoadingScreen message="Loading results ..." />}>
-      <SearchResults initialData={initialData} brands={brands} />
-    </Suspense>
+    <>
+      {/*
+       * Outside the Suspense boundary on purpose: the node describes the page,
+       * not the results, so it must be in the HTML whether or not the catalog
+       * has resolved. No product `ItemList` here — the audit is explicit that
+       * declaring one before block 5 consolidates the URLs would describe 1.622
+       * pages that are really 1.140 products.
+       */}
+      <JsonLd
+        data={[
+          buildPageTypeJsonLd({
+            type: 'CollectionPage',
+            path: '/tires',
+            name: 'Used & New Tires',
+          }),
+          buildBreadcrumbJsonLd([
+            { name: 'Home', url: '/' },
+            { name: 'Tires', url: '/tires' },
+          ]),
+        ]}
+      />
+      <Suspense fallback={<LoadingScreen message="Loading results ..." />}>
+        <SearchResults initialData={initialData} brands={brands} />
+      </Suspense>
+    </>
   );
 }

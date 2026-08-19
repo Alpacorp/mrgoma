@@ -5,7 +5,12 @@ import type { Metadata } from 'next';
 import { locationsConfig } from '@/app/(shop)/locations/locationsConfig';
 import { JsonLd } from '@/app/ui/components';
 import { HOME_TRUST_CLAIMS } from '@/app/utils/brandClaims';
-import { buildLocationsJsonLd, locationsMetadata } from '@/app/utils/seo';
+import {
+  buildBreadcrumbJsonLd,
+  buildLocationsJsonLd,
+  buildPageTypeJsonLd,
+  locationsMetadata,
+} from '@/app/utils/seo';
 
 export const metadata: Metadata = locationsMetadata();
 
@@ -51,7 +56,20 @@ export default function LocationsPage() {
   return (
     <>
       {/* The canonical home for all seven store entities. */}
-      <JsonLd data={buildLocationsJsonLd(locationsConfig)} />
+      <JsonLd
+        data={[
+          buildPageTypeJsonLd({
+            type: 'CollectionPage',
+            path: '/locations',
+            name: 'MrGoma Tires Locations',
+          }),
+          buildBreadcrumbJsonLd([
+            { name: 'Home', url: '/' },
+            { name: 'Locations', url: '/locations' },
+          ]),
+          ...buildLocationsJsonLd(locationsConfig),
+        ]}
+      />
       <main className="bg-[#0a0a0a] text-white min-h-screen">
         {/* Hero */}
         <section className="relative border-b border-white/8 overflow-hidden">

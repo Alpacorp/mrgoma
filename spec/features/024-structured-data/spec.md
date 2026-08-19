@@ -1,6 +1,6 @@
 # Spec — Telling Google what these pages are
 
-> Feature: `024-structured-data` · Status: Planned — ready for `/tasks`
+> Feature: `024-structured-data` · Status: Implemented — awaiting manual verification
 > Created: 2026-08-18 · Clarified: 2026-08-18
 > Roadmap: Backlog (SEO — Screaming Frog audit, block 4) · Branch: `feat/024-structured-data`
 

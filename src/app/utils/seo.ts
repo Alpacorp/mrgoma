@@ -864,7 +864,24 @@ export function organizationJsonLd() {
     '@id': organizationId(),
     name: SITE_NAME,
     url: site,
-    logo: absUrl('/favicon.png'),
+    /**
+     * The logotype, not the favicon.
+     *
+     * This was `absUrl('/favicon.png')` — a bare string pointing at a **32×32**
+     * icon, in the field Google may show beside a result and in the knowledge
+     * panel. `desk-logo.png` is the actual mark: the chevrons plus "MrGoma
+     * TIRES" on white, 513×512.
+     *
+     * `icons/icon-512.png` was considered and rejected: it is the chevron alone
+     * on a green field — an app icon, correct for a home screen and useless as a
+     * logo, because it names nobody.
+     */
+    logo: {
+      '@type': 'ImageObject',
+      url: absUrl('/desk-logo.png'),
+      width: 513,
+      height: 512,
+    },
     // The WhatsApp line: already the primary contact CTA on /contact, so the
     // structured data now matches what the site actually pushes.
     telephone: WHATSAPP_TEL,
@@ -926,7 +943,22 @@ export function buildLocationsJsonLd(locations: LocationSchemaInput[]): Record<s
 
     return {
       '@context': 'https://schema.org',
-      '@type': 'AutoPartsStore',
+      /**
+       * `TireShop` for what they sell, `AutoRepair` for what they do.
+       *
+       * They were `AutoPartsStore`, which describes a shop selling parts over a
+       * counter. These fit what they sell and perform eight services, two of
+       * which — oil changes and brakes — are mechanical maintenance.
+       *
+       * All seven alike. The audit proposed the second type for Hialeah and East
+       * Orlando only, the third time it singled out that pair, and the site's own
+       * copy contradicts it: `/services` says the eight services run at **7
+       * locations**, and Hialeah's description says it offers "the same full
+       * menu … as all our locations". `AutoRepair` was in any case already
+       * declared for this business by the service pages — it was simply not
+       * connected to the entity making the claim.
+       */
+      '@type': ['TireShop', 'AutoRepair'],
       '@id': `${url}#store`,
       name: `MrGoma Tires — ${loc.name}`,
       url,
@@ -971,6 +1003,107 @@ export function buildLocationsJsonLd(locations: LocationSchemaInput[]): Record<s
   });
 }
 
+/**
+ * A guide's `Article` node.
+ *
+ * **Moved here from `guides/[slug]/page.tsx`.** While it was built inside the
+ * page it inlined the organisation twice — as `author` and as `publisher`, the
+ * latter with the 32×32 favicon as its logo — and those were two of only three
+ * inline descriptions of this business in the whole app. The third was the
+ * service pages' `provider`, built inline for the same reason. Every node emitted
+ * from this file references {@link organizationId} correctly; the two that did
+ * not were the two built somewhere else.
+ *
+ * **No `dateModified`.** All seven guides used to assert they were modified on
+ * the day they were published, which `guidesConfig` cannot substantiate — it
+ * holds a `publishDate` and nothing else. A date nobody maintains becomes a lie
+ * the first time a guide is edited, and Google infers freshness by other means.
+ */
+export function buildArticleJsonLd(params: {
+  heading: string;
+  description: string;
+  slug: string;
+  publishDate: string;
+}): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: params.heading,
+    description: params.description,
+    url: absUrl(`/guides/${params.slug}`),
+    author: { '@id': organizationId() },
+    publisher: { '@id': organizationId() },
+    image: {
+      '@type': 'ImageObject',
+      url: absUrl('/opengraph-image'),
+      width: 1200,
+      height: 630,
+    },
+    datePublished: params.publishDate,
+  };
+}
+
+/**
+ * A service page's `Service` node.
+ *
+ * **Moved here from `services/[service]/page.tsx`**, where its `provider` was a
+ * third description of this business — `{ '@type': 'AutoRepair', name: 'MrGoma
+ * Tires', url: 'https://www.mrgomatires.com' }` — repeated across eight pages,
+ * with the site URL written as a literal rather than taken from
+ * {@link getSiteUrl}.
+ *
+ * It is worth noting what that inline node was right about: this business really
+ * does perform mechanical work, which is why the store nodes are now typed
+ * `AutoRepair` as well as `TireShop`. The claim was already being made; it was
+ * simply not connected to the entity making it.
+ */
+export function buildServiceJsonLd(params: {
+  name: string;
+  description: string;
+}): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: params.name,
+    description: params.description,
+    provider: { '@id': organizationId() },
+    areaServed: [
+      { '@type': 'City', name: 'Miami', containedInPlace: { '@type': 'State', name: 'Florida' } },
+      { '@type': 'City', name: 'Orlando', containedInPlace: { '@type': 'State', name: 'Florida' } },
+    ],
+  };
+}
+
+/**
+ * What kind of page this is.
+ *
+ * Five of the site's most-visited pages — the home aside — emitted only the
+ * `Organization` and `WebSite` the root layout gives everything, so none of them
+ * said anything about itself: the catalog did not say it was a catalog, and the
+ * guides index did not say it was a list. A store page and a guide had done this
+ * properly for months; the pattern existed and was not applied.
+ *
+ * `isPartOf` ties each page to the website entity, which is what lets Google
+ * treat them as one site rather than as unrelated documents.
+ */
+export function buildPageTypeJsonLd(params: {
+  type: 'CollectionPage' | 'AboutPage' | 'ContactPage';
+  path: string;
+  name: string;
+  description?: string;
+}): Record<string, unknown> {
+  const url = absUrl(params.path);
+  return {
+    '@context': 'https://schema.org',
+    '@type': params.type,
+    '@id': `${url}#page`,
+    url,
+    name: params.name,
+    ...(params.description ? { description: params.description } : {}),
+    isPartOf: { '@id': `${getSiteUrl()}/#website` },
+  };
+}
+
 export function websiteJsonLd() {
   const site = getSiteUrl();
   return {
@@ -993,6 +1126,16 @@ export function buildItemListJsonLd(params: {
   url: string;
   name: string;
   count: number;
+  /**
+   * The members, **by reference**. Each becomes a `ListItem` carrying a name and
+   * a URL and nothing else.
+   *
+   * Used by the home page for the seven stores. Their phone numbers, addresses
+   * and coordinates already live on each store page and in each store's node;
+   * copying them here would be the fifth duplication this audit has turned up,
+   * after the WhatsApp number, the founding year, the airport and the guides.
+   */
+  items?: { name: string; url: string }[];
 }): Record<string, unknown> {
   return {
     '@context': 'https://schema.org',
@@ -1001,5 +1144,15 @@ export function buildItemListJsonLd(params: {
     name: params.name,
     url: absUrl(params.url),
     numberOfItems: params.count,
+    ...(params.items
+      ? {
+          itemListElement: params.items.map((item, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: item.name,
+            item: absUrl(item.url),
+          })),
+        }
+      : {}),
   };
 }

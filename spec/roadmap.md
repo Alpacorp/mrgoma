@@ -242,7 +242,7 @@ To be resumed after the two tracks above; no fixed order yet.
   blocked on the owner. Worth stating plainly: structured data does not raise
   rankings, it changes how a result renders — which is the right lever here, since
   `021` and `022` measured a site that ranks well and is not chosen.
-  _Planned; ready for `/tasks`._
+  _Implemented; awaiting the Rich Results check after deploy._
 - ⬜ **Tire detail titles are truncated before the differentiators.** Found while
   analysing `021`, and not in the Screaming Frog audit, whose title tickets stop at
   section pages. `productTitle()` builds a title that reaches **100 characters** in
@@ -279,7 +279,7 @@ To be resumed after the two tracks above; no fixed order yet.
   from this site shared on WhatsApp or Facebook arrives today as bare text.
   The firewall rule was published on 2026-08-17 and verified: preview crawlers
   now get `200` while ordinary non-browser clients still get `429`.
-  _Planned; ready for `/tasks`._
+  _Implemented; awaiting the Rich Results check after deploy._
 - ⬜ **Document Stakeholders/Requirements** if formal sources appear.
 
 ## Recently delivered (context)

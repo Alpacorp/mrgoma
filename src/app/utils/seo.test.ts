@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { locationsConfig } from '@/app/(shop)/locations/locationsConfig';
+import { servicesConfig } from '@/app/(shop)/services/servicesConfig';
 import { WHATSAPP_TEL } from '@/app/utils/whatsapp';
 
 import {
@@ -12,6 +13,9 @@ import {
   canonical,
   getSiteUrl,
   locationMetadata,
+  buildArticleJsonLd,
+  buildServiceJsonLd,
+  organizationId,
   organizationJsonLd,
   productDescription,
   productTitle,
@@ -155,6 +159,36 @@ describe('site-wide JSON-LD', () => {
     expect(websiteJsonLd()['@id']).toBe(`${site}/#website`);
   });
 
+  /**
+   * The logo Google may show beside a result.
+   *
+   * It was the 32×32 favicon, as a bare string. Google's minimum is 112 px on
+   * the shorter side, so the old value was not merely poor — it was below the
+   * threshold at which the field is used at all.
+   */
+  it('declares a real logotype, big enough for Google to use', async () => {
+    const { existsSync, readFileSync } = await import('node:fs');
+    const { join } = await import('node:path');
+
+    const logo = organizationJsonLd().logo as {
+      '@type': string;
+      url: string;
+      width: number;
+      height: number;
+    };
+
+    expect(logo['@type']).toBe('ImageObject');
+    expect(Math.min(logo.width, logo.height)).toBeGreaterThanOrEqual(112);
+
+    const file = join(process.cwd(), 'public', new URL(logo.url).pathname);
+    expect(existsSync(file)).toBe(true);
+
+    // The declared dimensions must be the file's own, or the claim is decorative.
+    const header = readFileSync(file).subarray(16, 24);
+    expect(header.readUInt32BE(0)).toBe(logo.width);
+    expect(header.readUInt32BE(4)).toBe(logo.height);
+  });
+
   it('organizationJsonLd survives serialization with an ampersand in its description', () => {
     // The description says "Miami & Orlando"; JsonLd must round-trip it.
     const ld = organizationJsonLd();
@@ -175,6 +209,56 @@ describe('site-wide JSON-LD', () => {
   });
 });
 
+/**
+ * The two nodes that used to be built inside a page.
+ *
+ * Between them they carried all three inline descriptions of this business — the
+ * Article's `author` and `publisher`, and the Service's `provider` — while every
+ * node emitted from `seo.ts` referenced the entity `@id` correctly. Moving them
+ * is what removes the duplication; referencing the `@id` is what keeps it gone.
+ */
+describe('nodes that name the business reference it, rather than describing it', () => {
+  const article = buildArticleJsonLd({
+    heading: 'How to Buy Used Tires',
+    description: 'x'.repeat(60),
+    slug: 'how-to-buy-used-tires',
+    publishDate: '2026-05-01',
+  });
+  const service = buildServiceJsonLd({ name: 'Wheel Alignment', description: 'y'.repeat(60) });
+
+  it('points the article at the organization entity, twice', () => {
+    expect(article.author).toEqual({ '@id': organizationId() });
+    expect(article.publisher).toEqual({ '@id': organizationId() });
+    // The old publisher carried the 32x32 favicon as its logo.
+    expect(JSON.stringify(article)).not.toContain('favicon');
+  });
+
+  it('points the service at the same entity', () => {
+    expect(service.provider).toEqual({ '@id': organizationId() });
+    // The old provider hardcoded the site URL instead of deriving it.
+    expect(JSON.stringify(service)).not.toContain("url': 'https://www.mrgomatires.com'");
+  });
+
+  it('gives the article an image with dimensions', () => {
+    const image = article.image as { '@type': string; width: number; height: number };
+    expect(image['@type']).toBe('ImageObject');
+    expect(image.width).toBe(1200);
+    expect(image.height).toBe(630);
+  });
+
+  /**
+   * Absent, not corrected.
+   *
+   * Every guide used to claim it was modified on its publication day.
+   * `guidesConfig` holds no edit date, so there is nothing true to put here, and
+   * a field nobody maintains becomes a lie the first time a guide is edited.
+   */
+  it('claims no modification date it cannot substantiate', () => {
+    expect(article).not.toHaveProperty('dateModified');
+    expect(article.datePublished).toBe('2026-05-01');
+  });
+});
+
 describe('buildItemListJsonLd', () => {
   it('declares the item count so the rendered claim is backed by data', () => {
     const ld = buildItemListJsonLd({ url: '/tires/used', name: 'Used tires', count: 4342 });
@@ -192,6 +276,48 @@ describe('buildItemListJsonLd', () => {
  * path would ship a preview card that silently fails to load, and nothing in the
  * rendered page would show it.
  */
+/**
+ * AC9 — the type changes; the facts underneath it must not.
+ *
+ * `geo`, `hasMap`, `openingHoursSpecification`, `areaServed` and `address` were
+ * verified store by store on 2026-08-04, after Miami Gardens was found holding
+ * the coordinates of a locksmith in the same plaza. A wrong pin sends a customer
+ * to the wrong place, so these are asserted **against the config**, field by
+ * field, rather than as a vague "unchanged".
+ */
+describe('retyping the stores leaves their verified facts alone', () => {
+  const nodes = buildLocationsJsonLd(locationsConfig);
+
+  it.each(locationsConfig.map((l, i) => [l.slug, l, i] as const))(
+    '%s keeps the coordinates, map link, hours, areas and address it was verified with',
+    (_slug, store, index) => {
+      const node = nodes[index] as Record<string, never>;
+
+      expect(node['@type']).toEqual(['TireShop', 'AutoRepair']);
+      expect(node.geo).toMatchObject({
+        latitude: store.geo.latitude,
+        longitude: store.geo.longitude,
+      });
+      expect(node.hasMap).toBe(store.mapLink);
+      expect(node.openingHoursSpecification).toHaveLength(store.hours.length);
+      expect(node.areaServed).toBeTruthy();
+      expect(String(JSON.stringify(node.address))).toContain(store.address.split(',')[0]);
+    }
+  );
+
+  /**
+   * AC9b — the type rests on a claim the site makes elsewhere.
+   *
+   * `/services` states the eight services run at all seven locations. If that
+   * copy ever narrows, `AutoRepair` on every store stops being justified and this
+   * is the test that should send someone back to it.
+   */
+  it('is justified by the site claiming eight services at seven locations', () => {
+    expect(servicesConfig).toHaveLength(8);
+    expect(locationsConfig).toHaveLength(7);
+  });
+});
+
 describe('store preview cards', () => {
   it.each(locationsConfig.map(l => [l.slug, l] as const))(
     '%s shares its own storefront photo, and the file exists',
@@ -261,9 +387,9 @@ describe('buildLocationsJsonLd', () => {
     hours: [{ days: ['Monday'], opens: '08:00', closes: '18:00' }],
   };
 
-  it('maps a location to an AutoPartsStore with a parsed address', () => {
+  it('maps a location to a tire shop that also repairs, with a parsed address', () => {
     const [ld] = buildLocationsJsonLd([CUTLER_BAY]);
-    expect(ld['@type']).toBe('AutoPartsStore');
+    expect(ld['@type']).toEqual(['TireShop', 'AutoRepair']);
     expect(ld.name).toBe('MrGoma Tires — Cutler Bay');
     expect(ld.hasMap).toBe('http://map');
     const addr = ld.address as Record<string, unknown>;

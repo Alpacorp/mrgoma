@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import ServiceDetail from '@/app/(shop)/services/[service]/container/ServiceDetail/ServiceDetail';
 import { servicesConfig, getServiceBySlug } from '@/app/(shop)/services/servicesConfig';
 import { JsonLd } from '@/app/ui/components';
-import { buildBreadcrumbJsonLd, serviceMetadata } from '@/app/utils/seo';
+import { buildBreadcrumbJsonLd, buildServiceJsonLd, serviceMetadata } from '@/app/utils/seo';
 
 export function generateStaticParams() {
   return servicesConfig.map(s => ({ service: s.slug }));
@@ -38,21 +38,10 @@ export default async function ServicePage({ params }: { params: Promise<{ servic
     { name: service.title, url: `/services/${slug}` },
   ]);
 
-  const serviceSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Service',
+  const serviceSchema = buildServiceJsonLd({
     name: service.title,
     description: service.longDescription,
-    provider: {
-      '@type': 'AutoRepair',
-      name: 'MrGoma Tires',
-      url: 'https://www.mrgomatires.com',
-    },
-    areaServed: [
-      { '@type': 'City', name: 'Miami', containedInPlace: { '@type': 'State', name: 'Florida' } },
-      { '@type': 'City', name: 'Orlando', containedInPlace: { '@type': 'State', name: 'Florida' } },
-    ],
-  };
+  });
 
   const faqSchema = {
     '@context': 'https://schema.org',

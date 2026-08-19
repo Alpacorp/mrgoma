@@ -20,7 +20,7 @@ Groups A, B and C are independent of each other.
 
 ## A. What the organisation says about itself
 
-- [ ] **T1** — `Organization.logo` becomes an `ImageObject` for `/desk-logo.png`
+- [x] **T1** — `Organization.logo` becomes an `ImageObject` for `/desk-logo.png`
       with `width: 513, height: 512`. Today it is `absUrl('/favicon.png')` — a
       bare string pointing at a **32×32** icon, in the field Google may show
       beside a result and in the knowledge panel.
@@ -32,7 +32,7 @@ Groups A, B and C are independent of each other.
       · check: `npm test` — `@type` is `ImageObject`, width and height are
       present, **the file exists on disk**, and its shorter side is ≥ 112 px.
 
-- [ ] **T2** — Move **both** nodes that are built inside a page into `seo.ts`:
+- [x] **T2** — Move **both** nodes that are built inside a page into `seo.ts`:
       the guide's `Article` (`buildArticleJsonLd`) and the service pages'
       `Service` (`buildServiceJsonLd`).
       · **Move them; do not patch them in place.** The business is described
@@ -63,7 +63,7 @@ Groups A, B and C are independent of each other.
 
 ## B. Five pages that say nothing about themselves
 
-- [ ] **T3** — Add `buildPageTypeJsonLd()` and call it, with
+- [x] **T3** — Add `buildPageTypeJsonLd()` and call it, with
       `buildBreadcrumbJsonLd()`, from the five pages that today emit only what the
       root layout gives every page:
       | Page | Type |
@@ -82,7 +82,7 @@ Groups A, B and C are independent of each other.
       · check: `npm test` — each emits its type, and each breadcrumb's last item
       is that page's own canonical URL.
 
-- [ ] **T4** — An `ItemList` of the seven stores on the home page.
+- [x] **T4** — An `ItemList` of the seven stores on the home page.
       `buildItemListJsonLd()` gains an optional `items` and emits `ListItem`s that
       **reference `/locations/{slug}` URLs and repeat nothing** — the contact
       details already live on each store page, and copying them here would be the
@@ -96,7 +96,7 @@ Groups A, B and C are independent of each other.
 
 ## C. What the stores are
 
-- [ ] **T5** — In `buildLocationsJsonLd()`, `'@type': 'AutoPartsStore'` becomes
+- [x] **T5** — In `buildLocationsJsonLd()`, `'@type': 'AutoPartsStore'` becomes
       `['TireShop', 'AutoRepair']`, for **all seven** (spec Decision 1).
       · **This is the task where the danger is everything you do not change.**
       `geo`, `hasMap`, `openingHoursSpecification`, `areaServed` and `address` in
@@ -116,7 +116,7 @@ Groups A, B and C are independent of each other.
 
 ## D. Make it impossible to drift
 
-- [ ] **T6** — `structuredData.guard.test.ts` (new). **Last, because its main
+- [x] **T6** — `structuredData.guard.test.ts` (new). **Last, because its main
       assertion is false until T2 lands.**
       · **No file outside `seo.ts` describes this business**, under any of the
       business types: `Organization`, `LocalBusiness`, `Store`, `AutoPartsStore`,
@@ -141,7 +141,7 @@ Groups A, B and C are independent of each other.
 
 ## E. Close it out
 
-- [ ] **T7** — Definition of Done: `npx tsc --noEmit` + `npm run lint` +
+- [x] **T7** — Definition of Done: `npx tsc --noEmit` + `npm run lint` +
       `npm test` + `npm run build` + `npm run perf:budget`, all green.
       · The budget must not move: every node is server-rendered `<script>`
       content.
