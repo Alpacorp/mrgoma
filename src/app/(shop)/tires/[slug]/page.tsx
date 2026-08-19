@@ -8,12 +8,10 @@ import DetailView from '@/app/(shop)/detail/container/DetailView/DetailView';
 import type { SingleTire } from '@/app/interfaces/tires';
 import { JsonLd } from '@/app/ui/components';
 import {
-  absUrl,
   buildBreadcrumbJsonLd,
   buildProductJsonLd,
   canonical,
-  productDescription,
-  productTitle,
+  productMetadata,
 } from '@/app/utils/seo';
 import { generateTireDescription } from '@/app/utils/tireDescription';
 import { buildTireSlug, extractIdFromSlug } from '@/app/utils/tireSlug';
@@ -54,65 +52,26 @@ export async function generateMetadata({
   }
 
   const canonicalSlug = buildTireSlug(String(product.id), product.brand, product.size || '');
-  const url = canonical(`/tires/${canonicalSlug}`);
 
-  const title = productTitle({
-    brand: product.brand,
-    model: product.model2,
-    size: product.size,
-    condition: product.condition,
-    price: product.price,
-  });
-
-  const descriptionBase = productDescription({
+  /**
+   * Every field is handed to one pure builder rather than assembled here.
+   *
+   * This block used to compose the whole `Metadata` object inline, which is why
+   * nothing tested it — and why it was the last route still returning a plain
+   * `title` string, so the root `%s | MrGoma Tires` template printed the brand a
+   * second time on all 1.622 pages.
+   */
+  return productMetadata({
     brand: product.brand,
     model: product.model2,
     size: product.size,
     condition: product.condition,
     patched: product.patched,
     remainingLife: product.remainingLife,
+    price: product.price,
+    path: `/tires/${canonicalSlug}`,
+    images: Array.isArray(product.images) ? product.images.map(image => image.src) : [],
   });
-
-  const priceNumber = Number(product.price);
-  const hasValidPrice = typeof priceNumber === 'number' && isFinite(priceNumber) && priceNumber > 0;
-  const priceText = hasValidPrice ? ` Price: $${priceNumber.toFixed(2)}.` : '';
-  const description = `${descriptionBase}${priceText}`;
-
-  const images = Array.isArray(product.images) ? product.images.map(i => absUrl(i.src)) : [];
-
-  const keywords = [
-    product.brand,
-    product.model2,
-    product.size,
-    product.condition ? `${product.condition.toLowerCase()} tire` : null,
-    'Miami tires',
-    'MrGoma Tires',
-    'buy tires online',
-    'tire shop Miami',
-  ].filter(Boolean) as string[];
-
-  return {
-    title,
-    description,
-    keywords,
-    alternates: { canonical: url },
-    openGraph: {
-      type: 'website',
-      siteName: 'MrGoma Tires',
-      url,
-      title,
-      description,
-      images: images.length
-        ? images.map(u => ({ url: u }))
-        : [{ url: absUrl('/assets/images/og-default.jpg') }],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: images.length ? images : [absUrl('/assets/images/og-default.jpg')],
-    },
-  };
 }
 
 async function TireJsonLd({ productId }: { productId: string }) {

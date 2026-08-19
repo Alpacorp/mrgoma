@@ -167,6 +167,18 @@ export function buildDefaultMetadata(): Metadata {
  * differentiator needs.
  * ──────────────────────────────────────────────────────────────────────────── */
 
+/**
+ * Collapses runs of whitespace and trims.
+ *
+ * Builders composed from fixed copy never need this. Builders composed from a
+ * database record do: an absent model or size leaves a gap exactly where its
+ * value would have gone, and `fitTitle` selects by length without looking at
+ * what it is selecting.
+ */
+function tidy(text: string): string {
+  return text.replace(/\s+/g, ' ').trim();
+}
+
 /** Picks the first candidate that fits Google's title width; hard-trims if none do. */
 function fitTitle(...candidates: string[]): string {
   return (
@@ -183,7 +195,7 @@ function fitTitle(...candidates: string[]): string {
  * longest-first and this picks the one that fits.
  */
 function fitDescription(head: string, tails: readonly string[]): string {
-  const candidates = tails.map(tail => `${head} ${tail}`.replace(/\s+/g, ' ').trim());
+  const candidates = tails.map(tail => tidy(`${head} ${tail}`));
 
   const fits = candidates.find(
     candidate => candidate.length >= DESCRIPTION_MIN && candidate.length <= DESCRIPTION_MAX
@@ -192,8 +204,14 @@ function fitDescription(head: string, tails: readonly string[]): string {
 
   // Nothing landed in the window (an unusually long brand name, say). Prefer the
   // longest candidate that at least doesn't overflow.
+  //
+  // `tails` arrives longest-first, so that is `underMax[0]`. This read
+  // `underMax[underMax.length - 1]` — the *shortest* — until `025`, which is the
+  // first feature whose descriptions reach this branch at all: the fixed-copy
+  // pages always land in the window, so the fallback was never exercised and the
+  // code quietly disagreed with the line above it.
   const underMax = candidates.filter(candidate => candidate.length <= DESCRIPTION_MAX);
-  if (underMax.length) return underMax[underMax.length - 1];
+  if (underMax.length) return underMax[0];
 
   return candidates[candidates.length - 1].slice(0, DESCRIPTION_MAX).trimEnd();
 }
@@ -757,6 +775,56 @@ export function locationMetadata(params: {
   });
 }
 
+/**
+ * Brands the catalog spells in a way `brandName` cannot derive.
+ *
+ * Keyed by the stored (upper-case) form. The catalog holds **75 brands** and
+ * plain title-casing is right for 74 of them; this exists for the one that is not
+ * and grows only when another arrives.
+ */
+const BRAND_EXCEPTIONS: Record<string, string> = {
+  BFGOODRICH: 'BFGoodrich',
+};
+
+/**
+ * Renders a stored brand for display: `BRIDGESTONE` → `Bridgestone`.
+ *
+ * Two things this must not do. It must not touch **model** names — the catalog
+ * has 96 distinct all-caps tokens of three letters or fewer (`XL`, `RFT`, `RSC`,
+ * `A/S`) against a handful of real words spelled the same way (`ALL`, `NO`,
+ * `FIT`), so any length-based rule mangles one set; `Primacy ALL Season` is what
+ * the first attempt produced. And it must not assume the stored value is clean:
+ * `'BACK COUNTRY '` carries a **trailing space**, which is why today's titles
+ * render a double space before the model.
+ *
+ * An unknown brand degrades to title case rather than throwing.
+ */
+export function brandName(brand?: string): string {
+  const raw = (brand ?? '').trim().replace(/\s+/g, ' ');
+  if (!raw) return '';
+
+  const exception = BRAND_EXCEPTIONS[raw.toUpperCase()];
+  if (exception) return exception;
+
+  return raw
+    .toLowerCase()
+    .replace(/(^|[\s-])(\w)/g, (_, sep: string, ch: string) => sep + ch.toUpperCase());
+}
+
+/**
+ * The whole-dollar price, or `''` when there isn't one to show.
+ *
+ * `mapTireRecordToSingleTire` writes `record.Price?.toString() || '-'`, so a tire
+ * with no price arrives as the **string `'-'`** rather than `null` — a sentinel
+ * TypeScript cannot see. `Number('-')` is `NaN`, which the `isFinite` check
+ * below catches; removing that check would print `$NaN` on every such page.
+ */
+function productPrice(price?: number | string): string {
+  const value = typeof price === 'string' ? Number(price) : price;
+  const valid = typeof value === 'number' && isFinite(value) && value > 0;
+  return valid ? value.toFixed(0) : '';
+}
+
 export function productTitle(params: {
   brand?: string;
   model?: string;
@@ -764,16 +832,78 @@ export function productTitle(params: {
   condition?: string; // New | Used
   price?: number | string;
 }): string {
-  const condition = params.condition ? `${params.condition} ` : '';
-  const brand = params.brand ? `${params.brand} ` : '';
-  const model = params.model ? `${params.model} ` : '';
-  const size = params.size ? `${params.size} ` : '';
-  const priceNum = typeof params.price === 'string' ? Number(params.price) : params.price;
-  const hasPrice = typeof priceNum === 'number' && isFinite(priceNum) && priceNum > 0;
-  const priceStr = hasPrice ? ` | $${priceNum!.toFixed(0)}` : '';
-  return `${condition}${brand}${model}${size}Tire in Miami${priceStr} | Free Shipping`;
+  const head = tidy(`${params.condition ?? ''} ${brandName(params.brand)}`);
+  const model = params.model?.trim() ?? '';
+  const size = params.size?.trim() ?? '';
+  const price = productPrice(params.price);
+  const pricePart = price ? ` — $${price}` : '';
+
+  /**
+   * Ordered most complete first; `fitTitle` takes the first that fits.
+   *
+   * What gets sacrificed, and in which order, is the whole design. The brand
+   * suffix goes first because it is identical on all 1.622 product pages and so
+   * differentiates nothing. The model goes last because it is the one piece a
+   * searcher may have typed. Condition, brand and size are never dropped.
+   *
+   * `Tire in Miami` and `Free Shipping` are deliberately absent: together they
+   * cost 28 of the 60 characters to repeat what the description, the H1 and the
+   * breadcrumb already say. They survive in {@link productSocialTitle}, which has
+   * no such budget.
+   */
+  return fitTitle(
+    tidy(`${head} ${model} ${size}${pricePart}${TITLE_SUFFIX}`),
+    tidy(`${head} ${model} ${size}${pricePart}`),
+    tidy(`${head} ${model} ${size}`),
+    // Dropping a 51-character model frees far more room than the suffix costs,
+    // so the suffix comes back here rather than staying sacrificed.
+    tidy(`${head} ${size}${pricePart}${TITLE_SUFFIX}`),
+    tidy(`${head} ${size}${pricePart}`),
+    tidy(`${head} ${size}`)
+  );
 }
 
+/**
+ * The full-length title, for surfaces that are not cut at 60 characters.
+ *
+ * Open Graph and Twitter cards render far more, and `019`'s WhatsApp enquiry
+ * renders this card — so the price and the shipping promise `014` added stay
+ * here even though they no longer fit in the search result.
+ */
+export function productSocialTitle(params: {
+  brand?: string;
+  model?: string;
+  size?: string;
+  condition?: string;
+  price?: number | string;
+}): string {
+  const price = productPrice(params.price);
+  const pricePart = price ? ` | $${price}` : '';
+
+  return tidy(
+    `${params.condition ?? ''} ${brandName(params.brand)} ${params.model ?? ''} ` +
+      `${params.size ?? ''} Tire in Miami${pricePart} | Free Shipping`
+  );
+}
+
+/**
+ * The longest head that still leaves a tail room to reach the display window.
+ * Past this the model is dropped, exactly as the title does.
+ */
+const DESCRIPTION_HEAD_MAX = 95;
+
+/**
+ * Composes the meta description for a tire, price included.
+ *
+ * The price used to be appended by the caller *after* this returned, which put
+ * it last — the position truncation removes first. It reached 31% of pages.
+ * Here it is part of the head, so it is never the thing that gets cut.
+ *
+ * Note the `140` floor that `metadata.test.ts` enforces for the fixed-copy pages
+ * is a *preference* here, not a rule: this text is built from a database record,
+ * and a tire with no tread reading and a short brand cannot reach 140 without
+ * padding that says nothing. `fitDescription` already encodes that preference.
+ */
 export function productDescription(params: {
   brand?: string;
   model?: string;
@@ -781,21 +911,119 @@ export function productDescription(params: {
   condition?: string;
   patched?: string;
   remainingLife?: string;
+  price?: number | string;
 }): string {
-  const bits: string[] = [];
-  const cond = params.condition?.toLowerCase();
-  if (cond === 'new') bits.push('New tire');
-  else if (cond === 'used') bits.push('Used tire');
-  else bits.push('Quality tire');
-  if (params.brand) bits.push(`by ${params.brand}`);
-  if (params.model) bits.push(params.model);
-  if (params.size) bits.push(params.size);
-  bits.push('available in Miami, Florida.');
-  if (params.remainingLife && cond === 'used')
-    bits.push(`Approx. remaining life: ${params.remainingLife}.`);
-  if (params.patched && cond === 'used') bits.push(`Patched: ${params.patched}.`);
-  bits.push('Buy online or visit our locations for installation.');
-  return bits.join(' ');
+  const condition = params.condition?.trim().toLowerCase();
+  const isNew = condition === 'new';
+  const noun = isNew ? 'New' : condition === 'used' ? 'Used' : 'Quality';
+
+  const brand = brandName(params.brand);
+  const model = params.model?.trim() ?? '';
+  const size = params.size?.trim() ?? '';
+  const price = productPrice(params.price);
+  const forPrice = price ? ` for $${price}` : '';
+
+  const heads = [
+    tidy(`${noun} ${brand} ${model} ${size} tire in Miami${forPrice}.`),
+    tidy(`${noun} ${brand} ${size} tire in Miami${forPrice}.`),
+  ];
+  const head = heads.find(candidate => candidate.length <= DESCRIPTION_HEAD_MAX) ?? heads[1];
+
+  /**
+   * `WARRANTY` is claimed only for used tires. `WARRANTY_LONG` spells it out —
+   * "on Like-New Used Tires" — so attaching it to a new tire would make a claim
+   * the constant itself does not support.
+   */
+  if (isNew) {
+    return fitDescription(head, [
+      `Brand new and unused. ${SHIPPING} and installation at ${LOCATIONS_LABEL_LONG}.`,
+      `Brand new and unused. ${SHIPPING}.`,
+      `${SHIPPING}.`,
+    ]);
+  }
+
+  // `remainingLife` is `'-'` when the record has none — the same sentinel as the
+  // price, and just as invisible to TypeScript.
+  const life = params.remainingLife && params.remainingLife !== '-' ? params.remainingLife : '';
+  const patched =
+    params.patched === 'Yes' ? 'patched' : params.patched === 'No' ? 'never patched' : '';
+  const state = [life ? `${life} tread life left` : '', patched].filter(Boolean).join(', ');
+  const stateSentence = state ? `${state[0].toUpperCase()}${state.slice(1)}.` : '';
+
+  return fitDescription(head, [
+    `${stateSentence} ${SHIPPING} and a ${WARRANTY}. Buy online or visit us.`,
+    `${stateSentence} ${SHIPPING} and a ${WARRANTY}.`,
+    `${stateSentence} ${WARRANTY}.`,
+    `${SHIPPING} and a ${WARRANTY}.`,
+  ]);
+}
+
+/**
+ * The whole `Metadata` object for a tire detail page.
+ *
+ * Pure, like every other builder here, and for the stated reason: `/tires/[slug]`
+ * composes its metadata inside a `generateMetadata` that also awaits the
+ * database, so testing it in place would mean mocking `mssql`. It was the last
+ * route still in that state — which is why it was also the last one still
+ * returning a plain `title` string and letting the root `%s | MrGoma Tires`
+ * template print the brand a second time.
+ *
+ * The search title and the social title are deliberately different. Only the
+ * first is cut at 60 characters; Open Graph cards are not, and `019`'s WhatsApp
+ * enquiry renders one, so the price and shipping promise stay there.
+ */
+export function productMetadata(params: {
+  brand?: string;
+  model?: string;
+  size?: string;
+  condition?: string;
+  patched?: string;
+  remainingLife?: string;
+  price?: number | string;
+  path: string;
+  images?: string[];
+}): Metadata {
+  const title = productTitle(params);
+  const socialTitle = productSocialTitle(params);
+  const description = productDescription(params);
+  const url = canonical(params.path);
+
+  const images = params.images?.length
+    ? params.images.map(src => ({ url: absUrl(src) }))
+    : [DEFAULT_OG_IMAGE];
+
+  const keywords = [
+    brandName(params.brand),
+    params.model,
+    params.size,
+    params.condition ? `${params.condition.toLowerCase()} tire` : '',
+    'Miami tires',
+    SITE_NAME,
+    'buy tires online',
+    'tire shop Miami',
+  ].filter(Boolean) as string[];
+
+  return {
+    title: { absolute: title },
+    description,
+    keywords,
+    alternates: { canonical: url },
+    openGraph: {
+      type: 'website',
+      siteName: SITE_NAME,
+      url,
+      title: socialTitle,
+      description,
+      locale: 'en_US',
+      images,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: socialTitle,
+      description,
+      images: images.map(image => image.url),
+    },
+  };
 }
 
 export function buildProductJsonLd(params: {
