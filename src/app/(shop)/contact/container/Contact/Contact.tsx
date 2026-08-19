@@ -118,9 +118,10 @@ export default function Contact() {
           </div>
 
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-none mb-6">
-            Contact
-            <br />
-            <span className="text-[#9dfb40]">MrGoma</span> Tires
+            Contact{' '}
+            <span className="block">
+              <span className="text-[#9dfb40]">MrGoma</span> Tires
+            </span>
           </h1>
 
           <p className="text-gray-400 text-lg max-w-xl leading-relaxed">

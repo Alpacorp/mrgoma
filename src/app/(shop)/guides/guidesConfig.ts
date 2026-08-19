@@ -9,8 +9,18 @@ export type GuideSection = {
 
 export type Guide = {
   slug: string;
-  title: string;
-  headline: string;
+  /**
+   * The page's `<h1>`, and the `headline` of its Article schema — Google treats a
+   * mismatch between those two as a misdescribed article.
+   *
+   * Named `title` until 2026-08-18, which is how a breadcrumb came to name a
+   * different article than the heading three lines below it: whoever edited
+   * `title` had no reason to think they were editing a heading, and `headline`
+   * sounded like the one that was.
+   */
+  heading: string;
+  /** The short name a card shows in a grid. May be shorter than {@link heading}. */
+  cardName: string;
   metaTitle: string;
   metaDescription: string;
   category: 'buying-guide' | 'rideshare' | 'maintenance';
@@ -26,8 +36,8 @@ export type Guide = {
 export const guides: Guide[] = [
   {
     slug: 'how-to-buy-used-tires',
-    title: 'How to Buy Used Tires: The Complete Guide',
-    headline: "The Complete Buyer's Guide to Used Tires",
+    heading: 'How to Buy Used Tires',
+    cardName: 'How to Buy Used Tires',
     metaTitle: 'How to Buy Used Tires: What to Check First',
     metaDescription:
       'Save 30–70% without sacrificing safety. Tread depth, DOT age codes and the checks that matter, explained by ASE-certified technicians in Miami.',
@@ -122,8 +132,8 @@ export const guides: Guide[] = [
   },
   {
     slug: 'used-tire-safety-checklist',
-    title: 'Used Tire Safety Checklist: 8 Things to Check Before You Buy',
-    headline: 'Used Tire Safety: 8-Point Inspection Checklist',
+    heading: 'Used Tire Safety Checklist: 8 Things to Check Before You Buy',
+    cardName: 'Used Tire Safety: 8-Point Inspection Checklist',
     metaTitle: 'Used Tire Safety: 8-Point Inspection Checklist',
     metaDescription:
       'Before buying used tires, run through this 8-point safety checklist. Learn how to check tread depth, DOT age code, sidewall damage, and more.',
@@ -220,8 +230,8 @@ export const guides: Guide[] = [
   },
   {
     slug: 'how-to-read-tire-size',
-    title: 'How to Read Tire Size: A Simple Guide to Sidewall Markings',
-    headline: 'How to Read Tire Size Numbers',
+    heading: 'How to Read Tire Size: A Simple Guide to Sidewall Markings',
+    cardName: 'How to Read Tire Size Numbers',
     metaTitle: 'How to Read Tire Size: 225/65R17 Explained',
     metaDescription:
       'Decode a tire size like 215/55R17: width, aspect ratio, rim diameter, load index and speed rating, explained by our ASE-certified technicians.',
@@ -305,8 +315,8 @@ export const guides: Guide[] = [
   },
   {
     slug: 'how-long-do-used-tires-last',
-    title: 'How Long Do Used Tires Last? What to Expect and When to Replace',
-    headline: 'Used Tire Lifespan: What to Expect',
+    heading: 'How Long Do Used Tires Last? What to Expect and When to Replace',
+    cardName: 'Used Tire Lifespan: What to Expect',
     metaTitle: 'How Long Do Used Tires Last? Lifespan Guide',
     metaDescription:
       'Find out how long used tires last based on tread depth, age, and driving conditions. Learn when to replace used tires and how to extend their life.',
@@ -394,8 +404,8 @@ export const guides: Guide[] = [
   },
   {
     slug: 'used-vs-new-tires',
-    title: 'Used vs. New Tires: Which Should You Buy?',
-    headline: 'Used Tires vs. New: Which Is Right for You?',
+    heading: 'Used vs. New Tires: Which Should You Buy?',
+    cardName: 'Used Tires vs. New: Which Is Right for You?',
     metaTitle: 'Used vs. New Tires: Cost, Safety & Lifespan',
     metaDescription:
       'Used tires cost 30–70% less but last fewer miles. An honest comparison of price, safety, tread life and warranty — from ASE-certified technicians.',
@@ -480,8 +490,8 @@ export const guides: Guide[] = [
   },
   {
     slug: 'best-tires-for-uber-lyft-drivers',
-    title: 'Best Tires for Uber and Lyft Drivers in Miami & Orlando',
-    headline: 'Best Tires for Rideshare Drivers in Florida',
+    heading: 'Best Tires for Uber and Lyft Drivers in Miami & Orlando',
+    cardName: 'Best Tires for Rideshare Drivers in Florida',
     metaTitle: 'Best Tires for Uber and Lyft Drivers in Miami',
     metaDescription:
       'Find the best tires for Uber and Lyft drivers in Miami and Orlando. High-mileage options, cost-per-mile value, and rideshare pricing at MrGoma Tires.',
@@ -555,8 +565,8 @@ export const guides: Guide[] = [
   },
   {
     slug: 'rideshare-tire-maintenance-schedule',
-    title: 'Rideshare Driver Tire Maintenance Schedule: When to Rotate and Replace',
-    headline: 'Rideshare Tire Maintenance: Rotation & Replacement Schedule',
+    heading: 'Rideshare Driver Tire Maintenance Schedule: When to Rotate and Replace',
+    cardName: 'Rideshare Tire Maintenance: Rotation & Replacement Schedule',
     metaTitle: 'Tire Maintenance Schedule for Uber and Lyft Drivers',
     metaDescription:
       'How often should rideshare drivers rotate and replace tires? A practical maintenance schedule for Uber and Lyft drivers in Miami and Orlando, FL.',
@@ -610,8 +620,7 @@ export const guides: Guide[] = [
       {
         heading: 'Managing Costs: Used Tires for Rideshare',
         type: 'callout',
-        content:
-          `At 40,000+ annual miles, new tires that cost $600 and last 8 months cost more per mile than quality used tires at $150 that last 6 months. MrGoma's rideshare pricing makes this math work in your favor. Ask about our rideshare discount at any of our 7 locations in Miami and Orlando — or contact us via WhatsApp at ${WHATSAPP_DISPLAY}.`,
+        content: `At 40,000+ annual miles, new tires that cost $600 and last 8 months cost more per mile than quality used tires at $150 that last 6 months. MrGoma's rideshare pricing makes this math work in your favor. Ask about our rideshare discount at any of our 7 locations in Miami and Orlando — or contact us via WhatsApp at ${WHATSAPP_DISPLAY}.`,
       },
       {
         heading: 'Quick Monthly Inspection: 5-Minute Checklist',

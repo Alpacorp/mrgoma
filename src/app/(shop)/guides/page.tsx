@@ -33,9 +33,7 @@ export default function GuidesPage() {
             </span>
           </div>
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-none mb-6">
-            Tire Guides
-            <br />
-            <span className="text-[#9dfb40]">& Tips</span>
+            Tire Guides <span className="block text-[#9dfb40]">& Tips</span>
           </h1>
           <p className="text-gray-400 text-lg max-w-xl leading-relaxed">
             Straight answers from ASE-certified technicians. No fluff — just what you need to know
@@ -159,9 +157,16 @@ function GuideCard({ guide }: { guide: (typeof guides)[0] }) {
         </span>
         <span className="text-gray-600 text-xs">{guide.readTime}</span>
       </div>
-      <h2 className="text-white font-bold text-lg leading-snug mb-3 group-hover:text-[#9dfb40] transition-colors duration-200 flex-1">
-        {guide.headline}
-      </h2>
+      {/*
+       * An `<h3>`, because this card sits inside a section whose name is an
+       * `<h2>`. Marking both the same flattened the list to eleven equal
+       * headings and removed the structure a screen-reader user navigates by.
+       * The home page's guide cards were already `<h3>`; this brings the two
+       * grids in line rather than inventing a convention.
+       */}
+      <h3 className="text-white font-bold text-lg leading-snug mb-3 group-hover:text-[#9dfb40] transition-colors duration-200 flex-1">
+        {guide.cardName}
+      </h3>
       <p className="text-gray-500 text-sm leading-relaxed line-clamp-2 mb-5">{guide.intro}</p>
       <div className="flex items-center gap-1.5 text-xs font-semibold text-[#9dfb40] mt-auto">
         Read guide

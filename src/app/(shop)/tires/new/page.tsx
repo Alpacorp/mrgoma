@@ -101,9 +101,10 @@ export default async function NewTiresPage() {
               </span>
             </div>
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-none mb-5 text-white">
-              <span style={{ color: '#4ade80' }}>New</span> Tires
-              <br />
-              <span style={{ color: '#9dfb40' }}>Miami & Orlando</span>
+              <span style={{ color: '#4ade80' }}>New</span> Tires{' '}
+              <span className="block" style={{ color: '#9dfb40' }}>
+                Miami & Orlando
+              </span>
             </h1>
             <p className="text-gray-400 text-lg max-w-lg leading-relaxed">
               Brand-new tires from top manufacturers, installed by ASE-certified technicians at any

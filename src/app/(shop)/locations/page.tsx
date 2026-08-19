@@ -69,9 +69,7 @@ export default function LocationsPage() {
               </span>
             </div>
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-none mb-6">
-              Our Locations
-              <br />
-              <span className="text-[#9dfb40]">Miami & Orlando</span>
+              Our Locations <span className="block text-[#9dfb40]">Miami & Orlando</span>
             </h1>
             <p className="text-gray-400 text-lg max-w-xl leading-relaxed">
               7 tire shops across South Florida and Central Florida. Walk in at any location — no

@@ -16,7 +16,7 @@ const renderWith = (setShowMenu: (v: boolean) => void = vi.fn(), showMenu = fals
 describe('HamburgerMenu', () => {
   it('exposes an accessible toggle in the collapsed state', () => {
     renderWith();
-    const button = screen.getByRole('button', { name: /abrir menú/i });
+    const button = screen.getByRole('button', { name: /open navigation menu/i });
     expect(button).toHaveAttribute('aria-haspopup', 'menu');
     expect(button).toHaveAttribute('aria-expanded', 'false');
   });
@@ -25,7 +25,7 @@ describe('HamburgerMenu', () => {
     const setShowMenu = vi.fn();
     const user = userEvent.setup();
     renderWith(setShowMenu);
-    await user.click(screen.getByRole('button', { name: /abrir menú/i }));
+    await user.click(screen.getByRole('button', { name: /open navigation menu/i }));
     expect(setShowMenu).toHaveBeenCalledWith(true);
   });
 });

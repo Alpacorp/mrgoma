@@ -40,7 +40,10 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     { name: 'Home', url: '/' },
     { name: 'Guides', url: '/guides' },
-    { name: guide.headline, url: `/guides/${slug}` },
+    // The breadcrumb names the page the way its `<h1>` does. It used to be fed
+    // from the card name, so the trail said one thing and the heading three
+    // lines below it said another.
+    { name: guide.heading, url: `/guides/${slug}` },
   ]);
 
   const faqJsonLd = {
@@ -56,7 +59,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
   const articleJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    headline: guide.title,
+    headline: guide.heading,
     description: guide.metaDescription,
     url,
     author: { '@type': 'Organization', name: 'MrGoma Tires' },
@@ -87,7 +90,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
               Guides
             </Link>
             <span>/</span>
-            <span className="text-gray-900 font-medium line-clamp-1">{guide.headline}</span>
+            <span className="text-gray-900 font-medium line-clamp-1">{guide.heading}</span>
           </div>
         </nav>
 
@@ -124,7 +127,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
               </span>
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight mb-5">
-              {guide.title}
+              {guide.heading}
             </h1>
             <p className="text-gray-400 text-lg leading-relaxed max-w-2xl">{guide.intro}</p>
           </div>
@@ -240,7 +243,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
                           href={`/guides/${g.slug}`}
                           className="text-sm text-gray-700 hover:text-green-600 transition-colors leading-snug block"
                         >
-                          {g.headline}
+                          {g.cardName}
                         </Link>
                       </li>
                     ))}

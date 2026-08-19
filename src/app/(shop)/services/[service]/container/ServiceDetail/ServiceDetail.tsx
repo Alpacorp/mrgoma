@@ -123,9 +123,8 @@ export default function ServiceDetail({ service }: Props) {
             </span>
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight mb-6">
-            {service.title}
-            <br />
-            <span className="text-gray-500 text-2xl sm:text-3xl font-bold">
+            {service.title}{' '}
+            <span className="block text-gray-500 text-2xl sm:text-3xl font-bold">
               Miami & Orlando, FL
             </span>
           </h1>
