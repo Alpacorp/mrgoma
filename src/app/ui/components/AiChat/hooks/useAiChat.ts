@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 
 import { trackEvent } from '@/app/utils/analytics';
 import { EVENTS } from '@/app/utils/analyticsEvents';
+import { encodeLocationPairs } from '@/app/utils/filterUtils';
 
 export interface ChatMessage {
   id: string;
@@ -67,6 +68,14 @@ export function useAiChat(options?: {
     if (filters.patched !== undefined) params.set('patched', String(filters.patched));
     if (filters.brands !== undefined) params.set('brands', String(filters.brands));
     if (filters.stores !== undefined) params.set('stores', String(filters.stores));
+    // Pairs, not codes: the same shelf code exists in more than one store. Encoded
+    // through the shared helper so this and `parseLocationPairs` cannot drift.
+    if (Array.isArray(filters.locations) && filters.locations.length > 0) {
+      params.set(
+        'locations',
+        encodeLocationPairs(filters.locations as { store: string; code: string }[])
+      );
+    }
     if (filters.kindSale !== undefined) params.set('kindSale', String(filters.kindSale));
     if (filters.local !== undefined) params.set('local', String(filters.local));
     if (filters.code !== undefined) params.set('code', String(filters.code));

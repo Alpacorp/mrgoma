@@ -9,6 +9,7 @@ import { useTireSearch } from '@/app/ui/components/CollapsibleSearchBar/hooks/us
 import { FilterBody } from '@/app/ui/sections/';
 import { filtersItems } from '@/app/ui/sections/FiltersMobile/FiltersItems';
 import { useFilters } from '@/app/ui/sections/FiltersMobile/hooks/useFilters';
+import { LocationFilter } from '@/app/ui/sections/TopFilters/LocationFilter';
 
 export const CodeFilterInput: FC<{ redirectBasePath: string; fullWidth?: boolean }> = ({
   redirectBasePath,
@@ -100,6 +101,8 @@ export const TopFilters: FC<{
     rangeBounds,
     availableBrands,
     availableStores,
+    availableLocations,
+    isLoadingLocations,
     handleRangeChange,
     handleCheckboxChange,
     isLoadingRanges,
@@ -305,7 +308,7 @@ export const TopFilters: FC<{
                       onClick={() => setOpenMenu(prev => (prev === 'stores' ? null : 'stores'))}
                       className={`px-3 py-2 text-sm rounded-md border cursor-pointer flex items-center gap-2 ${isOpen || isActive ? activeClass : defaultClass}`}
                     >
-                      <span>Location</span>
+                      <span>Store</span>
                       <svg
                         className={`h-4 w-4 text-current transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
                         xmlns="http://www.w3.org/2000/svg"
@@ -355,6 +358,28 @@ export const TopFilters: FC<{
                   </>
                 );
               })()}
+            </div>
+          )}
+
+          {/*
+            Rendered whenever the Store filter is, disabled until a store is
+            picked — a hidden control teaches nobody it exists. See LocationFilter.
+          */}
+          {showStoreFilter && (
+            <div className="relative">
+              <LocationFilter
+                available={availableLocations}
+                selected={checkboxInputs?.locations || []}
+                hasStore={(checkboxInputs?.stores || []).length > 0}
+                isLoading={isLoadingLocations}
+                isOpen={openMenu === 'locations'}
+                onToggleAction={() =>
+                  setOpenMenu(prev => (prev === 'locations' ? null : 'locations'))
+                }
+                onChangeAction={handleCheckboxChange}
+                activeClass={activeClass}
+                defaultClass={defaultClass}
+              />
             </div>
           )}
 

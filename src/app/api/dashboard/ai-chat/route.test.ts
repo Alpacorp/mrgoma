@@ -12,6 +12,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const h = vi.hoisted(() => ({
   toolInput: null as Record<string, unknown> | null,
   session: { user: { name: 'seller' } } as unknown,
+  // What we actually sent Claude: the tool schema and the system prompt.
+  sent: null as Record<string, unknown> | null,
 }));
 
 vi.mock('@/app/utils/authOptions', () => ({ auth: async () => h.session }));
@@ -21,7 +23,7 @@ vi.mock('@/utils/logger', () => ({
 vi.mock('@anthropic-ai/sdk', () => ({
   default: class {
     messages = {
-      create: async () => ({
+      create: async (payload: Record<string, unknown>) => ((h.sent = payload), {
         content: h.toolInput
           ? [{ type: 'tool_use', input: { confirmationMessage: 'Filtering…', ...h.toolInput } }]
           : [{ type: 'text', text: 'Which size?' }],
@@ -102,5 +104,52 @@ describe('access', () => {
     const res = await POST(ask('Michelin'));
 
     expect(res.status).toBe(401);
+  });
+});
+
+/**
+ * A shelf code is the one filter value the assistant cannot reason about.
+ *
+ * It can recognise `Michelin` and `Hialeah` as things that plausibly exist. It
+ * has no way to know that `+703C+` is a real shelf and `+703Z+` is not — and a
+ * guessed code returns an empty table, which a seller reads as missing stock
+ * rather than a bad guess. So the prompt has to forbid inventing one, and the
+ * schema has to make a code inseparable from its store.
+ */
+describe('the shelf filter', () => {
+  const tool = () => {
+    const tools = h.sent?.tools as { name: string; input_schema: Record<string, never> }[];
+    return tools.find(t => t.name === 'apply_filters')!;
+  };
+
+  // AC10
+  it('offers locations as store-and-code pairs, never bare codes', async () => {
+    await POST(ask('anything'));
+
+    const locations = (tool().input_schema as unknown as { properties: Record<string, never> })
+      .properties.locations as unknown as {
+      type: string;
+      items: { properties: Record<string, unknown>; required: string[] };
+    };
+
+    expect(locations.type).toBe('array');
+    expect(Object.keys(locations.items.properties).sort()).toEqual(['code', 'store']);
+    expect(locations.items.required.sort()).toEqual(['code', 'store']);
+  });
+
+  it('tells the assistant never to invent a code, and that one needs a store', async () => {
+    await POST(ask('anything'));
+
+    const system = String(h.sent?.system);
+    expect(system).toMatch(/NEVER invent a shelf code/i);
+    expect(system).toMatch(/without a store is not a filter/i);
+  });
+
+  it('passes a pair straight through when the assistant produces one', async () => {
+    h.toolInput = { locations: [{ store: 'Hialeah', code: '+703C+' }] };
+
+    const body = await (await POST(ask('shelf +703C+ in Hialeah'))).json();
+
+    expect(body.filters.locations).toEqual([{ store: 'Hialeah', code: '+703C+' }]);
   });
 });

@@ -1,9 +1,18 @@
-import React, { FC } from 'react';
+/**
+ * Client component: it holds filter state and calls `useFilters`. The directive
+ * was missing until `026` added a `useState` here — the barrel re-exports this
+ * module and `not-found.tsx` reaches it from a Server Component, so the build
+ * failed where the test suite could not: vitest does not enforce RSC boundaries.
+ */
+'use client';
+
+import React, { FC, useState } from 'react';
 
 import { Disclosure, DisclosureButton, DisclosureIcon, DisclosurePanel } from '@/app/ui/components';
 import { FilterBody } from '@/app/ui/sections';
 import { filtersItems } from '@/app/ui/sections/FiltersMobile/FiltersItems';
 import { useFilters } from '@/app/ui/sections/FiltersMobile/hooks/useFilters';
+import { LocationFilter } from '@/app/ui/sections/TopFilters/LocationFilter';
 /**
  * FilterContent is a component that renders a form with various filters, such as price, tread depth, remaining life, and checkboxes.
  * It takes an optional `isMobile` prop, which determines whether the component is rendered for mobile devices or not.
@@ -29,6 +38,9 @@ export const FilterMobileContent: FC<{
     rangeBounds,
     availableBrands,
     availableStores,
+    availableLocations,
+    isLoadingLocations,
+    checkboxInputs,
     handleRangeChange,
     handleCheckboxChange,
     isLoadingRanges,
@@ -36,6 +48,8 @@ export const FilterMobileContent: FC<{
     isLoadingBrands,
     isLoadingStores,
   } = useFilters(redirectBasePath, apiBasePath, { enableStoreFilter: showStoreFilter });
+
+  const [locationsOpen, setLocationsOpen] = useState(false);
 
   const borderClass = isMobile ? 'border-t' : 'border-b';
   const paddingClass = isMobile ? 'px-4' : '';
@@ -87,7 +101,7 @@ export const FilterMobileContent: FC<{
             <DisclosureButton
               className={`flex w-full items-center justify-between bg-gray-50 ${isMobile ? 'px-2' : ''} py-3 text-sm text-gray-400 hover:text-gray-500`}
             >
-              <span className="font-medium text-gray-900">Location</span>
+              <span className="font-medium text-gray-900">Store</span>
               <span className="ml-6 flex items-center text-green-600">
                 <DisclosureIcon />
               </span>
@@ -124,6 +138,28 @@ export const FilterMobileContent: FC<{
             )}
           </DisclosurePanel>
         </Disclosure>
+      )}
+
+      {/*
+        The shelf filter, same component as the desktop bar. Sharing it rather
+        than mirroring the markup is deliberate: two hand-kept copies of a filter
+        drifting apart is precisely how `Location` came to mean two things.
+      */}
+      {showStoreFilter && (
+        <div className="border-b border-gray-200 py-4">
+          <LocationFilter
+            available={availableLocations}
+            selected={checkboxInputs?.locations || []}
+            hasStore={(checkboxInputs?.stores || []).length > 0}
+            isLoading={isLoadingLocations}
+            isOpen={locationsOpen}
+            onToggleAction={() => setLocationsOpen(open => !open)}
+            onChangeAction={handleCheckboxChange}
+            activeClass="border-green-600 bg-green-50 text-green-700"
+            defaultClass="border-gray-200 bg-white text-gray-700"
+            inline
+          />
+        </div>
       )}
 
       {/* Tread Depth Filter */}

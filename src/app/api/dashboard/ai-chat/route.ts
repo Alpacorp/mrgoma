@@ -25,6 +25,9 @@ When the user greets you or asks a tire-related question that doesn't need filte
 Tire size format in Colombia: width/profile/diameter (e.g., "205/55/16" means width=205, profile=55, diameter=16)
 Common abbreviations: "llantas" = tires, "usadas" = used, "nuevas" = new, "parcheadas" = patched, "kindSale" / "kind sale" = KindSale filter (yes/no), "local" / "locales" = Local filter (yes = local tires, no = non-local tires)
 Store/branch: tires belong to a store (called "sucursal" or "tienda" in Spanish). Use the stores filter with the exact store name the user mentions (e.g., "sucursal norte" → stores="sucursal norte").
+Shelf location: within a store, each tire sits on a shelf identified by a short code such as "+703C+", "-507D-", "{IN}" or ":410D:" (called "ubicación", "estante" or "posición" in Spanish). Use the locations filter, giving each code together with its store.
+NEVER invent a shelf code. You have no list of them and cannot tell whether one exists; a guessed code returns an empty table that looks like broken inventory. Only pass through a code the user typed.
+A shelf code without a store is not a filter: the same code exists in several stores. If the user names a code but no store, ask which store they mean instead of using the tool.
 Price context: prices in the database are in USD. Apply price filters directly using the USD amounts the user mentions.
 Tire code: each tire has a unique numeric code (called "código" or "code"). When the user mentions a specific code number, use the code filter (e.g., "busca el código 12345" → code="12345").
 
@@ -90,6 +93,19 @@ const APPLY_FILTERS_TOOL: Anthropic.Tool = {
         type: 'string',
         description:
           'Comma-separated list of store/branch names to filter by (e.g., "Sucursal Norte,Sucursal Sur")',
+      },
+      locations: {
+        type: 'array',
+        description:
+          'Shelf locations to filter by. Each entry pairs a shelf code with the store that holds it, because the same code exists in more than one store. Only use codes the user typed — never invent one.',
+        items: {
+          type: 'object',
+          properties: {
+            store: { type: 'string', description: 'The store that holds this shelf' },
+            code: { type: 'string', description: 'The shelf code exactly as the user typed it' },
+          },
+          required: ['store', 'code'],
+        },
       },
       kindSale: {
         type: 'string',
