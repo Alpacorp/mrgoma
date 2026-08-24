@@ -1,6 +1,7 @@
 import { timingSafeEqual } from 'node:crypto';
 
 import { SITE_NAME, absUrl, getSiteUrl } from '@/app/utils/seo';
+import { storeCity } from '@/app/utils/storeCity';
 import { generateTireDescription } from '@/app/utils/tireDescription';
 import { buildTireSlug } from '@/app/utils/tireSlug';
 import type { FeedTireRecord } from '@/repositories/feedQuery';
@@ -101,19 +102,27 @@ export function buildFeedItem(record: FeedTireRecord): GmcItem {
     remainingLife: record.RemainingLife,
   });
 
-  const description =
-    record.Description?.trim() ||
-    generateTireDescription({
-      brand,
-      model: record.Model2,
-      size,
-      condition: conditionLabel,
-      remainingLife: record.RemainingLife,
-      treadDepth: record.Tread,
-      patched,
-      loadIndex: record.loadIndex,
-      speedIndex: record.speedIndex,
-    });
+  /**
+   * Always generated, never the `Description` column.
+   *
+   * That column does not hold descriptions. It holds internal purchase notes —
+   * `$71 advance`, `45.95`, `62 Advance`, `175 TR` — and all 985 non-empty values
+   * are 40 characters or fewer. Preferring it sent those to Google Shopping as
+   * the product description, which was useless to a shopper and published what
+   * reads as the shop's cost next to its retail price.
+   */
+  const description = generateTireDescription({
+    brand,
+    model: record.Model2,
+    size,
+    condition: conditionLabel,
+    remainingLife: record.RemainingLife,
+    treadDepth: record.Tread,
+    patched,
+    loadIndex: record.loadIndex,
+    speedIndex: record.speedIndex,
+    city: storeCity(record.VaultName),
+  });
 
   const rawImages = [record.Image1, record.Image2, record.Image3, record.Image4].filter(
     (src): src is string => Boolean(src)

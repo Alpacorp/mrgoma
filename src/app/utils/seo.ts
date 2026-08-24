@@ -10,6 +10,7 @@ import {
   SLOGAN,
   WARRANTY,
 } from '@/app/utils/brandClaims';
+import type { StoreCity } from '@/app/utils/storeCity';
 import { WHATSAPP_TEL } from '@/app/utils/whatsapp';
 
 export const SITE_NAME = 'MrGoma Tires';
@@ -346,8 +347,9 @@ export function tiresMetadata(
 
   const title = size
     ? fitTitle(
-        `${size} Tires in Miami — ${WARRANTY}${paged}${TITLE_SUFFIX}`,
-        `${size} Tires in Miami${paged}${TITLE_SUFFIX}`,
+        // Both cities, for the same reason as the size landing pages below.
+        `${size} Tires Miami & Orlando — ${WARRANTY}${paged}${TITLE_SUFFIX}`,
+        `${size} Tires Miami & Orlando${paged}${TITLE_SUFFIX}`,
         `${size} Tires${paged}${TITLE_SUFFIX}`
       )
     : fitTitle(
@@ -557,7 +559,7 @@ export function checkoutMetadata(): Metadata {
   return {
     ...pageMetadata({
       title: `Checkout${TITLE_SUFFIX}`,
-      description: `Secure checkout at ${SITE_NAME}. ${SHIPPING} nationwide on every order.`,
+      description: `Secure checkout at ${SITE_NAME}. ${SHIPPING} on every order.`,
       path: '/checkout',
     }),
     robots: { index: false, follow: false, googleBot: { index: false, follow: false } },
@@ -622,9 +624,23 @@ export function newTiresMetadata(): Metadata {
 export function brandMetadata(params: { brand: string; slug: string }): Metadata {
   const { brand, slug } = params;
   return pageMetadata({
+    /*
+     * "Miami & Orlando" on the first rung, not just "Miami".
+     *
+     * These pages aggregate stock from every warehouse, and **19 sizes and 8
+     * brands exist only in Orlando** — `225/60/16` has 30 units, all of them
+     * there — so a title naming Miami was competing for the wrong city with no
+     * stock in it. Saying both is true of the business at all times, which a
+     * per-page rule could never be.
+     *
+     * The preposition is dropped to pay for it. `in Miami & Orlando` overflows
+     * `TITLE_MAX` on 13 of 15 real brand and size names, which would sacrifice
+     * the warranty `014` put here as the differentiator; without `in` only one
+     * does, and that one falls to the rung below rather than losing the cities.
+     */
     title: fitTitle(
-      `${brand} Tires in Miami — ${WARRANTY}${TITLE_SUFFIX}`,
-      `${brand} Tires in Miami & Orlando${TITLE_SUFFIX}`,
+      `${brand} Tires Miami & Orlando — ${WARRANTY}${TITLE_SUFFIX}`,
+      `${brand} Tires Miami & Orlando${TITLE_SUFFIX}`,
       `${brand} Tires${TITLE_SUFFIX}`
     ),
     description: fitDescription(
@@ -643,9 +659,23 @@ export function brandMetadata(params: { brand: string; slug: string }): Metadata
 export function sizeMetadata(params: { size: string; slug: string }): Metadata {
   const { size, slug } = params;
   return pageMetadata({
+    /*
+     * "Miami & Orlando" on the first rung, not just "Miami".
+     *
+     * These pages aggregate stock from every warehouse, and **19 sizes and 8
+     * brands exist only in Orlando** — `225/60/16` has 30 units, all of them
+     * there — so a title naming Miami was competing for the wrong city with no
+     * stock in it. Saying both is true of the business at all times, which a
+     * per-page rule could never be.
+     *
+     * The preposition is dropped to pay for it. `in Miami & Orlando` overflows
+     * `TITLE_MAX` on 13 of 15 real brand and size names, which would sacrifice
+     * the warranty `014` put here as the differentiator; without `in` only one
+     * does, and that one falls to the rung below rather than losing the cities.
+     */
     title: fitTitle(
-      `${size} Tires in Miami — ${WARRANTY}${TITLE_SUFFIX}`,
-      `${size} Tires in Miami & Orlando${TITLE_SUFFIX}`,
+      `${size} Tires Miami & Orlando — ${WARRANTY}${TITLE_SUFFIX}`,
+      `${size} Tires Miami & Orlando${TITLE_SUFFIX}`,
       `${size} Tires${TITLE_SUFFIX}`
     ),
     description: fitDescription(
@@ -876,13 +906,14 @@ export function productSocialTitle(params: {
   size?: string;
   condition?: string;
   price?: number | string;
+  city?: StoreCity;
 }): string {
   const price = productPrice(params.price);
   const pricePart = price ? ` | $${price}` : '';
 
   return tidy(
     `${params.condition ?? ''} ${brandName(params.brand)} ${params.model ?? ''} ` +
-      `${params.size ?? ''} Tire in Miami${pricePart} | Free Shipping`
+      `${params.size ?? ''} Tire in ${params.city ?? 'Miami'}${pricePart} | Free Shipping`
   );
 }
 
@@ -912,6 +943,7 @@ export function productDescription(params: {
   patched?: string;
   remainingLife?: string;
   price?: number | string;
+  city?: StoreCity;
 }): string {
   const condition = params.condition?.trim().toLowerCase();
   const isNew = condition === 'new';
@@ -922,10 +954,11 @@ export function productDescription(params: {
   const size = params.size?.trim() ?? '';
   const price = productPrice(params.price);
   const forPrice = price ? ` for $${price}` : '';
+  const city = params.city ?? 'Miami';
 
   const heads = [
-    tidy(`${noun} ${brand} ${model} ${size} tire in Miami${forPrice}.`),
-    tidy(`${noun} ${brand} ${size} tire in Miami${forPrice}.`),
+    tidy(`${noun} ${brand} ${model} ${size} tire in ${city}${forPrice}.`),
+    tidy(`${noun} ${brand} ${size} tire in ${city}${forPrice}.`),
   ];
   const head = heads.find(candidate => candidate.length <= DESCRIPTION_HEAD_MAX) ?? heads[1];
 
@@ -980,6 +1013,7 @@ export function productMetadata(params: {
   patched?: string;
   remainingLife?: string;
   price?: number | string;
+  city?: StoreCity;
   path: string;
   images?: string[];
 }): Metadata {

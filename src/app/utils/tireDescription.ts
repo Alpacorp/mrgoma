@@ -1,3 +1,5 @@
+import type { StoreCity } from '@/app/utils/storeCity';
+
 export interface TireDescriptionParams {
   brand?: string;
   model?: string;
@@ -8,6 +10,11 @@ export interface TireDescriptionParams {
   patched?: string;
   loadIndex?: string;
   speedIndex?: string;
+  /**
+   * Where the tire actually is. Defaults to Miami for callers that have not been
+   * given the warehouse yet — the same fallback `storeCity` uses.
+   */
+  city?: StoreCity;
 }
 
 /**
@@ -15,6 +22,7 @@ export interface TireDescriptionParams {
  * from its structured data fields. Used for visual display and JSON-LD.
  */
 export function generateTireDescription(params: TireDescriptionParams): string {
+  const city = params.city ?? 'Miami';
   const isNew = (params.condition || '').toLowerCase() === 'new';
   const isUsed = (params.condition || '').toLowerCase() === 'used';
 
@@ -55,7 +63,10 @@ export function generateTireDescription(params: TireDescriptionParams): string {
     specs.push(`Speed Index ${params.speedIndex}`);
   if (specs.length > 0) sentences.push(`${specs.join(', ')}.`);
 
-  sentences.push('Free shipping. Available at MrGoma Tires in Miami, FL.');
+  // Until 2026-08-24 this sentence named Miami unconditionally, on every tire,
+  // including the 793 sitting in Orlando — and it went out on the storefront, in
+  // the Product JSON-LD and in the Google Merchant feed alike.
+  sentences.push(`Free shipping. Available at MrGoma Tires in ${city}, FL.`);
 
   return sentences.join(' ');
 }

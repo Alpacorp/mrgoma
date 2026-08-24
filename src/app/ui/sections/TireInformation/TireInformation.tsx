@@ -45,6 +45,7 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
     patched: singleTire.patched,
     loadIndex: findDetail('Load Index'),
     speedIndex: findDetail('Speed Index'),
+    city: singleTire.city,
   });
 
   return (

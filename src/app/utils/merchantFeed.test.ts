@@ -191,3 +191,52 @@ describe('feed is not discoverable', () => {
     expect(src).not.toContain('/feed/');
   });
 });
+
+/**
+ * The feed reaches Google Shopping, so a wrong city there is a wrong city in an
+ * ad. `VaultName` is now selected by the query for exactly this reason — and it
+ * must go no further than the sentence it shapes.
+ */
+describe('the city in the feed', () => {
+  const inOrlando: FeedTireRecord = { ...usedRecord, VaultName: 'Clifton' };
+  const inMiami: FeedTireRecord = { ...usedRecord, VaultName: 'Hialeah' };
+
+  it('names Orlando for a tire in an Orlando warehouse', () => {
+    const description = buildFeedItem(inOrlando).description;
+    expect(description).toContain('Orlando');
+    expect(description).not.toContain('Miami');
+  });
+
+  it('names Miami for a tire in a Miami warehouse', () => {
+    expect(buildFeedItem(inMiami).description).toContain('Miami');
+  });
+
+  it('never serializes the warehouse name into the item', () => {
+    expect(JSON.stringify(buildFeedItem(inOrlando))).not.toContain('Clifton');
+  });
+
+  /**
+   * The `Description` column is not a description. It holds internal purchase
+   * notes — `$71 advance`, `45.95`, `175 TR` — and all 985 non-empty values are
+   * 40 characters or fewer. Preferring it, as the feed did until 2026-08-24,
+   * shipped those to Google Shopping as the product description: useless to a
+   * shopper, and it published what reads as the shop's cost beside its price.
+   *
+   * The column is no longer selected at all, so this asserts the shape that
+   * makes that impossible rather than the behaviour of a value we no longer read.
+   */
+  it('never reads a Description column, because the query no longer selects one', () => {
+    expect(buildFeedQuery()).not.toContain('Description');
+    expect(Object.keys(usedRecord)).not.toContain('Description');
+  });
+
+  it('always describes the tire itself, at real length', () => {
+    const description = buildFeedItem(inOrlando).description;
+    expect(description.length).toBeGreaterThan(40);
+    expect(description).toContain('Michelin');
+  });
+
+  it('selects VaultName so the city can be derived at all', () => {
+    expect(buildFeedQuery()).toContain('VaultName');
+  });
+});

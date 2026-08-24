@@ -134,7 +134,9 @@ export default async function SizeCategoryPage({ params }: { params: Promise<{ s
             </div>
             <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-none mb-4">
               <span className="text-[#9dfb40]">{originalSize}</span>{' '}
-              <span className="block">Tires in Miami</span>
+              {/* Both cities: this page aggregates every warehouse, and 19 sizes
+                  have stock only in Orlando. See `sizeMetadata` in seo.ts. */}
+              <span className="block">Tires in Miami &amp; Orlando</span>
             </h1>
             <p className="text-gray-400 text-lg">
               {totalCount > 0

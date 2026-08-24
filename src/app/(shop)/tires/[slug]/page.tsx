@@ -69,6 +69,7 @@ export async function generateMetadata({
     patched: product.patched,
     remainingLife: product.remainingLife,
     price: product.price,
+    city: product.city,
     path: `/tires/${canonicalSlug}`,
     images: Array.isArray(product.images) ? product.images.map(image => image.src) : [],
   });
@@ -93,6 +94,7 @@ async function TireJsonLd({ productId }: { productId: string }) {
     patched: product.patched,
     loadIndex: product.loadIndex,
     speedIndex: product.speedIndex,
+    city: product.city,
   });
 
   const productJsonLd = buildProductJsonLd({

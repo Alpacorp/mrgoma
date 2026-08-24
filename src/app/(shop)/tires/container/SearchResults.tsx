@@ -295,12 +295,13 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
                 <>
                   Size <span className="text-[#9dfb40]">{getTireSize()}</span>{' '}
                   <span className="block text-3xl sm:text-4xl text-gray-400 font-bold">
-                    Tires in Miami
+                    Tires in Miami &amp; Orlando
                   </span>
                 </>
               ) : (
                 <>
-                  New & Used <span className="block text-[#9dfb40]">Tires in Miami</span>
+                  New & Used{' '}
+                  <span className="block text-[#9dfb40]">Tires in Miami &amp; Orlando</span>
                 </>
               )}
             </h1>
@@ -327,8 +328,8 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
             {/* Section label for the product list (the page's single <h1> lives in the hero above) */}
             <h2 id="products-heading" className="sr-only">
               {getTireSize()
-                ? `Used & New Tires in Miami – Size ${getTireSize()}`
-                : 'Used & New Tires in Miami'}
+                ? `Used & New Tires in Miami & Orlando – Size ${getTireSize()}`
+                : 'Used & New Tires in Miami & Orlando'}
             </h2>
             <section aria-labelledby="products-heading" className="pb-24">
               <div className="md:mt-10 space-y-6">

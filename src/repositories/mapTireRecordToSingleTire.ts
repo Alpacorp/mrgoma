@@ -1,4 +1,5 @@
 import type { SingleTire } from '@/app/interfaces/tires';
+import { storeCity } from '@/app/utils/storeCity';
 import type { DocumentRecord } from '@/repositories/tiresRepository';
 
 /**
@@ -41,6 +42,9 @@ export function mapTireRecordToSingleTire(record: DocumentRecord): SingleTire {
     brandId: record.BrandId || 1,
     condition: record.ProductTypeId === 1 ? 'New' : 'Used',
     patched: record.Patched === '0' ? 'No' : 'Yes',
+    // The city, never `VaultName`. The internal warehouse name is deliberately
+    // kept off every public surface; what a buyer needs is where the tire is.
+    city: storeCity(record.VaultName),
     remainingLife: record.RemainingLife || '-',
     treadDepth: record.Tread || '-',
     size: record.RealSize || undefined,
@@ -48,7 +52,6 @@ export function mapTireRecordToSingleTire(record: DocumentRecord): SingleTire {
     speedIndex: record.speedIndex || undefined,
     model2: record.Model2 || undefined,
     runFlat: record.KindSaleId === 1 ? 'Yes' : record.KindSale || 'No',
-    description: record.Description || undefined,
     images,
     details: [
       {

@@ -26,7 +26,6 @@ export type FeedTireRecord = {
   Brand?: string;
   Model2?: string;
   RealSize?: string;
-  Description?: string;
   Price?: string | number;
   ProductTypeId?: number;
   Condition?: string;
@@ -39,11 +38,19 @@ export type FeedTireRecord = {
   Image2?: string;
   Image3?: string;
   Image4?: string;
+  /**
+   * Read to derive the city for the description, never serialized. The `GmcItem`
+   * whitelist in `merchantFeed.ts` decides what actually leaves.
+   */
+  VaultName?: string;
 };
 
 const FEED_COLUMNS =
-  'TireId, Code, Brand, Model2, RealSize, Description, Price, ProductTypeId, Condition, ' +
-  'RemainingLife, Patched, Tread, loadIndex, speedIndex, Image1, Image2, Image3, Image4';
+  'TireId, Code, Brand, Model2, RealSize, Price, ProductTypeId, Condition, ' +
+  'RemainingLife, Patched, Tread, loadIndex, speedIndex, Image1, Image2, Image3, Image4, ' +
+  // Read so the description can name the right city; never serialized — the
+  // `GmcItem` whitelist in merchantFeed.ts is what decides what leaves.
+  'VaultName';
 
 /**
  * The exact SQL the feed runs. Pure (no I/O) so it can be unit-tested: it must
