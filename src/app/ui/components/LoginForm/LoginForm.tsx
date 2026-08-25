@@ -62,7 +62,6 @@ const LoginForm = () => {
           <Image
             alt="MrGoma Tires logo"
             title="Go to the home page"
-            aria-label="Go to the home page"
             src={mrGomaLogoLight || '/placeholder.svg'}
             className="w-64"
             priority

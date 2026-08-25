@@ -2,7 +2,7 @@ import { FC, MouseEvent } from 'react';
 
 import Link from 'next/link';
 
-import { brandName } from '@/app/utils/tireNaming';
+import { tireTitle } from '@/app/utils/tireNaming';
 import { buildTireSlug } from '@/app/utils/tireSlug';
 
 interface CtaButtonProps {
@@ -10,6 +10,9 @@ interface CtaButtonProps {
     name: string;
     id?: string | number;
     brand?: string;
+    /** Optional, so the button can say the tire's name rather than its identity. */
+    model2?: string;
+    size?: string;
   };
   text: string;
   style?: 'primary' | 'secondary' | 'tertiary' | 'default' | 'filled' | 'filled-secondary';
@@ -35,11 +38,15 @@ const CtaButton: FC<CtaButtonProps> = ({
   // Size is the last pipe-separated segment of the product name: "(CODE) | BRAND | SIZE"
   const nameParts = (product.name || '').split(' | ');
   /**
-   * Read aloud by a screen reader, so the brand is written rather than shouted.
-   * `product.name` keeps the stored capitals: it is also the checkout
-   * re-validation payload.
+   * Read aloud by a screen reader, so it says what the page says rather than the
+   * stored identity: "In Cart, Nitto NT 420 V XL 275/45/20" instead of
+   * "In Cart, (594712) | Nitto | 275/45/20". Falls back to `name` for anything
+   * that reaches this button without a model.
    */
-  const spokenName = nameParts.map((part, i) => (i === 1 ? brandName(part) : part)).join(' | ');
+  const spokenName =
+    [tireTitle({ brand: product.brand, model: product.model2 }), product.size]
+      .filter(Boolean)
+      .join(' ') || product.name;
   const size = nameParts.length >= 2 ? nameParts[nameParts.length - 1] : '';
   const slug = product.id ? buildTireSlug(String(product.id), product.brand || '', size) : '';
   let url = slug ? `/tires/${slug}` : '/tires';

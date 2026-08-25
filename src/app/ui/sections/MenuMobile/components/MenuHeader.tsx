@@ -27,7 +27,6 @@ export const MenuHeader: React.FC<MenuHeaderProps> = ({ onClose, animationStage 
         <Image
           alt="MrGoma Tires logo"
           title="Go to the home page"
-          aria-label="Go to the home page"
           src={mrGomaLogoLight}
           className="h-8 w-auto"
           priority

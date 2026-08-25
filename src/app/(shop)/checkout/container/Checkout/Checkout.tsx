@@ -591,12 +591,12 @@ export default function Checkout() {
                         >
                           Product
                         </th>
-                        <th
-                          scope="col"
-                          className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600"
-                        >
-                          ID
-                        </th>
+                        {/*
+                          No ID column. It printed the internal TireId beside the
+                          stock code already shown under the product name — two
+                          numbers for one line, neither of which a buyer quotes.
+                          The stock code is the one staff search by.
+                        */}
                         <th
                           scope="col"
                           className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-600"
@@ -671,11 +671,6 @@ export default function Checkout() {
                                   )}
                                 </div>
                               </div>
-                            </td>
-                            <td className="px-4 py-4 text-left text-gray-600">
-                              <span className="font-mono text-xs bg-gray-50 border border-gray-200 rounded px-2 py-0.5 inline-block">
-                                {String(item.id)}
-                              </span>
                             </td>
                             <td className="px-4 py-4 text-right text-gray-700">
                               {currency(item.price)}

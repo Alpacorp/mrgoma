@@ -15,7 +15,6 @@ const Login = () => {
             <Image
               alt="MrGoma Tires logo"
               title="Go to the home page"
-              aria-label="Go to the home page"
               src={mrGomaLogoLight || '/placeholder.svg'}
               className="h-8 w-auto"
               priority

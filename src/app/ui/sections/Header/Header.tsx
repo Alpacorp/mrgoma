@@ -66,7 +66,6 @@ const Header: FC<{ compact?: boolean }> = ({ compact = false }): ReactNode => {
               <Image
                 alt="MrGoma Tires logo"
                 title="Go to the home page"
-                aria-label="Go to the home page"
                 src={mrGomaLogoLight || '/placeholder.svg'}
                 className={`w-auto transition-all duration-300 ${compact ? 'h-6' : 'h-8'}`}
                 width={185}
