@@ -4,6 +4,7 @@ import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 import { useSearchParams } from 'next/navigation';
 
+import { brandName } from '@/app/utils/tireNaming';
 import { slugify } from '@/app/utils/tireSlug';
 
 type RouteVariant = 'browse' | 'new' | 'used';
@@ -218,14 +219,18 @@ const BrandScroller: FC<BrandScrollerProps> = ({ brands, activeBrand }) => {
               ref={isActive ? activeChipRef : undefined}
               href={isActive ? '/tires' : `/tires/brands/${slugify(brand)}`}
               aria-pressed={isActive}
-              aria-label={isActive ? `Clear ${brand} filter` : `Browse ${brand} tires`}
+              aria-label={
+                isActive ? `Clear ${brandName(brand)} filter` : `Browse ${brandName(brand)} tires`
+              }
               className={`shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs font-semibold transition-colors duration-150 whitespace-nowrap ${
                 isActive
                   ? 'border-green-600 bg-green-600 text-white hover:bg-green-700 hover:border-green-700'
                   : 'border-gray-200 text-gray-700 hover:border-green-600 hover:text-green-700 hover:bg-green-50'
               }`}
             >
-              {brand}
+              {/* The href keeps the slug from the stored value; only the chip's
+                  text is written for a reader. */}
+              {brandName(brand)}
               {isActive && <ClearIcon />}
             </a>
           );

@@ -11,6 +11,7 @@ import { TiresData } from '@/app/interfaces/tires';
 import { BrandImage, JsonLd } from '@/app/ui/components';
 import { LOCATIONS_LABEL, SHIPPING, WARRANTY, onlineInventoryLabel } from '@/app/utils/brandClaims';
 import { brandMetadata, buildBreadcrumbJsonLd, buildItemListJsonLd } from '@/app/utils/seo';
+import { brandName as displayBrand } from '@/app/utils/tireNaming';
 import { matchSlug, slugify } from '@/app/utils/tireSlug';
 import { transformTireData } from '@/app/utils/transformTireData';
 import { fetchBrands, fetchTires } from '@/repositories/tiresRepository';
@@ -62,12 +63,12 @@ export default async function BrandCategoryPage({
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     { name: 'Home', url: '/' },
     { name: 'Tires', url: '/tires' },
-    { name: `${brandName} Tires`, url: `/tires/brands/${brandSlug}` },
+    { name: `${displayBrand(brandName)} Tires`, url: `/tires/brands/${brandSlug}` },
   ]);
 
   const itemListJsonLd = buildItemListJsonLd({
     url: `/tires/brands/${brandSlug}`,
-    name: `${brandName} tires available online`,
+    name: `${displayBrand(brandName)} tires available online`,
     count: totalCount,
   });
 
@@ -87,7 +88,7 @@ export default async function BrandCategoryPage({
               Tires
             </Link>
             <span>/</span>
-            <span className="text-gray-900 font-medium">{brandName} Tires</span>
+            <span className="text-gray-900 font-medium">{displayBrand(brandName)} Tires</span>
           </div>
         </nav>
 
@@ -111,7 +112,7 @@ export default async function BrandCategoryPage({
                 </span>
               </div>
               <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-none mb-4">
-                {brandName} <span className="block text-[#9dfb40]">Tires</span>
+                {displayBrand(brandName)} <span className="block text-[#9dfb40]">Tires</span>
               </h1>
               <p className="text-gray-400 text-lg">
                 {totalCount > 0

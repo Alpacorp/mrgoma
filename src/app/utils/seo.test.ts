@@ -11,6 +11,8 @@ import {
   DESCRIPTION_MAX,
   DEFAULT_OG_IMAGE,
   productMetadata,
+  brandMetadata,
+  sizeMetadata,
   brandName,
   buildBreadcrumbJsonLd,
   buildItemListJsonLd,
@@ -688,5 +690,86 @@ describe('buildLocationsJsonLd', () => {
     expect(ld.hasMap).toBeUndefined();
     expect(ld.geo).toBeUndefined();
     expect(ld.openingHoursSpecification).toBeUndefined();
+  });
+});
+
+/**
+ * Brand and size landing pages aggregate every warehouse, so their title must
+ * name the business's cities rather than one of them.
+ *
+ * **19 sizes and 8 brands have stock only in Orlando** — `225/60/16` has 30
+ * units, all there — and until 2026-08-24 their titles said "Tires in Miami",
+ * competing for a city with none of that stock in it.
+ *
+ * The fixtures are the longest real names in the catalog, because that is where
+ * the 60-character budget decides whether the warranty survives.
+ */
+describe('landing page titles name both cities', () => {
+  const brands = ['Pirelli', 'Groundspeed', 'Mastercraft', 'Venom Power', 'Back Country'];
+  const sizes = ['225/60/16', '35/12.50/22', '245/70/19.5', '195/65/15'];
+
+  const brandTitle = (brand: string) =>
+    (brandMetadata({ brand, slug: brand.toLowerCase() }).title as { absolute: string }).absolute;
+  const sizeTitle = (size: string) =>
+    (sizeMetadata({ size, slug: size.replace(/\//g, '-') }).title as { absolute: string }).absolute;
+
+  it.each(brands)('%s names Miami and Orlando, within the budget', brand => {
+    const title = brandTitle(brand);
+    expect(title).toContain('Miami');
+    expect(title).toContain('Orlando');
+    expect(title.length).toBeLessThanOrEqual(TITLE_MAX);
+  });
+
+  it.each(sizes)('%s names Miami and Orlando, within the budget', size => {
+    const title = sizeTitle(size);
+    expect(title).toContain('Miami');
+    expect(title).toContain('Orlando');
+    expect(title.length).toBeLessThanOrEqual(TITLE_MAX);
+  });
+
+  /**
+   * The preposition was dropped to pay for the second city: `in Miami & Orlando`
+   * overflows on 13 of 15 real names and would cost the warranty everywhere.
+   */
+  it('keeps the warranty on all but the longest name', () => {
+    const withWarranty = [...brands, ...sizes].filter(name =>
+      (name.includes('/') ? sizeTitle(name) : brandTitle(name)).includes(WARRANTY)
+    );
+    expect(withWarranty.length).toBeGreaterThanOrEqual(brands.length + sizes.length - 1);
+  });
+
+  // The one that overflows falls to the rung below — it loses the warranty, never
+  // the cities.
+  it('never trades a city for the warranty', () => {
+    expect(sizeTitle('245/70/19.5')).toContain('Orlando');
+  });
+});
+
+/**
+ * The catalog stores brands in capitals. `025` title-cased them in the tire
+ * `<title>`; the brand landing pages and the card and detail headings kept
+ * shouting, so the same tire read `Bridgestone` in the browser tab and
+ * `BRIDGESTONE` on the page under it.
+ */
+describe('a brand is written for a reader wherever it is shown', () => {
+  const titleOf = (brand: string) =>
+    (brandMetadata({ brand, slug: brand.toLowerCase() }).title as { absolute: string }).absolute;
+
+  it.each([
+    ['GROUNDSPEED', 'Groundspeed'],
+    ['BRIDGESTONE', 'Bridgestone'],
+    ['BFGOODRICH', 'BFGoodrich'],
+    ['BACK COUNTRY ', 'Back Country'],
+  ])('%s reads as %s in the landing page title', (stored, shown) => {
+    const title = titleOf(stored);
+    expect(title).toContain(shown);
+    expect(title).not.toContain(stored.trim());
+  });
+
+  it('still names both cities and stays within the budget', () => {
+    const title = titleOf('GROUNDSPEED');
+    expect(title).toContain('Miami');
+    expect(title).toContain('Orlando');
+    expect(title.length).toBeLessThanOrEqual(TITLE_MAX);
   });
 });

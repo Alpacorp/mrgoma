@@ -48,9 +48,8 @@ describe('mapTireRecordToSingleTire', () => {
     expect(t.treadDepth).toBe('7/32');
   });
 
-  it('includes description and the extra spec fields', () => {
+  it('includes the extra spec fields', () => {
     const t = mapTireRecordToSingleTire(baseRecord);
-    expect(t.description).toBe('A great tire');
     expect(t.size).toBe('225/40/18');
     expect(t.loadIndex).toBe('92');
     expect(t.speedIndex).toBe('V');
@@ -82,5 +81,61 @@ describe('mapTireRecordToSingleTire', () => {
     expect(t.details[0].name).toBe('More Details');
     expect(t.details[0].items).toContain('Load Index: 92');
     expect(t.details[0].items).toContain('Speed Index: V');
+  });
+});
+
+/**
+ * The city comes from the warehouse, and the warehouse name itself must not
+ * travel with it. `pickTireListFields` already keeps `VaultName` off the public
+ * list API and the Merchant whitelist keeps it out of the feed; the detail page
+ * is the surface where it could still have leaked.
+ */
+describe('the city a tire is in', () => {
+  const base = { TireId: '1', Code: 'X', Patched: '0', ProductTypeId: 2 } as never;
+
+  it('derives Orlando from an Orlando warehouse', () => {
+    expect(
+      mapTireRecordToSingleTire({ ...(base as object), VaultName: 'Clifton' } as never).city
+    ).toBe('Orlando');
+    expect(
+      mapTireRecordToSingleTire({ ...(base as object), VaultName: 'Semoran' } as never).city
+    ).toBe('Orlando');
+  });
+
+  it('derives Miami from a Miami warehouse', () => {
+    expect(
+      mapTireRecordToSingleTire({ ...(base as object), VaultName: 'Hialeah' } as never).city
+    ).toBe('Miami');
+  });
+
+  it('never exposes the warehouse name itself', () => {
+    const mapped = mapTireRecordToSingleTire({
+      ...(base as object),
+      VaultName: 'Clifton',
+    } as never);
+    expect(JSON.stringify(mapped)).not.toContain('Clifton');
+    expect('VaultName' in mapped).toBe(false);
+  });
+});
+
+/**
+ * The `Description` column holds internal purchase notes, not descriptions:
+ * `$71 advance`, `45.95`, `62 Advance`, `175 TR`. Until 2026-08-24 the mapper
+ * copied it into the object serialized to the browser, so it sat in the page
+ * source of 985 listings — and the Merchant feed published it outright.
+ *
+ * Nothing in the UI ever read it: `ProductDescription` renders the *generated*
+ * text. So this asserts the note leaves no trace at all.
+ */
+describe('the internal purchase note never leaves the database', () => {
+  it('is absent from the mapped tire, whatever the column holds', () => {
+    const mapped = mapTireRecordToSingleTire({
+      ...(baseRecord as object),
+      Description: '$71 advance',
+    } as never);
+
+    expect(JSON.stringify(mapped)).not.toContain('advance');
+    expect(JSON.stringify(mapped)).not.toContain('71');
+    expect('description' in mapped).toBe(false);
   });
 });

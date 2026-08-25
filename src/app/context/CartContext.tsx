@@ -21,6 +21,14 @@ export interface CartItem {
   quantity: number;
   brand?: string;
   brandId?: string | number;
+  /**
+   * Model and size as their own fields, so a cart line can be written the way
+   * the rest of the site writes a tire. Optional because items saved before
+   * 2026-08-24 are still in `localStorage` without them — those fall back to
+   * `name`, which is the only thing they carry.
+   */
+  model?: string;
+  size?: string;
 }
 
 // Define the cart context type
@@ -34,6 +42,14 @@ export interface AddToCartProduct {
   images?: Array<{ src: string }>;
   brand?: string;
   brandId?: string | number;
+  /**
+   * Model and size as their own fields, so a cart line can be written the way
+   * the rest of the site writes a tire. Optional because items saved before
+   * 2026-08-24 are still in `localStorage` without them — those fall back to
+   * `name`, which is the only thing they carry.
+   */
+  model?: string;
+  size?: string;
 }
 
 interface CartContextType {
@@ -111,6 +127,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             id: prodId,
             image: product.imageSrc || (product.images?.[0]?.src ?? undefined),
             name: product.name,
+            model: product.model,
+            size: product.size,
             price: price,
             quantity: 1,
           },

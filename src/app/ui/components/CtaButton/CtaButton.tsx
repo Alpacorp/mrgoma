@@ -2,6 +2,7 @@ import { FC, MouseEvent } from 'react';
 
 import Link from 'next/link';
 
+import { brandName } from '@/app/utils/tireNaming';
 import { buildTireSlug } from '@/app/utils/tireSlug';
 
 interface CtaButtonProps {
@@ -33,6 +34,12 @@ const CtaButton: FC<CtaButtonProps> = ({
   // Build SEO-friendly URL: /tires/{id}-{brand}-{size}
   // Size is the last pipe-separated segment of the product name: "(CODE) | BRAND | SIZE"
   const nameParts = (product.name || '').split(' | ');
+  /**
+   * Read aloud by a screen reader, so the brand is written rather than shouted.
+   * `product.name` keeps the stored capitals: it is also the checkout
+   * re-validation payload.
+   */
+  const spokenName = nameParts.map((part, i) => (i === 1 ? brandName(part) : part)).join(' | ');
   const size = nameParts.length >= 2 ? nameParts[nameParts.length - 1] : '';
   const slug = product.id ? buildTireSlug(String(product.id), product.brand || '', size) : '';
   let url = slug ? `/tires/${slug}` : '/tires';
@@ -101,7 +108,7 @@ const CtaButton: FC<CtaButtonProps> = ({
         type="button"
       >
         {text}
-        <span className="sr-only">, {product.name}</span>
+        <span className="sr-only">, {spokenName}</span>
       </button>
     );
   }
@@ -116,7 +123,7 @@ const CtaButton: FC<CtaButtonProps> = ({
       aria-disabled={disabled}
     >
       {text}
-      <span className="sr-only">, {product.name}</span>
+      <span className="sr-only">, {spokenName}</span>
     </Link>
   );
 };

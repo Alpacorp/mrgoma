@@ -1,5 +1,6 @@
 import { RangeSlider } from '@/app/ui/components';
 import { filtersItems } from '@/app/ui/sections/FiltersMobile/FiltersItems';
+import { brandName } from '@/app/utils/tireNaming';
 
 type RangeKey = 'price' | 'treadDepth' | 'remainingLife';
 type FilterKey = 'brands' | 'condition' | 'patched' | 'kindSale' | 'local';
@@ -148,7 +149,9 @@ export const FilterBody = (
                     htmlFor={`filter-${idPrefix}brands-${idx}`}
                     className={`ml-3 ${isMobile ? 'flex-1 text-gray-500' : 'text-gray-600'} text-sm`}
                   >
-                    {brand.toUpperCase()}
+                    {/* The label only. `value` stays as stored so the query
+                        still matches the catalog. */}
+                    {brandName(brand)}
                   </label>
                 </div>
               ))

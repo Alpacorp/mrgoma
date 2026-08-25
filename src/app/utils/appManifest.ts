@@ -49,7 +49,7 @@ export function storefrontManifest(): MetadataRoute.Manifest {
   return {
     name: 'MrGoma Tires',
     short_name: 'MrGoma',
-    description: 'New and used tires in Miami – MrGoma Tires',
+    description: 'New and used tires in Miami & Orlando – MrGoma Tires',
     start_url: '/',
     scope: '/',
     ...SHARED,

@@ -74,6 +74,8 @@ export interface SingleTireDetails {
 }
 
 export interface SingleTire {
+  /** Where the tire is, derived from the warehouse. Never the warehouse name. */
+  city?: 'Miami' | 'Orlando';
   id: string | number;
   /**
    * The stock code staff search by — the value the product name shows in
@@ -97,7 +99,6 @@ export interface SingleTire {
   speedIndex?: string;
   runFlat?: string;
   images: singleTireImages[];
-  description?: string;
   model2?: string;
   details: SingleTireDetails[];
 }
@@ -109,6 +110,9 @@ export interface TireFeature {
 }
 
 export interface TransformedTire {
+  /** The model and size as fields, not folded into `name`. */
+  model?: string;
+  size?: string;
   id: string;
   name: string;
   color: string;

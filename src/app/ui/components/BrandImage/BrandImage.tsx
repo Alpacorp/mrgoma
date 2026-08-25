@@ -4,6 +4,8 @@ import { FC, useState } from 'react';
 
 import Image from 'next/image';
 
+import { brandName } from '@/app/utils/tireNaming';
+
 interface BrandImageProps {
   product: {
     brand: string;
@@ -17,9 +19,9 @@ const BrandImage: FC<BrandImageProps> = ({ product }) => {
     <Image
       className="h-full aspect-auto max-w-32 w-full pl-1 object-contain object-center"
       src={src}
-      alt={product.brand}
-      title={product.brand}
-      aria-label={product.brand}
+      alt={brandName(product.brand)}
+      title={brandName(product.brand)}
+      aria-label={brandName(product.brand)}
       priority
       width={128}
       height={96}

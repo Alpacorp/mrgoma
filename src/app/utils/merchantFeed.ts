@@ -1,7 +1,9 @@
 import { timingSafeEqual } from 'node:crypto';
 
 import { SITE_NAME, absUrl, getSiteUrl } from '@/app/utils/seo';
+import { storeCity } from '@/app/utils/storeCity';
 import { generateTireDescription } from '@/app/utils/tireDescription';
+import { brandName, modelName } from '@/app/utils/tireNaming';
 import { buildTireSlug } from '@/app/utils/tireSlug';
 import type { FeedTireRecord } from '@/repositories/feedQuery';
 
@@ -88,7 +90,9 @@ export function buildFeedTitle(params: {
  */
 export function buildFeedItem(record: FeedTireRecord): GmcItem {
   const id = String(record.TireId ?? '');
-  const brand = record.Brand || 'Unknown';
+  // Written for a shopper, not as stored: the catalog keeps brands in capitals,
+  // and this string is the feed's title, brand attribute and description alike.
+  const brand = brandName(record.Brand) || 'Unknown';
   const size = record.RealSize || '';
   const condition = record.ProductTypeId === 1 ? 'new' : 'used';
   const conditionLabel = condition === 'new' ? 'New' : 'Used';
@@ -101,19 +105,27 @@ export function buildFeedItem(record: FeedTireRecord): GmcItem {
     remainingLife: record.RemainingLife,
   });
 
-  const description =
-    record.Description?.trim() ||
-    generateTireDescription({
-      brand,
-      model: record.Model2,
-      size,
-      condition: conditionLabel,
-      remainingLife: record.RemainingLife,
-      treadDepth: record.Tread,
-      patched,
-      loadIndex: record.loadIndex,
-      speedIndex: record.speedIndex,
-    });
+  /**
+   * Always generated, never the `Description` column.
+   *
+   * That column does not hold descriptions. It holds internal purchase notes —
+   * `$71 advance`, `45.95`, `62 Advance`, `175 TR` — and all 985 non-empty values
+   * are 40 characters or fewer. Preferring it sent those to Google Shopping as
+   * the product description, which was useless to a shopper and published what
+   * reads as the shop's cost next to its retail price.
+   */
+  const description = generateTireDescription({
+    brand,
+    model: modelName(record.Model2),
+    size,
+    condition: conditionLabel,
+    remainingLife: record.RemainingLife,
+    treadDepth: record.Tread,
+    patched,
+    loadIndex: record.loadIndex,
+    speedIndex: record.speedIndex,
+    city: storeCity(record.VaultName),
+  });
 
   const rawImages = [record.Image1, record.Image2, record.Image3, record.Image4].filter(
     (src): src is string => Boolean(src)
