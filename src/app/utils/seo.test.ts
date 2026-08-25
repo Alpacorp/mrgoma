@@ -744,3 +744,32 @@ describe('landing page titles name both cities', () => {
     expect(sizeTitle('245/70/19.5')).toContain('Orlando');
   });
 });
+
+/**
+ * The catalog stores brands in capitals. `025` title-cased them in the tire
+ * `<title>`; the brand landing pages and the card and detail headings kept
+ * shouting, so the same tire read `Bridgestone` in the browser tab and
+ * `BRIDGESTONE` on the page under it.
+ */
+describe('a brand is written for a reader wherever it is shown', () => {
+  const titleOf = (brand: string) =>
+    (brandMetadata({ brand, slug: brand.toLowerCase() }).title as { absolute: string }).absolute;
+
+  it.each([
+    ['GROUNDSPEED', 'Groundspeed'],
+    ['BRIDGESTONE', 'Bridgestone'],
+    ['BFGOODRICH', 'BFGoodrich'],
+    ['BACK COUNTRY ', 'Back Country'],
+  ])('%s reads as %s in the landing page title', (stored, shown) => {
+    const title = titleOf(stored);
+    expect(title).toContain(shown);
+    expect(title).not.toContain(stored.trim());
+  });
+
+  it('still names both cities and stays within the budget', () => {
+    const title = titleOf('GROUNDSPEED');
+    expect(title).toContain('Miami');
+    expect(title).toContain('Orlando');
+    expect(title.length).toBeLessThanOrEqual(TITLE_MAX);
+  });
+});

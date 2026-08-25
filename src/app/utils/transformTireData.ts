@@ -8,7 +8,14 @@ import { TiresData } from '@/app/interfaces/tires';
 export function transformTireData(tire: TiresData) {
   return {
     id: tire.TireId,
+    /**
+     * The composed identity, kept as it was: the cart and checkout match on it.
+     * Everything a person reads is now built from `model` and `size` below —
+     * `TireCard` used to recover them by splitting this string back apart.
+     */
     name: `(${tire.Code || ''}) | ${tire.Brand || 'Unknown'} | ${tire.Model2 || ''} | ${tire.RealSize || ''}`.trim(),
+    model: tire.Model2 || undefined,
+    size: tire.RealSize || undefined,
     color: 'Black',
     href: '#',
     imageSrc:

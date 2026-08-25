@@ -1,5 +1,6 @@
 import type { SingleTire } from '@/app/interfaces/tires';
 import { storeCity } from '@/app/utils/storeCity';
+import { brandName, modelName } from '@/app/utils/tireNaming';
 import type { DocumentRecord } from '@/repositories/tiresRepository';
 
 /**
@@ -8,7 +9,19 @@ import type { DocumentRecord } from '@/repositories/tiresRepository';
  * the `/api/tire` route handler (checkout re-validation), so the two never drift.
  */
 export function mapTireRecordToSingleTire(record: DocumentRecord): SingleTire {
-  const alt = `${record.Brand || 'Brand'} ${record.Model2 || ''} ${record.RealSize || ''}`.trim();
+  /**
+   * Alt text is read aloud and indexed by Google Images, so the brand is written
+   * for a reader rather than as the catalog stores it.
+   *
+   * This also reaches two `data-track-label` attributes — the tire card and the
+   * image zoom — so those event labels change spelling from 2026-08-24. Kept
+   * rather than worked around: the label is free text with one value per tire,
+   * nothing aggregates on it, and an event that reads back what the person
+   * actually saw is the more useful record. What stays untouched is `brand` and
+   * `name` on the tire itself, which the cart and checkout re-validation match on.
+   */
+  const alt =
+    `${brandName(record.Brand) || 'Brand'} ${modelName(record.Model2)} ${record.RealSize || ''}`.trim();
 
   const images = [record.Image1, record.Image2, record.Image3, record.Image4]
     .filter(Boolean)

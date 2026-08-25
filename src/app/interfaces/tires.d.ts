@@ -110,6 +110,9 @@ export interface TireFeature {
 }
 
 export interface TransformedTire {
+  /** The model and size as fields, not folded into `name`. */
+  model?: string;
+  size?: string;
   id: string;
   name: string;
   color: string;

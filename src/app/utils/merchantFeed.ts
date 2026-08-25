@@ -3,6 +3,7 @@ import { timingSafeEqual } from 'node:crypto';
 import { SITE_NAME, absUrl, getSiteUrl } from '@/app/utils/seo';
 import { storeCity } from '@/app/utils/storeCity';
 import { generateTireDescription } from '@/app/utils/tireDescription';
+import { brandName, modelName } from '@/app/utils/tireNaming';
 import { buildTireSlug } from '@/app/utils/tireSlug';
 import type { FeedTireRecord } from '@/repositories/feedQuery';
 
@@ -89,7 +90,9 @@ export function buildFeedTitle(params: {
  */
 export function buildFeedItem(record: FeedTireRecord): GmcItem {
   const id = String(record.TireId ?? '');
-  const brand = record.Brand || 'Unknown';
+  // Written for a shopper, not as stored: the catalog keeps brands in capitals,
+  // and this string is the feed's title, brand attribute and description alike.
+  const brand = brandName(record.Brand) || 'Unknown';
   const size = record.RealSize || '';
   const condition = record.ProductTypeId === 1 ? 'new' : 'used';
   const conditionLabel = condition === 'new' ? 'New' : 'Used';
@@ -113,7 +116,7 @@ export function buildFeedItem(record: FeedTireRecord): GmcItem {
    */
   const description = generateTireDescription({
     brand,
-    model: record.Model2,
+    model: modelName(record.Model2),
     size,
     condition: conditionLabel,
     remainingLife: record.RemainingLife,

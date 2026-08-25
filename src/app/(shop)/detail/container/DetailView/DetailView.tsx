@@ -1,6 +1,7 @@
 import { SingleTire } from '@/app/interfaces/tires';
 import TreadWearExplorer from '@/app/ui/components/TreadWearExplorer/TreadWearExplorer';
 import { ProductCarousel, TireInformation, TireFeatures, Benefits } from '@/app/ui/sections';
+import { brandName, modelName } from '@/app/utils/tireNaming';
 
 /**
  * Server Component: renders the whole product detail from server-fetched data,
@@ -12,7 +13,7 @@ const DetailView = ({ product }: { product: SingleTire }) => {
   const nameParts = product.name?.split(' | ') ?? [];
   const productSize = nameParts.length >= 2 ? nameParts[nameParts.length - 1] : undefined;
   const breadcrumbLabel =
-    `${product.condition} ${product.brand}${productSize ? ` ${productSize}` : ''}`.trim();
+    `${product.condition} ${brandName(product.brand)}${productSize ? ` ${productSize}` : ''}`.trim();
   const isNewTire = product.condition?.toLowerCase() === 'new';
 
   return (
@@ -79,8 +80,8 @@ const DetailView = ({ product }: { product: SingleTire }) => {
               )}
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight">
-              <span className="text-[#9dfb40]">{product.brand}</span>
-              {product.model2 && <> {product.model2}</>}
+              <span className="text-[#9dfb40]">{brandName(product.brand)}</span>
+              {product.model2 && <> {modelName(product.model2)}</>}
             </h1>
           </div>
         </div>

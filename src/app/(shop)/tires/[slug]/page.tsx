@@ -14,6 +14,7 @@ import {
   productMetadata,
 } from '@/app/utils/seo';
 import { generateTireDescription } from '@/app/utils/tireDescription';
+import { brandName, modelName } from '@/app/utils/tireNaming';
 import { buildTireSlug, extractIdFromSlug } from '@/app/utils/tireSlug';
 import { mapTireRecordToSingleTire } from '@/repositories/mapTireRecordToSingleTire';
 import { fetchTireById } from '@/repositories/tiresRepository';
@@ -63,7 +64,7 @@ export async function generateMetadata({
    */
   return productMetadata({
     brand: product.brand,
-    model: product.model2,
+    model: modelName(product.model2),
     size: product.size,
     condition: product.condition,
     patched: product.patched,
@@ -81,12 +82,16 @@ async function TireJsonLd({ productId }: { productId: string }) {
 
   const canonicalSlug = buildTireSlug(String(product.id), product.brand, product.size || '');
   const url = canonical(`/tires/${canonicalSlug}`);
+  // Shown in the breadcrumb and in its JSON-LD, so the brand is written for a
+  // reader rather than as the catalog stores it.
   const breadcrumbLabel =
-    `${product.condition} ${product.brand}${product.size ? ` ${product.size}` : ''}`.trim();
+    `${product.condition} ${brandName(product.brand)}${product.size ? ` ${product.size}` : ''}`.trim();
 
   const jsonLdDescription = generateTireDescription({
-    brand: product.brand,
-    model: product.model2,
+    // Written for a reader: this text is the Product node's description and is
+    // shown by Google, so it follows the page rather than the stored capitals.
+    brand: brandName(product.brand),
+    model: modelName(product.model2),
     size: product.size,
     condition: product.condition,
     remainingLife: product.remainingLife,
@@ -99,8 +104,13 @@ async function TireJsonLd({ productId }: { productId: string }) {
 
   const productJsonLd = buildProductJsonLd({
     url,
-    name: product.name,
-    brand: product.brand,
+    /**
+     * The display spelling here too. `product.name` keeps the stored capitals
+     * because it is also the checkout re-validation payload; this node is read
+     * by Google and shown to people.
+     */
+    name: product.name.replace(product.brand, brandName(product.brand)),
+    brand: brandName(product.brand),
     description: jsonLdDescription,
     images: (product.images || []).map(i => i.src),
     price: product.price,

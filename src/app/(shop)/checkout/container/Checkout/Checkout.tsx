@@ -13,6 +13,7 @@ import ShippingStateGate from '@/app/ui/components/ShippingStateGate/ShippingSta
 import { locationsData } from '@/app/ui/sections/LocationsSlider/locationsData';
 import { trackEvent } from '@/app/utils/analytics';
 import { EVENTS } from '@/app/utils/analyticsEvents';
+import { cartLine } from '@/app/utils/cartLine';
 import { buildTireSlug } from '@/app/utils/tireSlug';
 
 const TAX_RATE = (() => {
@@ -659,13 +660,15 @@ export default function Checkout() {
                                     href={detailHref}
                                     className="font-medium text-gray-900 hover:text-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
                                   >
-                                    {item.name}
+                                    {cartLine(item).title}
                                   </Link>
-                                  <ProductMeta
-                                    brand={item.brand}
-                                    condition={item.condition}
-                                    className="mt-0.5"
-                                  />
+                                  {cartLine(item).size && (
+                                    <p className="text-sm text-gray-500">{cartLine(item).size}</p>
+                                  )}
+                                  <ProductMeta condition={item.condition} className="mt-0.5" />
+                                  {cartLine(item).code && (
+                                    <p className="text-xs text-gray-400">{cartLine(item).code}</p>
+                                  )}
                                 </div>
                               </div>
                             </td>

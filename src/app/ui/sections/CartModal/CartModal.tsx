@@ -9,6 +9,7 @@ import { useCart } from '@/app/context/CartContext';
 import { XMarkIcon } from '@/app/ui/components';
 import { Dialog, DialogBackdrop, DialogPanel } from '@/app/ui/components/Dialog/Dialog';
 import ProductMeta from '@/app/ui/components/ProductMeta/ProductMeta';
+import { cartLine } from '@/app/utils/cartLine';
 
 const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
   const { cartItems, removeFromCart, cartTotal, showCartModal, setShowCartModal } = useCart();
@@ -89,10 +90,16 @@ const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
                         <div className="ml-4 flex-1 flex flex-col">
                           <div>
                             <div className="flex justify-between text-base font-medium text-gray-900">
-                              <h3>{item.name}</h3>
+                              <h3>{cartLine(item).title}</h3>
                               <p className="ml-4">${item.price.toFixed(2)}</p>
                             </div>
-                            <ProductMeta brand={item.brand} condition={item.condition} />
+                            {cartLine(item).size && (
+                              <p className="text-sm text-gray-500">{cartLine(item).size}</p>
+                            )}
+                            <ProductMeta condition={item.condition} />
+                            {cartLine(item).code && (
+                              <p className="text-xs text-gray-400">{cartLine(item).code}</p>
+                            )}
                           </div>
                           <div className="flex-1 flex items-end justify-between text-sm">
                             <p className="text-gray-500">Qty {item.quantity}</p>

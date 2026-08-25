@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useCart } from '@/app/context/CartContext';
 import { TransformedTire } from '@/app/interfaces/tires';
 import { BrandImage, FreeShippingBadge, ProductImage, StockBadge } from '@/app/ui/components';
+import { brandName, modelName } from '@/app/utils/tireNaming';
 import { buildTireSlug, slugify } from '@/app/utils/tireSlug';
 
 interface TireCardProps {
@@ -52,7 +53,7 @@ const TireCard: FC<TireCardProps> = ({ products }) => {
 
   const handleAddToCart = (event: SyntheticEvent, product: TransformedTire) => {
     event.preventDefault();
-    addToCart(product);
+    addToCart({ ...product, model: product.model, size: product.size });
   };
 
   return (
@@ -90,7 +91,9 @@ const TireCard: FC<TireCardProps> = ({ products }) => {
           : 'bg-amber-100 text-amber-700 border border-amber-300 hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-colors duration-150';
         const condLabel = isNew ? 'New' : 'Used';
 
-        const titleText = [product.brand, displayName].filter(Boolean).join(' ');
+        const titleText = [brandName(product.brand), modelName(displayName)]
+          .filter(Boolean)
+          .join(' ');
 
         return (
           <li

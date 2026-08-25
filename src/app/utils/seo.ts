@@ -11,7 +11,10 @@ import {
   WARRANTY,
 } from '@/app/utils/brandClaims';
 import type { StoreCity } from '@/app/utils/storeCity';
+import { brandName } from '@/app/utils/tireNaming';
 import { WHATSAPP_TEL } from '@/app/utils/whatsapp';
+
+export { brandName } from '@/app/utils/tireNaming';
 
 export const SITE_NAME = 'MrGoma Tires';
 
@@ -622,7 +625,9 @@ export function newTiresMetadata(): Metadata {
 
 /** `/tires/brands/[brand]` — head length varies with the brand name. */
 export function brandMetadata(params: { brand: string; slug: string }): Metadata {
-  const { brand, slug } = params;
+  const { slug } = params;
+  // Displayed, so title-cased: the catalog stores `GROUNDSPEED`.
+  const brand = brandName(params.brand);
   return pageMetadata({
     /*
      * "Miami & Orlando" on the first rung, not just "Miami".
@@ -803,42 +808,6 @@ export function locationMetadata(params: {
     ),
     path: `/locations/${slug}`,
   });
-}
-
-/**
- * Brands the catalog spells in a way `brandName` cannot derive.
- *
- * Keyed by the stored (upper-case) form. The catalog holds **75 brands** and
- * plain title-casing is right for 74 of them; this exists for the one that is not
- * and grows only when another arrives.
- */
-const BRAND_EXCEPTIONS: Record<string, string> = {
-  BFGOODRICH: 'BFGoodrich',
-};
-
-/**
- * Renders a stored brand for display: `BRIDGESTONE` → `Bridgestone`.
- *
- * Two things this must not do. It must not touch **model** names — the catalog
- * has 96 distinct all-caps tokens of three letters or fewer (`XL`, `RFT`, `RSC`,
- * `A/S`) against a handful of real words spelled the same way (`ALL`, `NO`,
- * `FIT`), so any length-based rule mangles one set; `Primacy ALL Season` is what
- * the first attempt produced. And it must not assume the stored value is clean:
- * `'BACK COUNTRY '` carries a **trailing space**, which is why today's titles
- * render a double space before the model.
- *
- * An unknown brand degrades to title case rather than throwing.
- */
-export function brandName(brand?: string): string {
-  const raw = (brand ?? '').trim().replace(/\s+/g, ' ');
-  if (!raw) return '';
-
-  const exception = BRAND_EXCEPTIONS[raw.toUpperCase()];
-  if (exception) return exception;
-
-  return raw
-    .toLowerCase()
-    .replace(/(^|[\s-])(\w)/g, (_, sep: string, ch: string) => sep + ch.toUpperCase());
 }
 
 /**

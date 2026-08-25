@@ -11,6 +11,7 @@ import {
 import AddToCartButton from '@/app/ui/components/AddToCartButton/AddToCartButton';
 import { WhatsAppEnquiryButton } from '@/app/ui/components/WhatsAppEnquiryButton/WhatsAppEnquiryButton';
 import { generateTireDescription } from '@/app/utils/tireDescription';
+import { brandName, modelName, tireTitle } from '@/app/utils/tireNaming';
 
 // Server Component: renders the product info from props. The only interactive
 // piece (add-to-cart) is delegated to the `AddToCartButton` client island.
@@ -36,8 +37,8 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
   const lifeColor = lifePct >= 70 ? 'bg-[#9dfb40]' : lifePct >= 40 ? 'bg-amber-400' : 'bg-red-500';
 
   const tireDescription = generateTireDescription({
-    brand: singleTire.brand,
-    model: singleTire.model2,
+    brand: brandName(singleTire.brand),
+    model: modelName(singleTire.model2),
     size,
     condition: singleTire.condition,
     remainingLife: singleTire.remainingLife,
@@ -61,14 +62,20 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
                 }}
               />
             </div>
+            {/*
+              The same name the card showed, so the tire does not change identity
+              between the list and its own page. The stock code moves to the line
+              below, where it is useful for support rather than sitting in the
+              middle of the product name.
+            */}
             <ProductName
               id={`product-name-${singleTire.id}`}
               type={2}
               size="3xl"
               weight="bold"
-              name={singleTire.name}
+              name={tireTitle({ brand: singleTire.brand, model: singleTire.model2 })}
             />
-            {singleTire.model2 && <p className="text-sm text-gray-600 mt-1">{singleTire.model2}</p>}
+            {singleTire.code && <p className="text-sm text-gray-500 mt-1">#{singleTire.code}</p>}
           </div>
           <div className="mt-3 flex items-center justify-between">
             <h2 className="sr-only">Product information</h2>

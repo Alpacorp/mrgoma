@@ -21,7 +21,7 @@ const AddToCartButton: FC<AddToCartButtonProps> = ({ product }) => {
 
   const handleAddToCart = (event: SyntheticEvent) => {
     event.preventDefault();
-    addToCart(product);
+    addToCart({ ...product, model: product.model2, size: product.size });
   };
 
   return (

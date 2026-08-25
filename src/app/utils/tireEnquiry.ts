@@ -1,4 +1,5 @@
 import type { SingleTire } from '@/app/interfaces/tires';
+import { brandName, modelName } from '@/app/utils/tireNaming';
 
 import { absUrl } from './seo';
 import { buildTireSlug } from './tireSlug';
@@ -45,7 +46,7 @@ function trim(name: string): string {
  * separately in the message.
  */
 function describe(tire: SingleTire): string {
-  const parts = [tire.brand, tire.model2].filter(part => present(part));
+  const parts = [brandName(tire.brand), modelName(tire.model2)].filter(part => present(part));
   return trim(parts.join(' ') || 'this tire');
 }
 
