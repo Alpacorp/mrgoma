@@ -99,3 +99,35 @@ What still holds the stored capitals, on purpose: the serialized `brand` and
 - [ ] A cart saved before this change should still show its old name rather than
       collapsing to a bare brand.
 - [ ] The dashboard's add-to-cart, which was the third composer.
+
+---
+
+## Visual balance in the detail hero
+
+Two changes asked for after the naming landed, both about composition rather than
+correctness.
+
+**The size moved into the heading.** It sat in a chip above the title at 12px —
+the smallest text on the screen, while being the thing most buyers arrive already
+knowing. It now reads at heading scale beside the model, in a muted grey so the
+product name still leads:
+
+```
+Bridgestone Dueler H/P Sport AS XL 245/50/19
+└ green ┘ └──── white ────────────┘ └ grey ─┘
+```
+
+That also puts the size in the page's accessible name, which is what a screen
+reader announces and what Google reads. Joined with a real space rather than a
+line break — `023` found that a `<br />` between text nodes runs the words
+together in `textContent`.
+
+**The condition badge appeared three times in one viewport**: a pill in the hero,
+another over the gallery image, and the labelled `Condition` cell in the spec
+grid. The gallery one is gone — it was the only one with no label and no context.
+Kept where each earns its place: once at the top for immediate context, once in
+the specs table where a buyer goes to compare.
+
+Verified: `Used` now appears twice on the page, in the hero and the spec grid,
+and the `<h1>` reads `Bridgestone Dueler H/P Sport AS XL 245/50/19` with no words
+run together.

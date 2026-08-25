@@ -73,15 +73,26 @@ const DetailView = ({ product }: { product: SingleTire }) => {
               >
                 {isNewTire ? 'New' : 'Used'}
               </span>
-              {productSize && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-[#9dfb40] text-[#0a0a0a] text-xs font-black tracking-wider">
-                  {productSize}
-                </span>
-              )}
             </div>
+            {/*
+              The size sits in the heading rather than in a chip above it. It was
+              the smallest text on the screen while being the thing most buyers
+              arrive knowing — and putting it here also makes it part of the
+              page's accessible name.
+
+              Real spaces, not a `<br />`: `023` found that a line break between
+              text nodes runs the words together in `textContent`, which is what
+              Google and a screen reader read.
+            */}
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight">
               <span className="text-[#9dfb40]">{brandName(product.brand)}</span>
               {product.model2 && <> {modelName(product.model2)}</>}
+              {productSize && (
+                <>
+                  {' '}
+                  <span className="text-gray-400 whitespace-nowrap">{productSize}</span>
+                </>
+              )}
             </h1>
           </div>
         </div>

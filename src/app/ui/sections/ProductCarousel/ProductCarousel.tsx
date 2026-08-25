@@ -3,7 +3,7 @@
 import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import { TireInformationProps } from '@/app/interfaces/tires';
-import { ProductCondition, ProductCarouselMiniature, StockBadge } from '@/app/ui/components';
+import { ProductCarouselMiniature, StockBadge } from '@/app/ui/components';
 import ProductImageZoom from '@/app/ui/components/ProductImageZoom/ProductImageZoom';
 
 const FALLBACK_IMAGE = '/assets/images/generic-tire-image.webp';
@@ -106,9 +106,12 @@ const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
               priority={index === 0}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
             />
-            <div className="pointer-events-none absolute top-2 left-2 z-30">
-              <ProductCondition condition={singleTire.condition} />
-            </div>
+            {/*
+              No condition badge here. It said the same word as the pill in the
+              hero directly above and as the labelled `Condition` cell in the
+              spec grid beside it — three times in one viewport. Kept where it
+              carries meaning: once at the top for context, once in the specs.
+            */}
             {(() => {
               const statusVal = singleTire.status;
               const isSold =
