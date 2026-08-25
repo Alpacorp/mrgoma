@@ -82,23 +82,44 @@ export const useCart = () => useContext(CartContext);
 
 // Cart provider component
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  // Initialize cart state from localStorage if available
-  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
-    if (typeof window !== 'undefined') {
-      const savedCart = localStorage.getItem('cart');
-      return savedCart ? JSON.parse(savedCart) : [];
-    }
-    return [];
-  });
+  /**
+   * Empty on the first render, on the server **and** on the client.
+   *
+   * This used to read `localStorage` inside the `useState` initialiser, guarded
+   * by `typeof window !== 'undefined'` — which is the first cause React's own
+   * hydration error lists. The server rendered "Add to Cart" and the client's
+   * first render said "In Cart", so every product page logged a hydration error
+   * for anyone with a cart, and the label flashed as React regenerated the tree.
+   */
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
+  /**
+   * Whether the stored cart has been read yet. **The save effect must not run
+   * before it has**: it would write the first render's empty array over a real
+   * cart and lose it. That ordering is the whole reason this flag exists.
+   */
+  const [loadedFromStorage, setLoadedFromStorage] = useState(false);
 
   const [showCartModal, setShowCartModal] = useState<boolean>(false);
 
-  // Save the cart to localStorage whenever it changes
+  // Read the stored cart once, after mount, so the first client render matches
+  // the server's.
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('cart', JSON.stringify(cartItems));
+    try {
+      const savedCart = localStorage.getItem('cart');
+      if (savedCart) setCartItems(JSON.parse(savedCart));
+    } catch {
+      // A corrupt payload used to throw here and take the whole app down.
+      // Starting empty is recoverable; crashing is not.
     }
-  }, [cartItems]);
+    setLoadedFromStorage(true);
+  }, []);
+
+  // Save the cart whenever it changes — but never before it has been read.
+  useEffect(() => {
+    if (!loadedFromStorage) return;
+    localStorage.setItem('cart', JSON.stringify(cartItems));
+  }, [cartItems, loadedFromStorage]);
 
   // Add a product to the cart
   const addToCart = (product: AddToCartProduct) => {

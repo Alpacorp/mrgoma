@@ -3,7 +3,19 @@
  */
 
 // Constants for pagination
-export const DEFAULT_PAGE_SIZE = 10;
+
+/**
+ * Rows per page before the visitor chooses otherwise.
+ *
+ * Ten put the catalogue at **416 pages** — a page of results shorter than the
+ * filter bar above it. Twenty is still one of `VALID_PAGE_SIZES`, halves the
+ * page count, and costs little: a filtered listing query measures around 100 ms
+ * on the server against 225 ms of network latency, so the row count is not what
+ * a visitor waits for.
+ *
+ * The dashboard shares this default, which is deliberate — one number, not two.
+ */
+export const DEFAULT_PAGE_SIZE = 20;
 export const DEFAULT_PAGE = 1;
 export const VALID_PAGE_SIZES = [5, 10, 15, 20, 25, 50, 100];
 export const MAX_PAGE_SIZE = 100; // Absolute maximum limit

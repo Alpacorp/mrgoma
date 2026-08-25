@@ -14,7 +14,7 @@ import {
   productMetadata,
 } from '@/app/utils/seo';
 import { generateTireDescription } from '@/app/utils/tireDescription';
-import { brandName, modelName } from '@/app/utils/tireNaming';
+import { brandName, modelName, tireTitle } from '@/app/utils/tireNaming';
 import { buildTireSlug, extractIdFromSlug } from '@/app/utils/tireSlug';
 import { mapTireRecordToSingleTire } from '@/repositories/mapTireRecordToSingleTire';
 import { fetchTireById } from '@/repositories/tiresRepository';
@@ -105,11 +105,16 @@ async function TireJsonLd({ productId }: { productId: string }) {
   const productJsonLd = buildProductJsonLd({
     url,
     /**
-     * The display spelling here too. `product.name` keeps the stored capitals
-     * because it is also the checkout re-validation payload; this node is read
-     * by Google and shown to people.
+     * The name a shopper would recognise, not the internal identity.
+     *
+     * This was `(594712) | Nitto | 275/45/20` — a stock code leading a
+     * pipe-delimited row, with the model missing entirely. Google may show this
+     * string in a rich result. `product.name` keeps its stored shape because the
+     * cart and checkout re-validation match on it.
      */
-    name: product.name.replace(product.brand, brandName(product.brand)),
+    name: [tireTitle({ brand: product.brand, model: product.model2 }), product.size]
+      .filter(Boolean)
+      .join(' '),
     brand: brandName(product.brand),
     description: jsonLdDescription,
     images: (product.images || []).map(i => i.src),

@@ -74,7 +74,7 @@ const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
                           {item.image ? (
                             <Image
                               src={item.image}
-                              alt={item.name}
+                              alt={cartLine(item).title}
                               width={64}
                               height={64}
                               className="w-full h-full object-center object-cover"

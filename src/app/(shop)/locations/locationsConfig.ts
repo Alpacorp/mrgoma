@@ -23,6 +23,7 @@ export interface LocationConfig {
   slug: string;
   name: string;
   address: string;
+  /** Display form, `(305) 278-4632`. The dialable E.164 lives in `tel`. */
   phone: string;
   tel: string;
   /**
@@ -67,7 +68,7 @@ export const locationsConfig: LocationConfig[] = [
     slug: 'cutler-bay',
     name: 'Cutler Bay',
     address: '18200 S Dixie Hwy, Miami, FL 33157',
-    phone: '(305)-278-4632',
+    phone: '(305) 278-4632',
     tel: 'tel:+13052784632',
     cid: '5066795194871319329',
     mapLink: 'https://maps.google.com/?cid=5066795194871319329',
@@ -84,7 +85,7 @@ export const locationsConfig: LocationConfig[] = [
     slug: 'miami-airport',
     name: 'Miami Airport',
     address: '3251 NW 27th Ave, Miami, FL 33142',
-    phone: '(305)-456-9588',
+    phone: '(305) 456-9588',
     tel: 'tel:+13054569588',
     cid: '2096624248671681511',
     mapLink: 'https://maps.google.com/?cid=2096624248671681511',
@@ -101,7 +102,7 @@ export const locationsConfig: LocationConfig[] = [
     slug: 'miami-gardens',
     name: 'Miami Gardens',
     address: '20282 NW 2nd Ave, Miami Gardens, FL 33169',
-    phone: '(305)-770-1154',
+    phone: '(305) 770-1154',
     tel: 'tel:+13057701154',
     cid: '12040422701354621089',
     mapLink: 'https://maps.google.com/?cid=12040422701354621089',
@@ -118,7 +119,7 @@ export const locationsConfig: LocationConfig[] = [
     slug: 'coral-gables',
     name: 'Coral Gables',
     address: '900 South Le Jeune Rd, Coral Gables, FL 33134',
-    phone: '(305)-713-1258',
+    phone: '(305) 713-1258',
     tel: 'tel:+13057131258',
     cid: '9306129931212076132',
     mapLink: 'https://maps.google.com/?cid=9306129931212076132',
@@ -140,7 +141,7 @@ export const locationsConfig: LocationConfig[] = [
     slug: 'hialeah',
     name: 'Hialeah',
     address: '4040 E 10th Ct, Hialeah, FL 33013',
-    phone: '(305)-836-4200',
+    phone: '(305) 836-4200',
     tel: 'tel:+13058364200',
     cid: '10647748756063834745',
     mapLink: 'https://maps.google.com/?cid=10647748756063834745',
@@ -157,7 +158,7 @@ export const locationsConfig: LocationConfig[] = [
     slug: 'orlando-west-colonial',
     name: 'Orlando West Colonial',
     address: '4400 W Colonial Dr, Orlando, FL 32808',
-    phone: '(407)-203-3912',
+    phone: '(407) 203-3912',
     tel: 'tel:+14072033912',
     cid: '7321587865564452670',
     mapLink: 'https://maps.google.com/?cid=7321587865564452670',
@@ -174,7 +175,7 @@ export const locationsConfig: LocationConfig[] = [
     slug: 'east-orlando',
     name: 'East Orlando',
     address: '575 N Semoran Blvd, Orlando, FL 32807',
-    phone: '(407)-282-3100',
+    phone: '(407) 282-3100',
     tel: 'tel:+14072823100',
     cid: '7657616713785074051',
     mapLink: 'https://maps.google.com/?cid=7657616713785074051',
