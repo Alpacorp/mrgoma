@@ -143,6 +143,7 @@ const FilterRail: FC<FilterRailProps> = ({
               <RangeFacet
                 key={group}
                 title={TITLES[group]}
+                trackGroup={group}
                 options={options}
                 bounds={
                   isPrice
@@ -177,6 +178,7 @@ const FilterRail: FC<FilterRailProps> = ({
               <FacetGroup
                 key={group}
                 title={TITLES[group]}
+                trackGroup={group}
                 options={[]}
                 collapsible={COLLAPSIBLE.has(group)}
                 defaultOpen={Boolean(applied)}
@@ -184,6 +186,7 @@ const FilterRail: FC<FilterRailProps> = ({
               >
                 <SearchableFacet
                   options={options}
+                  trackGroup={group}
                   noun={searchable.noun}
                   nounPlural={searchable.plural}
                   numeric={searchable.numeric}
@@ -197,6 +200,7 @@ const FilterRail: FC<FilterRailProps> = ({
             <FacetGroup
               key={group}
               title={TITLES[group]}
+              trackGroup={group}
               options={options}
               multiSelect={additive}
             />

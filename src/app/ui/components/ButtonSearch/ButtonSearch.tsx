@@ -3,10 +3,18 @@ import { FC } from 'react';
 interface ButtonSearchProps {
   onClick?: () => void;
   disabled: '' | boolean | string;
-  type?: 'submit' | 'reset' | 'button' | undefined;
+  /**
+   * Defaults to `button`.
+   *
+   * It was optional and unset, and React omits an attribute whose value is
+   * `undefined` — which leaves a bare `<button>`, and HTML defaults *that* to
+   * `submit`. Harmless where it renders today, and a form submitted by the wrong
+   * control the first time one of these is placed inside a `<form>`.
+   */
+  type?: 'submit' | 'reset' | 'button';
 }
 
-const ButtonSearch: FC<ButtonSearchProps> = ({ onClick, disabled, type }) => {
+const ButtonSearch: FC<ButtonSearchProps> = ({ onClick, disabled, type = 'button' }) => {
   return (
     <button
       type={type}

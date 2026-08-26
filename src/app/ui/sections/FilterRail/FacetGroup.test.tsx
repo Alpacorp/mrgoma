@@ -17,6 +17,7 @@ describe('FacetGroup', () => {
     render(
       <FacetGroup
         title="Brand"
+        trackGroup="brand"
         options={[option(), option({ value: 'MICHELIN', label: 'Michelin', count: 303 })]}
       />
     );
@@ -26,7 +27,11 @@ describe('FacetGroup', () => {
 
   it('groups thousands so a four-digit count is readable at a glance', () => {
     render(
-      <FacetGroup title="Condition" options={[option({ count: 2698 }), option({ value: 'x' })]} />
+      <FacetGroup
+        title="Condition"
+        trackGroup="condition"
+        options={[option({ count: 2698 }), option({ value: 'x' })]}
+      />
     );
     expect(screen.getByText('2,698')).toBeInTheDocument();
   });
@@ -41,6 +46,7 @@ describe('FacetGroup', () => {
     const { container } = render(
       <FacetGroup
         title="Brand"
+        trackGroup="brand"
         options={[option({ applied: true }), option({ value: 'MICHELIN', label: 'Michelin' })]}
       />
     );
@@ -51,7 +57,13 @@ describe('FacetGroup', () => {
   });
 
   it('renders filters as links, so a filtered view is a real URL', () => {
-    render(<FacetGroup title="Brand" options={[option(), option({ value: 'M', label: 'M' })]} />);
+    render(
+      <FacetGroup
+        title="Brand"
+        trackGroup="brand"
+        options={[option(), option({ value: 'M', label: 'M' })]}
+      />
+    );
     expect(screen.getByRole('link', { name: /Pirelli/ })).toHaveAttribute(
       'href',
       '/tires?brands=PIRELLI'
@@ -60,10 +72,16 @@ describe('FacetGroup', () => {
   });
 
   it('instruments each option, as tech-stack.md requires of new controls', () => {
-    render(<FacetGroup title="Brand" options={[option(), option({ value: 'M', label: 'M' })]} />);
+    render(
+      <FacetGroup
+        title="Brand"
+        trackGroup="brand"
+        options={[option(), option({ value: 'M', label: 'M' })]}
+      />
+    );
     const link = screen.getByRole('link', { name: /Pirelli/ });
     expect(link).toHaveAttribute('data-track', 'filter_apply');
-    expect(link).toHaveAttribute('data-track-label', 'Brand:PIRELLI');
+    expect(link).toHaveAttribute('data-track-label', 'brand:PIRELLI');
   });
 
   /**
@@ -72,18 +90,20 @@ describe('FacetGroup', () => {
    * that looks like a choice and is not one.
    */
   it('renders nothing when there is only one option to choose', () => {
-    const { container } = render(<FacetGroup title="Brand" options={[option()]} />);
+    const { container } = render(
+      <FacetGroup title="Brand" trackGroup="brand" options={[option()]} />
+    );
     expect(container).toBeEmptyDOMElement();
   });
 
   it('renders nothing at all when there are no options', () => {
-    const { container } = render(<FacetGroup title="Brand" options={[]} />);
+    const { container } = render(<FacetGroup title="Brand" trackGroup="brand" options={[]} />);
     expect(container).toBeEmptyDOMElement();
   });
 
   it('still renders a lone option when it carries its own control, like the brand search', () => {
     render(
-      <FacetGroup title="Brand" options={[option()]}>
+      <FacetGroup title="Brand" trackGroup="brand" options={[option()]}>
         <input aria-label="Search brands" />
       </FacetGroup>
     );
@@ -92,7 +112,13 @@ describe('FacetGroup', () => {
   });
 
   it('names the group so the options are not read as a bare list', () => {
-    render(<FacetGroup title="Rim size" options={[option(), option({ value: 'x' })]} />);
+    render(
+      <FacetGroup
+        title="Rim size"
+        trackGroup="rimsize"
+        options={[option(), option({ value: 'x' })]}
+      />
+    );
     expect(screen.getByRole('heading', { name: 'Rim size' })).toBeInTheDocument();
   });
 });
@@ -106,7 +132,12 @@ describe('FacetGroup', () => {
 describe('groups whose options add up say so', () => {
   it('shows a box on an additive group', () => {
     const { container } = render(
-      <FacetGroup title="Condition" multiSelect options={[option(), option({ value: 'x' })]} />
+      <FacetGroup
+        title="Condition"
+        trackGroup="condition"
+        multiSelect
+        options={[option(), option({ value: 'x' })]}
+      />
     );
     // Decoration only: the state is announced by aria-current, and a checkbox
     // role would promise an interaction the link does not have.
@@ -120,6 +151,7 @@ describe('groups whose options add up say so', () => {
     const { container } = render(
       <FacetGroup
         title="Rim size"
+        trackGroup="rimsize"
         options={[option({ label: '20"' }), option({ value: 'x', label: '21"' })]}
       />
     );
@@ -132,6 +164,7 @@ describe('groups whose options add up say so', () => {
       const { container, unmount } = render(
         <FacetGroup
           title="Condition"
+          trackGroup="condition"
           multiSelect={multi}
           options={[option({ applied: true }), option({ value: 'x' })]}
         />

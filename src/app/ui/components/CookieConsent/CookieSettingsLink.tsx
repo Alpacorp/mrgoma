@@ -10,7 +10,7 @@ import React from 'react';
  * giving it, and the cheapest way to be *exactly* as easy is to reopen the very
  * same banner — same control, same two buttons, no extra page to reach.
  *
- * It is a `<button>`, not a link: it performs an action on this page rather than
+ * It is a `<button type="button">`, not a link: it performs an action on this page rather than
  * navigating somewhere. `Footer` is a Server Component, which is why the click
  * handler lives here in its own client module instead of inline over there.
  */

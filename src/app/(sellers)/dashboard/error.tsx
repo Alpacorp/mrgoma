@@ -18,6 +18,7 @@ export default function DashboardError({
       <h2 className="text-2xl font-semibold text-gray-800">Dashboard error</h2>
       <p className="text-gray-500">Something failed loading the dashboard. Please try again.</p>
       <button
+        type="button"
         onClick={reset}
         className="rounded-md bg-green-600 px-4 py-2 text-white hover:bg-green-700"
       >

@@ -63,6 +63,7 @@ function AddToCartButton({ row }: { row: DocumentRecord }) {
 
   return (
     <button
+      type="button"
       onClick={handleClick}
       disabled={loading}
       title="Add to cart"
@@ -286,6 +287,7 @@ const DashboardTable = () => {
                       return (
                         <td key={cell.id} className="md:hidden px-2 py-2.5">
                           <button
+                            type="button"
                             onClick={() => toggleRow(rowId)}
                             className="text-gray-400 hover:text-gray-600 transition-colors p-1"
                             aria-label={isExpanded ? 'Collapse row' : 'Expand row'}
@@ -343,6 +345,7 @@ const DashboardTable = () => {
         </span>
         <div className="flex items-center gap-1">
           <button
+            type="button"
             onClick={() => setPage(1)}
             disabled={page === 1}
             className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors"
@@ -350,6 +353,7 @@ const DashboardTable = () => {
             «
           </button>
           <button
+            type="button"
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
             className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors"
@@ -360,6 +364,7 @@ const DashboardTable = () => {
             {page} / {totalPages || 1}
           </span>
           <button
+            type="button"
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page >= totalPages}
             className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors"
@@ -367,6 +372,7 @@ const DashboardTable = () => {
             ›
           </button>
           <button
+            type="button"
             onClick={() => setPage(totalPages)}
             disabled={page >= totalPages}
             className="px-2 py-1 text-sm rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-100 transition-colors"

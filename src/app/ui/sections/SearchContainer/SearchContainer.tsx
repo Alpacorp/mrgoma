@@ -57,6 +57,7 @@ const SearchContainer: FC = () => {
             role="tablist"
           >
             <button
+              type="button"
               onClick={() => handleChangeTab('size')}
               role="tab"
               aria-selected={activeTab === 'size'}
@@ -73,6 +74,7 @@ const SearchContainer: FC = () => {
               </div>
             </button>
             <button
+              type="button"
               onClick={() => handleChangeTab('text')}
               role="tab"
               aria-selected={activeTab === 'text'}

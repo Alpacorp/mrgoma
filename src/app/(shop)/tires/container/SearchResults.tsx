@@ -332,6 +332,7 @@ const SearchResults: FC<SearchResultsProps> = ({
                       >
                         <div className="flex gap-1">
                           <button
+                            type="button"
                             onClick={handleFirstPage}
                             disabled={page === 1}
                             aria-label="First page"
@@ -342,6 +343,7 @@ const SearchResults: FC<SearchResultsProps> = ({
                             &lt;&lt;
                           </button>
                           <button
+                            type="button"
                             onClick={handlePreviousPage}
                             disabled={page === 1}
                             aria-label="Previous page"
@@ -355,6 +357,7 @@ const SearchResults: FC<SearchResultsProps> = ({
                         {pagination.map((pageNumber, index) =>
                           typeof pageNumber === 'number' ? (
                             <button
+                              type="button"
                               key={index}
                               onClick={() => handlePageClick(pageNumber)}
                               aria-current={pageNumber === page ? 'page' : undefined}
@@ -374,6 +377,7 @@ const SearchResults: FC<SearchResultsProps> = ({
                         )}
                         <div className="flex gap-1">
                           <button
+                            type="button"
                             onClick={handleNextPage}
                             disabled={page === totalPages}
                             aria-label="Next page"
@@ -384,6 +388,7 @@ const SearchResults: FC<SearchResultsProps> = ({
                             &gt;
                           </button>
                           <button
+                            type="button"
                             onClick={handleLastPage}
                             disabled={page === totalPages}
                             aria-label="Last page"

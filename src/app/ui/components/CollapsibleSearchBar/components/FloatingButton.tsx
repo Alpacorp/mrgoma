@@ -15,6 +15,7 @@ interface FloatingButtonProps {
 export const FloatingButton: React.FC<FloatingButtonProps> = ({ action }) => {
   return (
     <button
+      type="button"
       onClick={action}
       className="fixed bottom-4 cursor-pointer left-4 bg-green-600 text-white px-4 py-2.5 min-h-[44px] rounded-full shadow-lg hover:bg-green-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 flex items-center gap-2 z-40 sm:z-40 md:z-40 lg:z-40 xl:z-40"
       aria-label="Edit tire sizes"

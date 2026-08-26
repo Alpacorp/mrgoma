@@ -30,6 +30,7 @@ const renderFacet = (min?: number, max?: number, search = '') =>
   render(
     <RangeFacet
       title="Price"
+      trackGroup="price"
       options={optionsFor(min, max)}
       bounds={[70, 2002]}
       value={[min, max]}

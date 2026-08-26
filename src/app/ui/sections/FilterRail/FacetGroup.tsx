@@ -15,6 +15,16 @@ export type FacetOption = {
 
 interface FacetGroupProps {
   title: string;
+  /**
+   * The key this group reports under, e.g. `rim`.
+   *
+   * Not the title. Analytics labels are read months later next to each other,
+   * and titles change with the copy — `Rim size` today, `Wheel size` tomorrow —
+   * which silently splits one metric in two. This is the same key
+   * `AppliedFilters` reports on removal, so applying and removing a filter share
+   * a vocabulary.
+   */
+  trackGroup: string;
   options: FacetOption[];
   /**
    * Whether picking a second option **adds** to the first rather than replacing
@@ -72,6 +82,7 @@ interface FacetGroupProps {
  */
 const FacetGroup: FC<FacetGroupProps> = ({
   title,
+  trackGroup,
   options,
   multiSelect = false,
   children,
@@ -95,7 +106,7 @@ const FacetGroup: FC<FacetGroupProps> = ({
               aria-current={option.applied ? 'true' : undefined}
               data-track="filter_apply"
               data-track-category="tires_filter"
-              data-track-label={`${title}:${option.value}`}
+              data-track-label={`${trackGroup}:${option.value}`}
               className={`flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
                 option.applied
                   ? 'bg-green-50 font-semibold text-green-700'

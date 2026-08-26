@@ -20,6 +20,8 @@ export type RangeOption = {
 
 interface RangeFacetProps {
   title: string;
+  /** The key this group reports under. See `FacetGroup`. */
+  trackGroup: string;
   options: RangeOption[];
   /** The lowest and highest values in the catalogue — the slider's travel. */
   bounds: [number, number];
@@ -64,6 +66,7 @@ const FORMATTERS: Record<'currency' | 'percent', (value: number) => string> = {
  */
 const RangeFacet: FC<RangeFacetProps> = ({
   title,
+  trackGroup,
   options,
   bounds,
   value,
@@ -130,7 +133,7 @@ const RangeFacet: FC<RangeFacetProps> = ({
               aria-current={option.applied ? 'true' : undefined}
               data-track="filter_apply"
               data-track-category="tires_filter"
-              data-track-label={`${title}:${option.id}`}
+              data-track-label={`${trackGroup}:${option.id}`}
               className={`flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
                 option.applied
                   ? 'bg-green-50 font-semibold text-green-700'

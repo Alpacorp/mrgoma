@@ -12,6 +12,8 @@ interface SearchableFacetProps {
   initialCount?: number;
   /** What the group holds, for the search label and the empty message. */
   noun?: string;
+  /** The key this group reports under. See `FacetGroup`. */
+  trackGroup: string;
   /** Plural of `noun`, when it is not simply `noun + 's'`. */
   nounPlural?: string;
   /** Whether picking a second option adds to the first. See `FacetGroup`. */
@@ -41,6 +43,7 @@ const SearchableFacet: FC<SearchableFacetProps> = ({
   options,
   initialCount = 8,
   noun = 'brand',
+  trackGroup,
   nounPlural,
   multiSelect = true,
   numeric = false,
@@ -105,7 +108,7 @@ const SearchableFacet: FC<SearchableFacetProps> = ({
               aria-current={option.applied ? 'true' : undefined}
               data-track="filter_apply"
               data-track-category="tires_filter"
-              data-track-label={`Brand:${option.value}`}
+              data-track-label={`${trackGroup}:${option.value}`}
               className={`flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
                 option.applied
                   ? 'bg-green-50 font-semibold text-green-700'

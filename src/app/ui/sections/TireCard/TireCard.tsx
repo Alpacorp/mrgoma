@@ -154,9 +154,16 @@ const TireCard: FC<TireCardProps> = ({ products }) => {
 
                 {/* Title */}
                 <Link href={detailUrl} className="group/title">
-                  <h2 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 leading-snug line-clamp-2 group-hover/title:text-green-700 transition-colors">
+                  {/*
+                    An <h3>, not an <h2>. Each card sits under the results
+                    section's own heading, so twenty tire names as <h2> put
+                    twenty siblings beside it instead of children under it — a
+                    screen reader's outline of the page becomes a flat list of
+                    product names with no section to leave.
+                  */}
+                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 leading-snug line-clamp-2 group-hover/title:text-green-700 transition-colors">
                     {titleText}
-                  </h2>
+                  </h3>
                 </Link>
 
                 {/* Price + brand logo */}
