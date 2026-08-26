@@ -4,9 +4,11 @@ import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 import Image from 'next/image';
 
+
 import { createPortal } from 'react-dom';
 
 import { Dialog, XMarkIcon } from '@/app/ui/components';
+import { isOptimisableImage } from '@/app/utils/imageHosts';
 
 interface ProductImageZoomProps {
   /** Original (remote) image URL — also used un-optimized for the crisp zoom layers. */
@@ -44,6 +46,15 @@ const ProductImageZoom: FC<ProductImageZoomProps> = ({
   sizes,
   priority = false,
 }) => {
+  /**
+   * Guarded here rather than at the caller: `next/image` **throws during render**
+   * for an unconfigured host, so a single bad URL takes the whole page down —
+   * `/tires/405630-pirelli-285-40-22` answered 500 because one tire's photo is
+   * hosted on eBay. Every caller of this component would otherwise have to
+   * remember, and the one that mattered did not.
+   */
+  const safeSrc = isOptimisableImage(src) ? src : '/images/placeholder-tire.svg';
+
   const containerRef = useRef<HTMLButtonElement>(null);
   const [canHover, setCanHover] = useState(false);
   const [lens, setLens] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
@@ -83,7 +94,7 @@ const ProductImageZoom: FC<ProductImageZoomProps> = ({
   const base = (
     <Image
       alt={alt}
-      src={src}
+      src={safeSrc}
       fill
       className="object-contain object-center"
       sizes={sizes}
@@ -131,7 +142,7 @@ const ProductImageZoom: FC<ProductImageZoomProps> = ({
                 the lens needs the original URL at an exact pixel size, not an
                 optimized/resized next/image. */}
             <img
-              src={src}
+              src={safeSrc}
               alt=""
               aria-hidden="true"
               draggable={false}
@@ -185,7 +196,7 @@ const ProductImageZoom: FC<ProductImageZoomProps> = ({
               style={{ touchAction: zoomed ? 'pan-x pan-y' : 'none' }}
             >
               <img
-                src={src}
+                src={safeSrc}
                 alt={alt}
                 draggable={false}
                 onClick={() => setZoomed(z => !z)}

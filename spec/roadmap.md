@@ -262,6 +262,20 @@ To be resumed after the two tracks above; no fixed order yet.
   changes what searchers see without touching a single URL.
 - ⬜ **TireCard redesign.** UX/UI improvements for the `/tires` cards (analysis
   done).
+- ⬜ **Filters that say how much is behind them (`030-tires-filter-rail`).** On
+  `/tires` the filters never say what is behind them: of the 1.610 brand × rim
+  combinations the page offers, **only 338 have stock**, so four clicks in five
+  land on "No Tires Found" with all 114 brand chips still on screen and nothing
+  saying which would have worked. The rim list is hardcoded, so it offers 14"
+  (one tire) and hides 23", 24", 26" and 19.5" — **102 tires in stock that no
+  buyer can reach**. Moves every filter into a left rail that travels with the
+  results, gives each option its live count, adds the brand search the 115-chip
+  carousel needs, and drops the duplicate chip rows. The room comes from the
+  **448 px the layout already wastes** — the results list is capped at 768 px and
+  centred in a 1216 px container — so the rows end up wider, not narrower. Also
+  clears **254 links carrying `aria-pressed`**, a WCAG 2.1 AA violation eight
+  times the size of the one fixed in the sister project. Grounded in
+  `spec/analysis/2026-08-25-tires-filter-rail.md`.
 - 🟡 **AI chat: search on what was said (`018-ai-chat-filters-and-surface`).**
   Ask the assistant for Michelin and it shows nothing: it demands a tire size
   first, even though it can already filter by brand, rim, condition and price.

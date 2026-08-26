@@ -166,3 +166,21 @@ export function modelName(model?: string): string {
 export function tireTitle(tire: { brand?: string; model?: string }): string {
   return [brandName(tire.brand), modelName(tire.model)].filter(Boolean).join(' ');
 }
+
+/**
+ * Split the stored `name` into the size and the part that reads as a model.
+ *
+ * `name` arrives as pipe-joined fields (`brand | model | … | 225/50/19`) rather
+ * than as a sentence. This lived privately inside `TireCard`; the table view
+ * needs exactly the same split, and a second copy of "how a tire's name is
+ * read" is how the card, the cart and the checkout ended up disagreeing in
+ * `028`. It belongs here, with `brandName` and `modelName`.
+ */
+export function parseTireName(name: string): { size: string; displayName: string } {
+  const parts = (name || '').split(' | ');
+  if (parts.length >= 3) {
+    return { size: parts[parts.length - 1], displayName: parts.slice(2, -1).join(' ') || parts[1] };
+  }
+  if (parts.length === 2) return { size: parts[1], displayName: parts[0] };
+  return { size: '', displayName: name };
+}

@@ -66,8 +66,19 @@ const TireCardSkeleton: FC = () => (
   </li>
 );
 
+/**
+ * A skeleton's only job is to be the shape of what replaces it.
+ *
+ * This one kept `mx-auto max-w-3xl` after the filter rail freed the results to
+ * take the full column: the placeholder rendered at 768 px, centred, and the
+ * real cards then appeared at 944 px, wider and shifted left. The page jumped
+ * every time results loaded.
+ *
+ * The wrapper must therefore stay identical to `TireResults`'s —
+ * `resultsWidth.guard.test.ts` holds the two together.
+ */
 export const ResultsSkeleton: FC<SkeletonProps> = ({ count = 6, className = '' }) => (
-  <div className="mx-auto max-w-3xl px-3 sm:px-0">
+  <div className="px-3 sm:px-0">
     <ul className={`mt-3 space-y-6 ${className}`} role="status" aria-label="Loading results">
       {Array.from({ length: count }).map((_, index) => (
         <TireCardSkeleton key={index} />

@@ -23,11 +23,37 @@ describe('ProductImage', () => {
     expect(screen.getByRole('img', { name: 'Michelin tire' })).toHaveAttribute('src', '/tire.jpg');
   });
 
-  it('accepts absolute http(s) URLs', () => {
+  it('accepts an absolute URL on a host next/image is configured for', () => {
     render(
-      <ProductImage product={{ imageSrc: 'https://cdn.x.com/t.jpg', imageAlt: 'a', brand: 'B' }} />
+      <ProductImage
+        product={{ imageSrc: 'https://www.usedtires.online/t.jpg', imageAlt: 'a', brand: 'B' }}
+      />
     );
-    expect(screen.getByRole('img')).toHaveAttribute('src', 'https://cdn.x.com/t.jpg');
+    expect(screen.getByRole('img')).toHaveAttribute('src', 'https://www.usedtires.online/t.jpg');
+  });
+
+  /**
+   * This test used to assert the opposite — that **any** absolute http(s) URL
+   * was accepted — and it was green while the bug it describes was live.
+   *
+   * `next/image` throws during render for a host it is not configured for. It
+   * does not fall back, and `onError` never fires because nothing loads. One
+   * tire in the catalogue has an eBay-hosted photo: its detail page answered
+   * **500**, and every filtered catalogue view containing it rendered the
+   * loading skeleton instead of results — a buyer asking for new Pirellis saw
+   * no tires at all.
+   */
+  it('falls back for a host next/image would throw on', () => {
+    render(
+      <ProductImage
+        product={{
+          imageSrc: 'https://i.ebayimg.com/images/g/x/s-l1600.webp',
+          imageAlt: 'a',
+          brand: 'B',
+        }}
+      />
+    );
+    expect(screen.getByRole('img')).toHaveAttribute('src', '/images/default-tire.png');
   });
 
   it('falls back to the default image for the N/A sentinel', () => {

@@ -4,6 +4,8 @@ import { FC, useState } from 'react';
 
 import Image from 'next/image';
 
+import { isOptimisableImage } from '@/app/utils/imageHosts';
+
 interface ProductImageProps {
   product: {
     imageAlt: string;
@@ -17,26 +19,19 @@ interface ProductImageProps {
 // URL de imagen por defecto cuando la URL original no es válida
 const DEFAULT_IMAGE_URL = '/images/default-tire.png';
 
-// Función para validar una URL
-const isValidUrl = (url: string): boolean => {
-  if (!url) return false;
-  if (url === 'N/A' || url === 'null' || url === 'undefined') return false;
-
-  try {
-    // Verificar si es una URL relativa simple (comienza con /)
-    if (url.startsWith('/')) return true;
-
-    // Verificar si es una URL absoluta válida
-    new URL(url);
-    return true;
-  } catch {
-    return false;
-  }
-};
+/**
+ * A URL only counts as usable if `next/image` is configured for its host.
+ *
+ * It used to be enough for the URL to *parse*. `next/image` then threw during
+ * render — "hostname is not configured under images" — which is not an error
+ * this component can catch: `onError` fires when an image fails to load, and
+ * nothing ever loaded. One eBay-hosted photo in the catalogue was 500ing its own
+ * detail page and blanking every filtered view it appeared in.
+ */
 
 const ProductImage: FC<ProductImageProps> = ({ product, priority = false }) => {
   const [imgSrc, setImgSrc] = useState<string>(() => {
-    return isValidUrl(product.imageSrc) ? product.imageSrc : DEFAULT_IMAGE_URL;
+    return isOptimisableImage(product.imageSrc) ? product.imageSrc : DEFAULT_IMAGE_URL;
   });
 
   const [imgError, setImgError] = useState(false);

@@ -4,7 +4,6 @@ import React, { FC, Suspense, useCallback, useEffect, useRef, useState } from 'r
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { BrowseFilters } from '@/app/(shop)/tires/container/BrowseFilters/BrowseFilters';
 import { useGenerateFixedPagination } from '@/app/hooks/useGeneratePagination';
 import { TiresData } from '@/app/interfaces/tires';
 import {
@@ -15,11 +14,12 @@ import {
   ResultsHeader,
   ResultsSkeleton,
   TireResults,
-  TrustStrip,
+  TireTable,
 } from '@/app/ui/components';
-import { FiltersMobile, TopFilters, PromoBanner } from '@/app/ui/sections';
+import type { LooseningSuggestion } from '@/app/ui/components/NotResultsFound/NoResultsFound';
+import { PromoBanner } from '@/app/ui/sections';
 import { promoBannerConfig } from '@/app/ui/sections/PromoBanner/config/promoBanner';
-import { LOCATIONS_LABEL, SHIPPING, WARRANTY, onlineInventoryLabel } from '@/app/utils/brandClaims';
+import type { TireView } from '@/app/utils/filterUtils';
 import {
   DEFAULT_PAGE,
   DEFAULT_PAGE_SIZE,
@@ -32,7 +32,12 @@ import { PaginatedTiresResponse } from '../utils/fetchTiresServer';
 
 interface SearchResultsProps {
   initialData?: PaginatedTiresResponse;
-  brands?: string[];
+  /** How the buyer is reading the results — decided on the server, from the URL. */
+  view?: TireView;
+  /** Ways out of an empty result, computed on the server with their counts. */
+  suggestions?: LooseningSuggestion[];
+  /** What the results are, in words — built from the applied filters. */
+  heading?: string;
   searchParams?: {
     page?: string;
     pageSize?: string;
@@ -49,7 +54,12 @@ interface SearchResultsProps {
  *
  * @returns The SearchResults component.
  */
-const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => {
+const SearchResults: FC<SearchResultsProps> = ({
+  initialData,
+  view = 'list',
+  suggestions = [],
+  heading,
+}) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [tiresData, setTiresData] = useState<PaginatedTiresResponse>(
@@ -265,243 +275,165 @@ const SearchResults: FC<SearchResultsProps> = ({ initialData, brands = [] }) => 
 
   return (
     <Suspense fallback={<LoadingScreen message="Preparing your tire selection..." />}>
-      <main className="bg-gray-50">
-        {/* ── Hero ── */}
-        <section className="bg-[#0a0a0a] text-white relative overflow-hidden border-b border-white/8">
-          <div
-            className="absolute inset-0 opacity-[0.03] pointer-events-none"
-            style={{
-              backgroundImage:
-                'linear-gradient(#9dfb40 1px, transparent 1px), linear-gradient(90deg, #9dfb40 1px, transparent 1px)',
-              backgroundSize: '60px 60px',
-            }}
+      {/*
+       * The hero, the filter rail and the page shell live in `page.tsx` now:
+       * the rail and this list are two columns of one grid, and a client
+       * component cannot be one of them while owning the other. What is left
+       * here is the results themselves — the list, its header and its
+       * pagination.
+       */}
+      <div className="relative">
+        <div className="mb-6">
+          <ResultsHeader
+            heading={heading}
+            showFilterButton={false}
+            getTireSize={getTireSize}
+            resultsCount={tiresData?.tires?.length || 0}
+            totalCount={tiresData.totalCount}
           />
-          <span
-            className="absolute right-0 top-1/2 -translate-y-1/2 text-[clamp(80px,14vw,180px)] font-black leading-none select-none pointer-events-none"
-            style={{ color: 'rgba(157,251,64,0.04)', letterSpacing: '-4px' }}
-            aria-hidden="true"
-          >
-            TIRES
-          </span>
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="w-8 h-px bg-[#9dfb40]" />
-              <span className="text-[#9dfb40] text-xs font-bold tracking-[0.2em] uppercase">
-                Miami & Orlando, FL
-              </span>
-            </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-none mb-5">
-              {getTireSize() ? (
-                <>
-                  Size <span className="text-[#9dfb40]">{getTireSize()}</span>{' '}
-                  <span className="block text-3xl sm:text-4xl text-gray-400 font-bold">
-                    Tires in Miami &amp; Orlando
-                  </span>
-                </>
-              ) : (
-                <>
-                  New & Used{' '}
-                  <span className="block text-[#9dfb40]">Tires in Miami &amp; Orlando</span>
-                </>
-              )}
-            </h1>
-            <TrustStrip
-              className="mt-6"
-              items={[
-                // The live catalogue count, labelled for what it is. The
-                // "15,000+" network claim describes physical stock across the
-                // stores and must never appear unqualified next to this number.
-                ...(tiresData.totalCount > 0 ? [onlineInventoryLabel(tiresData.totalCount)] : []),
-                SHIPPING,
-                LOCATIONS_LABEL,
-                WARRANTY,
-              ]}
-            />
-          </div>
-        </section>
-
-        {/* ── Browse by Brand / Rim Size ── */}
-        <BrowseFilters brands={brands} />
-
-        <div>
-          <div className="bg-gray-50 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative h-full">
-            {/* Section label for the product list (the page's single <h1> lives in the hero above) */}
-            <h2 id="products-heading" className="sr-only">
-              {getTireSize()
-                ? `Used & New Tires in Miami & Orlando – Size ${getTireSize()}`
-                : 'Used & New Tires in Miami & Orlando'}
-            </h2>
-            <section aria-labelledby="products-heading" className="pb-24">
-              <div className="md:mt-10 space-y-6">
-                <div className="w-full">
-                  <FiltersMobile redirectBasePath={'tires'} />
-                </div>
-                <div>
-                  <div>
-                    <TopFilters redirectBasePath={'tires'} />
-                    <div className="bg-gray-50">
-                      <div className="mx-auto">
-                        <div className="flex-1">
-                          <div className="mb-6">
-                            <ResultsHeader
-                              getTireSize={getTireSize}
-                              resultsCount={tiresData?.tires?.length || 0}
-                              totalCount={tiresData.totalCount}
-                            />
-                          </div>
-                          <div className="mx-auto max-w-3xl px-3 sm:px-0 mb-6">
-                            <PromoBanner content={promoBannerConfig.home} />
-                          </div>
-                          {error ? (
-                            <ErrorDisplay
-                              title="Error Loading Tires"
-                              message="We couldn't load the tire data at this moment."
-                              error={error}
-                              onRetry={() => window.location.reload()}
-                            />
-                          ) : (
-                            <div className="relative">
-                              {loading ? (
-                                <ResultsSkeleton count={pageSize} />
-                              ) : tiresData.tires.length === 0 ? (
-                                <NoResultsFound
-                                  title="No Tires Found"
-                                  message="We couldn't find any tires matching your search criteria. Please try different specifications."
-                                />
-                              ) : (
-                                <TireResults products={tiresData.tires} />
-                              )}
-                              {tiresData.tires.length > 0 && (
-                                <div className="mt-16">
-                                  <div className="mt-16 w-full">
-                                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                                      <div className="overflow-auto">
-                                        <nav
-                                          aria-label="Pagination"
-                                          className="mt-4 flex items-center justify-start md:justify-center gap-2 h-min"
-                                        >
-                                          <div className="flex gap-1">
-                                            <button
-                                              onClick={handleFirstPage}
-                                              disabled={page === 1}
-                                              aria-label="First page"
-                                              title="First page"
-                                              aria-disabled={page === 1}
-                                              className={`${page === 1 ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200' : 'cursor-pointer bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'} px-3 py-2 h-min min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`}
-                                            >
-                                              &lt;&lt;
-                                            </button>
-                                            <button
-                                              onClick={handlePreviousPage}
-                                              disabled={page === 1}
-                                              aria-label="Previous page"
-                                              title="Previous page"
-                                              aria-disabled={page === 1}
-                                              className={`${page === 1 ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200' : 'cursor-pointer bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'} px-3 py-2 h-min min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`}
-                                            >
-                                              &lt;
-                                            </button>
-                                          </div>
-                                          {pagination.map((pageNumber, index) =>
-                                            typeof pageNumber === 'number' ? (
-                                              <button
-                                                key={index}
-                                                onClick={() => handlePageClick(pageNumber)}
-                                                aria-current={
-                                                  pageNumber === page ? 'page' : undefined
-                                                }
-                                                className={`px-3 py-2 cursor-pointer h-min min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
-                                                  pageNumber === page
-                                                    ? 'bg-green-600 text-white border-green-600'
-                                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'
-                                                }`}
-                                              >
-                                                {pageNumber}
-                                              </button>
-                                            ) : (
-                                              <span
-                                                key={index}
-                                                className="px-3 py-1.5 mx-1 text-gray-500"
-                                              >
-                                                {pageNumber}
-                                              </span>
-                                            )
-                                          )}
-                                          <div className="flex gap-1">
-                                            <button
-                                              onClick={handleNextPage}
-                                              disabled={page === totalPages}
-                                              aria-label="Next page"
-                                              title="Next page"
-                                              aria-disabled={page === totalPages}
-                                              className={`${page === totalPages ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200' : 'cursor-pointer bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'} px-3 py-2 h-min min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`}
-                                            >
-                                              &gt;
-                                            </button>
-                                            <button
-                                              onClick={handleLastPage}
-                                              disabled={page === totalPages}
-                                              aria-label="Last page"
-                                              title="Last page"
-                                              aria-disabled={page === totalPages}
-                                              className={`${page === totalPages ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200' : 'cursor-pointer bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'} px-3 py-2 h-min min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`}
-                                            >
-                                              &gt;&gt;
-                                            </button>
-                                          </div>
-                                          <span className="ml-3 text-sm text-gray-500 shrink-0">
-                                            Page{' '}
-                                            <span className="font-semibold text-gray-700">
-                                              {page}
-                                            </span>{' '}
-                                            of{' '}
-                                            <span className="font-semibold text-gray-700">
-                                              {totalPages}
-                                            </span>
-                                          </span>
-                                        </nav>
-                                      </div>
-                                      {tiresData.totalCount >= 10 && (
-                                        <div className="md:ml-4 h-min flex items-center md:justify-end">
-                                          <label
-                                            htmlFor="pageSize"
-                                            className="mr-2 text-sm text-gray-600"
-                                          >
-                                            Rows per page:
-                                          </label>
-                                          <select
-                                            id="pageSize"
-                                            value={pageSize}
-                                            onChange={handlePageSizeChange}
-                                            className="bg-white border border-gray-300 rounded-md py-1.5 px-3 text-sm text-gray-700 shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer transition-colors"
-                                          >
-                                            {availablePageSizes.map(size => (
-                                              <option key={size} value={size}>
-                                                {size}
-                                              </option>
-                                            ))}
-                                          </select>
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          )}
+        </div>
+        <div className="mb-6">
+          <PromoBanner content={promoBannerConfig.home} />
+        </div>
+        {error ? (
+          <ErrorDisplay
+            title="Error Loading Tires"
+            message="We couldn't load the tire data at this moment."
+            error={error}
+            onRetry={() => window.location.reload()}
+          />
+        ) : (
+          <div className="relative">
+            {loading ? (
+              <ResultsSkeleton count={pageSize} />
+            ) : tiresData.tires.length === 0 ? (
+              <NoResultsFound
+                title="No Tires Found"
+                message={
+                  suggestions.length > 0
+                    ? 'Nothing matches all of your filters at once.'
+                    : "We couldn't find any tires matching your search criteria. Please try different specifications."
+                }
+                suggestions={suggestions}
+              />
+            ) : view === 'table' ? (
+              <TireTable products={tiresData.tires} />
+            ) : (
+              <TireResults products={tiresData.tires} />
+            )}
+            {tiresData.tires.length > 0 && (
+              <div className="mt-16">
+                <div className="mt-16 w-full">
+                  <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <div className="overflow-auto">
+                      <nav
+                        aria-label="Pagination"
+                        className="mt-4 flex items-center justify-start md:justify-center gap-2 h-min"
+                      >
+                        <div className="flex gap-1">
+                          <button
+                            onClick={handleFirstPage}
+                            disabled={page === 1}
+                            aria-label="First page"
+                            title="First page"
+                            aria-disabled={page === 1}
+                            className={`${page === 1 ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200' : 'cursor-pointer bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'} px-3 py-2 h-min min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`}
+                          >
+                            &lt;&lt;
+                          </button>
+                          <button
+                            onClick={handlePreviousPage}
+                            disabled={page === 1}
+                            aria-label="Previous page"
+                            title="Previous page"
+                            aria-disabled={page === 1}
+                            className={`${page === 1 ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200' : 'cursor-pointer bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'} px-3 py-2 h-min min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`}
+                          >
+                            &lt;
+                          </button>
                         </div>
-                      </div>
+                        {pagination.map((pageNumber, index) =>
+                          typeof pageNumber === 'number' ? (
+                            <button
+                              key={index}
+                              onClick={() => handlePageClick(pageNumber)}
+                              aria-current={pageNumber === page ? 'page' : undefined}
+                              className={`px-3 py-2 cursor-pointer h-min min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
+                                pageNumber === page
+                                  ? 'bg-green-600 text-white border-green-600'
+                                  : 'bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'
+                              }`}
+                            >
+                              {pageNumber}
+                            </button>
+                          ) : (
+                            <span key={index} className="px-3 py-1.5 mx-1 text-gray-500">
+                              {pageNumber}
+                            </span>
+                          )
+                        )}
+                        <div className="flex gap-1">
+                          <button
+                            onClick={handleNextPage}
+                            disabled={page === totalPages}
+                            aria-label="Next page"
+                            title="Next page"
+                            aria-disabled={page === totalPages}
+                            className={`${page === totalPages ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200' : 'cursor-pointer bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'} px-3 py-2 h-min min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`}
+                          >
+                            &gt;
+                          </button>
+                          <button
+                            onClick={handleLastPage}
+                            disabled={page === totalPages}
+                            aria-label="Last page"
+                            title="Last page"
+                            aria-disabled={page === totalPages}
+                            className={`${page === totalPages ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200' : 'cursor-pointer bg-white text-gray-700 border-gray-300 hover:bg-green-50 hover:border-green-500'} px-3 py-2 h-min min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-md border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500`}
+                          >
+                            &gt;&gt;
+                          </button>
+                        </div>
+                        <span className="ml-3 text-sm text-gray-500 shrink-0">
+                          Page <span className="font-semibold text-gray-700">{page}</span> of{' '}
+                          <span className="font-semibold text-gray-700">{totalPages}</span>
+                        </span>
+                      </nav>
                     </div>
+                    {tiresData.totalCount >= 10 && (
+                      <div className="md:ml-4 h-min flex items-center md:justify-end">
+                        <label htmlFor="pageSize" className="mr-2 text-sm text-gray-600">
+                          Rows per page:
+                        </label>
+                        <select
+                          id="pageSize"
+                          value={pageSize}
+                          onChange={handlePageSizeChange}
+                          className="bg-white border border-gray-300 rounded-md py-1.5 px-3 text-sm text-gray-700 shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer transition-colors"
+                        >
+                          {availablePageSizes.map(size => (
+                            <option key={size} value={size}>
+                              {size}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
-            </section>
+            )}
           </div>
-        </div>
-        <div className="block lg:hidden">
-          <CollapsibleSearchBar redirectBasePath={'tires'} />
-        </div>
-      </main>
+        )}
+      </div>
+      {/*
+       * The mobile size search stays: it is a persistent way in for the buyer
+       * who arrives knowing their size, which is a different moment from
+       * opening the collapsed filter panel to narrow what is already on screen.
+       */}
+      <div className="block lg:hidden">
+        <CollapsibleSearchBar redirectBasePath={'tires'} />
+      </div>
     </Suspense>
   );
 };

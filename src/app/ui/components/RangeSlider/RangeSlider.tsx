@@ -13,7 +13,22 @@ interface RangeSliderProps {
   value: [number, number];
   onChange: (value: [number, number]) => void;
   className?: string;
+  /** Names the pair for assistive technology, e.g. "price". */
+  label?: string;
+  /** Renders a value the way the buyer reads it, e.g. `$149`. */
+  format?: (value: number) => string;
 }
+
+/**
+ * Both thumbs were plain `<div>`s with mouse and touch handlers: no role, no
+ * `tabIndex`, no keyboard. The control was **inoperable without a pointer** and
+ * invisible to a screen reader — WCAG 2.1.1 Keyboard, a Level A failure — on
+ * every surface that renders it: `/tires`, `/dashboard` and the home page's
+ * "More filters". Found while building the filter rail, which could not claim
+ * AA conformance while reusing it.
+ *
+ * The pointer behaviour below is untouched; everything added here is additive.
+ */
 
 const RangeSlider: React.FC<RangeSliderProps> = ({
   min,
@@ -22,6 +37,8 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
   value,
   onChange,
   className = '',
+  label = 'value',
+  format,
 }) => {
   const [dragging, setDragging] = useState<'min' | 'max' | null>(null);
   const [localValue, setLocalValue] = useState(value);
@@ -152,6 +169,55 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
     };
   }, [dragging, handlePointerMove, onChange, localValue]);
 
+  /**
+   * Arrow keys move by one step, Page keys by a tenth of the range, Home and End
+   * jump to the ends. Each thumb is bounded by the other, exactly as dragging
+   * is, so the two can never cross.
+   */
+  const handleKeyDown = (thumb: 'min' | 'max') => (event: React.KeyboardEvent) => {
+    const page = Math.max(step, Math.round((max - min) / 10));
+    const [lo, hi] = localValue;
+
+    let next: number | null = null;
+    switch (event.key) {
+      case 'ArrowRight':
+      case 'ArrowUp':
+        next = (thumb === 'min' ? lo : hi) + step;
+        break;
+      case 'ArrowLeft':
+      case 'ArrowDown':
+        next = (thumb === 'min' ? lo : hi) - step;
+        break;
+      case 'PageUp':
+        next = (thumb === 'min' ? lo : hi) + page;
+        break;
+      case 'PageDown':
+        next = (thumb === 'min' ? lo : hi) - page;
+        break;
+      case 'Home':
+        next = thumb === 'min' ? min : lo + step;
+        break;
+      case 'End':
+        next = thumb === 'min' ? hi - step : max;
+        break;
+      default:
+        return;
+    }
+
+    event.preventDefault();
+    const bounded: [number, number] =
+      thumb === 'min'
+        ? [Math.min(Math.max(min, next), hi - step), hi]
+        : [lo, Math.max(Math.min(max, next), lo + step)];
+
+    if (bounded[0] === lo && bounded[1] === hi) return;
+    setLocalValue(bounded);
+    lastEmittedRef.current = bounded;
+    onChange(bounded);
+  };
+
+  const describe = (v: number) => (format ? format(v) : String(v));
+
   return (
     <div ref={sliderRef} className={`relative h-7 ${className}`} style={{ touchAction: 'none' }}>
       {/* Track background */}
@@ -172,7 +238,15 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
 
       {/* Minimum thumb */}
       <div
-        className="absolute w-10 h-10 -ml-5 top-0 -mt-1.5 cursor-pointer flex items-center justify-center touch-manipulation"
+        role="slider"
+        tabIndex={0}
+        aria-label={`Minimum ${label}`}
+        aria-valuemin={min}
+        aria-valuemax={localValue[1] - step}
+        aria-valuenow={localValue[0]}
+        aria-valuetext={describe(localValue[0])}
+        onKeyDown={handleKeyDown('min')}
+        className="absolute w-10 h-10 -ml-5 top-0 -mt-1.5 cursor-pointer flex items-center justify-center touch-manipulation rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
         style={{ left: `${getPercentage(localValue[0])}%` }}
         onMouseDown={() => handleMouseDown('min')}
         onTouchStart={() => handleTouchStart('min')}
@@ -182,7 +256,15 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
 
       {/* Maximum thumb */}
       <div
-        className="absolute w-10 h-10 -ml-5 top-0 -mt-1.5 cursor-pointer flex items-center justify-center touch-manipulation"
+        role="slider"
+        tabIndex={0}
+        aria-label={`Maximum ${label}`}
+        aria-valuemin={localValue[0] + step}
+        aria-valuemax={max}
+        aria-valuenow={localValue[1]}
+        aria-valuetext={describe(localValue[1])}
+        onKeyDown={handleKeyDown('max')}
+        className="absolute w-10 h-10 -ml-5 top-0 -mt-1.5 cursor-pointer flex items-center justify-center touch-manipulation rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
         style={{ left: `${getPercentage(localValue[1])}%` }}
         onMouseDown={() => handleMouseDown('max')}
         onTouchStart={() => {

@@ -87,18 +87,23 @@ const nextConfig = {
     qualities: [75],
     deviceSizes: [640, 828, 1200, 1920],
     imageSizes: [128, 256],
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'www.usedtires.online',
-        port: '',
-      },
-      {
-        protocol: 'https',
-        hostname: 'mrgomatires.com',
-        port: '',
-      },
-    ],
+    /**
+     * **Must equal `ALLOWED_IMAGE_HOSTS` in `src/app/utils/imageHosts.ts`.**
+     * This file is loaded before any TypeScript is compiled, so it cannot import
+     * it — the same constraint the canonical host above lives with, and
+     * `imageHosts.guard.test.ts` holds the two together.
+     *
+     * `ProductImage` needs the same list because **`next/image` throws during
+     * render for an unconfigured host**: it does not fall back, and `onError`
+     * never fires because nothing loads. One eBay-hosted photo in the catalogue
+     * was answering 500 on its own detail page and blanking every filtered view
+     * it appeared in.
+     */
+    remotePatterns: ['www.usedtires.online', 'mrgomatires.com'].map(hostname => ({
+      protocol: 'https',
+      hostname,
+      port: '',
+    })),
   },
   /**
    * Development only — `next build` and `next start` ignore this entirely.

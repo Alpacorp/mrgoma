@@ -1,4 +1,4 @@
-import { Float, Int, VarChar } from 'mssql';
+import { Int, VarChar } from 'mssql';
 
 import { getPool } from '@/connection/db';
 import { logQuery } from '@/connection/queryLogger';
@@ -7,139 +7,13 @@ import {
   buildFeedQuery,
   type FeedTireRecord,
 } from '@/repositories/feedQuery';
+import { buildFiltersClause } from '@/repositories/filtersClause';
+import type { TireFilters } from '@/repositories/filtersClause';
 
-type MssqlType = typeof VarChar | typeof Int | typeof Float;
-type SqlParam = { name: string; type: MssqlType; value: unknown };
-
-function buildFiltersClause(filters: TireFilters): { clause: string; params: SqlParam[] } {
-  let clause = '';
-  const params: SqlParam[] = [];
-
-  if (filters.width || filters.sidewall || filters.diameter) {
-    if (filters.width && filters.sidewall && filters.diameter) {
-      clause += ' AND RealSize = @realSize';
-      params.push({
-        name: 'realSize',
-        type: VarChar,
-        value: `${filters.width}/${filters.sidewall}/${filters.diameter}`,
-      });
-    } else {
-      if (filters.width) {
-        clause += ' AND RealSize LIKE @widthPattern';
-        params.push({ name: 'widthPattern', type: VarChar, value: `${filters.width}/%` });
-      }
-      if (filters.sidewall) {
-        clause += ' AND RealSize LIKE @sidewallPattern';
-        params.push({ name: 'sidewallPattern', type: VarChar, value: `%/${filters.sidewall}/%` });
-      }
-      if (filters.diameter) {
-        clause += ' AND RealSize LIKE @diameterPattern';
-        params.push({ name: 'diameterPattern', type: VarChar, value: `%/${filters.diameter}` });
-      }
-    }
-  }
-
-  if (filters.condition && filters.condition.length > 0) {
-    const normalized = filters.condition.map(c => c.toLowerCase());
-    if (normalized.includes('new') && !normalized.includes('used')) {
-      clause += ' AND ProductTypeId = 1';
-    } else if (!normalized.includes('new') && normalized.includes('used')) {
-      clause += ' AND ProductTypeId <> 1';
-    }
-  }
-
-  if (filters.patched && filters.patched.length > 0) {
-    const normalized = filters.patched.map(p => p.toLowerCase());
-    if (normalized.includes('yes') && !normalized.includes('no')) {
-      clause += " AND Patched <> '0'";
-    } else if (!normalized.includes('yes') && normalized.includes('no')) {
-      clause += " AND Patched = '0'";
-    }
-  }
-
-  if (filters.brands && filters.brands.length > 0) {
-    const brandParams = filters.brands.map((_, i) => `@brand${i}`).join(',');
-    clause += ` AND Brand IN (${brandParams})`;
-    filters.brands.forEach((brand, i) =>
-      params.push({ name: `brand${i}`, type: VarChar, value: brand })
-    );
-  }
-
-  if (filters.stores && filters.stores.length > 0) {
-    const storeParams = filters.stores.map((_, i) => `@store${i}`).join(',');
-    clause += ` AND VaultName IN (${storeParams})`;
-    filters.stores.forEach((store, i) =>
-      params.push({ name: `store${i}`, type: VarChar, value: store })
-    );
-  }
-
-  /**
-   * Store-and-code pairs, not `Location IN (…)`.
-   *
-   * The neighbouring `stores` branch above is the obvious model and the wrong
-   * one here: `IN`, `stkCesar`, `+690A+`, `+692A+`, `+706D+`, `[183B]` and
-   * `+IN+` each exist in more than one store, so a flat match would return
-   * another store's shelf of the same name without saying so.
-   */
-  if (filters.locations && filters.locations.length > 0) {
-    const pairs = filters.locations.map((pair, i) => {
-      params.push({ name: `locStore${i}`, type: VarChar, value: pair.store });
-      params.push({ name: `locCode${i}`, type: VarChar, value: pair.code });
-      return `(VaultName = @locStore${i} AND Location = @locCode${i})`;
-    });
-    clause += ` AND (${pairs.join(' OR ')})`;
-  }
-
-  if (filters.kindSale && filters.kindSale.length > 0) {
-    const normalized = filters.kindSale.map(k => k.toLowerCase());
-    if (normalized.includes('yes') && !normalized.includes('no')) {
-      clause += " AND KindSale = 'Yes'";
-    } else if (!normalized.includes('yes') && normalized.includes('no')) {
-      clause += " AND KindSale = 'No'";
-    }
-  }
-
-  if (filters.local && filters.local.length > 0) {
-    const normalized = filters.local.map(l => l.toLowerCase());
-    if (normalized.includes('yes') && !normalized.includes('no')) {
-      clause += " AND Local = '1'";
-    } else if (!normalized.includes('yes') && normalized.includes('no')) {
-      clause += " AND Local = '0'";
-    }
-  }
-
-  if (typeof filters.minPrice === 'number') {
-    clause += ' AND Price >= @minPrice';
-    params.push({ name: 'minPrice', type: Int, value: filters.minPrice });
-  }
-  if (typeof filters.maxPrice === 'number') {
-    clause += ' AND Price <= @maxPrice';
-    params.push({ name: 'maxPrice', type: Int, value: filters.maxPrice });
-  }
-  if (typeof filters.minTreadDepth === 'number') {
-    clause += ' AND Tread >= @minTreadDepth';
-    params.push({ name: 'minTreadDepth', type: Float, value: filters.minTreadDepth });
-  }
-  if (typeof filters.maxTreadDepth === 'number') {
-    clause += ' AND Tread <= @maxTreadDepth';
-    params.push({ name: 'maxTreadDepth', type: Float, value: filters.maxTreadDepth });
-  }
-  if (typeof filters.minRemainingLife === 'number') {
-    clause += " AND TRY_CAST(REPLACE(RemainingLife, '%', '') AS int) >= @minRemainingLife";
-    params.push({ name: 'minRemainingLife', type: Int, value: filters.minRemainingLife });
-  }
-  if (typeof filters.maxRemainingLife === 'number') {
-    clause += " AND TRY_CAST(REPLACE(RemainingLife, '%', '') AS int) <= @maxRemainingLife";
-    params.push({ name: 'maxRemainingLife', type: Int, value: filters.maxRemainingLife });
-  }
-
-  if (filters.tireCode) {
-    clause += ' AND Code = @tireCode';
-    params.push({ name: 'tireCode', type: VarChar, value: filters.tireCode });
-  }
-
-  return { clause, params };
-}
+// Re-exported: `TireFilters` and the clause builder are imported from here all
+// over the app, and moving the file must not become a rename of the import.
+export { buildFiltersClause };
+export type { TireFilters };
 
 export type DocumentRecord = {
   id?: number;
@@ -174,31 +48,6 @@ export type DocumentRecord = {
   Height?: string | number;
   Width?: string | number;
   LoadIndexId?: string | number;
-};
-
-export type TireFilters = {
-  condition?: string[];
-  patched?: string[];
-  brands?: string[];
-  minPrice?: number;
-  maxPrice?: number;
-  minTreadDepth?: number;
-  maxTreadDepth?: number;
-  minRemainingLife?: number;
-  maxRemainingLife?: number;
-  sort?: string;
-  width?: string; // Ancho del neumático (w)
-  sidewall?: string; // Relación de aspecto (s)
-  diameter?: string; // Diámetro (d)
-  stores?: string[];
-  /**
-   * Shelf codes, each bound to the store it belongs to. A bare code would be
-   * ambiguous — seven of them exist in more than one store.
-   */
-  locations?: { store: string; code: string }[];
-  kindSale?: string[];
-  local?: string[];
-  tireCode?: string;
 };
 
 export type TireRangeResult = {
@@ -276,9 +125,9 @@ async function fetchTiresInternal(
 }
 
 export async function fetchTireRanges(): Promise<TireRangeResult> {
-  return fetchTireRangesInternal(
-    "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND TRY_CAST(REPLACE(RemainingLife, '%', '') AS int) >= 50 AND Price != 0"
-  );
+  // The same rule as the results, so the slider's bounds describe the set the
+  // buyer is actually filtering. These were two separately written sentences.
+  return fetchTireRangesInternal(STOREFRONT_SELLABLE_WHERE);
 }
 
 export async function fetchDashboardRanges(): Promise<TireRangeResult> {
@@ -304,10 +153,10 @@ async function fetchTireRangesInternal(baseWhereClause: string): Promise<TireRan
 }
 
 export async function fetchBrands(filters: TireFilters = {}): Promise<string[]> {
-  return fetchBrandsInternal(
-    filters,
-    "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND RemainingLife >= '50%' AND Price != 0"
-  );
+  // The constant, not a second copy of it: this literal was character-identical
+  // to STOREFRONT_SELLABLE_WHERE, which is exactly when a duplicate is cheap to
+  // remove and impossible to notice.
+  return fetchBrandsInternal(filters, STOREFRONT_SELLABLE_WHERE);
 }
 
 export async function fetchDashboardBrands(filters: TireFilters = {}): Promise<string[]> {
@@ -338,8 +187,7 @@ async function fetchBrandsInternal(
 
 export async function fetchSizes(): Promise<string[]> {
   const pool = await getPool();
-  const baseWhere =
-    "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND RemainingLife >= '50%' AND Price != 0";
+  const baseWhere = STOREFRONT_SELLABLE_WHERE;
   const query = `SELECT DISTINCT RealSize
     FROM dbo.View_Tires
     WHERE ${baseWhere} AND RealSize IS NOT NULL AND RealSize <> ''

@@ -2,6 +2,8 @@ import React, { FC } from 'react';
 
 import Image from 'next/image';
 
+import { isOptimisableImage } from '@/app/utils/imageHosts';
+
 interface ProductImageProps {
   product: {
     imageAlt: string;
@@ -11,16 +13,12 @@ interface ProductImageProps {
   isHovered?: boolean;
 }
 
-const isValidNextImageSrc = (src: unknown): src is string => {
-  if (typeof src !== 'string') return false;
-  const trimmed = src.trim();
-  if (!trimmed || trimmed.toUpperCase() === 'N/A') return false;
-  return trimmed.startsWith('/') || trimmed.startsWith('http://') || trimmed.startsWith('https://');
-};
-
 const ProductCarouselMiniature: FC<ProductImageProps> = ({ product, isHovered }) => {
   const fallbackSrc = '/images/placeholder-tire.svg';
-  const safeSrc = isValidNextImageSrc(product?.imageSrc) ? product.imageSrc : fallbackSrc;
+  // This file used to carry its own validator, which accepted any absolute
+  // URL — and `next/image` throws during render for a host it is not configured
+  // for. Three components had three different answers to the same question.
+  const safeSrc = isOptimisableImage(product?.imageSrc) ? product.imageSrc! : fallbackSrc;
   const safeAlt = product?.imageAlt?.trim() || product?.brand || 'Product image';
 
   return (

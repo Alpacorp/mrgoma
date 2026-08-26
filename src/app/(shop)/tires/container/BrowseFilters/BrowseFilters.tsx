@@ -50,7 +50,7 @@ export const BrowseFilters: FC<BrowseFiltersProps> = ({
 
             <a
               href={isNew ? '/tires' : '/tires/new'}
-              aria-pressed={isNew}
+              aria-current={isNew ? 'true' : undefined}
               aria-label={isNew ? 'Clear new tires filter' : 'Shop new tires'}
               className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs font-semibold transition-colors duration-150 ${
                 isNew
@@ -64,7 +64,7 @@ export const BrowseFilters: FC<BrowseFiltersProps> = ({
 
             <a
               href={isUsed ? '/tires' : '/tires/used'}
-              aria-pressed={isUsed}
+              aria-current={isUsed ? 'true' : undefined}
               aria-label={isUsed ? 'Clear used tires filter' : 'Shop used tires'}
               className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs font-semibold transition-colors duration-150 ${
                 isUsed
@@ -95,7 +95,7 @@ const RimSizes: FC = () => {
           <a
             key={d}
             href={isActive ? '/tires' : `/tires?d=${d}`}
-            aria-pressed={isActive}
+            aria-current={isActive ? 'true' : undefined}
             aria-label={isActive ? `Clear rim size ${d}" filter` : `Filter by rim size ${d}"`}
             className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs font-semibold transition-colors duration-150 ${
               isActive
@@ -218,7 +218,7 @@ const BrandScroller: FC<BrandScrollerProps> = ({ brands, activeBrand }) => {
               key={brand}
               ref={isActive ? activeChipRef : undefined}
               href={isActive ? '/tires' : `/tires/brands/${slugify(brand)}`}
-              aria-pressed={isActive}
+              aria-current={isActive ? 'true' : undefined}
               aria-label={
                 isActive ? `Clear ${brandName(brand)} filter` : `Browse ${brandName(brand)} tires`
               }
