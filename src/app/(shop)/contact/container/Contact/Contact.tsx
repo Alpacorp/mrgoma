@@ -197,7 +197,12 @@ export default function Contact() {
               </p>
               <h2 className="text-3xl font-black tracking-tight">Find your nearest shop</h2>
             </div>
-            <span className="text-6xl font-black text-white/5 select-none hidden sm:block">07</span>
+            <span
+              aria-hidden="true"
+              className="text-6xl font-black text-white/40 select-none hidden sm:block"
+            >
+              07
+            </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/8 border border-white/8 rounded-2xl overflow-hidden">
@@ -208,7 +213,7 @@ export default function Contact() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <span className="text-[#9dfb40] text-xs font-bold tracking-widest">{loc.id}</span>
-                  <span className="text-[10px] text-white/30 font-medium text-right leading-tight">
+                  <span className="text-[10px] text-white/50 font-medium text-right leading-tight">
                     {loc.area}
                   </span>
                 </div>
@@ -269,7 +274,7 @@ export default function Contact() {
                       {row.day}
                     </span>
                     <span
-                      className={`text-sm tabular-nums ${isSunday ? 'text-gray-500' : 'text-gray-300'}`}
+                      className={`text-sm tabular-nums ${isSunday ? 'text-gray-400' : 'text-gray-300'}`}
                     >
                       {row.time}
                     </span>
@@ -278,7 +283,7 @@ export default function Contact() {
               })}
             </ul>
 
-            <p className="mt-5 text-xs text-gray-600 leading-relaxed">
+            <p className="mt-5 text-xs text-gray-400 leading-relaxed">
               Hours may vary by location. Contact the specific shop before visiting.
             </p>
           </div>
@@ -294,7 +299,7 @@ export default function Contact() {
 
             <div className="space-y-5">
               <div className="flex flex-col gap-1">
-                <span className="text-xs text-gray-500 uppercase tracking-widest font-medium">
+                <span className="text-xs text-gray-400 uppercase tracking-widest font-medium">
                   Email
                 </span>
                 <a
@@ -306,7 +311,7 @@ export default function Contact() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <span className="text-xs text-gray-500 uppercase tracking-widest font-medium">
+                <span className="text-xs text-gray-400 uppercase tracking-widest font-medium">
                   WhatsApp
                 </span>
                 <a
@@ -324,11 +329,11 @@ export default function Contact() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <span className="text-xs text-gray-500 uppercase tracking-widest font-medium">
+                <span className="text-xs text-gray-400 uppercase tracking-widest font-medium">
                   Coverage
                 </span>
                 <span className="text-white font-medium text-lg">Miami & Orlando, FL</span>
-                <span className="text-gray-500 text-sm">Shipping available nationwide</span>
+                <span className="text-gray-400 text-sm">Shipping available nationwide</span>
               </div>
             </div>
           </div>

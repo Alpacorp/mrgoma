@@ -89,6 +89,7 @@ const TreadWearExplorer: FC<TreadWearExplorerProps> = ({ singleTire }) => {
 
   const lifePct = life ?? 100;
   const lifeColor = lifePct >= 70 ? '#22c55e' : lifePct >= 40 ? '#f59e0b' : '#ef4444';
+  const lifeTextColor = lifePct >= 70 ? '#008236' : lifePct >= 40 ? '#a16207' : '#c10007';
   const status = lifePct >= 70 ? 'Like new' : lifePct >= 40 ? 'Good' : 'Worn';
   const newApprox = Math.round(newUnits);
 
@@ -136,7 +137,7 @@ const TreadWearExplorer: FC<TreadWearExplorerProps> = ({ singleTire }) => {
         <div className="flex flex-col justify-center gap-4">
           <div className="flex items-end gap-8">
             <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
+              <p className="text-xs font-bold uppercase tracking-wider text-gray-600">
                 Tread depth
               </p>
               <p className="text-3xl font-black text-gray-900">
@@ -144,8 +145,8 @@ const TreadWearExplorer: FC<TreadWearExplorerProps> = ({ singleTire }) => {
               </p>
             </div>
             <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-gray-400">Remaining</p>
-              <p className="text-3xl font-black" style={{ color: lifeColor }}>
+              <p className="text-xs font-bold uppercase tracking-wider text-gray-600">Remaining</p>
+              <p className="text-3xl font-black" style={{ color: lifeTextColor }}>
                 {life != null ? `${life}%` : '—'}
               </p>
             </div>
@@ -155,7 +156,7 @@ const TreadWearExplorer: FC<TreadWearExplorerProps> = ({ singleTire }) => {
             <div>
               <div className="mb-1 flex justify-between text-xs text-gray-500">
                 <span>Worn</span>
-                <span className="font-semibold" style={{ color: lifeColor }}>
+                <span className="font-semibold" style={{ color: lifeTextColor }}>
                   {status}
                 </span>
                 <span>New</span>
@@ -171,7 +172,7 @@ const TreadWearExplorer: FC<TreadWearExplorerProps> = ({ singleTire }) => {
         </div>
       </div>
 
-      <p className="mt-4 text-[11px] leading-snug text-gray-400">
+      <p className="mt-4 text-[11px] leading-snug text-gray-600">
         Visual aid for tread depth and wear. The model is an approximation — it does not exactly
         reflect this tire&apos;s condition, measurements or physical aspects.
       </p>

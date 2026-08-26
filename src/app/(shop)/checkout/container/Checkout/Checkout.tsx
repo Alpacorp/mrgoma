@@ -650,7 +650,7 @@ export default function Checkout() {
                                       className="h-full w-full object-cover object-center"
                                     />
                                   ) : (
-                                    <div className="flex h-full w-full items-center justify-center bg-gray-100 text-xs text-gray-500">
+                                    <div className="flex h-full w-full items-center justify-center bg-gray-100 text-xs text-gray-600">
                                       No image
                                     </div>
                                   )}
@@ -667,7 +667,7 @@ export default function Checkout() {
                                   )}
                                   <ProductMeta condition={item.condition} className="mt-0.5" />
                                   {cartLine(item).code && (
-                                    <p className="text-xs text-gray-400">{cartLine(item).code}</p>
+                                    <p className="text-xs text-gray-600">{cartLine(item).code}</p>
                                   )}
                                 </div>
                               </div>

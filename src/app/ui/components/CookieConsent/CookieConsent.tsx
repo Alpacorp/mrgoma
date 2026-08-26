@@ -160,12 +160,12 @@ export const CookieConsent: React.FC = () => {
                   We use cookies to improve your experience. Accepting also enables Google
                   Analytics; declining does not.
                 </p>
-                <p className="text-gray-400">
+                <p className="text-gray-300">
                   Vercel Web Analytics is cookie-free and runs either way. Your cart stays on this
                   device and is not affected.{' '}
                   <Link
                     href="/legal-policies#privacy"
-                    className="underline text-[#4da6ff] hover:text-[#7bb8ff]"
+                    className="underline text-[#7bb8ff] hover:text-[#a5cfff]"
                   >
                     Privacy Policy
                   </Link>

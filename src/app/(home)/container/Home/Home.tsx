@@ -320,7 +320,7 @@ const Home: FC = () => {
             <div className="mt-10 text-center">
               <Link
                 href="/services"
-                className="inline-flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-gray-900 transition-colors"
+                className="inline-flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-gray-900 transition-colors"
               >
                 See all services & pricing →
               </Link>
@@ -351,7 +351,7 @@ const Home: FC = () => {
               </div>
               <Link
                 href="/guides"
-                className="hidden sm:inline-flex items-center text-sm font-bold text-gray-400 hover:text-green-600 transition-colors"
+                className="hidden sm:inline-flex items-center text-sm font-bold text-gray-600 hover:text-green-600 transition-colors"
               >
                 All guides →
               </Link>
@@ -410,7 +410,7 @@ const Home: FC = () => {
                 <h3 className="text-2xl font-black text-white mb-2 group-hover:text-amber-400 transition-colors">
                   Quality Pre-Owned
                 </h3>
-                <p className="text-gray-500 text-sm leading-relaxed">
+                <p className="text-gray-400 text-sm leading-relaxed">
                   Inspected by ASE-certified techs. 30-day warranty included.
                 </p>
                 <span className="mt-6 inline-flex items-center text-amber-400 text-sm font-bold gap-1">
@@ -427,7 +427,7 @@ const Home: FC = () => {
                 <h3 className="text-2xl font-black text-white mb-2 group-hover:text-green-400 transition-colors">
                   Brand New Stock
                 </h3>
-                <p className="text-gray-500 text-sm leading-relaxed">
+                <p className="text-gray-400 text-sm leading-relaxed">
                   Full manufacturer warranty. Free shipping nationwide.
                 </p>
                 <span className="mt-6 inline-flex items-center text-green-400 text-sm font-bold gap-1">
@@ -444,7 +444,7 @@ const Home: FC = () => {
                 <h3 className="text-2xl font-black text-white mb-2 group-hover:text-[#9dfb40] transition-colors">
                   Browse Catalog
                 </h3>
-                <p className="text-gray-500 text-sm leading-relaxed">
+                <p className="text-gray-400 text-sm leading-relaxed">
                   15,000+ tires across 7 Miami & Orlando locations.
                 </p>
                 <span className="mt-6 inline-flex items-center text-[#9dfb40] text-sm font-bold gap-1">
