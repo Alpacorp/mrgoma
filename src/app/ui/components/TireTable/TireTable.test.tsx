@@ -43,7 +43,9 @@ describe('TireTable', () => {
     expect(within(row).getByText('245/50/19')).toBeInTheDocument();
     expect(within(row).getByText('Used')).toBeInTheDocument();
     expect(within(row).getByText('63%')).toBeInTheDocument();
-    expect(within(row).getByText('6.3')).toBeInTheDocument();
+    // Tread carries its unit now: a bare "6.3" says nothing to a buyer, and
+    // thirty-seconds of an inch is how the US market reads tread.
+    expect(within(row).getByText('6.3/32"')).toBeInTheDocument();
     expect(within(row).getByText('$155')).toBeInTheDocument();
   });
 

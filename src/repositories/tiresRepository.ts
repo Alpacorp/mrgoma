@@ -107,6 +107,21 @@ async function fetchTiresInternal(
       case 'price-desc':
         orderBy = 'Price DESC';
         break;
+      /**
+       * Most tread left first — the question a used-tire buyer actually asks
+       * once price is settled. Numeric, not textual: `RemainingLife` is stored
+       * as `'99%'`, and sorting that as text puts 9% above 80%.
+       *
+       * `TireId DESC` breaks ties so the order is stable across pages; without
+       * it, rows sharing a life value can reshuffle between requests and a tire
+       * appears twice or not at all while paging.
+       */
+      case 'life-desc':
+        orderBy = "TRY_CAST(REPLACE(RemainingLife, '%', '') AS int) DESC, TireId DESC";
+        break;
+      case 'newest':
+        orderBy = 'ModificationDate DESC, TireId DESC';
+        break;
     }
   }
 

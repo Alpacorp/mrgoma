@@ -144,6 +144,8 @@ const ResultsHeader: FC<ResultsHeaderProps> = ({
               <option value="">Sort by</option>
               <option value="price-asc">Price: Low to High</option>
               <option value="price-desc">Price: High to Low</option>
+              <option value="life-desc">Most tread left</option>
+              <option value="newest">Newest arrivals</option>
             </select>
           )}
         </div>

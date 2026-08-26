@@ -8,6 +8,7 @@ import { TransformedTire } from '@/app/interfaces/tires';
 import { StockBadge } from '@/app/ui/components';
 import { brandName, modelName, parseTireName } from '@/app/utils/tireNaming';
 import { buildTireSlug } from '@/app/utils/tireSlug';
+import { patchedNote, treadDepthLabel } from '@/app/utils/tireSpecs';
 
 interface TireTableProps {
   products: TransformedTire[];
@@ -121,9 +122,11 @@ const TireTable: FC<TireTableProps> = ({ products }) => {
                   {spec['Remaining life'] ?? '—'}
                 </td>
                 <td className="px-3 py-3 text-right tabular-nums text-gray-700">
-                  {spec['Tread depth'] ?? '—'}
+                  {treadDepthLabel(spec['Tread depth'])}
                 </td>
-                <td className="px-3 py-3 text-gray-700">{spec.Patched ?? '—'}</td>
+                <td className="px-3 py-3 text-gray-700">
+                  <span title={patchedNote(spec.Patched)}>{spec.Patched ?? '—'}</span>
+                </td>
                 <td className="px-3 py-3 text-gray-700">{spec['Run Flat'] ?? '—'}</td>
                 <td className="px-3 py-3 text-right font-bold tabular-nums text-gray-900">
                   {product.price}

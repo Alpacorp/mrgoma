@@ -107,7 +107,7 @@ const FacetGroup: FC<FacetGroupProps> = ({
               data-track="filter_apply"
               data-track-category="tires_filter"
               data-track-label={`${trackGroup}:${option.value}`}
-              className={`flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
+              className={`flex items-center justify-between gap-2 rounded-md px-2 py-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 lg:py-1.5 ${
                 option.applied
                   ? 'bg-green-50 font-semibold text-green-700'
                   : 'text-gray-700 hover:bg-gray-50 hover:text-green-700'
@@ -154,7 +154,7 @@ const FacetGroup: FC<FacetGroupProps> = ({
     return (
       <section className={`border-b border-gray-200 pb-4 last:border-b-0 ${className}`.trim()}>
         <details open={defaultOpen} className="group">
-          <summary className="-mx-1 flex cursor-pointer list-none items-center justify-between gap-2 rounded-md px-1 py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500">
+          <summary className="-mx-1 flex cursor-pointer list-none items-center justify-between gap-2 rounded-md px-1 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 lg:py-0.5">
             <h3 className="text-[10px] font-bold uppercase tracking-[0.16em] text-gray-500">
               {title}
             </h3>
