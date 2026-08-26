@@ -23,3 +23,5 @@ export { default as TopHeader } from './TopHeader/TopHeader';
 export { default as StickyHeader } from './StickyHeader/StickyHeader';
 export { default as PromoBanner } from './PromoBanner/PromoBanner';
 export { default as MobileQuickFilters } from './MobileQuickFilters/MobileQuickFilters';
+export { default as FilterRail } from './FilterRail/FilterRail';
+export { default as FilterRailMobile } from './FilterRail/FilterRailMobile';

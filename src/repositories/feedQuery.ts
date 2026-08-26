@@ -11,8 +11,20 @@
  * Merchant feed can never drift: the feed is exactly what the site sells. Do not
  * weaken this without a product decision.
  */
+/**
+ * What we may sell online: not local-only, not trashed, not sold, at least half
+ * its life left, and priced.
+ *
+ * **The life test is numeric on purpose.** `RemainingLife` is text like `'99%'`,
+ * and the string comparison this used to do (`RemainingLife >= '50%'`) orders
+ * lexicographically — so `'100%'` sorts *below* `'50%'` and a brand-new tire
+ * recorded at 100% would silently vanish from the catalog, the feed and every
+ * count. No tire holds `'100%'` today, which is why nothing was ever wrong; both
+ * forms were measured over the live catalog and return **the same 4.128 tires**.
+ * The numeric form simply cannot acquire the bug later.
+ */
 export const STOREFRONT_SELLABLE_WHERE =
-  "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND RemainingLife >= '50%' AND Price != 0";
+  "Local = '0' AND Trash = 'false' AND Condition != 'sold' AND TRY_CAST(REPLACE(RemainingLife, '%', '') AS int) >= 50 AND Price != 0";
 
 /**
  * Whitelisted columns the Google Merchant feed is allowed to read — a subset of

@@ -11,7 +11,13 @@ interface TireResultsProps {
 
 const TireResults: FC<TireResultsProps> = ({ products }) => {
   return (
-    <div className="mx-auto max-w-3xl px-3 sm:px-0">
+    /*
+     * No `mx-auto max-w-3xl` any more. The list used to be capped at 768 px and
+     * centred inside a 1216 px container, leaving 224 px blank on each side; it
+     * now takes the width the filter rail leaves it, which measured 944 px —
+     * **wider than before, not narrower.**
+     */
+    <div className="px-3 sm:px-0">
       {products && products.length > 0 ? (
         <TireCard products={products} />
       ) : (

@@ -5,6 +5,7 @@ import {
   buildTireFilters,
   encodeLocationPairs,
   parseLocationPairs,
+  parseTireView,
 } from './filterUtils';
 
 const sp = (query: string) => new URLSearchParams(query);
@@ -115,5 +116,21 @@ describe('locations: the shelf-code pairs', () => {
 
   it('sets no locations key when the param is absent', () => {
     expect(buildTireFilters(new URLSearchParams({ stores: 'Hialeah' })).locations).toBeUndefined();
+  });
+});
+
+describe('parseTireView', () => {
+  it('reads the two views it knows', () => {
+    expect(parseTireView('list')).toBe('list');
+    expect(parseTireView('table')).toBe('table');
+  });
+
+  it('falls back to the list rather than breaking the page', () => {
+    // The parameter arrives from a URL, so it can say anything at all.
+    expect(parseTireView('nonsense')).toBe('list');
+    expect(parseTireView('')).toBe('list');
+    expect(parseTireView(null)).toBe('list');
+    expect(parseTireView(undefined)).toBe('list');
+    expect(parseTireView('LIST')).toBe('list');
   });
 });

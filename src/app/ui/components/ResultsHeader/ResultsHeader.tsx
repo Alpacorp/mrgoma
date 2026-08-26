@@ -8,12 +8,19 @@ import { ShowFilterContext } from '@/app/context/ShowFilterContext';
 import { AdjustmentsHorizontalIcon } from '@/app/ui/components/Icons/Icons';
 
 interface ResultsHeaderProps {
+  /**
+   * What the results are. Computed on the server from the applied filters, so
+   * the heading and the rail's chips can never describe different things.
+   */
+  heading?: string;
   getTireSize?: () => string;
   resultsCount?: number;
   totalCount?: number;
   showTitle?: boolean;
   showCount?: boolean;
   showSort?: boolean;
+  /** The mobile drawer trigger. `/dashboard` still needs it; `/tires` does not. */
+  showFilterButton?: boolean;
 }
 
 /**
@@ -22,12 +29,14 @@ interface ResultsHeaderProps {
  * and sorting options for price.
  */
 const ResultsHeader: FC<ResultsHeaderProps> = ({
+  heading,
   getTireSize,
   resultsCount,
   totalCount,
   showTitle = true,
   showCount = true,
   showSort = true,
+  showFilterButton = true,
 }) => {
   const { setShowFilter } = useContext(ShowFilterContext);
   const router = useRouter();
@@ -83,20 +92,34 @@ const ResultsHeader: FC<ResultsHeaderProps> = ({
                 </span>
               </>
             ) : (
-              'All tires'
+              // It used to read "All tires" whatever was applied, on the one
+              // page whose purpose is narrowing.
+              (heading ?? 'All tires')
             )}
           </h2>
         )}
-        <button
-          type="button"
-          className="lg:hidden flex items-center justify-center p-2 rounded-md bg-green-500 text-white hover:bg-green-600 transition-colors"
-          aria-label="Show filters"
-          onClick={() => setShowFilter(true)}
-        >
-          <span className="sr-only">Filters</span>
-          <AdjustmentsHorizontalIcon className="h-5 w-5" />
-          <span className="ml-1">Filters</span>
-        </button>
+        {/*
+         * The green "Filters" button that used to sit here opened the mobile
+         * drawer the filter rail replaced. On a phone it left two controls
+         * called Filters within one screen of each other — this one, and the
+         * rail's own disclosure above the results — and this one opened a panel
+         * that is no longer part of the page.
+         *
+         * `ResultsHeader` is shared with `/dashboard`, which still uses that
+         * drawer, so the button is gated rather than deleted.
+         */}
+        {showFilterButton && (
+          <button
+            type="button"
+            className="lg:hidden flex items-center justify-center p-2 rounded-md bg-green-600 text-white hover:bg-green-700 transition-colors"
+            aria-label="Show filters"
+            onClick={() => setShowFilter(true)}
+          >
+            <span className="sr-only">Filters</span>
+            <AdjustmentsHorizontalIcon className="h-5 w-5" />
+            <span className="ml-1">Filters</span>
+          </button>
+        )}
       </div>
 
       {/* Right side - Sort and count */}

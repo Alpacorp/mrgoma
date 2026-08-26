@@ -58,6 +58,25 @@ export function parseLocationPairs(value: string | null): { store: string; code:
 }
 
 /**
+ * How the buyer is reading the results, which is not a filter.
+ *
+ * **Half the catalogue has no photo** — 2.089 of 4.149 sellable tires — so a row
+ * built around an image spends its best space on a placeholder for every second
+ * listing. The table is for those. It lives in the URL so a shared link opens
+ * the way the sender was reading it.
+ */
+export const TIRE_VIEWS = ['list', 'table'] as const;
+export type TireView = (typeof TIRE_VIEWS)[number];
+export const DEFAULT_TIRE_VIEW: TireView = 'list';
+
+/** Anything unrecognised reads as the default rather than breaking the page. */
+export function parseTireView(value: string | null | undefined): TireView {
+  return (TIRE_VIEWS as readonly string[]).includes(value ?? '')
+    ? (value as TireView)
+    : DEFAULT_TIRE_VIEW;
+}
+
+/**
  * Extract and build a filters' object from search parameters
  * @param searchParams URL search parameters
  * @returns Filters object ready to use with repository functions

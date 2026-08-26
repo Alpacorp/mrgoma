@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useCart } from '@/app/context/CartContext';
 import { TransformedTire } from '@/app/interfaces/tires';
 import { BrandImage, FreeShippingBadge, ProductImage, StockBadge } from '@/app/ui/components';
-import { brandName, modelName } from '@/app/utils/tireNaming';
+import { brandName, modelName, parseTireName } from '@/app/utils/tireNaming';
 import { buildTireSlug, slugify } from '@/app/utils/tireSlug';
 
 interface TireCardProps {
@@ -21,14 +21,6 @@ const SPEC_LABELS: Record<SpecKey, string> = {
   Patched: 'Patched',
   'Run Flat': 'Run Flat',
 };
-
-function parseTireName(name: string): { size: string; displayName: string } {
-  const parts = (name || '').split(' | ');
-  if (parts.length >= 3)
-    return { size: parts[parts.length - 1], displayName: parts.slice(2, -1).join(' ') || parts[1] };
-  if (parts.length === 2) return { size: parts[1], displayName: parts[0] };
-  return { size: '', displayName: name };
-}
 
 const CartIcon = () => (
   <svg

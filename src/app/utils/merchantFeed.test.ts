@@ -164,7 +164,9 @@ describe('buildFeedQuery (mirrors storefront, no cap)', () => {
 
   it('reuses the storefront sellable clause', () => {
     expect(q).toContain(STOREFRONT_SELLABLE_WHERE);
-    expect(q).toContain("RemainingLife >= '50%'");
+    // Numeric, not lexicographic: see STOREFRONT_SELLABLE_WHERE. A string
+    // comparison sorts '100%' below '50%'.
+    expect(q).toContain("TRY_CAST(REPLACE(RemainingLife, '%', '') AS int) >= 50");
   });
 
   it('is NOT the dashboard (Trash-only, everything) clause', () => {
