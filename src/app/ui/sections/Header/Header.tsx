@@ -167,6 +167,7 @@ const Header: FC<{ compact?: boolean }> = ({ compact = false }): ReactNode => {
             </div>
             <div className="flex">
               <button
+                type="button"
                 onClick={handleCartClick}
                 data-track="open_cart"
                 data-track-category="cart"

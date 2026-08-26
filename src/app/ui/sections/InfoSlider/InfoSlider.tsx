@@ -73,6 +73,7 @@ const InfoSlider = () => {
       <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-2">
         {infoSliderData.map((_, index) => (
           <button
+            type="button"
             key={index}
             onClick={() => goToSlide(index)}
             className={`w-12 h-3 rounded-full transition-all duration-300 cursor-pointer ${

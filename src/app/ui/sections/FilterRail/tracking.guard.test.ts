@@ -43,3 +43,40 @@ describe('every new control reports what happened', () => {
     }
   });
 });
+
+/**
+ * **Every filter reports under its own group.**
+ *
+ * `SearchableFacet` was generalised out of the brand facet and its label kept
+ * the word it was born with: every width, profile and rim click reported as
+ * `Brand:205`, `Brand:55`, `Brand:16`. Nothing failed — the filter worked, the
+ * count was right, and the analytics quietly recorded tire sizes as brand names.
+ * It was found by an outside audit of production, not by this suite, which is
+ * why the assertion below exists.
+ *
+ * The label is the group *key*, not the title: titles change with the copy —
+ * "Rim size" today, "Wheel size" tomorrow — and a renamed title silently splits
+ * one metric into two.
+ */
+describe('a filter reports the group it belongs to', () => {
+  const RAIL = 'src/app/ui/sections/FilterRail/';
+
+  it.each([['FacetGroup.tsx'], ['SearchableFacet.tsx'], ['RangeFacet.tsx']])(
+    '%s labels from the group key, never a hardcoded name',
+    file => {
+      const source = readFileSync(RAIL + file, 'utf8');
+      expect(source).toContain('data-track-label={`${trackGroup}:');
+      // The exact shape of the bug: a group name written into the template.
+      expect(source).not.toMatch(
+        /data-track-label=\{`(Brand|Condition|Price|Width|Profile|Rim)[^$]/
+      );
+    }
+  );
+
+  it('and the rail hands each group its own key', () => {
+    const source = readFileSync(RAIL + 'FilterRail.tsx', 'utf8');
+    // Passed as the loop variable, so it cannot be one group's name for all.
+    expect(source.match(/trackGroup=\{group\}/g) ?? []).toHaveLength(4);
+    expect(source).not.toMatch(/trackGroup="[a-z]/i);
+  });
+});

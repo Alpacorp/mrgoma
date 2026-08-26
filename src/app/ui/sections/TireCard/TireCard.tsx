@@ -7,6 +7,7 @@ import { TransformedTire } from '@/app/interfaces/tires';
 import { BrandImage, FreeShippingBadge, ProductImage, StockBadge } from '@/app/ui/components';
 import { brandName, modelName, parseTireName } from '@/app/utils/tireNaming';
 import { buildTireSlug, slugify } from '@/app/utils/tireSlug';
+import { patchedNote, treadDepthLabel } from '@/app/utils/tireSpecs';
 
 interface TireCardProps {
   products: TransformedTire[];
@@ -154,9 +155,16 @@ const TireCard: FC<TireCardProps> = ({ products }) => {
 
                 {/* Title */}
                 <Link href={detailUrl} className="group/title">
-                  <h2 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 leading-snug line-clamp-2 group-hover/title:text-green-700 transition-colors">
+                  {/*
+                    An <h3>, not an <h2>. Each card sits under the results
+                    section's own heading, so twenty tire names as <h2> put
+                    twenty siblings beside it instead of children under it — a
+                    screen reader's outline of the page becomes a flat list of
+                    product names with no section to leave.
+                  */}
+                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 leading-snug line-clamp-2 group-hover/title:text-green-700 transition-colors">
                     {titleText}
-                  </h2>
+                  </h3>
                 </Link>
 
                 {/* Price + brand logo */}
@@ -198,14 +206,35 @@ const TireCard: FC<TireCardProps> = ({ products }) => {
             {/* ── Spec strip — dark ── */}
             <div className="grid grid-cols-4 divide-x divide-white/10 border-t border-white/10 bg-[#0a0a0a]">
               {SPEC_KEYS.map(key => {
-                const value = specMap[key] ?? '—';
+                const raw = specMap[key] ?? '—';
+                // Tread is measured in thirty-seconds of an inch. A bare "8.0"
+                // is unreadable to the buyer it is meant to reassure.
+                const value = key === 'Tread depth' ? treadDepthLabel(raw) : raw;
+                // "Patched: Yes" reads as a warning on its own, at the moment a
+                // used-tire buyer hesitates.
+                const note = key === 'Patched' ? patchedNote(raw) : undefined;
                 return (
                   <div key={key} className="flex flex-col gap-0.5 px-2 py-2 sm:px-3 sm:py-2.5">
                     <span className="text-[10px] font-bold text-[#9dfb40]/60 uppercase tracking-wider">
                       {SPEC_LABELS[key]}
                     </span>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-sm font-bold text-white leading-none">{value}</span>
+                      <span
+                        className="text-sm font-bold text-white leading-none"
+                        title={note}
+                        aria-label={note ? `${SPEC_LABELS[key]}: ${value}. ${note}` : undefined}
+                      >
+                        {value}
+                      </span>
+                      {note && (
+                        <span
+                          aria-hidden="true"
+                          title={note}
+                          className="grid h-3.5 w-3.5 shrink-0 cursor-help place-items-center rounded-full border border-[#9dfb40]/50 text-[9px] font-bold leading-none text-[#9dfb40]/80"
+                        >
+                          i
+                        </span>
+                      )}
                       {key === 'Remaining life' && lifePct > 0 && (
                         <div className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden max-w-[48px]">
                           <div

@@ -12,6 +12,7 @@ import AddToCartButton from '@/app/ui/components/AddToCartButton/AddToCartButton
 import { WhatsAppEnquiryButton } from '@/app/ui/components/WhatsAppEnquiryButton/WhatsAppEnquiryButton';
 import { generateTireDescription } from '@/app/utils/tireDescription';
 import { brandName, modelName, tireTitle } from '@/app/utils/tireNaming';
+import { patchedNote, treadDepthLabel } from '@/app/utils/tireSpecs';
 
 // Server Component: renders the product info from props. The only interactive
 // piece (add-to-cart) is delegated to the `AddToCartButton` client island.
@@ -140,7 +141,7 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
                 Tread
               </p>
               <span className="text-sm font-bold text-gray-900">
-                {singleTire.treadDepth || '—'}
+                {treadDepthLabel(singleTire.treadDepth)}
               </span>
             </div>
             <div className="px-3 py-3 bg-gray-50">
@@ -148,6 +149,15 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
                 Patched
               </p>
               <span className="text-sm font-bold text-gray-900">{singleTire.patched || '—'}</span>
+              {/*
+                This is where a used-tire buyer hesitates. The fact stays; the
+                context is what turns it from a warning into a reassurance.
+              */}
+              {patchedNote(singleTire.patched) && (
+                <p className="mt-1 text-[11px] leading-snug text-gray-500">
+                  {patchedNote(singleTire.patched)}
+                </p>
+              )}
             </div>
             {singleTire.runFlat && (
               <div className="col-span-2 sm:col-span-1 px-3 py-3 bg-gray-50">

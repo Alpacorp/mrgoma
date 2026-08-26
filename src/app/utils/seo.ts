@@ -516,7 +516,7 @@ export function guidesMetadata(): Metadata {
  * One guide.
  *
  * **`type: 'article'` and `publishedTime` are passed through on purpose.** These
- * pages already declared both, and `pageMetadata` defaults to `'website'`;
+ * pages are already declared both, and `pageMetadata` defaults to `'website'`;
  * migrating them without this would quietly demote seven articles to generic
  * pages and drop their publication dates. Nothing in the rendered page would
  * show it — only a social debugger would.

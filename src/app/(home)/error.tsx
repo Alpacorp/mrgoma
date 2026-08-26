@@ -18,6 +18,7 @@ export default function HomeError({
       <h2 className="text-2xl font-semibold text-gray-800">Something went wrong</h2>
       <p className="text-gray-500">We couldn&apos;t load this page. Please try again.</p>
       <button
+        type="button"
         onClick={reset}
         className="rounded-md bg-green-600 px-4 py-2 text-white hover:bg-green-700"
       >

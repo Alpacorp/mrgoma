@@ -12,6 +12,8 @@ interface SearchableFacetProps {
   initialCount?: number;
   /** What the group holds, for the search label and the empty message. */
   noun?: string;
+  /** The key this group reports under. See `FacetGroup`. */
+  trackGroup: string;
   /** Plural of `noun`, when it is not simply `noun + 's'`. */
   nounPlural?: string;
   /** Whether picking a second option adds to the first. See `FacetGroup`. */
@@ -41,6 +43,7 @@ const SearchableFacet: FC<SearchableFacetProps> = ({
   options,
   initialCount = 8,
   noun = 'brand',
+  trackGroup,
   nounPlural,
   multiSelect = true,
   numeric = false,
@@ -94,7 +97,7 @@ const SearchableFacet: FC<SearchableFacetProps> = ({
         autoComplete="off"
         // 16px keeps iOS Safari from zooming the page on focus.
         style={{ fontSize: '16px' }}
-        className="mb-2 w-full rounded-md border border-gray-300 bg-white px-2.5 py-1.5 leading-tight text-gray-700 placeholder-gray-400 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+        className="mb-2 w-full rounded-md border border-gray-300 bg-white px-2.5 py-3 leading-tight text-gray-700 placeholder-gray-400 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 lg:py-1.5"
       />
 
       <ul className="flex flex-col">
@@ -105,8 +108,8 @@ const SearchableFacet: FC<SearchableFacetProps> = ({
               aria-current={option.applied ? 'true' : undefined}
               data-track="filter_apply"
               data-track-category="tires_filter"
-              data-track-label={`Brand:${option.value}`}
-              className={`flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
+              data-track-label={`${trackGroup}:${option.value}`}
+              className={`flex items-center justify-between gap-2 rounded-md px-2 py-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 lg:py-1.5 ${
                 option.applied
                   ? 'bg-green-50 font-semibold text-green-700'
                   : 'text-gray-700 hover:bg-gray-50 hover:text-green-700'
@@ -152,7 +155,7 @@ const SearchableFacet: FC<SearchableFacetProps> = ({
         <button
           type="button"
           onClick={() => setShowAll(true)}
-          className="mt-1 cursor-pointer rounded-md px-2 py-1 text-sm font-semibold text-green-700 hover:bg-green-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+          className="mt-1 w-full cursor-pointer rounded-md px-2 py-3 text-left text-sm font-semibold text-green-700 hover:bg-green-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 lg:w-auto lg:py-1"
         >
           Show all {matches.length.toLocaleString('en-US')} {plural}
         </button>

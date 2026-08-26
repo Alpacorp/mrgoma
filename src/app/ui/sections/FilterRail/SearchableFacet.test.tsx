@@ -41,7 +41,9 @@ const MANY = [
 
 describe('SearchableFacet', () => {
   it('opens short rather than making the buyer scroll past a hundred brands', () => {
-    const { container } = render(<SearchableFacet options={MANY} initialCount={8} />);
+    const { container } = render(
+      <SearchableFacet trackGroup="brand" options={MANY} initialCount={8} />
+    );
     // Drawn: eight. Present: all of them — see the next test for why that
     // distinction is the whole point.
     const drawn = [...container.querySelectorAll('li')].filter(
@@ -61,7 +63,9 @@ describe('SearchableFacet', () => {
    * was built to make reachable.
    */
   it('still puts every option in the markup', () => {
-    const { container } = render(<SearchableFacet options={MANY} initialCount={3} />);
+    const { container } = render(
+      <SearchableFacet trackGroup="brand" options={MANY} initialCount={3} />
+    );
     expect(container.querySelectorAll('a')).toHaveLength(MANY.length);
     for (const brand of MANY) {
       expect(screen.getByRole('link', { name: new RegExp(brand.label) })).toBeInTheDocument();
@@ -70,7 +74,9 @@ describe('SearchableFacet', () => {
 
   it('reveals the rest on request', async () => {
     const user = userEvent.setup();
-    const { container } = render(<SearchableFacet options={MANY} initialCount={8} />);
+    const { container } = render(
+      <SearchableFacet trackGroup="brand" options={MANY} initialCount={8} />
+    );
     await user.click(screen.getByRole('button', { name: /Show all/ }));
     const drawn = [...container.querySelectorAll('li')].filter(
       li => !li.className.includes('hidden')
@@ -80,7 +86,7 @@ describe('SearchableFacet', () => {
 
   it('narrows the list as the buyer types', async () => {
     const user = userEvent.setup();
-    render(<SearchableFacet options={MANY} />);
+    render(<SearchableFacet trackGroup="brand" options={MANY} />);
     await user.type(screen.getByPlaceholderText('Search brands'), 'mich');
 
     expect(screen.getByRole('link', { name: /Michelin/ })).toBeInTheDocument();
@@ -90,27 +96,29 @@ describe('SearchableFacet', () => {
 
   it('sorts a numeric group by value, so 19.5 lands between 19 and 20', () => {
     const sizes = [brand('19'), brand('19.5'), brand('20')];
-    render(<SearchableFacet options={sizes} noun="size" nounPlural="sizes" numeric />);
+    render(
+      <SearchableFacet trackGroup="brand" options={sizes} noun="size" nounPlural="sizes" numeric />
+    );
     expect(screen.getByPlaceholderText('Search sizes')).toHaveAttribute('inputmode', 'numeric');
   });
 
   it('matches anywhere in the name, not only at the start', async () => {
     const user = userEvent.setup();
-    render(<SearchableFacet options={MANY} />);
+    render(<SearchableFacet trackGroup="brand" options={MANY} />);
     await user.type(screen.getByPlaceholderText('Search brands'), 'stone');
     expect(screen.getByRole('link', { name: /Bridgestone/ })).toBeInTheDocument();
   });
 
   it('ignores case, because brands are stored in capitals', async () => {
     const user = userEvent.setup();
-    render(<SearchableFacet options={MANY} />);
+    render(<SearchableFacet trackGroup="brand" options={MANY} />);
     await user.type(screen.getByPlaceholderText('Search brands'), 'PIRE');
     expect(screen.getByRole('link', { name: /Pirelli/ })).toBeInTheDocument();
   });
 
   it('reaches past the initial eight without needing "show all"', async () => {
     const user = userEvent.setup();
-    render(<SearchableFacet options={MANY} initialCount={8} />);
+    render(<SearchableFacet trackGroup="brand" options={MANY} initialCount={8} />);
     // Toyo is 11th; searching must find it even though the list opened short.
     await user.type(screen.getByPlaceholderText('Search brands'), 'toyo');
     expect(screen.getByRole('link', { name: /Toyo/ })).toBeInTheDocument();
@@ -123,7 +131,7 @@ describe('SearchableFacet', () => {
    */
   it('does not navigate while searching', async () => {
     const user = userEvent.setup();
-    render(<SearchableFacet options={MANY} />);
+    render(<SearchableFacet trackGroup="brand" options={MANY} />);
 
     await user.type(screen.getByPlaceholderText('Search brands'), 'mich');
 
@@ -135,7 +143,7 @@ describe('SearchableFacet', () => {
 
   it('says so when nothing matches, instead of showing an empty box', async () => {
     const user = userEvent.setup();
-    render(<SearchableFacet options={MANY} />);
+    render(<SearchableFacet trackGroup="brand" options={MANY} />);
     await user.type(screen.getByPlaceholderText('Search brands'), 'zzz');
     expect(screen.getByText(/No brand matches/)).toBeInTheDocument();
     expect(screen.queryAllByRole('link')).toHaveLength(0);
@@ -147,7 +155,7 @@ describe('SearchableFacet', () => {
    */
   it('always shows the applied brand, however far down the list it sits', () => {
     const options = [...MANY.slice(0, 10), brand('Toyo', 12, true)];
-    render(<SearchableFacet options={options} initialCount={3} />);
+    render(<SearchableFacet trackGroup="brand" options={options} initialCount={3} />);
 
     const applied = screen.getByRole('link', { name: /Toyo/ });
     expect(applied).toBeInTheDocument();
@@ -155,17 +163,17 @@ describe('SearchableFacet', () => {
   });
 
   it('uses no button-like ARIA on its links', () => {
-    const { container } = render(<SearchableFacet options={MANY} />);
+    const { container } = render(<SearchableFacet trackGroup="brand" options={MANY} />);
     expect(container.querySelectorAll('[aria-pressed]')).toHaveLength(0);
   });
 
   it('labels its input for a screen reader', () => {
-    render(<SearchableFacet options={MANY} />);
+    render(<SearchableFacet trackGroup="brand" options={MANY} />);
     expect(screen.getByLabelText('Search brands')).toBeInTheDocument();
   });
 
   it('sets a 16px font so iOS Safari does not zoom the page on focus', () => {
-    render(<SearchableFacet options={MANY} />);
+    render(<SearchableFacet trackGroup="brand" options={MANY} />);
     expect(screen.getByPlaceholderText('Search brands')).toHaveStyle({ fontSize: '16px' });
   });
 });

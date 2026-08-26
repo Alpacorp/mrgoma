@@ -43,7 +43,9 @@ const TireDisplay: FC = () => {
         />
       </div>
       <div>
-        <Image src={shadow} alt={'shadow'} className="absolute -bottom-[.4rem]" />
+        {/* Decorative: a screen reader reading "image: shadow" tells the buyer
+            nothing about the tire. */}
+        <Image src={shadow} alt="" aria-hidden="true" className="absolute -bottom-[.4rem]" />
       </div>
       <div className="absolute inset-0 flex items-center justify-center gap-2 px-4 py-1 bg-neutral-800 h-min w-min rounded-full shadow-xl m-auto">
         <ArrowsToRight className="w-10" />

@@ -132,6 +132,7 @@ export const LocationsSlider = ({
           </div>
 
           <button
+            type="button"
             onClick={prevSlide}
             className="absolute cursor-pointer left-3 sm:left-4 top-1/2 -translate-y-3/6 bg-[#9DFB40]/90 hover:bg-[#9DFB40] text-black p-2 rounded-full transition-all duration-200 shadow-md backdrop-blur focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 border border-black/10 opacity-95 group-hover:opacity-100"
             aria-label="Previous location"
@@ -154,6 +155,7 @@ export const LocationsSlider = ({
             </svg>
           </button>
           <button
+            type="button"
             onClick={nextSlide}
             className="absolute cursor-pointer right-3 sm:right-4 top-1/2 -translate-y-1/2 bg-[#9DFB40]/90 hover:bg-[#9DFB40] text-black p-2 rounded-full transition-all duration-200 shadow-md backdrop-blur focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 border border-black/10 opacity-95 group-hover:opacity-100"
             aria-label="Next location"
@@ -183,6 +185,7 @@ export const LocationsSlider = ({
             <div className="flex justify-center gap-2">
               {Array.from({ length: totalSlides }).map((_, index) => (
                 <button
+                  type="button"
                   key={index}
                   onClick={() => goToSlide(index)}
                   className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${

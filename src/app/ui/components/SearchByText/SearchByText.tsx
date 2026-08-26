@@ -55,7 +55,6 @@ const SearchByText: FC<SearchByTextProps> = ({ showButton = true, enableSubmit =
               </label>
               <input
                 autoFocus={true}
-                id="tireSize"
                 inputMode="numeric"
                 type="text"
                 placeholder="e.g. 255/55/18"
@@ -73,7 +72,7 @@ const SearchByText: FC<SearchByTextProps> = ({ showButton = true, enableSubmit =
                 }`}
               />
               <div className="flex items-center justify-between">
-                <p id="tireSizeHelp" className="text-xs text-gray-600">
+                <p className="text-xs text-gray-600">
                   Enter size as Width/Aspect/Diameter (e.g., 255/55/18).
                 </p>
                 {value && (
@@ -91,7 +90,7 @@ const SearchByText: FC<SearchByTextProps> = ({ showButton = true, enableSubmit =
                 )}
               </div>
               {isInvalid && (
-                <p id="tireSizeError" className="text-xs text-red-600">
+                <p className="text-xs text-red-600">
                   Please complete the size as 3 digits / 2 digits / 2 digits.
                 </p>
               )}

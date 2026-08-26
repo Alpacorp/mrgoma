@@ -20,6 +20,8 @@ export type RangeOption = {
 
 interface RangeFacetProps {
   title: string;
+  /** The key this group reports under. See `FacetGroup`. */
+  trackGroup: string;
   options: RangeOption[];
   /** The lowest and highest values in the catalogue — the slider's travel. */
   bounds: [number, number];
@@ -64,6 +66,7 @@ const FORMATTERS: Record<'currency' | 'percent', (value: number) => string> = {
  */
 const RangeFacet: FC<RangeFacetProps> = ({
   title,
+  trackGroup,
   options,
   bounds,
   value,
@@ -130,8 +133,8 @@ const RangeFacet: FC<RangeFacetProps> = ({
               aria-current={option.applied ? 'true' : undefined}
               data-track="filter_apply"
               data-track-category="tires_filter"
-              data-track-label={`${title}:${option.id}`}
-              className={`flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${
+              data-track-label={`${trackGroup}:${option.id}`}
+              className={`flex items-center justify-between gap-2 rounded-md px-2 py-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 lg:py-1.5 ${
                 option.applied
                   ? 'bg-green-50 font-semibold text-green-700'
                   : 'text-gray-700 hover:bg-gray-50 hover:text-green-700'
@@ -164,7 +167,7 @@ const RangeFacet: FC<RangeFacetProps> = ({
        * price and tread life both have one.
        */}
       <details className="mt-2 group" open={handSet}>
-        <summary className="-mx-1 flex cursor-pointer list-none items-center gap-1 rounded-md px-1 py-0.5 text-xs font-semibold text-gray-500 hover:text-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500">
+        <summary className="-mx-1 flex min-h-[44px] cursor-pointer list-none items-center gap-1 rounded-md px-1 text-xs font-semibold text-gray-500 hover:text-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 lg:min-h-0 lg:py-0.5">
           <span aria-hidden="true" className="transition-transform group-open:rotate-180">
             ▾
           </span>

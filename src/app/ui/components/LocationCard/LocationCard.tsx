@@ -53,6 +53,7 @@ export const LocationCard = ({
       <div className="absolute bottom-0 left-0 right-0 p-4">
         <div className="flex flex-wrap justify-between items-start gap-4">
           <button
+            type="button"
             onClick={handleLocationClick}
             className="flex gap-2 transition-colors cursor-pointer group"
             aria-label={`Open address link`}
@@ -68,6 +69,7 @@ export const LocationCard = ({
             </div>
           </button>
           <button
+            type="button"
             onClick={handlePhoneClick}
             data-track="call_store"
             data-track-category="contact"

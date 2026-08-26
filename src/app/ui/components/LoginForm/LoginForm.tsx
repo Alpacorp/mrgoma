@@ -95,7 +95,6 @@ const LoginForm = () => {
           </label>
           <div className="relative">
             <input
-              id="username"
               {...register('username')}
               type="text"
               autoComplete="off"
@@ -112,7 +111,6 @@ const LoginForm = () => {
           </label>
           <div className="relative">
             <input
-              id="password"
               {...register('password')}
               type={passwordVisibility ? 'password' : 'text'}
               autoComplete="off"
@@ -143,7 +141,10 @@ const LoginForm = () => {
           {isLoading ? (
             <ButtonSpinner text={'Logging in…'} />
           ) : (
-            <button className="w-full py-2 text-base font-medium rounded-lg transition-colors bg-[#9dfb40] text-black cursor-pointer">
+            <button
+              type="submit"
+              className="w-full py-2 text-base font-medium rounded-lg transition-colors bg-[#9dfb40] text-black cursor-pointer"
+            >
               Login
             </button>
           )}

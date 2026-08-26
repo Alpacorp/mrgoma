@@ -16,7 +16,7 @@ import { trackEvent } from '@/app/utils/analytics';
  * both platforms, and there is no way to wire up only one of them by mistake.
  *
  * Mark any actionable like:
- *   <button data-track="add_to_cart" data-track-label="Goodyear 205/55R16">…</button>
+ *   <button type="button" data-track="add_to_cart" data-track-label="Goodyear 205/55R16">…</button>
  *   <a data-track="open_whatsapp" data-track-category="contact">…</a>
  *
  * Conventions:
