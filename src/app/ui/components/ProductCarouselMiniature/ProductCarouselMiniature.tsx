@@ -11,9 +11,15 @@ interface ProductImageProps {
     brand: string;
   };
   isHovered?: boolean;
+  /**
+   * Thumbnails sit beside the main photo, above the fold, and `next/image`
+   * defers them anyway — they were `loading="lazy"` and arrived visibly late,
+   * after the frame they belong to had already been drawn empty.
+   */
+  eager?: boolean;
 }
 
-const ProductCarouselMiniature: FC<ProductImageProps> = ({ product, isHovered }) => {
+const ProductCarouselMiniature: FC<ProductImageProps> = ({ product, isHovered, eager = false }) => {
   const fallbackSrc = '/images/placeholder-tire.svg';
   // This file used to carry its own validator, which accepted any absolute
   // URL — and `next/image` throws during render for a host it is not configured
@@ -33,6 +39,7 @@ const ProductCarouselMiniature: FC<ProductImageProps> = ({ product, isHovered })
         aria-label={safeAlt}
         width={128}
         height={128}
+        loading={eager ? 'eager' : 'lazy'}
       />
     </div>
   );

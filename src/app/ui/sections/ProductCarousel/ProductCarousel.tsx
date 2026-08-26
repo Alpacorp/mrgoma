@@ -34,6 +34,25 @@ const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
     [images.length, index, select]
   );
 
+  /**
+   * The gallery hands the viewer every photo, not just the selected one.
+   *
+   * Switching used to replace a single `src`, so the browser had to fetch a
+   * photo nothing had asked for and the frame went blank while it waited —
+   * measured at 970 ms to blank, still blank nine seconds later on a cold photo.
+   */
+  const zoomImages = useMemo(
+    () =>
+      (images.length ? images : [{ id: 0, name: 'Image', src: FALLBACK_IMAGE, alt: '' }]).map(
+        (image, i) => ({
+          id: image.id ?? i,
+          src: image.src,
+          alt: image.alt || image.name || `${singleTire.brand} ${singleTire.name}`,
+        })
+      ),
+    [images, singleTire.brand, singleTire.name]
+  );
+
   const current = images[index] || {
     id: 0,
     name: 'Image',
@@ -70,6 +89,7 @@ const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
                 <span className="sr-only">{image.name}</span>
                 <span className="absolute inset-0 overflow-hidden rounded-md">
                   <ProductCarouselMiniature
+                    eager
                     product={{
                       imageAlt: image.name,
                       imageSrc: image.src,
@@ -100,10 +120,10 @@ const ProductCarousel: FC<TireInformationProps> = ({ singleTire }) => {
         >
           <div className="relative isolate w-full bg-white rounded-lg overflow-hidden aspect-square sm:aspect-[16/10] lg:aspect-[16/9]">
             <ProductImageZoom
-              src={current.src}
-              alt={current.alt || current.name}
+              images={zoomImages}
+              index={index}
               enabled={zoomEnabled}
-              priority={index === 0}
+              priority
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
             />
             {/*
