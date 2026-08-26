@@ -160,7 +160,7 @@ export default function ServicesPage() {
                 <h2 className="text-lg font-bold text-white leading-tight group-hover:text-[#9dfb40] transition-colors duration-200">
                   {service.title}
                 </h2>
-                <p className="text-gray-500 text-sm leading-relaxed">{service.shortDescription}</p>
+                <p className="text-gray-400 text-sm leading-relaxed">{service.shortDescription}</p>
               </div>
               <div className="flex items-center gap-1.5 text-xs font-semibold text-[#9dfb40] mt-auto">
                 Learn more

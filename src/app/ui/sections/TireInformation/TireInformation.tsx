@@ -109,7 +109,7 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
             } divide-x divide-y sm:divide-y-0 divide-gray-100 border border-gray-200 rounded-xl overflow-hidden`}
           >
             <div className="px-3 py-3 bg-gray-50">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+              <p className="text-[10px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">
                 Condition
               </p>
               <span
@@ -119,7 +119,7 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
               </span>
             </div>
             <div className="px-3 py-3 bg-gray-50">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+              <p className="text-[10px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">
                 Life
               </p>
               <div className="flex items-center gap-1.5">
@@ -137,7 +137,7 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
               </div>
             </div>
             <div className="px-3 py-3 bg-gray-50">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+              <p className="text-[10px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">
                 Tread
               </p>
               <span className="text-sm font-bold text-gray-900">
@@ -145,7 +145,7 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
               </span>
             </div>
             <div className="px-3 py-3 bg-gray-50">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+              <p className="text-[10px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">
                 Patched
               </p>
               <span className="text-sm font-bold text-gray-900">{singleTire.patched || '—'}</span>
@@ -161,7 +161,7 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
             </div>
             {singleTire.runFlat && (
               <div className="col-span-2 sm:col-span-1 px-3 py-3 bg-gray-50">
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                <p className="text-[10px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">
                   Run Flat
                 </p>
                 <span className="text-sm font-bold text-gray-900">

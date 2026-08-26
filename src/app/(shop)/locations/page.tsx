@@ -102,7 +102,7 @@ export default function LocationsPage() {
             <div className="flex items-center gap-4 mb-10">
               <MapPinIcon />
               <h2 className="text-2xl font-black tracking-tight">Miami, FL</h2>
-              <span className="text-gray-600 text-sm font-medium">{miamis.length} locations</span>
+              <span className="text-gray-400 text-sm font-medium">{miamis.length} locations</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/8 border border-white/8 rounded-2xl overflow-hidden mb-4">
               {miamis.map(loc => (
@@ -115,7 +115,7 @@ export default function LocationsPage() {
             <div className="flex items-center gap-4 mb-10">
               <MapPinIcon />
               <h2 className="text-2xl font-black tracking-tight">Orlando, FL</h2>
-              <span className="text-gray-600 text-sm font-medium">{orlandos.length} locations</span>
+              <span className="text-gray-400 text-sm font-medium">{orlandos.length} locations</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/8 border border-white/8 rounded-2xl overflow-hidden">
               {orlandos.map(loc => (

@@ -97,6 +97,9 @@ html {
 @theme {
   --breakpoint-xs: 350px;
   --animate-slide-in-right: slide-in-right 0.3s ease-out;
+
+  --color-green-600: #008236;
+  --color-green-700: #016630;
 }
 
 @media (prefers-reduced-motion: no-preference) {

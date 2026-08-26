@@ -130,7 +130,7 @@ export default function AboutUs() {
               Who we are
             </p>
             <h2 className="text-4xl sm:text-5xl font-black tracking-tight mb-8 leading-tight">
-              Built in Miami. <span className="block text-gray-500">Driven by trust.</span>
+              Built in Miami. <span className="block text-gray-400">Driven by trust.</span>
             </h2>
             <div className="space-y-5 text-gray-400 leading-relaxed text-lg">
               {/* Hidden until confirmed — founding year & founder name. Restore once confirmed:
@@ -177,7 +177,7 @@ export default function AboutUs() {
                       key={item.label}
                       className="flex justify-between items-baseline border-b border-white/6 pb-4 last:border-0 last:pb-0"
                     >
-                      <span className="text-gray-500 text-sm">{item.label}</span>
+                      <span className="text-gray-400 text-sm">{item.label}</span>
                       <span
                         className={`font-semibold text-sm ${item.value.startsWith('[') ? 'text-yellow-400' : 'text-white'}`}
                       >
@@ -232,7 +232,7 @@ export default function AboutUs() {
                     {stat.value}
                   </div>
                   <div className="text-white font-bold text-lg mb-1">{stat.label}</div>
-                  <div className="text-gray-500 text-sm">{stat.sub}</div>
+                  <div className="text-gray-400 text-sm">{stat.sub}</div>
                 </div>
               ))}
           </div>
@@ -262,7 +262,10 @@ export default function AboutUs() {
                   className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-0 group-hover:opacity-5 transition-opacity duration-500 blur-2xl"
                   style={{ background: '#9dfb40' }}
                 />
-                <span className="block text-[#9dfb40]/20 text-7xl font-black leading-none mb-6 select-none group-hover:text-[#9dfb40]/40 transition-colors duration-300">
+                <span
+                  aria-hidden="true"
+                  className="block text-[#9dfb40]/40 text-7xl font-black leading-none mb-6 select-none group-hover:text-[#9dfb40]/60 transition-colors duration-300"
+                >
                   {pillar.number}
                 </span>
                 <h3 className="text-xl font-bold text-white mb-3">{pillar.title}</h3>
@@ -276,7 +279,7 @@ export default function AboutUs() {
       {/* ── CERTIFICATIONS ── */}
       <section className="border-b border-white/8">
         <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16">
-          <p className="text-center text-gray-500 text-xs uppercase tracking-widest mb-8 font-medium">
+          <p className="text-center text-gray-400 text-xs uppercase tracking-widest mb-8 font-medium">
             Certifications & Trust
           </p>
           <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
@@ -294,7 +297,7 @@ export default function AboutUs() {
                   >
                     {cert.label}
                   </span>
-                  <span className="text-gray-600 text-xs">{cert.detail}</span>
+                  <span className="text-gray-400 text-xs">{cert.detail}</span>
                 </div>
               ))}
           </div>
