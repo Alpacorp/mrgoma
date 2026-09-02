@@ -14,6 +14,7 @@ type Condition = 'new' | 'used' | 'both';
 interface LeadForm {
   vehicleDetails: string; // free text: Make, Model, Year
   condition: Condition[];
+  quantity: string; // number of tires, as the <select> value
   name: string;
   email: string;
   phone: string;
@@ -23,11 +24,16 @@ interface LeadForm {
 const initialLead: LeadForm = {
   vehicleDetails: '',
   condition: [],
+  quantity: '',
   name: '',
   email: '',
   phone: '',
   notes: '',
 };
+
+// A retail order is one to eight tires; larger fleet requests go through the
+// notes. The API enforces the same range so nothing outside it reaches n8n.
+const QUANTITY_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8];
 
 const SectionCard: React.FC<{
   step: number;
@@ -84,6 +90,7 @@ const InstantQuote: React.FC = () => {
 
   const allRequiredFilled =
     Boolean(sizeText) &&
+    Boolean(lead.quantity) &&
     lead.name.trim().length > 1 &&
     (isEmailValid(lead.email) || isPhoneValid(lead.phone)) &&
     Boolean(pickupStore);
@@ -150,11 +157,16 @@ const InstantQuote: React.FC = () => {
   const focusFirstInvalid = () => {
     const form = formRef.current;
     if (!form) return;
-    const ids = ['tireSize', 'name', 'email', 'phone', 'pickup-store'] as const;
+    const ids = ['tireSize', 'quantity', 'name', 'email', 'phone', 'pickup-store'] as const;
     for (const id of ids) {
       const el = form.querySelector<HTMLElement>(`#${id}`) || document.getElementById(id);
       if (!el) continue;
       if (id === 'tireSize' && !sizeText) {
+        el.focus();
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        break;
+      }
+      if (id === 'quantity' && !lead.quantity) {
         el.focus();
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         break;
@@ -214,6 +226,7 @@ const InstantQuote: React.FC = () => {
           carBrand: derivedCarBrand,
           year: derivedYear,
           condition: lead.condition.join(','),
+          quantity: Number(lead.quantity),
           pickupStoreId: pickupStore,
           name: lead.name,
           email: lead.email,
@@ -313,6 +326,27 @@ const InstantQuote: React.FC = () => {
                   </label>
                 </div>
               </fieldset>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="quantity">
+                How many tires? <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="quantity"
+                name="quantity"
+                value={lead.quantity}
+                onChange={handleChange}
+                className="w-full bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white text-sm"
+              >
+                <option value="">Select…</option>
+                {QUANTITY_OPTIONS.map(n => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-500 mt-1">Need more than 8? Tell us in the notes.</p>
             </div>
 
             <div className="lg:col-span-2">

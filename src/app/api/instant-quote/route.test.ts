@@ -23,7 +23,7 @@ afterEach(() => vi.unstubAllGlobals());
 describe('POST /api/instant-quote', () => {
   it('returns 500 when the webhook is not configured', async () => {
     vi.stubEnv('N8N_WEBHOOK_URL', '');
-    const res = await POST(makeReq({ size: '225/40/18', name: 'J', email: 'a@b.co' }));
+    const res = await POST(makeReq({ size: '225/40/18', name: 'J', email: 'a@b.co', quantity: 4 }));
     expect(res.status).toBe(500);
   });
 
@@ -47,11 +47,52 @@ describe('POST /api/instant-quote', () => {
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ ok: true }) });
     vi.stubGlobal('fetch', fetchMock);
 
-    const res = await POST(makeReq({ size: '225/40/18', name: 'John', email: 'john@a.co' }));
+    const res = await POST(
+      makeReq({ size: '225/40/18', name: 'John', email: 'john@a.co', quantity: 2 })
+    );
 
     expect(res.status).toBe(200);
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock.mock.calls[0][0]).toBe('http://webhook');
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body).quantity).toBe(2);
+  });
+
+  it('rejects a lead with no quantity', async () => {
+    vi.stubEnv('N8N_WEBHOOK_URL', 'http://webhook');
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
+    const res = await POST(makeReq({ size: '225/40/18', name: 'John', email: 'john@a.co' }));
+
+    expect(res.status).toBe(400);
+    expect(await res.json()).toMatchObject({ message: expect.stringContaining('quantity') });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it.each([0, 9, 2.5, -1, 'four'])('rejects an out-of-range quantity (%s)', async bad => {
+    vi.stubEnv('N8N_WEBHOOK_URL', 'http://webhook');
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
+    const res = await POST(
+      makeReq({ size: '225/40/18', name: 'John', email: 'john@a.co', quantity: bad })
+    );
+
+    expect(res.status).toBe(400);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('normalises a numeric string quantity before forwarding', async () => {
+    vi.stubEnv('N8N_WEBHOOK_URL', 'http://webhook');
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ ok: true }) });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const res = await POST(
+      makeReq({ size: '225/40/18', name: 'John', email: 'john@a.co', quantity: '4' })
+    );
+
+    expect(res.status).toBe(200);
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body).quantity).toBe(4);
   });
 
   it('rejects a disallowed origin with 403', async () => {
@@ -62,7 +103,9 @@ describe('POST /api/instant-quote', () => {
 
   it('silently accepts (200) when the honeypot is filled', async () => {
     vi.stubEnv('N8N_WEBHOOK_URL', 'http://webhook');
-    const res = await POST(makeReq({ hp: 'bot', size: '225/40/18', name: 'J', email: 'a@b.co' }));
+    const res = await POST(
+      makeReq({ hp: 'bot', size: '225/40/18', name: 'J', email: 'a@b.co', quantity: 4 })
+    );
     expect(res.status).toBe(200);
   });
 
@@ -85,7 +128,7 @@ describe('POST /api/instant-quote', () => {
         json: async () => ({}),
       })
     );
-    const res = await POST(makeReq({ size: '225/40/18', name: 'J', email: 'a@b.co' }));
+    const res = await POST(makeReq({ size: '225/40/18', name: 'J', email: 'a@b.co', quantity: 4 }));
     expect(res.status).toBe(502);
   });
 });

@@ -24,6 +24,16 @@ const renderWithSize = (size = { width: '', sidewall: '', diameter: '' }) =>
     </SelectedFiltersContext.Provider>
   );
 
+// The submit button only enables once size, quantity, name, a contact method
+// and the pickup store are all set; these fill the ones a case isn't asserting on.
+const fillRequired = async (user: ReturnType<typeof userEvent.setup>) => {
+  await user.selectOptions(screen.getByLabelText(/how many tires/i), '4');
+  await user.type(screen.getByLabelText('Name'), 'John Doe');
+  await user.type(screen.getByLabelText('Email'), 'john@example.com');
+  const store = screen.getByLabelText(/choose a store for pick-up/i);
+  await user.selectOptions(store, within(store).getAllByRole('option')[1]);
+};
+
 // `delay: null` on every setup below: user-event's default inter-keystroke
 // delay uses real timers, so on a loaded machine these typing-heavy cases
 // intermittently blew the 5s budget. Removing the delay makes them
@@ -66,12 +76,7 @@ describe('InstantQuote form', () => {
 
     renderWithSize({ width: '225', sidewall: '40', diameter: '18' });
 
-    await user.type(screen.getByLabelText('Name'), 'John Doe');
-    await user.type(screen.getByLabelText('Email'), 'john@example.com');
-
-    const store = screen.getByLabelText(/choose a store for pick-up/i);
-    const options = within(store).getAllByRole('option');
-    await user.selectOptions(store, options[1]);
+    await fillRequired(user);
 
     const submit = screen.getByRole('button', { name: /get my quote/i });
     expect(submit).toBeEnabled();
@@ -80,6 +85,8 @@ describe('InstantQuote form', () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock.mock.calls[0][0]).toBe('/api/instant-quote');
+    // The quantity travels as a number, matching what the API forwards to n8n.
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body).quantity).toBe(4);
     expect(await screen.findByText(/thanks for choosing mrgoma tires/i)).toBeInTheDocument();
 
     // AC7: an accepted submission is exactly one lead, and it carries none of
@@ -97,10 +104,7 @@ describe('InstantQuote form', () => {
     );
 
     renderWithSize({ width: '225', sidewall: '40', diameter: '18' });
-    await user.type(screen.getByLabelText('Name'), 'John Doe');
-    await user.type(screen.getByLabelText('Email'), 'john@example.com');
-    const store = screen.getByLabelText(/choose a store for pick-up/i);
-    await user.selectOptions(store, within(store).getAllByRole('option')[1]);
+    await fillRequired(user);
 
     await user.click(screen.getByRole('button', { name: /get my quote/i }));
     expect(await screen.findByText('Upstream failed')).toBeInTheDocument();
@@ -116,6 +120,22 @@ describe('InstantQuote form', () => {
     expect(
       await screen.findByText(/please complete all required fields correctly/i)
     ).toBeInTheDocument();
+  });
+
+  it('keeps submit disabled until a tire quantity is chosen', async () => {
+    const user = userEvent.setup({ delay: null });
+    renderWithSize({ width: '225', sidewall: '40', diameter: '18' });
+
+    await user.type(screen.getByLabelText('Name'), 'John Doe');
+    await user.type(screen.getByLabelText('Email'), 'john@example.com');
+    const store = screen.getByLabelText(/choose a store for pick-up/i);
+    await user.selectOptions(store, within(store).getAllByRole('option')[1]);
+
+    const submit = screen.getByRole('button', { name: /get my quote/i });
+    expect(submit).toBeDisabled();
+
+    await user.selectOptions(screen.getByLabelText(/how many tires/i), '2');
+    expect(submit).toBeEnabled();
   });
 
   it('toggles a tire-condition checkbox', async () => {
