@@ -14,6 +14,12 @@ const ipRequestLog = new Map<string, number[]>();
 // memory. Generous vs. a real form (~1 KB).
 const MAX_BODY_BYTES = 10 * 1024; // 10 KB
 
+// Mirrors QUANTITY_OPTIONS in the form. The value is tabulated in a
+// spreadsheet, so it is normalised to an integer here and anything outside the
+// range is refused rather than written through.
+const MIN_QUANTITY = 1;
+const MAX_QUANTITY = 8;
+
 function getClientIp(req: NextRequest): string | undefined {
   const xff = req.headers.get('x-forwarded-for');
   const xri = req.headers.get('x-real-ip');
@@ -115,6 +121,15 @@ export const POST = withLogging('instantQuote.POST', async (req: NextRequest) =>
     const name = typeof payload?.name === 'string' ? payload.name.trim() : '';
     if (!name) missing.push('name');
 
+    const quantity = Number(
+      typeof payload?.quantity === 'number'
+        ? payload.quantity
+        : String(payload?.quantity ?? '').trim()
+    );
+    if (!Number.isInteger(quantity) || quantity < MIN_QUANTITY || quantity > MAX_QUANTITY) {
+      missing.push('quantity');
+    }
+
     const email = typeof payload?.email === 'string' ? payload.email.trim() : '';
     const phoneRaw = typeof payload?.phone === 'string' ? payload.phone : '';
     const phoneDigits = String(phoneRaw || '').replace(/\D/g, '');
@@ -143,7 +158,9 @@ export const POST = withLogging('instantQuote.POST', async (req: NextRequest) =>
       source: payload.source || 'instant-quote',
     };
 
-    const body = { ...payload, _meta: meta };
+    // Send the normalised number, not whatever shape the client used, so the
+    // sheet gets a number in every row.
+    const body = { ...payload, quantity, _meta: meta };
 
     const resp = await fetch(webhookUrl, {
       method: 'POST',
