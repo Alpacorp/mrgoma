@@ -2,6 +2,38 @@ import type { MetadataRoute } from 'next';
 
 import { getSiteUrl } from '@/app/utils/seo';
 
+/**
+ * The catalog's filter links, as `robots.txt` patterns — each parameter in both
+ * positions, for the same reason as `_rsc` below: a rule anchored on `?` misses
+ * the parameter whenever it is not the first one in the query string.
+ *
+ * Every option in the filter rail is a real `<Link>` (see `FacetGroup.tsx`), and
+ * `/tires` is rendered on every request with its facet queries against SQL
+ * Server. Multi-select brands × condition × price × remaining life × the rest is
+ * an unbounded number of URLs, and all of them canonicalise back to `/tires`. In
+ * September 2026 Applebot alone was fetching ~244.000 of them a day, each one a
+ * cache miss and a round of database queries, for pages that can never rank.
+ *
+ * **Deliberately not listed:** `page`, and the size parameters `w`, `s`, `d`.
+ * `tiresMetadata` gives pagination a self-referencing canonical and folds a
+ * complete size into its `/tires/size/{slug}` landing page — both are pages we
+ * ask Google to reach, and blocking them here would contradict that. Their
+ * combinations are bounded; the facets are what multiply.
+ */
+export const FACET_PARAMS = [
+  'brands',
+  'condition',
+  'minPrice',
+  'maxPrice',
+  'minRemainingLife',
+  'maxRemainingLife',
+  'patched',
+  'kindSale',
+  'view',
+] as const;
+
+const facetRules = FACET_PARAMS.flatMap(param => [`/tires?${param}=`, `/tires?*&${param}=`]);
+
 export default function robots(): MetadataRoute.Robots {
   const site = getSiteUrl();
   return {
@@ -41,6 +73,7 @@ export default function robots(): MetadataRoute.Robots {
            */
           '/*?_rsc=',
           '/*&_rsc=',
+          ...facetRules,
         ],
       },
     ],
