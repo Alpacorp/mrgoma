@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import robots from './robots';
+import robots, { FACET_PARAMS } from './robots';
 
 /**
  * `robots.txt` is one of the few files where a one-character edit silently
@@ -16,6 +16,21 @@ import robots from './robots';
 const rule = robots().rules;
 const first = Array.isArray(rule) ? rule[0] : rule;
 const disallow = ([] as string[]).concat(first.disallow ?? []);
+
+/**
+ * Google's matching, not `startsWith`: a rule is a prefix of the path plus query,
+ * `*` matches any run of characters and a trailing `$` anchors the end. The facet
+ * rules depend on `*`, so a naive prefix check would pass them vacuously.
+ */
+const blocks = (rule: string, url: string) => {
+  const anchored = rule.endsWith('$');
+  const body = (anchored ? rule.slice(0, -1) : rule)
+    .split('*')
+    .map(part => part.replace(/[.+?^${}()|[\]\\]/g, '\\$&'))
+    .join('.*');
+  return new RegExp(`^${body}${anchored ? '$' : ''}`).test(url);
+};
+const isBlocked = (url: string) => disallow.some(rule => blocks(rule, url));
 
 describe('robots.txt', () => {
   // AC1 — the rules that predate this feature
@@ -94,5 +109,56 @@ describe('robots.txt', () => {
         expect(path.startsWith(blocked)).toBe(false);
       }
     }
+  });
+
+  /**
+   * AC3 (036) — the filter combinations stop being crawlable.
+   *
+   * Every parameter the filter rail writes into a link, first in the query
+   * string and after another one, alone and stacked. These are the URLs that
+   * multiply without bound and all canonicalise to `/tires`.
+   */
+  it.each(FACET_PARAMS)('blocks the %s facet wherever it sits in the query string', param => {
+    expect(isBlocked(`/tires?${param}=x`)).toBe(true);
+    expect(isBlocked(`/tires?page=2&${param}=x`)).toBe(true);
+    expect(isBlocked(`/tires?w=235&s=50&d=20&${param}=x`)).toBe(true);
+  });
+
+  it('blocks a stacked combination of facets', () => {
+    expect(isBlocked('/tires?brands=michelin&brands=bridgestone&condition=used&minPrice=50')).toBe(
+      true
+    );
+  });
+
+  /**
+   * AC4 (036) — deliberately still crawlable.
+   *
+   * Pagination carries a self-referencing canonical and a complete size folds
+   * into its landing page (`tiresMetadata`). Blocking either would leave Google
+   * holding pages it was told to reach and can no longer fetch.
+   */
+  it.each([
+    '/tires',
+    '/tires?page=2',
+    '/tires?w=235&s=50&d=20',
+    '/tires?w=235&s=50&d=20&page=3',
+    '/tires/brands/michelin',
+    '/tires/size/235-50-20',
+    '/tires/471004-bridgestone-235-50-20',
+    '/tires/new',
+    '/tires/used',
+  ])('leaves %s crawlable', url => {
+    expect(isBlocked(url)).toBe(false);
+  });
+
+  /**
+   * AC4 (036) — a parameter name is matched whole. `view` must not catch a
+   * parameter that merely ends in it, and the facet rules must not reach
+   * outside `/tires`.
+   */
+  it('matches facet names whole and only under /tires', () => {
+    expect(isBlocked('/tires?preview=1')).toBe(false);
+    expect(isBlocked('/tires?page=2&preview=1')).toBe(false);
+    expect(isBlocked('/guides?view=grid')).toBe(false);
   });
 });
