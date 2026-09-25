@@ -1,7 +1,7 @@
 import { cache } from 'react';
 
 import { matchSlug, slugify } from '@/app/utils/tireSlug';
-import { fetchSizes } from '@/repositories/tiresRepository';
+import { getCachedStockedSizes } from '@/repositories/cachedCatalog';
 
 /**
  * One answer to the question two routes now ask: *is this a size we stock, and
@@ -24,13 +24,15 @@ import { fetchSizes } from '@/repositories/tiresRepository';
  */
 
 /**
- * `fetchSizes`, deduped for the length of one request.
+ * The stocked sizes, cached twice over.
  *
- * The size route asks twice per render — once in `generateMetadata` and once in
- * the page body — and used to run the query both times. `cache` is React's own
- * request-scoped memo, so this costs no dependency and no configuration.
+ * `cache` is React's request-scoped memo: the size route asks twice per render —
+ * once in `generateMetadata` and once in the page body — and used to run the
+ * query both times. Underneath it, `getCachedStockedSizes` keeps the answer for
+ * five minutes across requests, because `/tires` asks on every visit with a
+ * complete size and the list is the same each time (see `cachedCatalog.ts`).
  */
-export const getStockedSizes = cache(fetchSizes);
+export const getStockedSizes = cache(() => getCachedStockedSizes());
 
 /**
  * The stocked size behind a slug, or `null`.

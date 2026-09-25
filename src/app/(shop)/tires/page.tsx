@@ -12,8 +12,8 @@ import { appliedChips, looseningSuggestions } from '@/app/ui/sections/FilterRail
 import { buildTireFilters, parseTireView } from '@/app/utils/filterUtils';
 import { resultsHeading } from '@/app/utils/resultsHeading';
 import { buildBreadcrumbJsonLd, buildPageTypeJsonLd, tiresMetadata } from '@/app/utils/seo';
+import { getCachedTireRanges } from '@/repositories/cachedCatalog';
 import { fetchFacetsForRequest } from '@/repositories/tireFacets';
-import { fetchTireRanges } from '@/repositories/tiresRepository';
 
 /**
  * **The counts must never be baked at build time.**
@@ -119,7 +119,7 @@ export default async function TiresPage({
   const [initialData, facetResult, ranges] = await Promise.all([
     fetchTiresServer(sp),
     fetchFacetsForRequest(filters).catch(() => EMPTY_FACETS),
-    fetchTireRanges().catch(() => FALLBACK_RANGES),
+    getCachedTireRanges().catch(() => FALLBACK_RANGES),
   ]);
 
   const size =
