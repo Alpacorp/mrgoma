@@ -78,9 +78,24 @@ const SearchResults: FC<SearchResultsProps> = ({
   // Skip the first client-side fetch when SSR data was already provided
   const skipNextFetch = useRef(Boolean(initialData));
 
-  // Pagination state
-  const [page, setPage] = useState<number>(DEFAULT_PAGE);
-  const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
+  /**
+   * Pagination state starts from the URL, not from page 1.
+   *
+   * It used to start at `DEFAULT_PAGE` and let an effect catch up. On a reload
+   * of `?page=7`, that effect's `setPage(7)` only lands on the next render, but
+   * the effect below that writes state back into the URL runs in the same first
+   * commit — still holding page 1 — and `router.replace`d the URL to `?page=1`.
+   * The first effect then read page 1 and the buyer was sent back to the start,
+   * at the cost of a second full server render of `/tires`.
+   */
+  const [page, setPage] = useState<number>(
+    () => parseInt(searchParams.get('page') || String(DEFAULT_PAGE), 10) || DEFAULT_PAGE
+  );
+  const [pageSize, setPageSize] = useState<number>(() =>
+    validatePageSize(
+      parseInt(searchParams.get('pageSize') || String(DEFAULT_PAGE_SIZE), 10) || DEFAULT_PAGE_SIZE
+    )
+  );
   const totalPages = Math.ceil(tiresData.totalCount / pageSize);
   const maxVisiblePages = 10;
 
