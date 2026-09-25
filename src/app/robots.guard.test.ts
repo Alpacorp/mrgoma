@@ -133,15 +133,14 @@ describe('robots.txt', () => {
   /**
    * AC4 (036) — deliberately still crawlable.
    *
-   * Pagination carries a self-referencing canonical and a complete size folds
-   * into its landing page (`tiresMetadata`). Blocking either would leave Google
-   * holding pages it was told to reach and can no longer fetch.
+   * Pagination carries a self-referencing canonical (`tiresMetadata`), and the
+   * size landing pages are where a complete size is published. Blocking them
+   * would leave Google holding pages it was told to reach and can no longer
+   * fetch.
    */
   it.each([
     '/tires',
     '/tires?page=2',
-    '/tires?w=235&s=50&d=20',
-    '/tires?w=235&s=50&d=20&page=3',
     '/tires/brands/michelin',
     '/tires/size/235-50-20',
     '/tires/471004-bridgestone-235-50-20',
@@ -160,5 +159,36 @@ describe('robots.txt', () => {
     expect(isBlocked('/tires?preview=1')).toBe(false);
     expect(isBlocked('/tires?page=2&preview=1')).toBe(false);
     expect(isBlocked('/guides?view=grid')).toBe(false);
+  });
+
+  /**
+   * AC1 (038) — sizes on `/tires` are closed, partial or complete.
+   *
+   * The rail links partial sizes, which canonicalise to `/tires` and are no page
+   * we publish; they were the one door `036` left open. A complete size is
+   * published as its landing page instead (asserted crawlable above).
+   */
+  it.each([
+    '/tires?w=235',
+    '/tires?d=19',
+    '/tires?s=55&d=19',
+    '/tires?w=235&s=50&d=20',
+    '/tires?w=235&s=50&d=20&page=3',
+    '/tires?page=2&w=235',
+  ])('blocks the size filter %s', url => {
+    expect(isBlocked(url)).toBe(true);
+  });
+
+  /**
+   * AC2 (038) — `w`, `s` and `d` are one letter long, so they are the names most
+   * likely to swallow a parameter that merely starts or ends with them. Each rule
+   * is anchored on `?` or `&` and ends in `=`, which is what keeps them whole.
+   */
+  it('matches the one-letter size names whole', () => {
+    expect(isBlocked('/tires?sort=price')).toBe(false);
+    expect(isBlocked('/tires?page=2&ws=1')).toBe(false);
+    expect(isBlocked('/tires?page=2&dd=1')).toBe(false);
+    expect(isBlocked('/tires?page=2&sw=1')).toBe(false);
+    expect(isBlocked('/tires/size/235-50-20?w=235')).toBe(false);
   });
 });

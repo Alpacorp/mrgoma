@@ -14,11 +14,24 @@ import { getSiteUrl } from '@/app/utils/seo';
  * September 2026 Applebot alone was fetching ~244.000 of them a day, each one a
  * cache miss and a round of database queries, for pages that can never rank.
  *
- * **Deliberately not listed:** `page`, and the size parameters `w`, `s`, `d`.
- * `tiresMetadata` gives pagination a self-referencing canonical and folds a
- * complete size into its `/tires/size/{slug}` landing page — both are pages we
- * ask Google to reach, and blocking them here would contradict that. Their
- * combinations are bounded; the facets are what multiply.
+ * **Deliberately not listed:** `page`. `tiresMetadata` gives pagination a
+ * self-referencing canonical, so page 2 of the catalog is a page we ask Google
+ * to reach.
+ *
+ * **The size parameters `w`, `s`, `d` are listed (038).** They were left open in
+ * `036` on the reasoning that a complete size folds into its `/tires/size/{slug}`
+ * landing page. What that missed is that the rail links **partial** sizes too —
+ * width alone, rim alone, width and profile — thousands of combinations that
+ * canonicalise to `/tires` and are no page we publish. With every other facet
+ * closed they became the one open door, and two days after `036` the catalog was
+ * still rendering ~158.000 times a day: always page 1, a different handful of
+ * tires each time, 9 to 11 queries against SQL Server per request.
+ *
+ * Closing them costs nothing we rank for. A complete size is published as its
+ * landing page, which is in the sitemap and served from the ISR cache — the
+ * canonical already points there. The only URLs lost are page 2+ of a complete
+ * size on `/tires`, which exist for the handful of sizes with more than twenty
+ * tires in stock.
  */
 export const FACET_PARAMS = [
   'brands',
@@ -30,6 +43,9 @@ export const FACET_PARAMS = [
   'patched',
   'kindSale',
   'view',
+  'w',
+  's',
+  'd',
 ] as const;
 
 const facetRules = FACET_PARAMS.flatMap(param => [`/tires?${param}=`, `/tires?*&${param}=`]);
