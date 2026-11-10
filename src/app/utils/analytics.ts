@@ -1,6 +1,6 @@
 import { track } from '@vercel/analytics';
 
-import { event as gaEvent, type GaEventParams } from '@/app/utils/gtag';
+import { ecommerceEvent, event as gaEvent, type GaEventParams } from '@/app/utils/gtag';
 
 /**
  * Send one interaction to both analytics platforms.
@@ -92,4 +92,85 @@ export function trackEvent(e: GaEventParams): void {
   } catch {
     // no-op
   }
+}
+
+/** A GA4 ecommerce payload: `items` plus scalars (value, currency, tiers…). */
+export type EcommercePayload = {
+  items: Array<{ item_id: string }>;
+} & Record<string, unknown>;
+
+export type TrackEcommerceOptions = {
+  /**
+   * Also report to Vercel. Off for `purchase`, which Vercel already counts on
+   * the server once per recorded order — a second, browser-side copy would
+   * double it.
+   */
+  vercel?: boolean;
+  /**
+   * Wait up to this long for GA to confirm the hit left (gtag's
+   * `event_callback`). For a caller about to navigate away; 0 resolves at once.
+   */
+  waitMs?: number;
+};
+
+/**
+ * Flatten an ecommerce payload for Vercel, which stores no arrays and would
+ * otherwise get the product list as a JSON string. It gets the summary —
+ * `item_count`, the single `item_id` when there is exactly one, and every
+ * scalar the payload carries (value, currency, shipping_tier, payment_type…).
+ */
+export function toVercelEcommerceProps(payload: EcommercePayload): VercelEventProps {
+  const props: VercelEventProps = {};
+  for (const [key, val] of Object.entries(payload)) {
+    if (key === 'items' || val === undefined) continue;
+    if (isAllowed(val)) props[key] = val;
+  }
+  props.item_count = payload.items.length;
+  if (payload.items.length === 1) props.item_id = payload.items[0].item_id;
+  return props;
+}
+
+/**
+ * Report a GA4 ecommerce event (feature 040).
+ *
+ * GA4 gets the full payload, `items` included — without them its ecommerce
+ * reports ignore the event, which is why the `data-track` markup cannot be used
+ * here. Vercel gets the flat summary under the same event name.
+ *
+ * Never rejects. The returned promise resolves when GA confirms the send, after
+ * `waitMs`, or at once when `waitMs` is 0 — whichever comes first — so a
+ * blocked or absent GA can never hold up the caller longer than it allowed.
+ */
+export function trackEcommerce(
+  name: string,
+  payload: EcommercePayload,
+  { vercel = true, waitMs = 0 }: TrackEcommerceOptions = {}
+): Promise<void> {
+  if (typeof window === 'undefined') return Promise.resolve();
+
+  return new Promise<void>(resolve => {
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      resolve();
+    };
+
+    try {
+      ecommerceEvent(name, payload, waitMs > 0 ? finish : undefined);
+    } catch {
+      // no-op
+    }
+
+    if (vercel) {
+      try {
+        track(name, toVercelEcommerceProps(payload));
+      } catch {
+        // no-op
+      }
+    }
+
+    if (waitMs > 0) setTimeout(finish, waitMs);
+    else finish();
+  });
 }

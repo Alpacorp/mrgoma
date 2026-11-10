@@ -9,6 +9,7 @@ import {
   FreeShippingBadge,
 } from '@/app/ui/components';
 import AddToCartButton from '@/app/ui/components/AddToCartButton/AddToCartButton';
+import ViewItemTracker from '@/app/ui/components/ViewItemTracker/ViewItemTracker';
 import { WhatsAppEnquiryButton } from '@/app/ui/components/WhatsAppEnquiryButton/WhatsAppEnquiryButton';
 import { generateTireDescription } from '@/app/utils/tireDescription';
 import { brandName, modelName, tireTitle } from '@/app/utils/tireNaming';
@@ -84,6 +85,19 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
               <ProductPrice price={singleTire.price} />
               <FreeShippingBadge />
             </div>
+            {/* Every tire, sold included: the page was still viewed, and leaving
+                sold stock out would hide demand for what sold out (040). */}
+            <ViewItemTracker
+              tire={{
+                id: singleTire.id,
+                name: singleTire.name,
+                price: singleTire.price,
+                brand: singleTire.brand,
+                model: singleTire.model2,
+                size: singleTire.size ?? size,
+                condition: singleTire.condition,
+              }}
+            />
             {isSold ? (
               <div
                 className="inline-flex items-center rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700"

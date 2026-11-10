@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { useCart } from '@/app/context/CartContext';
 import { TransformedTire } from '@/app/interfaces/tires';
 import { BrandImage, FreeShippingBadge, ProductImage, StockBadge } from '@/app/ui/components';
+import { trackEcommerce } from '@/app/utils/analytics';
+import { EVENTS } from '@/app/utils/analyticsEvents';
+import { cartPayload } from '@/app/utils/ecommerce';
 import { brandName, modelName, parseTireName } from '@/app/utils/tireNaming';
 import { buildTireSlug, slugify } from '@/app/utils/tireSlug';
 import { patchedNote, treadDepthLabel } from '@/app/utils/tireSpecs';
@@ -47,6 +50,9 @@ const TireCard: FC<TireCardProps> = ({ products }) => {
   const handleAddToCart = (event: SyntheticEvent, product: TransformedTire) => {
     event.preventDefault();
     addToCart({ ...product, model: product.model, size: product.size });
+    // Sent from here, not from `addToCart`: the seller dashboard calls that too,
+    // and staff activity must not read as shopper demand (feature 040).
+    void trackEcommerce(EVENTS.ADD_TO_CART, cartPayload([product]));
   };
 
   return (
@@ -119,9 +125,6 @@ const TireCard: FC<TireCardProps> = ({ products }) => {
                       type="button"
                       onClick={e => handleAddToCart(e, product)}
                       disabled={productInCart}
-                      data-track="add_to_cart"
-                      data-track-category="cart"
-                      data-track-label={titleText}
                       className="flex items-center gap-2 pl-3 pr-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-full cursor-pointer hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
                     >
                       <CartIcon />
@@ -191,9 +194,6 @@ const TireCard: FC<TireCardProps> = ({ products }) => {
                     type="button"
                     onClick={e => handleAddToCart(e, product)}
                     disabled={productInCart}
-                    data-track="add_to_cart"
-                    data-track-category="cart"
-                    data-track-label={titleText}
                     className="w-full flex items-center justify-center gap-2 py-3 bg-green-600 text-white text-sm font-semibold rounded-full cursor-pointer hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     <CartIcon />

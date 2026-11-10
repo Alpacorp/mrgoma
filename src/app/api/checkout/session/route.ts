@@ -83,6 +83,12 @@ export const GET = withLogging('checkout.session.GET', async (req: NextRequest) 
         id: li.id,
         productId: product?.metadata?.productId || product?.id || null,
         condition: product?.metadata?.condition || null,
+        // Empty for sessions created before feature 040; the analytics builder
+        // then reads them from the description.
+        brand: product?.metadata?.brand || null,
+        model: product?.metadata?.model || null,
+        size: product?.metadata?.size || null,
+        tireCondition: product?.metadata?.tireCondition || null,
         description: li.description || product?.name || 'Item',
         quantity: li.quantity || 1,
         amount_subtotal: li.amount_subtotal || 0,
@@ -241,6 +247,12 @@ export const GET = withLogging('checkout.session.GET', async (req: NextRequest) 
     const shipping_total_cents =
       session.shipping_cost?.amount_total ?? session.total_details?.amount_shipping ?? 0;
 
+    // Tax charged, in cents: Stripe's automatic tax (delivery) plus our own
+    // synthetic 7% line (pickup), which is a line item rather than a tax amount.
+    const tax_total =
+      (session.total_details?.amount_tax ?? 0) +
+      items.filter(it => it.productId === 'tax').reduce((n, it) => n + (it.amount_total || 0), 0);
+
     const payload = {
       id: session.id,
       created: session.created ? new Date(session.created * 1000).toISOString() : null,
@@ -252,6 +264,7 @@ export const GET = withLogging('checkout.session.GET', async (req: NextRequest) 
       payment_method: paymentMethodType,
       items,
       shipping_total: shipping_total_cents,
+      tax_total,
       updated_sold,
       sc_order_id,
       sc_order_guid,

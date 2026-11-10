@@ -32,12 +32,84 @@ const canSend = (): boolean =>
   typeof window.gtag === 'function' &&
   hasConsent();
 
+/**
+ * Send GA4 hits in debug mode, so they show in DebugView and stay out of the
+ * standard reports (feature 040, decision D5).
+ *
+ * On for anything that is not a production build — `npm run dev`, which is
+ * where Stripe test payments are made — and on demand for a preview deploy via
+ * `NEXT_PUBLIC_GA_DEBUG=true`. Live production traffic is never in debug mode.
+ */
+export const GA_DEBUG =
+  process.env.NODE_ENV !== 'production' || process.env.NEXT_PUBLIC_GA_DEBUG === 'true';
+
+/**
+ * GA4 reads *any* `debug_mode` key as "on", `false` included — the documented way
+ * to stay out of debug is to omit it. So it is added, never set to `false`.
+ */
+export const withDebug = <T extends Record<string, unknown>>(params: T): T =>
+  GA_DEBUG ? { ...params, debug_mode: true } : params;
+
+/**
+ * Calls held while consent is given but gtag is not defined yet.
+ *
+ * `window.gtag` only exists once the `ga-init` inline script has run, which is
+ * after hydration. Anything raised before it — `view_item` on a page someone
+ * landed on from Google, `purchase` on the full page load back from Stripe —
+ * used to be dropped. Those are exactly the events that matter most, so they
+ * wait here and are replayed, in order, once `ga-init` dispatches `ga:ready`.
+ *
+ * Bounded so a page where GA never loads (blocked script) cannot grow it.
+ */
+const MAX_PENDING = 20;
+const pending: unknown[][] = [];
+
+export const GA_READY_EVENT = 'ga:ready';
+
+const send = (...args: unknown[]) => {
+  try {
+    if (!GA_ID || typeof window === 'undefined' || !hasConsent()) return;
+    if (typeof window.gtag === 'function') {
+      window.gtag(...args);
+      return;
+    }
+    pending.push(args);
+    if (pending.length > MAX_PENDING) pending.shift();
+  } catch {
+    // no-op
+  }
+};
+
+/** Replay held calls. Consent is re-read: it may have been withdrawn meanwhile. */
+export const flushPending = () => {
+  const held = pending.splice(0, pending.length);
+  if (!canSend()) return;
+  for (const args of held) {
+    try {
+      window.gtag(...args);
+    } catch {
+      // no-op
+    }
+  }
+};
+
+/** Exposed for tests only. */
+export const pendingCount = () => pending.length;
+
+if (typeof window !== 'undefined') {
+  window.addEventListener(GA_READY_EVENT, flushPending);
+}
+
 export const pageview = (url: string) => {
   try {
     if (!canSend()) return;
-    window.gtag('config', GA_ID, {
-      page_path: url,
-    });
+    window.gtag(
+      'config',
+      GA_ID,
+      withDebug({
+        page_path: url,
+      })
+    );
   } catch {
     // no-op
   }
@@ -54,13 +126,33 @@ export type GaEventParams = {
 export const event = ({ action, category, label, value, params }: GaEventParams) => {
   try {
     if (!canSend()) return;
-    window.gtag('event', action, {
-      event_category: category,
-      event_label: label,
-      value,
-      ...params,
-    });
+    window.gtag(
+      'event',
+      action,
+      withDebug({
+        event_category: category,
+        event_label: label,
+        value,
+        ...params,
+      })
+    );
   } catch {
     // no-op
   }
+};
+
+/**
+ * A GA4 ecommerce event: the params go through untouched — no
+ * `event_category` / `event_label`, which GA's ecommerce reports ignore — and,
+ * unlike `event`, it is held rather than dropped when gtag has not loaded yet.
+ *
+ * `onSent` is passed as gtag's `event_callback`, so a caller about to navigate
+ * away can wait for the hit to leave.
+ */
+export const ecommerceEvent = (
+  name: string,
+  params: Record<string, unknown>,
+  onSent?: () => void
+) => {
+  send('event', name, withDebug(onSent ? { ...params, event_callback: onSent } : params));
 };

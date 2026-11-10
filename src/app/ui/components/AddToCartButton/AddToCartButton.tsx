@@ -5,6 +5,9 @@ import { FC, SyntheticEvent } from 'react';
 import { useCart } from '@/app/context/CartContext';
 import { SingleTire } from '@/app/interfaces/tires';
 import { CtaButton } from '@/app/ui/components';
+import { trackEcommerce } from '@/app/utils/analytics';
+import { EVENTS } from '@/app/utils/analyticsEvents';
+import { cartPayload } from '@/app/utils/ecommerce';
 
 interface AddToCartButtonProps {
   product: SingleTire;
@@ -22,6 +25,12 @@ const AddToCartButton: FC<AddToCartButtonProps> = ({ product }) => {
   const handleAddToCart = (event: SyntheticEvent) => {
     event.preventDefault();
     addToCart({ ...product, model: product.model2, size: product.size });
+    // Untracked until feature 040: the detail page's add was invisible to both
+    // GA4 and Vercel.
+    void trackEcommerce(
+      EVENTS.ADD_TO_CART,
+      cartPayload([{ ...product, model: product.model2, size: product.size }])
+    );
   };
 
   return (
