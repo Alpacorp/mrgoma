@@ -6,7 +6,7 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import Script from 'next/script';
 
 import { GA_ID, hasConsent } from '@/app/utils/consent';
-import { pageview } from '@/app/utils/gtag';
+import { GA_DEBUG, GA_READY_EVENT, pageview } from '@/app/utils/gtag';
 
 // `hasConsent` used to be reimplemented here. Two readings of the same rule is
 // how they start to disagree, and disagreeing about consent means either
@@ -49,6 +49,13 @@ const GoogleAnalytics = () => {
 
   if (!GA_ID || !consentGranted) return null;
 
+  // `ga-init` ends by dispatching `ga:ready`, which flushes the events
+  // `gtag.ts` held while gtag was not defined yet — `view_item` on a landing
+  // page, `purchase` on the return from Stripe. It must stay after `config`,
+  // so those events reach the configured property and not a void.
+  // `debug_mode` is omitted, never `false`, in production: GA4 treats any value
+  // as on (feature 040).
+
   return (
     <>
       <Script
@@ -62,8 +69,9 @@ const GoogleAnalytics = () => {
           function gtag(){dataLayer.push(arguments);} 
           gtag('js', new Date());
           gtag('config', '${GA_ID}', {
-            page_path: window.location.pathname,
+            page_path: window.location.pathname,${GA_DEBUG ? `\n            debug_mode: true,` : ''}
           });
+          window.dispatchEvent(new Event('${GA_READY_EVENT}'));
         `}
       </Script>
     </>

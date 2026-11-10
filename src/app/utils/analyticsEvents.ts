@@ -11,16 +11,58 @@
  */
 export const EVENTS = {
   /**
-   * The checkout form was submitted — fulfilment method and state or store are
-   * complete — and the customer is handed off to the payment provider.
+   * A shopper opened a tire detail page. Carries the tire as the single item.
+   * Feature 040.
+   */
+  VIEW_ITEM: 'view_item',
+
+  /**
+   * A tire was put in the cart from a shopper-facing button (catalog card or
+   * detail page). Never from the seller dashboard, which shares the cart.
+   */
+  ADD_TO_CART: 'add_to_cart',
+
+  /**
+   * The checkout page opened with a non-empty cart, however the shopper got
+   * there.
    *
-   * Deliberately *not* `add_payment_info`: payment details are entered on the
-   * provider's own page, which we cannot observe. This is the moment we can
-   * honestly report.
+   * **Anchor changed with the release of feature 040** (deploy date recorded in
+   * `spec/features/040-ga4-ecommerce/results.md`). Before that, it fired on
+   * the press of the cart drawer's "Checkout" button, so a direct visit to
+   * `/checkout` was missed. Read the series across the release with care.
+   */
+  BEGIN_CHECKOUT: 'begin_checkout',
+
+  /**
+   * The server accepted the order — fulfilment method and state or store are
+   * complete — and the customer is about to be handed off (to Stripe or, when
+   * card payment is off, to WhatsApp).
+   *
+   * **Anchor changed with the release of feature 040** (deploy date recorded in
+   * `spec/features/040-ga4-ecommerce/results.md`). Before that, it fired on
+   * the button press, so an order the server then rejected (a tire sold in the
+   * meantime) still counted. Read the series across the release with care.
    */
   ADD_SHIPPING_INFO: 'add_shipping_info',
 
-  /** A payment settled and the order was recorded. Server-side, once per order. */
+  /**
+   * The accepted order is being handed off to Stripe's card form.
+   *
+   * Card details are typed on Stripe's own page, which we cannot observe, so
+   * this means "sent to the card form", **not** "card details entered". It is
+   * the last moment the site can honestly report. Never sent for WhatsApp.
+   */
+  ADD_PAYMENT_INFO: 'add_payment_info',
+
+  /**
+   * A payment settled. Reported twice, to two places, on purpose:
+   *
+   * - **Vercel**, from the server, once per recorded order — the count that no
+   *   ad-blocker can suppress, and the reference for how many orders happened.
+   * - **GA4**, from the shopper's browser on the confirmation page (feature 040),
+   *   so the sale joins the visit's own session and channel. Consent-gated and
+   *   blockable, so it will read lower than Vercel.
+   */
   PURCHASE: 'purchase',
 
   /**

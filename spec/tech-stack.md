@@ -110,6 +110,15 @@ Versions taken from `package.json` (2026-06-30). Update here when they change.
   `place_order` and `quote_submit` were retired on 2026-08-04 for exactly that
   sin, and `retiredEvents.guard.test.ts` stops them coming back. Prefer GA4's
   recommended ecommerce names, which GA recognises as conversions unconfigured.
+- **Ecommerce events do not use `data-track`.** `view_item`, `add_to_cart`,
+  `begin_checkout`, `add_shipping_info`, `add_payment_info` and `purchase`
+  carry an `items` array that markup cannot hold, and GA4's ecommerce reports
+  ignore them without it. They go through `trackEcommerce()` with a payload
+  built by `src/app/utils/ecommerce.ts` — the one place a tire becomes a GA4
+  item. GA4 gets the full payload; Vercel a flat summary. Events raised before
+  gtag has loaded are held and replayed on `ga:ready`, never dropped; local and
+  preview runs go to GA4 in `debug_mode`. See
+  `spec/features/040-ga4-ecommerce/`.
 - Events emitted from a route handler use `@vercel/analytics/server` and must
   never delay or fail the request they observe. See
   `spec/features/015-vercel-event-tracking/`.

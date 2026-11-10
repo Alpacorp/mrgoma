@@ -149,6 +149,10 @@ export const POST = withLogging('checkout.createSession.POST', async (req: NextR
       quantity: number;
       condition?: string | null;
       image?: string | null;
+      brand?: string;
+      model?: string;
+      size?: string;
+      tireCondition?: string;
     }[] = [];
 
     for (const it of normalized) {
@@ -234,6 +238,11 @@ export const POST = withLogging('checkout.createSession.POST', async (req: NextR
         if (fb) image = fb;
       }
 
+      // Brand, model and size travel to Stripe as metadata so the confirmation
+      // page can describe what was bought to analytics without re-parsing the
+      // composed name (feature 040). Stripe caps metadata values at 500 chars.
+      const meta = (v: unknown) => (v == null ? '' : String(v).trim().slice(0, 500));
+
       validated.push({
         id: it.id,
         name,
@@ -241,6 +250,12 @@ export const POST = withLogging('checkout.createSession.POST', async (req: NextR
         quantity: it.quantity,
         condition: typeof conditionVal === 'string' ? conditionVal : null,
         image,
+        brand: meta(data?.brand ?? data?.Brand),
+        model: meta(model2),
+        size: meta(data?.size ?? data?.Size),
+        // New / Used. Not `condition`, which already carries the stock status
+        // (`data.status`) and is shown on the confirmation page as such.
+        tireCondition: meta(data?.condition),
       });
     }
 
@@ -341,6 +356,10 @@ export const POST = withLogging('checkout.createSession.POST', async (req: NextR
           metadata: {
             productId: v.id,
             condition: (v.condition || '').toString(),
+            brand: v.brand || '',
+            model: v.model || '',
+            size: v.size || '',
+            tireCondition: v.tireCondition || '',
           },
         },
         unit_amount: Math.round(v.price * 100), // cents
@@ -367,6 +386,10 @@ export const POST = withLogging('checkout.createSession.POST', async (req: NextR
               metadata: {
                 productId: 'tax',
                 condition: 'n/a',
+                brand: '',
+                model: '',
+                size: '',
+                tireCondition: '',
               },
             },
             unit_amount: taxCents,

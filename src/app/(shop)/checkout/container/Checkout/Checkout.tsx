@@ -11,9 +11,11 @@ import { LoadingScreen } from '@/app/ui/components';
 import ProductMeta from '@/app/ui/components/ProductMeta/ProductMeta';
 import ShippingStateGate from '@/app/ui/components/ShippingStateGate/ShippingStateGate';
 import { locationsData } from '@/app/ui/sections/LocationsSlider/locationsData';
-import { trackEvent } from '@/app/utils/analytics';
+import { trackEcommerce, trackEvent } from '@/app/utils/analytics';
 import { EVENTS } from '@/app/utils/analyticsEvents';
 import { cartLine } from '@/app/utils/cartLine';
+import { hasConsent } from '@/app/utils/consent';
+import { cartPayload, purchasePayload, type StripeLine } from '@/app/utils/ecommerce';
 import { buildTireSlug } from '@/app/utils/tireSlug';
 
 const TAX_RATE = (() => {
@@ -38,7 +40,7 @@ function formatCents(amountInCents: number, currencyCode: string | undefined) {
 }
 
 export default function Checkout() {
-  const { cartItems, removeFromCart, cartTotal, clearCart } = useCart();
+  const { cartItems, removeFromCart, cartTotal, clearCart, isCartReady } = useCart();
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -57,16 +59,14 @@ export default function Checkout() {
     currency: string | null;
     receipt_url: string | null;
     payment_method: string | null;
-    items: Array<{
-      id: string;
-      productId: string | null;
-      condition: string | null;
-      description: string;
-      quantity: number;
-      amount_total: number;
-      currency: string;
-    }>;
+    items: Array<
+      StripeLine & {
+        id: string;
+        currency: string;
+      }
+    >;
     shipping_total?: number | null;
+    tax_total?: number | null;
   }>(null);
 
   const [detailsLoading, setDetailsLoading] = React.useState(false);
@@ -172,6 +172,51 @@ export default function Checkout() {
     };
   }, [orderState, sessionId]);
 
+  /**
+   * `begin_checkout` — the checkout page opened with a non-empty cart, however
+   * the shopper got here (feature 040, D4). Once per page load; never on the
+   * confirmation views, and never before the stored cart has been read, when
+   * `cartItems` is still the empty first render.
+   */
+  const beginCheckoutSent = React.useRef(false);
+  React.useEffect(() => {
+    if (beginCheckoutSent.current) return;
+    if (!mounted || !isCartReady || resolvingReturn) return;
+    if (orderState !== 'idle' || success || whatsappFlag) return;
+    if (cartItems.length === 0) return;
+    beginCheckoutSent.current = true;
+    void trackEcommerce(EVENTS.BEGIN_CHECKOUT, cartPayload(cartItems));
+  }, [mounted, isCartReady, resolvingReturn, orderState, success, whatsappFlag, cartItems]);
+
+  /**
+   * `purchase` to GA4 — from the browser, so the sale joins this visit's session
+   * and channel (feature 040, D1). Vercel already counts it on the server, once
+   * per recorded order, so it is skipped here.
+   *
+   * Only a settled payment counts, and only once per Stripe session: reloading,
+   * going back or opening a shared confirmation link must not add revenue. GA4
+   * also de-duplicates on `transaction_id`; this guard spares it the work. The
+   * marker is written only when consent allowed a send, so a shopper who accepts
+   * analytics later is not marked as already reported.
+   */
+  React.useEffect(() => {
+    if (!sessionDetails || (sessionDetails.payment_status || '').toLowerCase() !== 'paid') return;
+    const key = `ga-purchase:${sessionDetails.id}`;
+    try {
+      if (localStorage.getItem(key)) return;
+    } catch {
+      // Storage unavailable: fall back on GA4's own transaction_id de-duplication.
+    }
+    void trackEcommerce(EVENTS.PURCHASE, purchasePayload(sessionDetails), { vercel: false });
+    if (hasConsent()) {
+      try {
+        localStorage.setItem(key, '1');
+      } catch {
+        // no-op
+      }
+    }
+  }, [sessionDetails]);
+
   // Loading overlay logic
   const showLoader = !mounted || resolvingReturn || detailsLoading || loading;
   const loaderMsg = (() => {
@@ -245,6 +290,19 @@ export default function Checkout() {
       }
 
       const data = await res.json();
+
+      // The server accepted the order. Only now is the shipping step reported:
+      // before feature 040 it fired on the button press, so an order rejected
+      // above still counted (feature 040, D3).
+      const accepted = data?.whatsappUrl || data?.url;
+      const payload = cartPayload(cartItems);
+      if (accepted) {
+        void trackEcommerce(EVENTS.ADD_SHIPPING_INFO, {
+          ...payload,
+          shipping_tier: fulfillmentMethod,
+        });
+      }
+
       if (data?.whatsappUrl) {
         // The order left the site. Recorded separately from `purchase` on
         // purpose: we can see the hand-off but never whether it was completed,
@@ -261,6 +319,15 @@ export default function Checkout() {
         return;
       }
       if (data?.url) {
+        // Card details are typed on Stripe's page, which we cannot see: this is
+        // the last moment we can honestly report (feature 040, D2). Navigation
+        // can cut a pending hit, so wait for GA's acknowledgement — at most
+        // 600 ms, behind the "Redirecting to payment…" screen already showing.
+        await trackEcommerce(
+          EVENTS.ADD_PAYMENT_INFO,
+          { ...payload, payment_type: 'card' },
+          { waitMs: 600 }
+        );
         window.location.assign(data.url);
         return;
       }
@@ -822,9 +889,6 @@ export default function Checkout() {
                   <button
                     type="button"
                     onClick={proceedToPayment}
-                    data-track={EVENTS.ADD_SHIPPING_INFO}
-                    data-track-category="checkout"
-                    data-track-label={fulfillmentMethod}
                     className="inline-flex w-full cursor-pointer items-center justify-center rounded-md bg-green-600 px-5 py-2.5 text-base font-semibold text-white shadow-sm hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={
                       isEmpty ||

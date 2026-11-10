@@ -10,6 +10,7 @@ const h = vi.hoisted(() => ({
   existingOrder: null as { orderId: number; orderGuid: string } | null,
   emitCalls: [] as unknown[][],
   emitImpl: (async () => {}) as (...a: unknown[]) => unknown,
+  lineItems: [] as unknown[],
 }));
 
 vi.mock('@/app/api/checkout/_lib/purchaseEvent', () => ({
@@ -24,7 +25,7 @@ vi.mock('stripe', () => ({
     checkout = {
       sessions: {
         retrieve: async () => h.session,
-        listLineItems: async () => ({ data: [] }),
+        listLineItems: async () => ({ data: h.lineItems }),
       },
     };
     paymentIntents = { retrieve: async () => ({ latest_charge: null }) };
@@ -71,6 +72,7 @@ beforeEach(() => {
   h.existingOrder = null;
   h.emitCalls = [];
   h.emitImpl = async () => {};
+  h.lineItems = [];
 });
 
 describe('GET /api/checkout/session — purchase reporting', () => {
@@ -132,5 +134,71 @@ describe('GET /api/checkout/session — purchase reporting', () => {
     await GET(req());
 
     expect(JSON.stringify(h.emitCalls)).not.toContain('john@example.com');
+  });
+});
+
+// Feature 040: what the confirmation page needs to report `purchase` to GA4.
+const line = (productId: string, metadata: Record<string, string>, amount: number) => ({
+  id: `li_${productId}`,
+  description: productId === 'tax' ? 'Sales tax (7%)' : '(1) | MICHELIN | DEFENDER | 225/65R17',
+  quantity: 1,
+  amount_subtotal: amount,
+  amount_total: amount,
+  currency: 'usd',
+  price: { unit_amount: amount, product: { id: 'prod_x', metadata: { productId, ...metadata } } },
+});
+
+describe('GET /api/checkout/session — analytics fields', () => {
+  it('returns brand, model and size per line from the Stripe metadata', async () => {
+    h.lineItems = [
+      line(
+        '1',
+        {
+          condition: 'Available',
+          brand: 'MICHELIN',
+          model: 'DEFENDER',
+          size: '225/65R17',
+          tireCondition: 'Used',
+        },
+        30000
+      ),
+    ];
+    const body = await (await GET(req())).json();
+    expect(body.items[0]).toMatchObject({
+      brand: 'MICHELIN',
+      model: 'DEFENDER',
+      size: '225/65R17',
+      tireCondition: 'Used',
+    });
+  });
+
+  it('returns nulls for sessions created before the metadata existed', async () => {
+    h.lineItems = [line('1', { condition: 'Used' }, 30000)];
+    const body = await (await GET(req())).json();
+    expect(body.items[0]).toMatchObject({
+      brand: null,
+      model: null,
+      size: null,
+      tireCondition: null,
+    });
+  });
+
+  it('counts the synthetic pickup tax line in tax_total', async () => {
+    h.lineItems = [line('1', {}, 30000), line('tax', { condition: 'n/a' }, 2100)];
+    const body = await (await GET(req())).json();
+    expect(body.tax_total).toBe(2100);
+  });
+
+  it("counts Stripe's automatic tax in tax_total for delivery", async () => {
+    h.session = { ...paidSession, total_details: { amount_tax: 1850, amount_shipping: 0 } };
+    h.lineItems = [line('1', {}, 30000)];
+    const body = await (await GET(req())).json();
+    expect(body.tax_total).toBe(1850);
+  });
+
+  it('never returns personal data in the item lines', async () => {
+    h.lineItems = [line('1', { brand: 'MICHELIN' }, 30000)];
+    const body = await (await GET(req())).json();
+    expect(JSON.stringify(body.items)).not.toContain('john@example.com');
   });
 });

@@ -62,6 +62,12 @@ interface CartContextType {
   cartTotal: number;
   showCartModal: boolean;
   setShowCartModal: (show: boolean) => void;
+  /**
+   * The stored cart has been read. Until then `cartItems` is the empty first
+   * render, not the shopper's cart — anything that reports on the cart (e.g.
+   * `begin_checkout`, feature 040) must wait for this.
+   */
+  isCartReady: boolean;
 }
 
 // Create the cart context with default values
@@ -75,6 +81,7 @@ export const CartContext = createContext<CartContextType>({
   cartTotal: 0,
   showCartModal: false,
   setShowCartModal: () => {},
+  isCartReady: false,
 });
 
 // Custom hook to use the cart context
@@ -202,8 +209,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       cartTotal,
       showCartModal,
       setShowCartModal,
+      isCartReady: loadedFromStorage,
     }),
-    [cartItems, isInCart, cartCount, cartTotal, showCartModal]
+    [cartItems, isInCart, cartCount, cartTotal, showCartModal, loadedFromStorage]
   );
 
   return <CartContext.Provider value={contextValue}>{children}</CartContext.Provider>;
