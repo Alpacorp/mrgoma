@@ -66,6 +66,14 @@ export const EVENTS = {
   PURCHASE: 'purchase',
 
   /**
+   * A shopper added a set of 2, 3 or 4 tires built on a detail page (feature
+   * 041). Sent alongside the set's `add_to_cart`, so the feature's use can be
+   * counted apart from single adds. Carries `set_size`, `swaps` (how many units
+   * the shopper changed from the suggestion) and `condition`.
+   */
+  SET_BUILT: 'set_built',
+
+  /**
    * An order was handed off to WhatsApp because card payment is disabled. We can
    * see the hand-off; we can never see whether the order was completed, so this
    * must never be counted as or aggregated with `PURCHASE`.

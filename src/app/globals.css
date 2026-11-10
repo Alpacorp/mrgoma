@@ -131,6 +131,19 @@ html {
   }
 }
 
+/* Tailwind v4 dropped Preflight's `cursor: pointer` on buttons, so any button
+   without an explicit `cursor-pointer` showed the arrow on hover and did not
+   read as clickable (seen on the checkout's "Remove the Orlando tire", 041).
+   This is the restore Tailwind's upgrade guide recommends. It lives in the base
+   layer, so `cursor-not-allowed` and other utilities still win. */
+@layer base {
+  button:not(:disabled),
+  [role='button']:not(:disabled),
+  select:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

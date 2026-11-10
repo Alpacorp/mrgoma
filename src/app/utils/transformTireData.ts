@@ -29,6 +29,7 @@ export function transformTireData(tire: TiresData) {
     brand: tire.Brand || 'Unknown',
     brandId: tire.BrandId || 1,
     condition: tire.ProductTypeId === 1 ? 'New' : 'Used',
+    city: tire.City,
     features: [
       {
         name: 'Patched',

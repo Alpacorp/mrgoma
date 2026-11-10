@@ -5,14 +5,85 @@ import React, { FC } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { useCart } from '@/app/context/CartContext';
+import { useCart, type CartItem } from '@/app/context/CartContext';
 import { XMarkIcon } from '@/app/ui/components';
+import CityTag from '@/app/ui/components/CityTag/CityTag';
 import { Dialog, DialogBackdrop, DialogPanel } from '@/app/ui/components/Dialog/Dialog';
 import ProductMeta from '@/app/ui/components/ProductMeta/ProductMeta';
 import { cartLine } from '@/app/utils/cartLine';
+import { groupCartLines, oddCity } from '@/app/utils/cartSets';
+import { GENERIC_TIRE_IMAGE } from '@/app/utils/genericTireImage';
+import { tireDetailHref } from '@/app/utils/tireSlug';
+
+/** One tire in the drawer — the same markup for single tires and set members. */
+const CartLine: FC<{
+  item: CartItem;
+  onRemove: (id: string | number) => void;
+  onOpen: () => void;
+  /** Show the city (set members show it once, in the set header). */
+  city?: { odd: boolean };
+}> = ({ item, onRemove, onOpen, city }) => (
+  <li className="py-3 flex gap-3 -mx-2 px-2 rounded-md hover:bg-gray-50 transition-colors group">
+    {/* Product Image — a second, mouse-only way into the tire's page */}
+    <Link
+      href={tireDetailHref(item)}
+      onClick={onOpen}
+      tabIndex={-1}
+      aria-hidden="true"
+      className="shrink-0 w-16 h-16 border border-gray-200 rounded-md overflow-hidden group-hover:ring-1 group-hover:ring-green-200"
+    >
+      <Image
+        src={item.image || GENERIC_TIRE_IMAGE}
+        alt={cartLine(item).title}
+        width={64}
+        height={64}
+        className="w-full h-full object-center object-cover"
+      />
+    </Link>
+
+    {/* Product Details */}
+    <div className="ml-4 flex-1 flex flex-col">
+      <div>
+        <div className="flex justify-between text-base font-medium text-gray-900">
+          <h3>
+            <Link
+              href={tireDetailHref(item)}
+              onClick={onOpen}
+              className="underline-offset-2 hover:text-green-700 hover:underline rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+            >
+              {cartLine(item).title}
+            </Link>
+          </h3>
+          <p className="ml-4">${item.price.toFixed(2)}</p>
+        </div>
+        {cartLine(item).size && <p className="text-sm text-gray-500">{cartLine(item).size}</p>}
+        {/* Condition and city side by side, so the line does not grow. */}
+        <div className="mt-1 flex flex-wrap items-center gap-2">
+          <ProductMeta condition={item.condition} className="mt-0!" />
+          {city ? <CityTag city={item.city} odd={city.odd} /> : null}
+        </div>
+        {cartLine(item).code && <p className="text-xs text-gray-400">{cartLine(item).code}</p>}
+      </div>
+      <div className="flex-1 flex items-end justify-between text-sm">
+        <p className="text-gray-500">Qty {item.quantity}</p>
+        <button
+          type="button"
+          className="font-medium text-gray-500 hover:text-red-600 transition-colors cursor-pointer inline-flex items-center min-h-[44px] py-2 -my-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+          onClick={() => onRemove(item.id)}
+          aria-label={`Remove ${item.name} from cart`}
+        >
+          Remove
+        </button>
+      </div>
+    </div>
+  </li>
+);
 
 const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
-  const { cartItems, removeFromCart, cartTotal, showCartModal, setShowCartModal } = useCart();
+  const { cartItems, removeFromCart, removeSet, cartTotal, showCartModal, setShowCartModal } =
+    useCart();
+
+  const odd = oddCity(cartItems);
 
   const closeModal = () => {
     setShowCartModal(false);
@@ -64,57 +135,60 @@ const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
                     aria-live="polite"
                   >{`Items in cart: ${cartItems.length}`}</div>
                   <ul className="divide-y divide-gray-200" aria-label="Cart items">
-                    {cartItems.map(item => (
-                      <li
-                        key={item.id}
-                        className="py-3 flex gap-3 -mx-2 px-2 rounded-md hover:bg-gray-50 transition-colors group"
-                      >
-                        {/* Product Image */}
-                        <div className="flex-shrink-0 w-16 h-16 border border-gray-200 rounded-md overflow-hidden group-hover:ring-1 group-hover:ring-green-200">
-                          {item.image ? (
-                            <Image
-                              src={item.image}
-                              alt={cartLine(item).title}
-                              width={64}
-                              height={64}
-                              className="w-full h-full object-center object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                              <span className="text-xs text-gray-500">No image</span>
+                    {groupCartLines(cartItems).map(group =>
+                      group.kind === 'single' ? (
+                        <CartLine
+                          key={group.item.id}
+                          item={group.item}
+                          onRemove={removeFromCart}
+                          onOpen={closeModal}
+                          city={{ odd: odd?.city === group.item.city }}
+                        />
+                      ) : (
+                        <li key={group.setId} className="py-3">
+                          {/* A set is one framed card, so a single tire after it
+                              cannot be read as part of it. */}
+                          <div className="rounded-lg border-2 border-green-600/70 bg-green-50/50">
+                            <div className="flex items-center justify-between gap-2 rounded-t-md bg-green-600/10 px-3 text-sm">
+                              <p className="font-semibold text-green-900">
+                                {`Set of ${group.items.length} · $${group.total.toFixed(2)}`}
+                                {group.range ? (
+                                  <span className="ml-1 font-normal text-green-900/80">
+                                    {` · tread ${group.range}`}
+                                  </span>
+                                ) : null}
+                                <CityTag
+                                  city={group.items[0].city}
+                                  odd={odd?.city === group.items[0].city}
+                                  className="ml-2 align-middle"
+                                />
+                              </p>
+                              <button
+                                type="button"
+                                className="inline-flex min-h-[44px] items-center rounded-md font-medium text-gray-600 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+                                onClick={() => removeSet(group.setId)}
+                                aria-label={`Remove set of ${group.items.length} from cart`}
+                              >
+                                Remove set
+                              </button>
                             </div>
-                          )}
-                        </div>
-
-                        {/* Product Details */}
-                        <div className="ml-4 flex-1 flex flex-col">
-                          <div>
-                            <div className="flex justify-between text-base font-medium text-gray-900">
-                              <h3>{cartLine(item).title}</h3>
-                              <p className="ml-4">${item.price.toFixed(2)}</p>
-                            </div>
-                            {cartLine(item).size && (
-                              <p className="text-sm text-gray-500">{cartLine(item).size}</p>
-                            )}
-                            <ProductMeta condition={item.condition} />
-                            {cartLine(item).code && (
-                              <p className="text-xs text-gray-400">{cartLine(item).code}</p>
-                            )}
-                          </div>
-                          <div className="flex-1 flex items-end justify-between text-sm">
-                            <p className="text-gray-500">Qty {item.quantity}</p>
-                            <button
-                              type="button"
-                              className="font-medium text-gray-500 hover:text-red-600 transition-colors cursor-pointer inline-flex items-center min-h-[44px] py-2 -my-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
-                              onClick={() => removeFromCart(item.id)}
-                              aria-label={`Remove ${item.name} from cart`}
+                            <ul
+                              className="divide-y divide-green-100 px-3"
+                              aria-label={`Set of ${group.items.length}`}
                             >
-                              Remove
-                            </button>
+                              {group.items.map(item => (
+                                <CartLine
+                                  key={item.id}
+                                  item={item}
+                                  onRemove={removeFromCart}
+                                  onOpen={closeModal}
+                                />
+                              ))}
+                            </ul>
                           </div>
-                        </div>
-                      </li>
-                    ))}
+                        </li>
+                      )
+                    )}
                   </ul>
                 </>
               )}

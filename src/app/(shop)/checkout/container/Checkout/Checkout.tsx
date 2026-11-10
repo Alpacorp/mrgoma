@@ -8,15 +8,25 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import { useCart } from '@/app/context/CartContext';
 import { LoadingScreen } from '@/app/ui/components';
+import CityTag from '@/app/ui/components/CityTag/CityTag';
 import ProductMeta from '@/app/ui/components/ProductMeta/ProductMeta';
 import ShippingStateGate from '@/app/ui/components/ShippingStateGate/ShippingStateGate';
 import { locationsData } from '@/app/ui/sections/LocationsSlider/locationsData';
 import { trackEcommerce, trackEvent } from '@/app/utils/analytics';
 import { EVENTS } from '@/app/utils/analyticsEvents';
 import { cartLine } from '@/app/utils/cartLine';
+import {
+  cartCities,
+  groupCartLines,
+  oddCity,
+  setUnitToLine,
+  type SetProduct,
+} from '@/app/utils/cartSets';
 import { hasConsent } from '@/app/utils/consent';
 import { cartPayload, purchasePayload, type StripeLine } from '@/app/utils/ecommerce';
-import { buildTireSlug } from '@/app/utils/tireSlug';
+import { GENERIC_TIRE_IMAGE } from '@/app/utils/genericTireImage';
+import type { SetUnit } from '@/app/utils/tireSets';
+import { tireDetailHref } from '@/app/utils/tireSlug';
 
 const TAX_RATE = (() => {
   if (typeof process !== 'undefined') {
@@ -40,7 +50,8 @@ function formatCents(amountInCents: number, currencyCode: string | undefined) {
 }
 
 export default function Checkout() {
-  const { cartItems, removeFromCart, cartTotal, clearCart, isCartReady } = useCart();
+  const { cartItems, removeFromCart, removeSet, replaceInCart, cartTotal, clearCart, isCartReady } =
+    useCart();
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -96,6 +107,96 @@ export default function Checkout() {
     'delivery'
   );
   const [pickupStoreId, setPickupStoreId] = React.useState<string>('');
+
+  // Pickup by city (feature 041, D1). Lines saved before tires carried their
+  // city are "unknown": they do not narrow the list here, and the server still
+  // rejects a wrong-city pickup for them.
+  const cartCityList = React.useMemo(() => cartCities(cartItems).cities, [cartItems]);
+  const mixedCities = cartCityList.length > 1;
+  const pickupCity = cartCityList.length === 1 ? cartCityList[0] : undefined;
+  /** "Miami (4) and Orlando (1)" — what the mixed-city notice tells the buyer. */
+  /** The tires that stop pickup at one store, marked on their lines. */
+  const odd = React.useMemo(() => oddCity(cartItems), [cartItems]);
+  const isOdd = (city?: string) => Boolean(odd && city === odd.city);
+  const cityCounts = React.useMemo(
+    () =>
+      cartCityList.map(city => ({
+        city,
+        count: cartItems.filter(i => i.city === city).length,
+      })),
+    [cartCityList, cartItems]
+  );
+  const pickupStores = React.useMemo(
+    () => (pickupCity ? locationsData.filter(l => l.city === pickupCity) : locationsData),
+    [pickupCity]
+  );
+
+  // Keep the choice valid as the cart changes: no pickup with mixed cities, and
+  // no store selected that is no longer offered.
+  React.useEffect(() => {
+    if (mixedCities && fulfillmentMethod === 'pickup') setFulfillmentMethod('delivery');
+  }, [mixedCities, fulfillmentMethod]);
+  React.useEffect(() => {
+    if (pickupStoreId && !pickupStores.some(s => s.id === pickupStoreId)) setPickupStoreId('');
+  }, [pickupStoreId, pickupStores]);
+
+  /**
+   * A set tire that sold before payment, and what can replace it (feature 041,
+   * FR13). `replacement: null` means none was found and the tire was removed.
+   */
+  const [soldOffers, setSoldOffers] = React.useState<
+    Array<{
+      soldId: string;
+      soldLabel: string;
+      setSize: number;
+      replacement: SetUnit | null;
+      product: SetProduct | null;
+    }>
+  >([]);
+
+  const offerReplacements = async (soldIds: string[]) => {
+    const offers = await Promise.all(
+      soldIds.map(async soldId => {
+        const line = cartItems.find(i => String(i.id) === soldId);
+        const siblings = line?.setId
+          ? cartItems.filter(i => i.setId === line.setId && String(i.id) !== soldId)
+          : [];
+        const soldLabel = line
+          ? `${cartLine(line).title}${line.code ? ` #${line.code}` : ''}`
+          : soldId;
+        let replacement: SetUnit | null = null;
+        let product: SetProduct | null = null;
+        try {
+          const keep = siblings
+            .slice(0, 3)
+            .map(s => String(s.id))
+            .join(',');
+          const res = await fetch(
+            `/api/tire-sets/replacement?sold=${encodeURIComponent(soldId)}&keep=${encodeURIComponent(keep)}`,
+            { cache: 'no-store' }
+          );
+          if (res.ok) {
+            const data = await res.json();
+            replacement = data?.replacement ?? null;
+            product = data?.product ?? null;
+          }
+        } catch {
+          // No replacement is a valid outcome; the tire is removed below.
+        }
+        if (!replacement) removeFromCart(soldId);
+        return { soldId, soldLabel, setSize: siblings.length + 1, replacement, product };
+      })
+    );
+    setSoldOffers(offers);
+  };
+
+  const acceptReplacement = (soldId: string) => {
+    const offer = soldOffers.find(o => o.soldId === soldId);
+    if (!offer?.replacement || !offer.product) return;
+    replaceInCart(soldId, setUnitToLine(offer.replacement, offer.product));
+    setSoldOffers(prev => prev.filter(o => o.soldId !== soldId));
+    setError(null);
+  };
 
   // Detect checkout return states
   const success = (searchParams.get('success') || '') === '1';
@@ -268,7 +369,36 @@ export default function Checkout() {
 
       if (res.status === 409) {
         const data = await res.json().catch(() => ({}));
-        const details = data?.unavailable?.map((u: { id: string }) => u.id).join(', ');
+        const unavailable: Array<{ id: string; code?: string }> = data?.unavailable ?? [];
+
+        // A set tire that sold → offer a compatible replacement (feature 041).
+        const soldInSet = unavailable
+          .filter(u => u.code === 'sold')
+          .map(u => String(u.id))
+          .filter(id => cartItems.some(i => String(i.id) === id && i.setId));
+        if (soldInSet.length > 0) {
+          await offerReplacements(soldInSet);
+          setError('Some tires in your set sold while you were shopping. Review them below.');
+          return;
+        }
+
+        const wrongCity = unavailable.filter(u => u.code === 'city');
+        if (wrongCity.length > 0) {
+          // Name the tires: a cart saved before tires carried their city cannot
+          // be pre-filtered in the browser, so this is where the shopper learns
+          // which tire is elsewhere (feature 041).
+          const named = wrongCity.map(u => {
+            const line = cartItems.find(i => String(i.id) === String(u.id));
+            const title = line
+              ? `${cartLine(line).title}${line.code ? ` #${line.code}` : ''}`
+              : `Tire ${u.id}`;
+            return `${title}: ${(u as { reason?: string }).reason ?? 'in another city'}`;
+          });
+          setError(`${named.join('. ')}. Remove it, choose delivery, or pick a store in its city.`);
+          return;
+        }
+
+        const details = unavailable.map(u => u.id).join(', ');
         setError(
           details
             ? `Some items in your cart are unavailable: ${details}`
@@ -690,76 +820,126 @@ export default function Checkout() {
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100 bg-white">
-                      {cartItems.map(item => {
-                        const lineTotal = item.price * item.quantity;
-                        // Build the canonical product URL directly (no /detail redirect hop).
-                        // Size is the last "|"-separated segment of the stored item name.
-                        const nameParts = (item.name || '').split(' | ');
-                        const itemSize =
-                          nameParts.length > 1 ? nameParts[nameParts.length - 1].trim() : '';
-                        const detailHref = `/tires/${buildTireSlug(
-                          String(item.id),
-                          item.brand || '',
-                          itemSize
-                        )}`;
-                        return (
-                          <tr key={item.id} className="hover:bg-gray-50">
-                            <td className="px-4 py-4">
-                              <div className="flex items-center gap-3">
-                                <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md border border-gray-200 bg-white">
-                                  {item.image ? (
-                                    <Image
-                                      src={item.image}
-                                      alt={item.name}
-                                      width={64}
-                                      height={64}
-                                      className="h-full w-full object-cover object-center"
-                                    />
-                                  ) : (
-                                    <div className="flex h-full w-full items-center justify-center bg-gray-100 text-xs text-gray-600">
-                                      No image
-                                    </div>
-                                  )}
-                                </div>
-                                <div>
-                                  <Link
-                                    href={detailHref}
-                                    className="font-medium text-gray-900 hover:text-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
-                                  >
-                                    {cartLine(item).title}
-                                  </Link>
-                                  {cartLine(item).size && (
-                                    <p className="text-sm text-gray-500">{cartLine(item).size}</p>
-                                  )}
-                                  <ProductMeta condition={item.condition} className="mt-0.5" />
-                                  {cartLine(item).code && (
-                                    <p className="text-xs text-gray-600">{cartLine(item).code}</p>
-                                  )}
-                                </div>
+                    {groupCartLines(cartItems).map(group => {
+                      // Feature 041: each set is its own framed <tbody> — a
+                      // header row, then its tires on a green rail — so a
+                      // single tire after it cannot be read as part of it.
+                      const isSet = group.kind === 'set';
+                      const items = isSet ? group.items : [group.item];
+                      const header =
+                        group.kind === 'set' ? (
+                          <tr key={`set-${group.setId}`} className="bg-green-600/10">
+                            <td colSpan={5} className="border-l-4 border-green-600 px-4 py-2">
+                              <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+                                <p className="font-semibold text-green-900">
+                                  {`Set of ${group.items.length} · ${currency(group.total)}`}
+                                  {group.range ? (
+                                    <span className="ml-1 font-normal text-green-900/80">
+                                      {` · tread ${group.range}`}
+                                    </span>
+                                  ) : null}
+                                  <CityTag
+                                    city={group.items[0].city}
+                                    odd={isOdd(group.items[0].city)}
+                                    className="ml-2 align-middle"
+                                  />
+                                </p>
+                                <button
+                                  type="button"
+                                  onClick={() => removeSet(group.setId)}
+                                  className="inline-flex min-h-[44px] items-center rounded-md px-2 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+                                  aria-label={`Remove set of ${group.items.length} from cart`}
+                                >
+                                  Remove set
+                                </button>
                               </div>
                             </td>
-                            <td className="px-4 py-4 text-right text-gray-700">
-                              {currency(item.price)}
-                            </td>
-                            <td className="px-4 py-4 text-center text-gray-700">{item.quantity}</td>
-                            <td className="px-4 py-4 text-right font-medium text-gray-900">
-                              {currency(lineTotal)}
-                            </td>
-                            <td className="px-4 py-4 text-right">
-                              <button
-                                type="button"
-                                onClick={() => removeFromCart(item.id)}
-                                className="inline-flex items-center cursor-pointer rounded-md border border-red-200 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
-                                aria-label={`Remove ${item.name} from cart`}
-                              >
-                                Remove
-                              </button>
-                            </td>
                           </tr>
-                        );
-                      })}
-                    </tbody>
+                        ) : null;
+                      return (
+                        <tbody
+                          key={isSet ? `set-${group.setId}` : String(group.item.id)}
+                          className={
+                            isSet
+                              ? 'divide-y divide-green-100 border-y-2 border-green-600/60 bg-green-50/40'
+                              : 'divide-y divide-gray-100 bg-white'
+                          }
+                        >
+                          {header}
+                          {items.map(item => {
+                            const lineTotal = item.price * item.quantity;
+                            // Canonical product URL directly (no /detail redirect hop).
+                            const detailHref = tireDetailHref(item);
+                            return (
+                              <tr
+                                key={item.id}
+                                className={isSet ? 'hover:bg-green-50' : 'hover:bg-gray-50'}
+                              >
+                                <td
+                                  className={`px-4 py-4 ${isSet ? 'border-l-4 border-green-600' : ''}`}
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md border border-gray-200 bg-white">
+                                      <Image
+                                        src={item.image || GENERIC_TIRE_IMAGE}
+                                        alt={item.name}
+                                        width={64}
+                                        height={64}
+                                        className="h-full w-full object-cover object-center"
+                                      />
+                                    </div>
+                                    <div>
+                                      <Link
+                                        href={detailHref}
+                                        className="font-medium text-gray-900 hover:text-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+                                      >
+                                        {cartLine(item).title}
+                                      </Link>
+                                      {cartLine(item).size && (
+                                        <p className="text-sm text-gray-500">
+                                          {cartLine(item).size}
+                                        </p>
+                                      )}
+                                      <div className="mt-0.5 flex flex-wrap items-center gap-2">
+                                        <ProductMeta condition={item.condition} className="mt-0!" />
+                                        {/* A set shows its city once, in its header. */}
+                                        {!isSet && (
+                                          <CityTag city={item.city} odd={isOdd(item.city)} />
+                                        )}
+                                      </div>
+                                      {cartLine(item).code && (
+                                        <p className="text-xs text-gray-600">
+                                          {cartLine(item).code}
+                                        </p>
+                                      )}
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-4 text-right text-gray-700">
+                                  {currency(item.price)}
+                                </td>
+                                <td className="px-4 py-4 text-center text-gray-700">
+                                  {item.quantity}
+                                </td>
+                                <td className="px-4 py-4 text-right font-medium text-gray-900">
+                                  {currency(lineTotal)}
+                                </td>
+                                <td className="px-4 py-4 text-right">
+                                  <button
+                                    type="button"
+                                    onClick={() => removeFromCart(item.id)}
+                                    className="inline-flex items-center cursor-pointer rounded-md border border-red-200 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+                                    aria-label={`Remove ${item.name} from cart`}
+                                  >
+                                    Remove
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      );
+                    })}
                   </table>
                 </div>
               </div>
@@ -833,20 +1013,75 @@ export default function Checkout() {
                       <span>Delivery to my address</span>
                     </label>
                     <label
-                      className={`flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm ${fulfillmentMethod === 'pickup' ? 'border-green-300 bg-green-50 text-green-800' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}
+                      className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${
+                        mixedCities
+                          ? 'cursor-not-allowed border-dashed border-gray-300 bg-gray-100 text-gray-400'
+                          : fulfillmentMethod === 'pickup'
+                            ? 'cursor-pointer border-green-300 bg-green-50 text-green-800'
+                            : 'cursor-pointer border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                      }`}
                     >
                       <input
                         type="radio"
                         name="fulfillment"
                         value="pickup"
-                        className="h-4 w-4 text-green-600 focus:ring-green-500"
+                        className="h-4 w-4 text-green-600 focus:ring-green-500 disabled:cursor-not-allowed"
                         checked={fulfillmentMethod === 'pickup'}
                         onChange={() => setFulfillmentMethod('pickup')}
+                        disabled={mixedCities}
+                        aria-describedby={mixedCities ? 'pickup-mixed-note' : undefined}
                         aria-label="Pick up in store"
                       />
-                      <span>Pick up in store</span>
+                      <span>
+                        Pick up in store
+                        {mixedCities ? (
+                          <span className="block text-xs">Not available for this cart</span>
+                        ) : null}
+                      </span>
                     </label>
                   </div>
+                  {mixedCities && (
+                    <div
+                      id="pickup-mixed-note"
+                      className="mt-2 flex gap-2 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="mt-0.5 h-5 w-5 shrink-0 text-amber-600"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 6a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 6Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <div>
+                        <p className="font-semibold">Store pickup isn’t available for this cart</p>
+                        <p className="mt-1">
+                          {`Your tires are in ${cityCounts
+                            .map(c => `${c.city} (${c.count})`)
+                            .join(
+                              ' and '
+                            )}, and each store can only hand over tires from its own city. Choose delivery, or remove the tires from one city to pick up.`}
+                        </p>
+                        {odd && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              cartItems
+                                .filter(i => i.city === odd.city)
+                                .forEach(i => removeFromCart(i.id))
+                            }
+                            className="mt-2 inline-flex min-h-[44px] items-center rounded-md border border-amber-400 bg-white px-3 text-sm font-semibold text-amber-900 transition-colors hover:border-amber-500 hover:bg-amber-200 active:bg-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                          >
+                            {`Remove the ${odd.city} tire${odd.count > 1 ? 's' : ''} (${odd.count})`}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {fulfillmentMethod === 'pickup' && (
                     <div className="mt-3">
@@ -863,12 +1098,17 @@ export default function Checkout() {
                         className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-green-500 focus:ring-2 focus:ring-green-500"
                       >
                         <option value="">Select a store…</option>
-                        {locationsData.map(loc => (
+                        {pickupStores.map(loc => (
                           <option key={loc.id} value={loc.id}>
                             {loc.name} — {loc.address}
                           </option>
                         ))}
                       </select>
+                      {pickupCity && (
+                        <p className="mt-1 text-xs text-gray-700">
+                          {`Your tires are in ${pickupCity}, so only ${pickupCity} stores are shown.`}
+                        </p>
+                      )}
                       <p className="mt-1 text-xs text-gray-500">
                         Most orders are ready within 24–48 business hours. You will receive
                         confirmation before pickup.
@@ -884,6 +1124,44 @@ export default function Checkout() {
                   >
                     {error}
                   </div>
+                )}
+                {soldOffers.length > 0 && (
+                  <ul className="my-3 space-y-2" aria-label="Sold tires">
+                    {soldOffers.map(offer => (
+                      <li
+                        key={offer.soldId}
+                        className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-gray-900"
+                      >
+                        <p>{`${offer.soldLabel} sold.`}</p>
+                        {offer.replacement ? (
+                          <>
+                            <p className="mt-1 text-gray-700">
+                              {`A matching tire is available: ${
+                                offer.replacement.tread !== null
+                                  ? `${offer.replacement.tread}/32`
+                                  : 'tread n/a'
+                              } · ${offer.replacement.patched ? 'patched' : 'no patch'} · ${currency(
+                                offer.replacement.price
+                              )}`}
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => acceptReplacement(offer.soldId)}
+                              className="mt-2 inline-flex min-h-[44px] items-center rounded-md bg-green-600 px-4 text-sm font-semibold text-white hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+                            >
+                              Use this tire instead
+                            </button>
+                          </>
+                        ) : (
+                          <p className="mt-1 text-gray-700">
+                            {`No matching tire is left, so it was removed. Your set is now ${
+                              offer.setSize - 1
+                            } ${offer.setSize - 1 === 1 ? 'tire' : 'tires'}.`}
+                          </p>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
                 )}
                 <div className="mt-4 grid gap-2">
                   <button

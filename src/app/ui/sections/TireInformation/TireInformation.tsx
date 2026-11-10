@@ -17,7 +17,7 @@ import { patchedNote, treadDepthLabel } from '@/app/utils/tireSpecs';
 
 // Server Component: renders the product info from props. The only interactive
 // piece (add-to-cart) is delegated to the `AddToCartButton` client island.
-const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
+const TireInformation: FC<TireInformationProps> = ({ singleTire, setSlot }) => {
   // Determine availability from DB Condition (exposed as status)
   const isSold =
     typeof singleTire.status === 'string' && singleTire.status.trim().toLowerCase() === 'sold';
@@ -184,6 +184,9 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire }) => {
               </div>
             )}
           </div>
+          {/* Feature 041. After the specs, so the tire's own state is read first.
+              The block is given by the page (see `setSlot`); none for a sold tire. */}
+          {!isSold && setSlot}
         </div>
       </div>
       <div className="my-6">

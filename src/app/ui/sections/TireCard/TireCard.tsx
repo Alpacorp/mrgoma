@@ -49,7 +49,7 @@ const TireCard: FC<TireCardProps> = ({ products }) => {
 
   const handleAddToCart = (event: SyntheticEvent, product: TransformedTire) => {
     event.preventDefault();
-    addToCart({ ...product, model: product.model, size: product.size });
+    addToCart({ ...product, model: product.model, size: product.size, city: product.city });
     // Sent from here, not from `addToCart`: the seller dashboard calls that too,
     // and staff activity must not read as shopper demand (feature 040).
     void trackEcommerce(EVENTS.ADD_TO_CART, cartPayload([product]));

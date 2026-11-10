@@ -46,3 +46,19 @@ export function buildTireSlug(id: string, brand: string, size: string): string {
 export function extractIdFromSlug(slug: string): string {
   return slug.split('-')[0];
 }
+
+/**
+ * The detail page of a cart line. Lines saved before `size` was stored only
+ * carry it as the last `" | "` segment of `name`; the id alone is enough for the
+ * route to resolve, so a missing brand or size still gives a working link.
+ */
+export function tireDetailHref(item: {
+  id: string | number;
+  brand?: string;
+  size?: string;
+  name?: string;
+}): string {
+  const parts = (item.name ?? '').split(' | ');
+  const size = item.size?.trim() || (parts.length > 1 ? parts[parts.length - 1].trim() : '');
+  return `/tires/${buildTireSlug(String(item.id), item.brand ?? '', size)}`;
+}

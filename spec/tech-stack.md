@@ -119,6 +119,13 @@ Versions taken from `package.json` (2026-06-30). Update here when they change.
   gtag has loaded are held and replayed on `ga:ready`, never dropped; local and
   preview runs go to GA4 in `debug_mode`. See
   `spec/features/040-ga4-ecommerce/`.
+- **Tire sets (feature 041).** The rules live in one pure module,
+  `src/app/utils/tireSets.ts` (compatible = same brand, model, size, run-flat,
+  condition class and city; tread Δ ≤ 2/32"). A set in the cart is just lines
+  sharing a `setId` — the cart stays a flat list of unique tires.
+  Pickup is restricted to the tires' city, enforced by `create-session` (409
+  `code: 'city'`); the browser only pre-filters. See
+  `spec/features/041-tire-sets/`.
 - Events emitted from a route handler use `@vercel/analytics/server` and must
   never delay or fail the request they observe. See
   `spec/features/015-vercel-event-tracking/`.

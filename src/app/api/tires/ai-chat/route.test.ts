@@ -238,6 +238,36 @@ describe('the prompts the chat advertises', () => {
   }
 });
 
+describe('tire sets (041)', () => {
+  it('adds the Build your set tip when a search asks for a set', async () => {
+    h.toolInput = { w: 235, s: 50, d: 19 };
+    const body = await (await POST(ask('I need 4 tires 235/50/19'))).json();
+    expect(body.type).toBe('filters');
+    expect(body.message).toMatch(/Build your set/);
+  });
+
+  it('adds it in Spanish to the size question too', async () => {
+    h.text = '¿Qué medida buscas?';
+    const body = await (await POST(ask('necesito un juego de llantas'))).json();
+    expect(body.type).toBe('message');
+    expect(body.message).toMatch(/Para armar tu juego/);
+  });
+
+  it('stays out of searches that are not about sets', async () => {
+    h.toolInput = { brands: 'Michelin' };
+    const body = await (await POST(ask('michelin'))).json();
+    expect(body.message).not.toMatch(/Build your set/);
+  });
+
+  it('is not added to an empty result', async () => {
+    h.toolInput = { w: 235, s: 50, d: 19 };
+    h.totalCount = 0;
+    const body = await (await POST(ask('4 tires 235/50/19'))).json();
+    expect(body.type).toBe('no_results');
+    expect(body.message).not.toMatch(/Build your set/);
+  });
+});
+
 describe('protecting an anonymous, paid endpoint', () => {
   it('rejects a conversation longer than the cap before calling the model', async () => {
     const messages = Array.from({ length: 41 }, () => ({ role: 'user', content: 'hi' }));

@@ -20,6 +20,7 @@ const WHITELIST = [
   'RemainingLife',
   'Tread',
   'KindSaleId',
+  'City',
 ].sort();
 
 const INTERNAL = [

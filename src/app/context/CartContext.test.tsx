@@ -101,3 +101,75 @@ describe('the cart and hydration', () => {
     expect(screen.getByTestId('count').textContent).toBe('0');
   });
 });
+
+describe('sets (feature 041)', () => {
+  type Api = ReturnType<typeof useCart>;
+  let api: Api;
+  function Capture() {
+    api = useCart();
+    return (
+      <span data-testid="ids">{api.cartItems.map(i => `${i.id}:${i.setId ?? '-'}`).join(',')}</span>
+    );
+  }
+  const line = (id: string) => ({
+    id,
+    name: `(${id}) | B | 1`,
+    price: 10,
+    city: 'Miami' as const,
+    tread: 9,
+  });
+
+  const mount = async () => {
+    render(
+      <CartProvider>
+        <Capture />
+      </CartProvider>
+    );
+    await waitFor(() => expect(api.isCartReady).toBe(true));
+  };
+
+  it('adds every tire of a set with the same setId, once each (AC6)', async () => {
+    await mount();
+    act(() => api.addSetToCart([line('1'), line('2'), line('3'), line('4')], 's1'));
+    expect(screen.getByTestId('ids').textContent).toBe('1:s1,2:s1,3:s1,4:s1');
+    act(() => api.addSetToCart([line('1'), line('2'), line('3'), line('4')], 's2'));
+    expect(api.cartItems).toHaveLength(4);
+    expect(api.showCartModal).toBe(true);
+  });
+
+  it('pulls a tire already in the cart on its own into the set', async () => {
+    await mount();
+    act(() => api.addToCart(line('1')));
+    act(() => api.addSetToCart([line('1'), line('2')], 's1'));
+    expect(screen.getByTestId('ids').textContent).toBe('1:s1,2:s1');
+  });
+
+  it('keeps the other tires when one is removed, and removes all with removeSet (AC7)', async () => {
+    await mount();
+    act(() => api.addSetToCart([line('1'), line('2'), line('3')], 's1'));
+    act(() => api.removeFromCart('2'));
+    expect(screen.getByTestId('ids').textContent).toBe('1:s1,3:s1');
+    act(() => api.removeSet('s1'));
+    expect(api.cartItems).toHaveLength(0);
+  });
+
+  it('replaces a sold tire in place, keeping its set', async () => {
+    await mount();
+    act(() => api.addSetToCart([line('1'), line('2')], 's1'));
+    act(() => api.replaceInCart('2', line('9')));
+    expect(screen.getByTestId('ids').textContent).toBe('1:s1,9:s1');
+  });
+
+  it('reads lines saved before 041 as singles', async () => {
+    localStorage.setItem('cart', JSON.stringify(STORED));
+    await mount();
+    expect(api.cartItems[0].setId).toBeUndefined();
+    expect(api.cartItems[0].city).toBeUndefined();
+  });
+
+  it('keeps the city and tread of a single tire', async () => {
+    await mount();
+    act(() => api.addToCart({ ...line('7'), city: 'Orlando' }));
+    expect(api.cartItems[0]).toMatchObject({ id: '7', city: 'Orlando', tread: 9 });
+  });
+});
