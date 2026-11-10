@@ -10,6 +10,7 @@ import {
   buildNoResultsMessage,
   buildUnknownBrandMessage,
 } from '@/app/api/_lib/aiChat/messages';
+import { asksForSet, buildSetHint } from '@/app/api/_lib/aiChat/sets';
 import { getCachedBrands, parseBrands, unknownBrands } from '@/app/api/_lib/brandCatalogue';
 import { withLogging } from '@/app/api/_lib/withLogging';
 import { buildStoreDirectory } from '@/app/api/tires/ai-chat/_lib/storeDirectory';
@@ -173,6 +174,19 @@ Tire size format: width/profile/diameter (e.g., "225/45R17" or "225/45/17" → w
 Prices are in USD.
 When the customer asks about a specific vehicle, suggest the standard tire size for that vehicle and offer to search for it.
 When the customer refines a previous search ("only new ones", "just Michelin"), combine with the existing conversation context.
+
+## TIRE SETS (2, 3 or 4 matching tires)
+Customers often want a set ("4 tires", "a pair", "un juego", "4 llantas").
+Every tire is a unique unit, and each tire page has a "Build your set" block
+that picks 2, 3 or 4 matching tires — same brand, model and size, tread within
+2/32", all in the same city (Miami or Orlando) — and adds them to the cart
+together. The set price is the sum of its tires; there is no set discount.
+- Search exactly as usual (RULE ZERO): the size, brand, condition or price they gave.
+- Do NOT explain "Build your set" yourself: the app adds a one-line tip after
+  your reply whenever the customer asks for a set. Keep your reply short.
+- Never say how many matching tires are in stock or that a set is available;
+  you cannot see it. The tire page shows which set sizes can be built.
+- For store pickup, all tires must be in the store's city; delivery has no such limit.
 
 ## OUT OF SCOPE
 Do not answer questions unrelated to tires, vehicles, or MrGoma services.
@@ -343,11 +357,12 @@ export const POST = withLogging('tires.aiChat.POST', async (req: NextRequest) =>
       // The model wrote the confirmation; the hint is appended here so it can be
       // asserted in a test rather than merely requested of a model.
       const hint = buildNarrowingHint(spanish, unusedDimensions(filterParams));
+      const setHint = asksForSet(messages) ? buildSetHint(spanish) : '';
 
       return NextResponse.json({
         type: 'filters',
         filters: filterParams,
-        message: `${confirmationMessage as string}${hint}`,
+        message: `${confirmationMessage as string}${hint}${setHint}`,
         dimensions,
       });
     }
@@ -358,9 +373,11 @@ export const POST = withLogging('tires.aiChat.POST', async (req: NextRequest) =>
         ? textBlock.text
         : 'I can help you find the right tires. Ask me about sizes, brands, or conditions!';
 
+    // Asked for a set but gave nothing to search on yet: the size question
+    // still comes first, with the tip on how the set will be built.
     return NextResponse.json({
       type: 'message',
-      message,
+      message: asksForSet(messages) ? `${message}${buildSetHint(isSpanish(messages))}` : message,
     });
   } catch (err: unknown) {
     logger.error('Failed to process customer AI chat request', err);

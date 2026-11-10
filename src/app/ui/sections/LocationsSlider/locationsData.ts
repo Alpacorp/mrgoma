@@ -11,4 +11,6 @@ export const locationsData: LocationData[] = locationsConfig.map((l, i) => ({
   phone: l.phone,
   backgroundImage: l.image,
   link: l.mapLink,
+  // Feature 041: pickup is restricted to stores in the tires' city.
+  city: l.city,
 }));

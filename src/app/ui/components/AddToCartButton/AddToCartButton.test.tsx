@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -59,5 +59,18 @@ describe('AddToCartButton (detail page)', () => {
     track.mockClear();
     await user.click(screen.getByRole('button', { name: /in cart/i }));
     expect(track).not.toHaveBeenCalled();
+  });
+
+  it('stores the tire city on the cart line, for pickup by city (feature 041)', async () => {
+    const user = userEvent.setup();
+    render(
+      <CartProvider>
+        <AddToCartButton product={{ ...tire, city: 'Orlando' } as SingleTire} />
+      </CartProvider>
+    );
+    await user.click(screen.getByRole('button', { name: /add to cart/i }));
+    await waitFor(() =>
+      expect(JSON.parse(localStorage.getItem('cart') || '[]')[0]).toMatchObject({ city: 'Orlando' })
+    );
   });
 });

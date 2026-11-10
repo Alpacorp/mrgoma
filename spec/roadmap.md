@@ -82,6 +82,33 @@ persisted (`SC_Order`/`SC_OrderDetail`), tire marked `sold`, and receipt shown.
 
 To be resumed after the two tracks above; no fixed order yet.
 
+- 🟡 **Build your tire set (`041-tire-sets`).** Shoppers build a set of 2, 3 or
+  4 compatible tires (same brand, model, size, run-flat; tread Δ ≤ 2/32"; same
+  city) from the detail page and buy it in one go; pickup is restricted to the
+  tires' city, closing a gap that also affects single tires. 70% of sellable
+  units sit in groups of four or more. _Implemented (2026-11-10), commit on
+  `feat/041-tire-sets`; the public chat already adds a "Build your set" tip
+  when a customer asks for a set (step 1, server-appended, tested)._
+- ⬜ **Quote & receipt PDF + WhatsApp (`042`).** A PDF of the cart (pre-order,
+  no stock hold) and of the paid order, shareable to Mr. Goma's WhatsApp from
+  the cart and the confirmation page. Generated server-side (JS budget). Follows
+  041 so sets are included.
+- ⬜ **Visitor city (`043`).** Approximate city from Vercel's IP geolocation
+  headers, stored in a cookie by the proxy (pages stay cached), always
+  changeable by the visitor ("Shopping in Miami · change"). Uses: offer sets in
+  the visitor's city when the viewed tire is in the other one, preselect the
+  nearest pickup store, rank local stock first. Constraints: same HTML for
+  everyone (no cloaking), no storage of the location, privacy-policy mention.
+  Browser GPS only on explicit request. Follows 041.
+- ⬜ **Tire sets in the AI chat (`044`).** Step 2 after 041's chat tip: a
+  `find_sets` tool for the public chat. Given a size (and optionally brand,
+  condition or city) it returns 2–3 sets that can really be built — brand and
+  model, city, total price, tread range — each linking to the tire page with
+  the set block ready. Reuses 041's engine so the rules are identical; needs a
+  new grouped count query per size, cached (the mssql pool of 10 has saturated
+  before). The chat never adds to the cart (a wrong pick ends in a real
+  payment); the shopper confirms on the page. Follows 041.
+
 - ⬜ **Tailwind v4 config activation (bug).** `tailwind.config.ts` is ignored by
   Tailwind v4 (no `@config` directive), so its custom tokens are dormant **in
   production today**: `green-primary` (brand accent on focus rings/checkboxes),

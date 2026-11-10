@@ -1,6 +1,9 @@
+import { Suspense } from 'react';
+
 import { SingleTire } from '@/app/interfaces/tires';
 import TreadWearExplorer from '@/app/ui/components/TreadWearExplorer/TreadWearExplorer';
 import { ProductCarousel, TireInformation, TireFeatures, Benefits } from '@/app/ui/sections';
+import TireSetSection from '@/app/ui/sections/TireSet/TireSetSection';
 import { brandName, modelName } from '@/app/utils/tireNaming';
 
 /**
@@ -105,7 +108,14 @@ const DetailView = ({ product }: { product: SingleTire }) => {
           <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8">
             <ProductCarousel singleTire={product} />
             <div className="mt-10 sm:mt-16 lg:mt-0">
-              <TireInformation singleTire={product} />
+              <TireInformation
+                singleTire={product}
+                setSlot={
+                  <Suspense fallback={null}>
+                    <TireSetSection tire={product} />
+                  </Suspense>
+                }
+              />
               <section aria-labelledby="details-heading" className="my-6">
                 <TireFeatures singleTire={product} />
               </section>

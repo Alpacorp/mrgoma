@@ -29,6 +29,15 @@ export interface CartItem {
    */
   model?: string;
   size?: string;
+  /**
+   * Feature 041. Lines added together as a set share an id; removing one leaves
+   * the rest grouped. Absent on single tires and on every line saved before 041.
+   */
+  setId?: string;
+  /** Where the tire is (never the warehouse). Absent on older lines. */
+  city?: 'Miami' | 'Orlando';
+  /** Tread in 32nds, for the set's range in the cart. */
+  tread?: number | null;
 }
 
 // Define the cart context type
@@ -50,12 +59,20 @@ export interface AddToCartProduct {
    */
   model?: string;
   size?: string;
+  city?: 'Miami' | 'Orlando';
+  tread?: number | null;
 }
 
 interface CartContextType {
   cartItems: CartItem[];
   addToCart: (product: AddToCartProduct) => void;
+  /** Add every tire of a built set at once (feature 041). */
+  addSetToCart: (lines: AddToCartProduct[], setId: string) => void;
   removeFromCart: (productId: string | number) => void;
+  /** Remove every tire still carrying `setId`. */
+  removeSet: (setId: string) => void;
+  /** Swap one line for another, keeping its set (feature 041, sold-tire replacement). */
+  replaceInCart: (oldId: string | number, replacement: AddToCartProduct) => void;
   clearCart: () => void;
   isInCart: (productId: string | number) => boolean;
   cartCount: number;
@@ -70,11 +87,35 @@ interface CartContextType {
   isCartReady: boolean;
 }
 
+/** One cart line from a product, as `addToCart` builds it for a new tire. */
+function toCartItem(product: AddToCartProduct, setId?: string): CartItem {
+  const price = typeof product.price === 'string' ? parseFloat(product.price) : product.price;
+  return {
+    brand: product.brand,
+    code: product.code,
+    condition: product.condition,
+    brandId: product.brandId,
+    id: String(product.id),
+    image: product.imageSrc || (product.images?.[0]?.src ?? undefined),
+    name: product.name,
+    model: product.model,
+    size: product.size,
+    city: product.city,
+    tread: product.tread,
+    price,
+    quantity: 1,
+    ...(setId ? { setId } : {}),
+  };
+}
+
 // Create the cart context with default values
 export const CartContext = createContext<CartContextType>({
   cartItems: [],
   addToCart: () => {},
+  addSetToCart: () => {},
   removeFromCart: () => {},
+  removeSet: () => {},
+  replaceInCart: () => {},
   clearCart: () => {},
   isInCart: () => false,
   cartCount: 0,
@@ -157,6 +198,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             name: product.name,
             model: product.model,
             size: product.size,
+            city: product.city,
+            tread: product.tread,
             price: price,
             quantity: 1,
           },
@@ -166,6 +209,45 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     // Show the cart modal when adding an item
     setShowCartModal(true);
+  };
+
+  /**
+   * Add a built set. Tires already in the cart are left as they are — each tire
+   * is one physical unit, so "adding it again" would mean nothing — and the
+   * drawer opens once, as for a single tire.
+   */
+  const addSetToCart = (lines: AddToCartProduct[], setId: string) => {
+    setCartItems(prevItems => {
+      // A tire already in the cart (e.g. added alone with the button above the
+      // set block) joins the set instead of staying a loose line beside it.
+      const inSet = new Set(lines.map(line => String(line.id)));
+      const present = new Set(prevItems.map(item => String(item.id)));
+      const kept = prevItems.map(item =>
+        inSet.has(String(item.id)) && item.setId !== setId ? { ...item, setId } : item
+      );
+      const added = lines
+        .filter(line => !present.has(String(line.id)))
+        .map(line => toCartItem(line, setId));
+      return [...kept, ...added];
+    });
+    setShowCartModal(true);
+  };
+
+  const removeSet = (setId: string) => {
+    setCartItems(prevItems => prevItems.filter(item => item.setId !== setId));
+  };
+
+  const replaceInCart = (oldId: string | number, replacement: AddToCartProduct) => {
+    setCartItems(prevItems => {
+      const old = prevItems.find(item => String(item.id) === String(oldId));
+      if (!old) return prevItems;
+      if (prevItems.some(item => String(item.id) === String(replacement.id))) {
+        return prevItems.filter(item => String(item.id) !== String(oldId));
+      }
+      return prevItems.map(item =>
+        String(item.id) === String(oldId) ? toCartItem(replacement, old.setId) : item
+      );
+    });
   };
 
   // Remove a product from the cart
@@ -202,7 +284,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     () => ({
       cartItems,
       addToCart,
+      addSetToCart,
       removeFromCart,
+      removeSet,
+      replaceInCart,
       clearCart,
       isInCart,
       cartCount,

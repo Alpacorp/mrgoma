@@ -24,7 +24,7 @@ const AddToCartButton: FC<AddToCartButtonProps> = ({ product }) => {
 
   const handleAddToCart = (event: SyntheticEvent) => {
     event.preventDefault();
-    addToCart({ ...product, model: product.model2, size: product.size });
+    addToCart({ ...product, model: product.model2, size: product.size, city: product.city });
     // Untracked until feature 040: the detail page's add was invisible to both
     // GA4 and Vercel.
     void trackEcommerce(

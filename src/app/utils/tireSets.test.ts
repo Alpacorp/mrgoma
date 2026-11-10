@@ -1,0 +1,207 @@
+import { describe, expect, it } from 'vitest';
+
+import {
+  availableSetSizes,
+  countJoinable,
+  isQuantityMode,
+  isWithinTolerance,
+  parseTread,
+  pickReplacement,
+  setTotal,
+  suggestSet,
+  swapOptions,
+  treadRange,
+  type SetUnit,
+} from './tireSets';
+
+let n = 0;
+const unit = (over: Partial<SetUnit> = {}): SetUnit => ({
+  id: over.id ?? `u${++n}`,
+  price: 100,
+  tread: 9,
+  patched: false,
+  condition: 'Used',
+  city: 'Miami',
+  ...over,
+});
+
+const ids = (units: SetUnit[] | null) => (units ?? []).map(u => u.id);
+
+describe('parseTread', () => {
+  it.each([
+    ['10.0', 10],
+    ['9.6', 9.6],
+    [8, 8],
+    ['-', null],
+    ['', null],
+    [null, null],
+    ['abc', null],
+    ['0', null],
+  ])('%p → %p', (input, expected) => {
+    expect(parseTread(input)).toBe(expected);
+  });
+});
+
+describe('treadRange / tolerance', () => {
+  it('labels a range with its difference', () => {
+    expect(treadRange([unit({ tread: 9 }), unit({ tread: 10 })])?.label).toBe('9–10/32, Δ1/32');
+  });
+
+  it('labels a uniform set with one figure', () => {
+    expect(treadRange([unit({ tread: 10 }), unit({ tread: 10 })])?.label).toBe('10/32');
+  });
+
+  it('accepts exactly 2/32 and rejects more', () => {
+    expect(isWithinTolerance([unit({ tread: 9.6 }), unit({ tread: 7.6 })])).toBe(true);
+    expect(isWithinTolerance([unit({ tread: 9.7 }), unit({ tread: 7.6 })])).toBe(false);
+  });
+
+  it('rejects a used unit without tread', () => {
+    expect(isWithinTolerance([unit({ tread: 9 }), unit({ tread: null })])).toBe(false);
+  });
+
+  it('counts a new tire without tread as full tread', () => {
+    const a = unit({ tread: 10, condition: 'New' });
+    const b = unit({ tread: null, condition: 'New' });
+    expect(isWithinTolerance([a, b])).toBe(true);
+  });
+
+  it('totals the prices of the units', () => {
+    expect(setTotal([unit({ price: 120.5 }), unit({ price: 80.25 })])).toBe(200.75);
+  });
+});
+
+describe('availableSetSizes (FR3, AC1–AC3)', () => {
+  const anchor = unit({ id: 'a', tread: 9 });
+
+  it('offers nothing without candidates', () => {
+    expect(availableSetSizes(anchor, [])).toEqual([]);
+  });
+
+  it('offers only a pair with one compatible tire (AC2)', () => {
+    expect(availableSetSizes(anchor, [unit({ tread: 9 })])).toEqual([2]);
+  });
+
+  it('offers 2, 3 and 4 with three compatible tires (AC1)', () => {
+    expect(availableSetSizes(anchor, [unit(), unit(), unit()])).toEqual([2, 3, 4]);
+  });
+
+  it('ignores tires outside 2/32, in another city, or without tread (AC3)', () => {
+    const far = unit({ tread: 5 });
+    const orlando = unit({ city: 'Orlando' });
+    const unknown = unit({ tread: null });
+    expect(availableSetSizes(anchor, [far, orlando, unknown])).toEqual([]);
+  });
+
+  it('never counts the anchor itself or duplicates', () => {
+    const twin = unit({ id: 'b' });
+    expect(availableSetSizes(anchor, [anchor, twin, twin])).toEqual([2]);
+  });
+});
+
+describe('countJoinable (FR4)', () => {
+  it('counts only tires within 2/32 of the anchor, not the whole group', () => {
+    const anchor = unit({ id: 'a', tread: 9 });
+    const group = [
+      ...Array.from({ length: 6 }, () => unit({ tread: 8 })),
+      unit({ tread: 6 }),
+      unit({ tread: 5.5 }),
+    ];
+    expect(countJoinable(anchor, group)).toBe(6);
+  });
+});
+
+describe('suggestSet (FR5, D6, AC4, AC15)', () => {
+  it('always includes the anchor and distinct tires', () => {
+    const anchor = unit({ id: 'a' });
+    const set = suggestSet(anchor, [unit(), unit(), unit(), unit()], 4);
+    expect(set?.[0].id).toBe('a');
+    expect(new Set(ids(set)).size).toBe(4);
+  });
+
+  it('prefers the closest tread', () => {
+    const anchor = unit({ id: 'a', tread: 9 });
+    const close = unit({ id: 'close', tread: 9 });
+    const farther = unit({ id: 'farther', tread: 8, price: 10 });
+    expect(ids(suggestSet(anchor, [farther, close], 2))).toEqual(['a', 'close']);
+  });
+
+  it('between equal tread, prefers unpatched (AC15)', () => {
+    const anchor = unit({ id: 'a', tread: 9 });
+    const patched = unit({ id: 'p', tread: 9, patched: true, price: 50 });
+    const clean = unit({ id: 'c', tread: 9, patched: false, price: 150 });
+    expect(ids(suggestSet(anchor, [patched, clean], 2))).toEqual(['a', 'c']);
+  });
+
+  it('between equal tread and patch status, prefers the cheaper (AC15)', () => {
+    const anchor = unit({ id: 'a', tread: 9 });
+    const dear = unit({ id: 'dear', tread: 9, price: 200 });
+    const cheap = unit({ id: 'cheap', tread: 9, price: 90 });
+    expect(ids(suggestSet(anchor, [dear, cheap], 2))).toEqual(['a', 'cheap']);
+  });
+
+  it('never exceeds 2/32 even when greedy picking would (anchor 8, units 6 and 10)', () => {
+    const anchor = unit({ id: 'a', tread: 8 });
+    const low = unit({ id: 'low', tread: 6 });
+    const high = unit({ id: 'high', tread: 10 });
+    expect(suggestSet(anchor, [low, high], 3)).toBeNull();
+    const pair = suggestSet(anchor, [low, high], 2);
+    expect(pair && isWithinTolerance(pair)).toBe(true);
+  });
+
+  it('finds the valid window when it is not centred on the anchor', () => {
+    const anchor = unit({ id: 'a', tread: 8 });
+    const set = suggestSet(
+      anchor,
+      [unit({ tread: 9.5 }), unit({ tread: 10 }), unit({ tread: 6 })],
+      3
+    );
+    expect(set && isWithinTolerance(set)).toBe(true);
+    expect(set).toHaveLength(3);
+  });
+});
+
+describe('swapOptions (FR7, AC5)', () => {
+  const anchor = unit({ id: 'a', tread: 9 });
+  const b = unit({ id: 'b', tread: 9 });
+  const c = unit({ id: 'c', tread: 8 });
+  const ok = unit({ id: 'ok', tread: 8.5 });
+  const tooFar = unit({ id: 'far', tread: 6.5 });
+
+  it('never offers to swap the anchor', () => {
+    expect(swapOptions([anchor, b, c], 0, [ok])).toEqual([]);
+  });
+
+  it('only offers tires that keep the set within 2/32 and are not already in it', () => {
+    expect(ids(swapOptions([anchor, b, c], 2, [ok, tooFar, b]))).toEqual(['ok']);
+  });
+});
+
+describe('pickReplacement (FR13, AC11)', () => {
+  it('returns the best compatible tire for the ones kept', () => {
+    const keep = [unit({ id: 'a', tread: 9 }), unit({ id: 'b', tread: 9 })];
+    const options = [
+      unit({ id: 'patch', tread: 9, patched: true }),
+      unit({ id: 'clean', tread: 9 }),
+    ];
+    expect(pickReplacement(keep, options)?.id).toBe('clean');
+  });
+
+  it('returns null when nothing fits', () => {
+    const keep = [unit({ id: 'a', tread: 9 })];
+    expect(pickReplacement(keep, [unit({ tread: 5 }), unit({ city: 'Orlando' })])).toBeNull();
+  });
+});
+
+describe('quantity mode (D11, AC16)', () => {
+  it('is on for new tires and sizes are capped by availability', () => {
+    const anchor = unit({ id: 'a', condition: 'New', tread: 10 });
+    const others = [unit({ condition: 'New', tread: null }), unit({ condition: 'New', tread: 10 })];
+    expect(isQuantityMode(anchor)).toBe(true);
+    expect(availableSetSizes(anchor, others)).toEqual([2, 3]);
+  });
+
+  it('is off for used tires', () => {
+    expect(isQuantityMode(unit())).toBe(false);
+  });
+});

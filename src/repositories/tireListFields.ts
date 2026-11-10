@@ -1,3 +1,4 @@
+import { storeCity } from '@/app/utils/storeCity';
 import type { DocumentRecord } from '@/repositories/tiresRepository';
 
 /**
@@ -28,6 +29,11 @@ export type TireListRecord = {
   RemainingLife?: string;
   Tread?: string;
   KindSaleId?: number;
+  /**
+   * Where the tire is — derived from `VaultName` here, on the server, so the
+   * warehouse name itself never leaves (feature 041: pickup by city).
+   */
+  City?: 'Miami' | 'Orlando';
 };
 
 /** Returns only the whitelisted fields; internal columns are dropped. */
@@ -49,5 +55,6 @@ export function pickTireListFields(record: DocumentRecord): TireListRecord {
     RemainingLife: record.RemainingLife,
     Tread: record.Tread,
     KindSaleId: record.KindSaleId,
+    City: storeCity(record.VaultName),
   };
 }

@@ -45,7 +45,10 @@ const renderCheckout = (cartItems: CartItem[] = [ITEM]) =>
       value={{
         cartItems,
         addToCart: vi.fn(),
+        addSetToCart: vi.fn(),
         removeFromCart: vi.fn(),
+        removeSet: vi.fn(),
+        replaceInCart: vi.fn(),
         clearCart: vi.fn(),
         isInCart: () => false,
         cartCount: cartItems.length,
@@ -354,5 +357,163 @@ describe('purchase (feature 040, D1)', () => {
     await waitFor(() => expect(ecomNames()).toContain('begin_checkout'));
     expect(purchases()).toHaveLength(0);
     expect(fetch).not.toHaveBeenCalled();
+  });
+});
+
+describe('tire sets at checkout (feature 041)', () => {
+  const api = {
+    removeFromCart: vi.fn(),
+    removeSet: vi.fn(),
+    replaceInCart: vi.fn(),
+  };
+  const renderWith = (cartItems: CartItem[]) =>
+    render(
+      <CartContext.Provider
+        value={{
+          cartItems,
+          addToCart: vi.fn(),
+          addSetToCart: vi.fn(),
+          clearCart: vi.fn(),
+          isInCart: () => false,
+          cartCount: cartItems.length,
+          cartTotal: cartItems.reduce((n, i) => n + i.price * i.quantity, 0),
+          showCartModal: false,
+          setShowCartModal: vi.fn(),
+          isCartReady: true,
+          ...api,
+        }}
+      >
+        <Checkout />
+      </CartContext.Provider>
+    );
+
+  const tire = (id: string, over: Partial<CartItem> = {}): CartItem => ({
+    ...ITEM,
+    id,
+    name: `(${id}) | MICHELIN | 225/65/17`,
+    brand: 'MICHELIN',
+    model: 'DEFENDER',
+    size: '225/65/17',
+    ...over,
+  });
+
+  beforeEach(() => {
+    api.removeFromCart.mockClear();
+    api.removeSet.mockClear();
+    api.replaceInCart.mockClear();
+  });
+
+  const storeOptions = () =>
+    Array.from((screen.getByLabelText('Choose a store for pick-up') as HTMLSelectElement).options)
+      .map(o => o.textContent ?? '')
+      .filter(t => t !== 'Select a store…');
+
+  it('offers only Orlando stores for an Orlando cart (AC8)', async () => {
+    const user = userEvent.setup({ delay: null });
+    renderWith([
+      tire('1', { city: 'Orlando', setId: 's' }),
+      tire('2', { city: 'Orlando', setId: 's' }),
+    ]);
+    await user.click(screen.getByRole('radio', { name: /pick up in store/i }));
+    expect(storeOptions().length).toBeGreaterThan(0);
+    expect(storeOptions().every(t => /Orlando/.test(t))).toBe(true);
+    expect(screen.getByText(/only Orlando stores are shown/)).toBeInTheDocument();
+  });
+
+  it('hides Miami stores for a single Orlando tire too (AC10)', async () => {
+    const user = userEvent.setup({ delay: null });
+    renderWith([tire('1', { city: 'Orlando' })]);
+    await user.click(screen.getByRole('radio', { name: /pick up in store/i }));
+    expect(storeOptions().some(t => /Cutler Bay|Hialeah|Coral Gables/.test(t))).toBe(false);
+  });
+
+  it('disables pickup with a reason when the cart mixes cities; delivery stays (AC9)', () => {
+    renderWith([tire('1', { city: 'Orlando' }), tire('2', { city: 'Miami' })]);
+    expect(screen.getByRole('radio', { name: /pick up in store/i })).toBeDisabled();
+    expect(screen.getByRole('radio', { name: /delivery to my address/i })).toBeEnabled();
+    expect(screen.getByText(/Store pickup isn’t available for this cart/)).toBeInTheDocument();
+    expect(screen.getByText(/tires are in Orlando \(1\) and Miami \(1\)/)).toBeInTheDocument();
+  });
+
+  it('marks the odd-city tire and removes it from the pickup notice', async () => {
+    const user = userEvent.setup({ delay: null });
+    renderWith([
+      tire('1', { city: 'Miami', setId: 's' }),
+      tire('2', { city: 'Miami', setId: 's' }),
+      tire('3', { city: 'Orlando' }),
+    ]);
+    // The set shows its city once; the single shows its own.
+    expect(screen.getAllByText('Miami')).toHaveLength(1);
+    expect(screen.getByText('Orlando').closest('span.bg-amber-100')).not.toBeNull();
+    expect(screen.getByText('Miami').closest('span.bg-amber-100')).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Remove the Orlando tire (1)' }));
+    expect(api.removeFromCart).toHaveBeenCalledWith('3');
+  });
+
+  it('groups a set in the order table with its total and a Remove set action', async () => {
+    const user = userEvent.setup({ delay: null });
+    renderWith([tire('1', { setId: 's', tread: 9 }), tire('2', { setId: 's', tread: 10 })]);
+    expect(screen.getByText(/Set of 2 · \$160\.00/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Remove set of 2 from cart' }));
+    expect(api.removeSet).toHaveBeenCalledWith('s');
+  });
+
+  const sold409 = (replacement: unknown) =>
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) => {
+        if (url.startsWith('/api/tire-sets/replacement')) {
+          return {
+            ok: true,
+            status: 200,
+            json: async () => ({
+              replacement,
+              product: { brand: 'MICHELIN', model2: 'DEFENDER', size: '225/65/17' },
+            }),
+          };
+        }
+        return {
+          ok: false,
+          status: 409,
+          json: async () => ({
+            unavailable: [{ id: '2', reason: 'Product is already sold', code: 'sold' }],
+          }),
+        };
+      })
+    );
+
+  it('offers a replacement for a set tire that sold, and swaps it in on accept (AC11)', async () => {
+    const user = userEvent.setup({ delay: null });
+    sold409({ id: '9', price: 85, tread: 9, patched: false, condition: 'Used', city: 'Miami' });
+    renderWith([
+      tire('1', { setId: 's', city: 'Miami' }),
+      tire('2', { setId: 's', city: 'Miami' }),
+    ]);
+    await choosePickup(user);
+    await user.click(submitButton());
+
+    await screen.findByText(/A matching tire is available: 9\/32 · no patch · \$85\.00/);
+    expect(api.removeFromCart).not.toHaveBeenCalled();
+    await user.click(screen.getByRole('button', { name: 'Use this tire instead' }));
+    expect(api.replaceInCart).toHaveBeenCalledWith(
+      '2',
+      expect.objectContaining({ id: '9', model: 'DEFENDER', city: 'Miami' })
+    );
+  });
+
+  it('removes a sold set tire and says the set is smaller when nothing fits (AC11)', async () => {
+    const user = userEvent.setup({ delay: null });
+    sold409(null);
+    renderWith([
+      tire('1', { setId: 's', city: 'Miami' }),
+      tire('2', { setId: 's', city: 'Miami' }),
+    ]);
+    await choosePickup(user);
+    await user.click(submitButton());
+
+    await screen.findByText(
+      /No matching tire is left, so it was removed\. Your set is now 1 tire\./
+    );
+    expect(api.removeFromCart).toHaveBeenCalledWith('2');
   });
 });

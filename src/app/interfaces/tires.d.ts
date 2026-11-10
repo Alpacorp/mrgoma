@@ -59,6 +59,8 @@ export interface TiresData {
   LocalCode?: string;
   OfferUp?: null;
   OfferUpId?: number;
+  /** Derived server-side from `VaultName` by `pickTireListFields` (feature 041). */
+  City?: 'Miami' | 'Orlando';
 }
 
 export interface singleTireImages {
@@ -125,8 +127,17 @@ export interface TransformedTire {
   condition: string;
   status?: string;
   features: TireFeature[];
+  /** Where the tire is, for the pickup-by-city rule (feature 041). */
+  city?: 'Miami' | 'Orlando';
 }
 
 interface TireInformationProps {
   singleTire: SingleTire;
+  /**
+   * The "Build your set" block, rendered after the specs (feature 041). Passed
+   * in rather than imported: the set block reads the database, and this
+   * component is exported from the `@/app/ui/sections` barrel that client
+   * components import — importing it here would drag `mssql` into the browser.
+   */
+  setSlot?: React.ReactNode;
 }

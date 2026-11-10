@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildTireSlug, extractIdFromSlug, matchSlug, slugify } from './tireSlug';
+import { buildTireSlug, extractIdFromSlug, matchSlug, slugify, tireDetailHref } from './tireSlug';
 
 describe('slugify', () => {
   it('lowercases and replaces non-alphanumerics with single hyphens', () => {
@@ -103,5 +103,17 @@ describe('matchSlug', () => {
 
   it('returns null against an empty catalog rather than throwing', () => {
     expect(matchSlug([], '235-50-20')).toBeNull();
+  });
+});
+
+describe('tireDetailHref', () => {
+  it('uses the stored size, or the last segment of a legacy name', () => {
+    expect(tireDetailHref({ id: 1, brand: 'Pirelli', size: '275/35/22' })).toBe(
+      '/tires/1-pirelli-275-35-22'
+    );
+    expect(tireDetailHref({ id: 2, brand: 'Pirelli', name: '(9) | PIRELLI | 275/35/22' })).toBe(
+      '/tires/2-pirelli-275-35-22'
+    );
+    expect(tireDetailHref({ id: 3 })).toBe('/tires/3');
   });
 });
