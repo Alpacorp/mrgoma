@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useId, useRef } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 
 import type { SetProduct } from '@/app/utils/cartSets';
+import { parseSetParam, resolvePresetSet } from '@/app/utils/chatSets';
 import type { SetSize, SetUnit } from '@/app/utils/tireSets';
 
 import TireSetBuilder from './TireSetBuilder';
@@ -47,6 +48,11 @@ const TireSetPanel = ({
 }: Props) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
+  /** A set opened from the AI chat (feature 044): the builder starts from it. */
+  const [preset, setPreset] = useState<{ set: SetUnit[]; notice?: string; key: string } | null>(
+    null
+  );
+  const [cardNotice, setCardNotice] = useState<string | null>(null);
 
   // Light dismiss: `closedby="any"` where supported; elsewhere (Safari) close on a
   // press *and* release outside the panel, so a drag that ends on the backdrop
@@ -73,6 +79,41 @@ const TireSetPanel = ({
     };
   }, []);
 
+  // `?set=` from a chat card, read after mount so the page's HTML never varies
+  // by URL (no `searchParams` on the server). Removed from the address bar once
+  // read: a reload or a shared link opens the page as usual.
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const raw = url.searchParams.get('set');
+    if (raw === null) return;
+    url.searchParams.delete('set');
+    window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+
+    const result = resolvePresetSet(parseSetParam(raw), anchor, candidates);
+    if (result.status === 'exact') {
+      setPreset({ set: result.set, key: raw });
+    } else if (result.status === 'replaced') {
+      const n = result.replaced;
+      setPreset({
+        set: result.set,
+        key: raw,
+        notice:
+          n === 1
+            ? '1 tire of that set just sold; we picked the closest match.'
+            : `${n} tires of that set just sold; we picked the closest matches.`,
+      });
+    } else if (result.status === 'unavailable') {
+      setCardNotice(
+        `That set of ${result.size} is no longer available. You can build another one here.`
+      );
+    }
+    // Run once per page: the link is read on arrival only.
+  }, []);
+
+  useEffect(() => {
+    if (preset) open();
+  }, [preset]);
+
   const open = () => {
     const dialog = dialogRef.current;
     dialog?.showModal?.();
@@ -87,6 +128,11 @@ const TireSetPanel = ({
     <>
       <div className="mt-4 flex flex-col gap-3 rounded-xl border border-green-200 bg-green-50/60 p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="text-sm text-gray-800">
+          {cardNotice ? (
+            <p role="status" className="mb-2 font-medium text-amber-900">
+              {cardNotice}
+            </p>
+          ) : null}
           <p className="font-semibold text-gray-900">
             {quantityMode ? 'Need more than one?' : `Need ${sizeText} tires?`}
           </p>
@@ -132,6 +178,9 @@ const TireSetPanel = ({
         </div>
         <div className="px-4 pt-4">
           <TireSetBuilder
+            key={preset?.key ?? 'suggested'}
+            initialSet={preset?.set}
+            notice={preset?.notice}
             anchor={anchor}
             candidates={candidates}
             product={product}

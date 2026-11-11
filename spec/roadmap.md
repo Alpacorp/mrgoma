@@ -92,26 +92,28 @@ To be resumed after the two tracks above; no fixed order yet.
   no stock hold) and of the paid order, shareable to Mr. Goma's WhatsApp from
   the cart and the confirmation page. Generated server-side (JS budget). Follows
   041 so sets are included.
-- 🟡 **Visitor city (`043-visitor-city`).** Approximate city from Vercel's IP geolocation
-  headers, stored in a cookie by the proxy (pages stay cached), always
-  changeable by the visitor ("Shopping in Miami · change"). Uses: offer sets in
-  the visitor's city when the viewed tire is in the other one, preselect the
-  nearest pickup store, rank local stock first. Constraints: same HTML for
-  everyone (no cloaking), no storage of the location, privacy-policy mention.
-  Browser GPS only on explicit request. Follows 041.
-- 🟡 **Sold and removed tire pages (`045-sold-tire-pages`).** Sold tire pages
+- ✅ **Visitor city (`043-visitor-city`).** Approximate city (Miami/Orlando,
+  within 60 miles of a store) from Vercel's IP geolocation headers, kept in the
+  browser for one day; same HTML for everyone (no cloaking), no storage of the
+  location, privacy-policy mention. Uses: "N like this in {city}" on tire pages
+  and the nearest pickup store preselected. No visible city selector (D8).
+  Shipped with the set builder panel and the step-by-step checkout. _Merged
+  (PR #204, 2026-11-10)._
+- ✅ **Sold and removed tire pages (`045-sold-tire-pages`).** Sold tire pages
   stay indexed but tell Google `SoldOut` (was a hard-coded `InStock`), link to
   the same tire in stock, and tires trashed without being sold are no longer
   published. Selling also trashes a record (all 19,387 sold rows), so the trash
-  alone is not "removed". Stacked on 043. _Implemented 2026-11-10._
-- ⬜ **Tire sets in the AI chat (`044`).** Step 2 after 041's chat tip: a
+  alone is not "removed". Sold tires show no price. _Merged (PR #205,
+  2026-11-10)._
+- 🟡 **Tire sets in the AI chat (`044-chat-tire-sets`).** Step 2 after 041's chat tip: a
   `find_sets` tool for the public chat. Given a size (and optionally brand,
   condition or city) it returns 2–3 sets that can really be built — brand and
   model, city, total price, tread range — each linking to the tire page with
   the set block ready. Reuses 041's engine so the rules are identical; needs a
   new grouped count query per size, cached (the mssql pool of 10 has saturated
   before). The chat never adds to the cart (a wrong pick ends in a real
-  payment); the shopper confirms on the page. Follows 041.
+  payment); the shopper confirms on the page. Follows 041. _Implemented
+  2026-11-10 (cards in the chat, panel opens with the same tires)._
 
 - ⬜ **Tailwind v4 config activation (bug).** `tailwind.config.ts` is ignored by
   Tailwind v4 (no `@config` directive), so its custom tokens are dormant **in

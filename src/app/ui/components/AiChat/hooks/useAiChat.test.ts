@@ -148,3 +148,76 @@ describe('shelf locations in the URL', () => {
     expect(url.searchParams.get('locations')).toBeNull();
   });
 });
+
+describe('sets from the chat (044)', () => {
+  const card = {
+    brand: 'Michelin',
+    model: 'Pilot Sport 4',
+    condition: 'Used',
+    city: 'Miami',
+    count: 4,
+    total: 480,
+    treadLabel: '8/32',
+    href: '/tires/1-michelin-225-45-17?set=1,2,3,4',
+  };
+  const setsReply = {
+    type: 'sets',
+    message: 'These sets can be built right now.',
+    sets: [card],
+    outcome: 'found',
+    historyMessage: 'These sets can be built right now.\n\n[Sets shown: 1]',
+    dimensions: 'size',
+  };
+
+  afterEach(() => window.localStorage.clear());
+
+  it('keeps the cards on the message, does not navigate, and reports once', async () => {
+    respondWith(setsReply);
+
+    const result = await send('4 tires 225/45R17');
+
+    const last = result.current.messages[result.current.messages.length - 1];
+    expect(last.sets).toEqual([card]);
+    expect(last.isFilterApplication).toBe(false);
+    expect(h.push).not.toHaveBeenCalled();
+    const shown = h.track.mock.calls.filter(([e]) => e.action === EVENTS.AI_CHAT_SETS_SHOWN);
+    expect(shown).toHaveLength(1);
+    expect(shown[0][0].params).toEqual({
+      surface: 'site',
+      dimensions: 'size',
+      outcome: 'found',
+      sets: 1,
+    });
+  });
+
+  it('sends back the short summary as the assistant turn', async () => {
+    respondWith(setsReply);
+    const result = await send('4 tires 225/45R17');
+
+    respondWith({ type: 'message', message: 'ok' });
+    await act(async () => {
+      await result.current.sendMessage('only Michelin');
+    });
+
+    const body = JSON.parse(
+      (vi.mocked(global.fetch).mock.calls[0][1] as RequestInit).body as string
+    );
+    expect(body.messages[1]).toEqual({ role: 'assistant', content: setsReply.historyMessage });
+  });
+
+  it('sends the stored city estimate, and nothing when there is none', async () => {
+    respondWith({ type: 'message', message: 'ok' });
+    await send('hi');
+    let body = JSON.parse((vi.mocked(global.fetch).mock.calls[0][1] as RequestInit).body as string);
+    expect(body.city).toBeUndefined();
+
+    window.localStorage.setItem(
+      'mg_city_guess',
+      JSON.stringify({ city: 'Orlando', store: 'location-5', at: Date.now() })
+    );
+    respondWith({ type: 'message', message: 'ok' });
+    await send('hi');
+    body = JSON.parse((vi.mocked(global.fetch).mock.calls[0][1] as RequestInit).body as string);
+    expect(body.city).toBe('Orlando');
+  });
+});

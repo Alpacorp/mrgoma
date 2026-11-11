@@ -1,3 +1,7 @@
+import type { ChatSetCard, ChatSetOutcome } from '@/app/utils/chatSets';
+import type { SetSize, TireCity } from '@/app/utils/tireSets';
+import { whatsAppLink } from '@/app/utils/whatsapp';
+
 /**
  * Tire sets in the public chat (feature 041, chat step 1).
  *
@@ -37,4 +41,126 @@ export function buildSetHint(spanish: boolean): string {
   return spanish
     ? '\n\n🛞 Para armar tu juego: abre cualquier llanta y en "Build your set" elige 2, 3 o 4. Te armamos el juego con llantas iguales (misma marca, modelo y medida, labrado parecido y en la misma ciudad) y lo agregas al carrito de una vez.'
     : '\n\n🛞 To build your set: open any tire and use "Build your set" to pick 2, 3 or 4. We match identical tires (same brand, model and size, similar tread, same city) and you add the whole set to your cart at once.';
+}
+
+/* ── Feature 044: sets the chat looked up itself ─────────────────────────── */
+
+
+export type SetsMessageInput = {
+  outcome: ChatSetOutcome;
+  /** The number asked for. */
+  requested: SetSize;
+  /** The number of the sets shown (smaller than `requested` for `smaller`). */
+  shown: SetSize;
+  /** `w/s/d`. */
+  size: string;
+  /** The city the cards are in, for `other_city`. */
+  city?: TireCity;
+  /** The city the customer named or the visitor's estimate, when known. */
+  wantedCity?: TireCity | null;
+  /** What the customer narrowed by, so "none" says none *of what* (AC8). */
+  brands?: string[];
+  condition?: 'new' | 'used';
+  /** A city the customer named (not the estimate). */
+  namedCity?: TireCity;
+};
+
+/** "used Pirelli 315/30R22" / "Pirelli 315/30R22 usadas", plus " in Orlando". */
+function describeAsk(spanish: boolean, m: SetsMessageInput, size: string) {
+  const brand = (m.brands ?? []).join(spanish ? ' o ' : ' or ');
+  const cond = m.condition
+    ? spanish
+      ? m.condition === 'new'
+        ? ' nuevas'
+        : ' usadas'
+      : `${m.condition} `
+    : '';
+  const city = m.namedCity ? (spanish ? ` en ${m.namedCity}` : ` in ${m.namedCity}`) : '';
+  return spanish
+    ? { what: `${brand ? `${brand} ` : ''}${size}${cond}`, city }
+    : { what: `${cond}${brand ? `${brand} ` : ''}${size}`, city };
+}
+
+const prettySize = (size: string) => {
+  const [w, s, d] = size.split('/');
+  return w && s && d ? `${w}/${s}R${d}` : size;
+};
+
+const catalogHref = (size: string) => {
+  const [w, s, d] = size.split('/');
+  return `/tires?w=${w}&s=${s}&d=${d}&page=1`;
+};
+
+/**
+ * The text above the set cards, written by the server for each outcome (D7):
+ * the model never states counts, prices or availability. Always ends with the
+ * "as of now" line when cards follow (D5).
+ */
+export function buildSetsMessage(spanish: boolean, m: SetsMessageInput): string {
+  const size = prettySize(m.size);
+  const { what, city } = describeAsk(spanish, m, size);
+  const asOfNow = spanish
+    ? '\n\nPrecios y disponibilidad de este momento: revisas el juego y lo confirmas en la página de la llanta.'
+    : '\n\nPrices and stock as of now: you review the set and confirm it on the tire page.';
+
+  switch (m.outcome) {
+    case 'found':
+      return (
+        (spanish
+          ? `Estos juegos de ${m.shown} llantas ${what}${city} se pueden armar ahora:`
+          : `These sets of ${m.shown} ${what} tires${city} can be built right now:`) + asOfNow
+      );
+    case 'other_city': {
+      const there = m.city ?? '';
+      const home = m.wantedCity ?? '';
+      return (
+        (spanish
+          ? `No hay juegos de ${m.shown} llantas ${what} en ${home} ahora mismo, pero sí en ${there}. ` +
+            `Recoger en tienda solo es posible en ${there}; el envío a domicilio llega a las dos ciudades.`
+          : `There's no set of ${m.shown} ${what} tires in ${home} right now, but there is in ${there}. ` +
+            `Store pickup is only in ${there}; home delivery reaches both cities.`) + asOfNow
+      );
+    }
+    case 'smaller':
+      return (
+        (spanish
+          ? `No hay juegos de ${m.requested} llantas ${what}${city} ahora mismo. Estos de ${m.shown} sí se pueden armar:`
+          : `There's no set of ${m.requested} ${what} tires${city} right now. These sets of ${m.shown} can be built:`) +
+        asOfNow
+      );
+    case 'none':
+    default: {
+      const wa = whatsAppLink(
+        spanish
+          ? `Hola, busco un juego de ${m.requested} llantas ${what}${city}.`
+          : `Hi, I'm looking for a set of ${m.requested} ${what} tires${city}.`
+      );
+      return spanish
+        ? `No hay ningún juego de llantas ${what}${city} que se pueda armar ahora mismo. ` +
+            `Puedes ver las llantas sueltas de esa medida o escribirnos:\n\n` +
+            `🛞 [Ver llantas ${size}](${catalogHref(m.size)})\n💬 [Escribir por WhatsApp](${wa})`
+        : `No set of ${what} tires${city} can be built right now. ` +
+            `You can see single tires in that size or message us:\n\n` +
+            `🛞 [See ${size} tires](${catalogHref(m.size)})\n💬 [Chat on WhatsApp](${wa})`;
+    }
+  }
+}
+
+/**
+ * What the next model turn sees of the cards, so "only Michelin" refines the
+ * same search. Brand, model, city and count only — no prices or treads, so the
+ * model has nothing to quote — and short: the route rejects any message over
+ * 2,000 characters, assistant turns included.
+ */
+export function summarizeSetsForHistory(cards: ChatSetCard[]): string {
+  if (cards.length === 0) return '';
+  const lines = cards.map(c => `- ${c.brand} ${c.model} · ${c.count} · ${c.city}`.slice(0, 120));
+  return `\n\n[Sets shown: ${cards.length}]\n${lines.join('\n')}`;
+}
+
+/** Message + summary, cut to fit the route's 2,000-character cap. */
+export const MAX_HISTORY_MESSAGE = 2000;
+export function withSetsSummary(message: string, cards: ChatSetCard[]): string {
+  const full = `${message}${summarizeSetsForHistory(cards)}`;
+  return full.length <= MAX_HISTORY_MESSAGE ? full : full.slice(0, MAX_HISTORY_MESSAGE);
 }

@@ -33,6 +33,14 @@ type Props = {
   titleId?: string;
   /** Called after the set is added, so the panel can close before the cart opens. */
   onAdded?: () => void;
+  /**
+   * A set chosen elsewhere — the AI chat (feature 044) — to start from instead
+   * of the suggestion. Already validated (`resolvePresetSet`); anchor first.
+   * Choosing another size returns to the suggestion.
+   */
+  initialSet?: SetUnit[];
+  /** One line above the set, e.g. "1 tire sold; we picked the closest match". */
+  notice?: string;
 };
 
 const money = (n: number) => `$${n.toFixed(2)}`;
@@ -60,17 +68,25 @@ const TireSetBuilder = ({
   embedded = false,
   titleId,
   onAdded,
+  initialSet,
+  notice,
 }: Props) => {
   const { addSetToCart, isInCart } = useCart();
   const sizes = useMemo(() => availableSetSizes(anchor, candidates), [anchor, candidates]);
   const quantityMode = isQuantityMode(anchor);
-  const [size, setSize] = useState<SetSize>(sizes[sizes.length - 1] ?? 2);
+  const [preset, setPreset] = useState<SetUnit[] | null>(
+    initialSet && initialSet.length >= 2 ? initialSet : null
+  );
+  const [size, setSize] = useState<SetSize>(
+    preset ? (preset.length as SetSize) : (sizes[sizes.length - 1] ?? 2)
+  );
   const [overrides, setOverrides] = useState<Record<number, string>>({});
   const groupName = useId();
 
   const suggested = useMemo(
-    () => suggestSet(anchor, candidates, size) ?? [],
-    [anchor, candidates, size]
+    () =>
+      preset && preset.length === size ? preset : (suggestSet(anchor, candidates, size) ?? []),
+    [anchor, candidates, size, preset]
   );
 
   // The shopper's swaps, applied slot by slot on top of the suggestion.
@@ -94,6 +110,7 @@ const TireSetBuilder = ({
 
   const chooseSize = (next: SetSize) => {
     setSize(next);
+    setPreset(null);
     setOverrides({});
   };
 
@@ -136,6 +153,12 @@ const TireSetBuilder = ({
           </span>
         ) : null}
       </p>
+
+      {notice ? (
+        <p role="status" className="mt-2 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-900">
+          {notice}
+        </p>
+      ) : null}
 
       <fieldset className="mt-3">
         <legend className="text-sm text-gray-700">How many tires?</legend>

@@ -132,8 +132,8 @@ Versions taken from `package.json` (2026-06-30). Update here when they change.
   `x-vercel-ip-*` headers (guard: `visitorCity.guard.test.ts`). Pages never
   vary by location: the city is applied in the browser after load through
   `VisitorCityProvider` / `useVisitorCity()` (lazy — nothing is fetched until a
-  component asks). The browser keeps only the city and a store id
-  (`mg_city_choice` 90 days, `mg_city_guess` 1 day), never coordinates;
+  component asks). The browser keeps only the estimated city and a store id
+  (`mg_city_guess`, 1 day; no manual choice since 043's D8), never coordinates;
   analytics carry at most the city name. `visitorCity.ts` ships to every page
   and has no imports; distance logic with the store directory lives in the
   server-side `visitorCityGeo.ts`. See `spec/features/043-visitor-city/`.

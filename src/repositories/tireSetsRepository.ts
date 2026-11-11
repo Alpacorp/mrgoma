@@ -4,7 +4,12 @@ import { NVarChar } from 'mssql';
 
 import type { SingleTire } from '@/app/interfaces/tires';
 import { ORLANDO_VAULTS, storeCity } from '@/app/utils/storeCity';
-import { parseTread, type SetUnit, type TireCity } from '@/app/utils/tireSets';
+import {
+  parseTread,
+  SET_PAGE_CANDIDATES,
+  type SetUnit,
+  type TireCity,
+} from '@/app/utils/tireSets';
 import { logQuery } from '@/connection/queryLogger';
 import { STOREFRONT_SELLABLE_WHERE } from '@/repositories/feedQuery';
 
@@ -57,7 +62,7 @@ const SET_COLUMNS =
   'TireId, Code, Price, Tread, RemainingLife, Patched, DOT, Image1, ProductTypeId, VaultName';
 
 /** Most units a set block ever needs; the biggest groups exceed 100. */
-const MAX_CANDIDATES = 60;
+export const MAX_CANDIDATES = SET_PAGE_CANDIDATES;
 
 const ORLANDO_LIST = ORLANDO_VAULTS.map(v => `'${v}'`).join(', ');
 
@@ -141,4 +146,56 @@ const cachedByKey = unstable_cache(
 
 export function getCachedSetCandidates(g: SetGroup): Promise<SetUnit[]> {
   return cachedByKey(setGroupKey(g), g);
+}
+
+/* ── Feature 044: every sellable unit of one size, for the AI chat ─────────── */
+
+/** A unit of a size, with the group fields the chat groups by. No warehouse. */
+export type SizeUnit = SetUnit & { brand: string; model2: string; runFlat: boolean };
+
+/** The largest size had 266 sellable units on 2026-11-10 (290 sizes, 6,754 units). */
+export const MAX_SIZE_UNITS = 400;
+
+/** Pure and exported for the test: binds `@size`, never reads `Location`. */
+export function buildSizeUnitsQuery(): string {
+  return (
+    `SELECT TOP ${MAX_SIZE_UNITS} Brand, Model2, KindSaleId, ${SET_COLUMNS} ` +
+    `FROM dbo.View_Tires WHERE ${STOREFRONT_SELLABLE_WHERE} AND RealSize = @size ` +
+    `ORDER BY TRY_CAST(Tread AS float) DESC, Price ASC`
+  );
+}
+
+type SizeRow = SetRow & { Brand?: string; Model2?: string; KindSaleId?: number };
+
+export function toSizeUnit(row: SizeRow): SizeUnit {
+  return {
+    ...toSetUnit(row),
+    brand: (row.Brand ?? '').trim(),
+    model2: (row.Model2 ?? '').trim(),
+    runFlat: row.KindSaleId === 1,
+  };
+}
+
+/** Every sellable unit of a size (`w/s/d`, as `RealSize`), uncached. */
+export async function fetchSizeUnitsFresh(size: string): Promise<SizeUnit[]> {
+  const { getPool } = await import('@/connection/db');
+  const pool = await getPool();
+  const request = pool.request();
+  request.input('size', NVarChar, size);
+  const result = await logQuery('tireSets.sizeUnits', () => request.query(buildSizeUnitsQuery()));
+  return ((result.recordset as SizeRow[]) ?? []).map(toSizeUnit);
+}
+
+/**
+ * Cached by size for 120 s: every chat asking for one size shares one query —
+ * the pool of 10 connections has saturated under bot traffic before.
+ */
+const cachedSizeUnits = unstable_cache(
+  async (size: string) => fetchSizeUnitsFresh(size),
+  ['tire-size-units'],
+  { revalidate: 120, tags: ['tire-sets'] }
+);
+
+export function getCachedSizeUnits(size: string): Promise<SizeUnit[]> {
+  return cachedSizeUnits(size);
 }

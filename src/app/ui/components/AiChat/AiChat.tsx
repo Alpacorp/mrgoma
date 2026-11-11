@@ -59,6 +59,7 @@ function MessageContent({ content }: { content: string }) {
 
 import mrGomaAvatar from '#public/assets/images/mrgoma-avatar.svg';
 
+import ChatSetCards from './ChatSetCards';
 import { DASHBOARD_EXAMPLE_QUERIES } from './exampleQueries';
 import { useAiChat } from './hooks/useAiChat';
 
@@ -93,7 +94,7 @@ export default function AiChat({
 
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const logRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const previouslyFocused = useRef<HTMLElement | null>(null);
   const { messages, isLoading, sendMessage, clearChat } = useAiChat({
@@ -106,7 +107,23 @@ export default function AiChat({
     const prefersReduced =
       typeof window !== 'undefined' &&
       window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    messagesEndRef.current?.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth' });
+    // Scroll the message log itself, never with `scrollIntoView`: that also
+    // scrolls every scrollable ancestor — the panel included, despite its
+    // `overflow: hidden` — and a smooth scroll measured before the log moved
+    // pushed the header out of view (044, set cards made replies tall enough).
+    const log = logRef.current;
+    if (!log) return;
+    const behavior: ScrollBehavior = prefersReduced ? 'auto' : 'smooth';
+    const last = messages[messages.length - 1];
+    if (!isLoading && last?.role === 'assistant' && last.sets?.length) {
+      // A reply with set cards is read from its start, not its end.
+      const el = log.querySelector<HTMLElement>(`[data-msg-id="${last.id}"]`);
+      if (el) {
+        log.scrollTo?.({ top: Math.max(0, el.offsetTop - 12), behavior });
+        return;
+      }
+    }
+    log.scrollTo?.({ top: log.scrollHeight, behavior });
   }, [messages, isLoading]);
 
   // Auto-close the panel 1.5s after filters are applied so the user
@@ -265,7 +282,8 @@ export default function AiChat({
 
           {/* Messages Area */}
           <div
-            className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50"
+            ref={logRef}
+            className="relative flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 space-y-3 bg-gray-50"
             role="log"
             aria-live="polite"
             aria-relevant="additions"
@@ -296,6 +314,7 @@ export default function AiChat({
             {messages.map(msg => (
               <div
                 key={msg.id}
+                data-msg-id={msg.id}
                 className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {msg.isFilterApplication ? (
@@ -308,6 +327,19 @@ export default function AiChat({
                 ) : msg.role === 'user' ? (
                   <div className="max-w-[85%] px-3 py-2 rounded-xl bg-green-600 text-white text-sm">
                     {msg.content}
+                  </div>
+                ) : msg.sets?.length ? (
+                  // Sets (044): the text, then the cards. The panel stays open —
+                  // no auto-close — until the shopper opens a set.
+                  <div className="max-w-[90%] w-full">
+                    <div className="px-3 py-2 rounded-xl bg-white border border-gray-200 text-gray-700 text-sm">
+                      <MessageContent content={msg.content} />
+                    </div>
+                    <ChatSetCards
+                      sets={msg.sets}
+                      spanish={msg.setsSpanish}
+                      onOpen={() => setIsOpen(false)}
+                    />
                   </div>
                 ) : (
                   <div className="max-w-[85%] px-3 py-2 rounded-xl bg-white border border-gray-200 text-gray-700 text-sm">
@@ -339,7 +371,6 @@ export default function AiChat({
               </div>
             )}
 
-            <div ref={messagesEndRef} />
           </div>
 
           {/* Input — native form submit is the most reliable on iOS */}

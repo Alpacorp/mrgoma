@@ -32,8 +32,15 @@ vi.mock('@/connection/queryLogger', () => ({
 
 vi.mock('next/cache', () => ({ unstable_cache: (fn: unknown) => fn }));
 
-const { buildSetCandidatesQuery, fetchSetCandidatesFresh, setGroupKey, setGroupOf, toSetUnit } =
-  await import('./tireSetsRepository');
+const {
+  buildSetCandidatesQuery,
+  buildSizeUnitsQuery,
+  fetchSetCandidatesFresh,
+  fetchSizeUnitsFresh,
+  setGroupKey,
+  setGroupOf,
+  toSetUnit,
+} = await import('./tireSetsRepository');
 const { STOREFRONT_SELLABLE_WHERE } = await import('./feedQuery');
 
 const tire = (over: Partial<SingleTire> = {}): SingleTire =>
@@ -143,5 +150,42 @@ describe('fetchSetCandidatesFresh / toSetUnit', () => {
 
   it('reads a missing tread as null', () => {
     expect(toSetUnit({ TireId: 1, Tread: '-' }).tread).toBeNull();
+  });
+});
+
+describe('size units for the AI chat (044)', () => {
+  beforeEach(() => {
+    h.queries.length = 0;
+    h.inputs.length = 0;
+    h.recordset = [];
+  });
+
+  it('binds the size, uses the storefront filter and never reads the shelf code', () => {
+    const sql = buildSizeUnitsQuery();
+    expect(sql).toContain(STOREFRONT_SELLABLE_WHERE);
+    expect(sql).toContain('RealSize = @size');
+    expect(sql).not.toMatch(/\bLocation\b/);
+    expect(sql).toMatch(/SELECT TOP 400 Brand, Model2, KindSaleId/);
+  });
+
+  it('maps rows to units with group fields and no warehouse name', async () => {
+    h.recordset = [
+      {
+        TireId: 7,
+        Price: '120',
+        Tread: '8',
+        Patched: '0',
+        ProductTypeId: 2,
+        VaultName: 'Kissimmee',
+        Brand: ' Michelin ',
+        Model2: 'Pilot Sport 4',
+        KindSaleId: 1,
+      },
+    ];
+    const [u] = await fetchSizeUnitsFresh('225/45/17');
+    expect(h.inputs).toEqual([{ name: 'size', value: '225/45/17' }]);
+    expect(u).toMatchObject({ id: '7', brand: 'Michelin', model2: 'Pilot Sport 4', runFlat: true });
+    expect(JSON.stringify(u)).not.toContain('Kissimmee');
+    expect(Object.keys(u)).not.toContain('VaultName');
   });
 });
