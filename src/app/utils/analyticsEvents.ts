@@ -17,6 +17,36 @@ export const EVENTS = {
   VIEW_ITEM: 'view_item',
 
   /**
+   * A listing showed a new result — first load, another page, a filter or sort
+   * change (feature 046, D1). Carries the list id and name and every tire
+   * shown, with its position on the whole result.
+   */
+  VIEW_ITEM_LIST: 'view_item_list',
+
+  /**
+   * The shopper opened a tire's page from a listing (photo or title of a card,
+   * or a chat set card). Carries the tire, the list and its position (046, D2).
+   */
+  SELECT_ITEM: 'select_item',
+
+  /** The cart drawer opened with tires in it (046, D3). Not sent on /checkout. */
+  VIEW_CART: 'view_cart',
+
+  /**
+   * The shopper removed tires from the cart — one tire, a set, or "Remove the
+   * {city} tire" at checkout (046, D4). Never for a tire the site removes
+   * because it sold.
+   */
+  REMOVE_FROM_CART: 'remove_from_cart',
+
+  /**
+   * A tire search by size landed on /tires: from the home search by size or by
+   * text, or a size facet of the catalog (046, D5). Only a change of size is a
+   * new search. Carries `search_term` and `tire_*` parameters.
+   */
+  SEARCH: 'search',
+
+  /**
    * A tire was put in the cart from a shopper-facing button (catalog card or
    * detail page). Never from the seller dashboard, which shares the cart.
    */

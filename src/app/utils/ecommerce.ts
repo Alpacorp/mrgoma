@@ -214,3 +214,99 @@ export function purchasePayload(session: PaidSession): PurchasePayload {
       .filter((it): it is GaItem => it !== null),
   };
 }
+
+/* ── Feature 046: lists, selection and search ─────────────────────────────── */
+
+export type GaList = { id: string; name: string };
+
+/** The listings, with ids and names fixed so reports can compare them (FR3). */
+export const LISTS = {
+  catalog: { id: 'catalog', name: 'All tires' },
+  newTires: { id: 'new_tires', name: 'New tires' },
+  usedTires: { id: 'used_tires', name: 'Used tires' },
+  chatSets: { id: 'chat_sets', name: 'Chat sets' },
+  brand: (brand: string): GaList => ({ id: 'brand_tires', name: `Brand: ${brand}` }),
+  size: (size: string): GaList => ({ id: 'size_tires', name: `Size: ${size}` }),
+} as const;
+
+/** GA4 caps an event at 200 items. */
+export const MAX_LIST_ITEMS = 200;
+
+export type GaListItem = GaItem & { item_list_id: string; item_list_name: string; index: number };
+
+export type ListPayload = { item_list_id: string; item_list_name: string; items: GaListItem[] };
+
+const listItem = (list: GaList, tire: TireLike, index: number): GaListItem => ({
+  ...toGaItem(tire),
+  item_list_id: list.id,
+  item_list_name: list.name,
+  index,
+});
+
+/**
+ * `view_item_list`: every tire shown, positioned on the whole result —
+ * `offset` is how many came before this page (page 2 of 20 starts at 21).
+ */
+export function listPayload(list: GaList, tires: TireLike[], offset = 0): ListPayload {
+  return {
+    item_list_id: list.id,
+    item_list_name: list.name,
+    items: tires.slice(0, MAX_LIST_ITEMS).map((t, i) => listItem(list, t, offset + i + 1)),
+  };
+}
+
+/**
+ * `select_item`: the tire(s) opened from a list at `index` (1-based). A chat
+ * set opens several tires at one position.
+ */
+export function selectPayload(list: GaList, tires: TireLike[], index: number): ListPayload {
+  return {
+    item_list_id: list.id,
+    item_list_name: list.name,
+    items: tires.slice(0, MAX_LIST_ITEMS).map(t => listItem(list, t, index)),
+  };
+}
+
+export type SearchEventParams = {
+  search_term: string;
+  tire_width?: string;
+  tire_profile?: string;
+  tire_rim?: string;
+  tire_brand?: string;
+  tire_condition?: string;
+};
+
+/** GA4 cuts parameter values at 100 characters; cut them ourselves first. */
+const cut = (v: string) => v.slice(0, 100);
+
+const clean = (v?: string | null) => (v ?? '').trim();
+
+/**
+ * GA4 `search` parameters for a tire size search (046, FR6). `search_term` reads
+ * as a shopper writes a size — `225/45R17`, or partial: `225/45`, `225`,
+ * `R17`. `null` when there is no size part: that is not a size search.
+ */
+export function searchParams(input: {
+  w?: string | null;
+  s?: string | null;
+  d?: string | null;
+  brands?: string | null;
+  condition?: string | null;
+}): SearchEventParams | null {
+  const w = clean(input.w);
+  const s = clean(input.s);
+  const d = clean(input.d);
+  if (!w && !s && !d) return null;
+
+  const head = [w, s].filter(Boolean).join('/');
+  const term = d ? `${head}R${d}` : head;
+  const out: SearchEventParams = { search_term: cut(term) };
+  if (w) out.tire_width = w;
+  if (s) out.tire_profile = s;
+  if (d) out.tire_rim = d;
+  const brands = clean(input.brands);
+  if (brands) out.tire_brand = cut(brands);
+  const condition = clean(input.condition).toLowerCase();
+  if (condition) out.tire_condition = cut(condition);
+  return out;
+}

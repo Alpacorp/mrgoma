@@ -9,6 +9,7 @@ import { TireGrid } from '@/app/(shop)/tires/container/TireGrid/TireGrid';
 import { TiresData } from '@/app/interfaces/tires';
 import { JsonLd } from '@/app/ui/components';
 import { onlineInventoryLabel } from '@/app/utils/brandClaims';
+import { LISTS } from '@/app/utils/ecommerce';
 import { buildBreadcrumbJsonLd, buildItemListJsonLd, newTiresMetadata } from '@/app/utils/seo';
 import { transformTireData } from '@/app/utils/transformTireData';
 import { fetchBrands, fetchTires } from '@/repositories/tiresRepository';
@@ -170,6 +171,7 @@ export default async function NewTiresPage() {
             tires={tires}
             totalCount={totalCount}
             viewAllHref="/tires?condition=new"
+            list={LISTS.newTires}
             viewAllLabel={`View all ${totalCount} new tires`}
           />
         </section>

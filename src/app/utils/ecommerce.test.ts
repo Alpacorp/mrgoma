@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  LISTS,
   cartPayload,
+  listPayload,
+  searchParams,
+  selectPayload,
   normalizeCondition,
   purchasePayload,
   toGaItem,
@@ -199,5 +203,90 @@ describe('purchasePayload', () => {
       'transaction_id',
       'value',
     ]);
+  });
+});
+
+describe('listPayload / selectPayload (046)', () => {
+  const tire = (id: number) => ({
+    id,
+    name: `(C${id}) | MICHELIN | DEFENDER | 225/65/17`,
+    price: 100,
+    brand: 'MICHELIN',
+    condition: 'Used',
+  });
+
+  it('positions every tire on the whole result', () => {
+    const p = listPayload(LISTS.catalog, [tire(1), tire(2)], 20);
+    expect(p.item_list_id).toBe('catalog');
+    expect(p.item_list_name).toBe('All tires');
+    expect(p.items.map(i => i.index)).toEqual([21, 22]);
+  });
+
+  it("carries exactly 040's item keys plus the list keys (AC11)", () => {
+    const [item] = listPayload(LISTS.usedTires, [tire(7)]).items;
+    expect(Object.keys(item).sort()).toEqual(
+      [
+        'index',
+        'item_brand',
+        'item_category',
+        'item_id',
+        'item_list_id',
+        'item_list_name',
+        'item_name',
+        'item_variant',
+        'price',
+        'quantity',
+      ].sort()
+    );
+  });
+
+  it('caps a list at 200 items', () => {
+    const many = Array.from({ length: 250 }, (_, i) => tire(i + 1));
+    expect(listPayload(LISTS.catalog, many).items).toHaveLength(200);
+  });
+
+  it('puts every tire of a selection at the same position', () => {
+    const p = selectPayload(LISTS.chatSets, [tire(1), tire(2)], 2);
+    expect(p.items.map(i => [i.item_id, i.index])).toEqual([
+      ['1', 2],
+      ['2', 2],
+    ]);
+  });
+
+  it('names brand and size lists', () => {
+    expect(LISTS.brand('Michelin')).toEqual({ id: 'brand_tires', name: 'Brand: Michelin' });
+    expect(LISTS.size('225/45/17')).toEqual({ id: 'size_tires', name: 'Size: 225/45/17' });
+  });
+});
+
+describe('searchParams (046, AC8)', () => {
+  it('reads a full size as a shopper writes it', () => {
+    expect(searchParams({ w: '225', s: '45', d: '17' })).toEqual({
+      search_term: '225/45R17',
+      tire_width: '225',
+      tire_profile: '45',
+      tire_rim: '17',
+    });
+  });
+
+  it('reads partial sizes', () => {
+    expect(searchParams({ w: '225', s: '45' })?.search_term).toBe('225/45');
+    expect(searchParams({ w: '225' })?.search_term).toBe('225');
+    expect(searchParams({ d: '17' })?.search_term).toBe('R17');
+  });
+
+  it('adds brand and condition when chosen', () => {
+    expect(
+      searchParams({ w: '225', s: '45', d: '17', brands: 'Michelin,Pirelli', condition: 'Used' })
+    ).toMatchObject({ tire_brand: 'Michelin,Pirelli', tire_condition: 'used' });
+  });
+
+  it('is not a size search without a size part', () => {
+    expect(searchParams({ brands: 'Michelin' })).toBeNull();
+  });
+
+  it('cuts values to 100 characters', () => {
+    const p = searchParams({ w: '225', brands: 'X'.repeat(300) });
+    expect(p?.tire_brand).toHaveLength(100);
   });
 });

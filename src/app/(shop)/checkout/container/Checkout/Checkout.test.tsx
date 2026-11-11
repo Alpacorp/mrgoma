@@ -471,6 +471,10 @@ describe('tire sets at checkout (feature 041)', () => {
     await user.click(screen.getByRole('radio', { name: /pick up in store/i }));
     await user.click(screen.getByRole('button', { name: 'Remove the Orlando tire (1)' }));
     expect(api.removeFromCart).toHaveBeenCalledWith('3');
+    // The shopper's choice is a removal (046, AC6), reported once.
+    const removals = ecom.mock.calls.filter(([n]) => n === 'remove_from_cart');
+    expect(removals).toHaveLength(1);
+    expect(removals[0][1].items.map((i: { item_id: string }) => i.item_id)).toEqual(['3']);
   });
 
   it('groups a set in the order table with its total and a Remove set action', async () => {
@@ -479,6 +483,11 @@ describe('tire sets at checkout (feature 041)', () => {
     expect(screen.getByText(/Set of 2 · \$160\.00/)).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Remove set of 2 from cart' }));
     expect(api.removeSet).toHaveBeenCalledWith('s');
+    const removals = ecom.mock.calls.filter(([n]) => n === 'remove_from_cart');
+    expect(removals).toHaveLength(1);
+    expect(removals[0][1].items).toHaveLength(2);
+    // /checkout sends begin_checkout, never view_cart (046, D3).
+    expect(ecomNames()).not.toContain('view_cart');
   });
 
   const sold409 = (replacement: unknown) =>
@@ -538,6 +547,8 @@ describe('tire sets at checkout (feature 041)', () => {
       /No matching tire is left, so it was removed\. Your set is now 1 tire\./
     );
     expect(api.removeFromCart).toHaveBeenCalledWith('2');
+    // The site removed a sold tire: not the shopper's removal (046, AC7).
+    expect(ecomNames()).not.toContain('remove_from_cart');
   });
 });
 

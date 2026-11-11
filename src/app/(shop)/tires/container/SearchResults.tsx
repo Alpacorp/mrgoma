@@ -17,8 +17,10 @@ import {
   TireTable,
 } from '@/app/ui/components';
 import type { LooseningSuggestion } from '@/app/ui/components/NotResultsFound/NoResultsFound';
+import { useSearchEvent } from '@/app/ui/components/SearchEvent/useSearchEvent';
 import { PromoBanner } from '@/app/ui/sections';
 import { promoBannerConfig } from '@/app/ui/sections/PromoBanner/config/promoBanner';
+import { LISTS } from '@/app/utils/ecommerce';
 import type { TireView } from '@/app/utils/filterUtils';
 import {
   DEFAULT_PAGE,
@@ -62,6 +64,8 @@ const SearchResults: FC<SearchResultsProps> = ({
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  // GA4 `search` where every size search lands (feature 046, D5).
+  useSearchEvent(searchParams);
   const [tiresData, setTiresData] = useState<PaginatedTiresResponse>(
     initialData ?? {
       tires: [],
@@ -334,7 +338,16 @@ const SearchResults: FC<SearchResultsProps> = ({
             ) : view === 'table' ? (
               <TireTable products={tiresData.tires} />
             ) : (
-              <TireResults products={tiresData.tires} />
+              <TireResults
+                products={tiresData.tires}
+                list={LISTS.catalog}
+                indexOffset={
+                  // From the data's own page, not the page state: the state
+                  // moves before the new tires arrive, and would re-report the
+                  // old ones at the new positions (found in the browser, 046).
+                  (Math.max(1, tiresData.page || 1) - 1) * (tiresData.pageSize || pageSize)
+                }
+              />
             )}
             {tiresData.tires.length > 0 && (
               <div className="mt-16">

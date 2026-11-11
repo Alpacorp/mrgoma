@@ -119,6 +119,14 @@ Versions taken from `package.json` (2026-06-30). Update here when they change.
   gtag has loaded are held and replayed on `ga:ready`, never dropped; local and
   preview runs go to GA4 in `debug_mode`. See
   `spec/features/040-ga4-ecommerce/`.
+- **Lists, cart and search (feature 046).** Listings report
+  `view_item_list` / `select_item` through `TireCard`'s `list` prop (ids in
+  `LISTS`, `ecommerce.ts`); `view_cart` fires when the cart drawer opens and
+  `remove_from_cart` only at the shopper's own remove controls (never in
+  `CartContext`, which also drops sold tires); GA4 `search` is sent once where
+  every size search lands (`useSearchEvent` on `/tires`), keyed on the size
+  only. Filters carry `filter_group` / `filter_value` and `tire_brand` /
+  `tire_condition` as `data-track-*`. See `spec/features/046-ga4-catalog-events/`.
 - **Tire sets (feature 041).** The rules live in one pure module,
   `src/app/utils/tireSets.ts` (compatible = same brand, model, size, run-flat,
   condition class and city; tread Δ ≤ 2/32"). A set in the cart is just lines

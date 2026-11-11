@@ -5,15 +5,23 @@ import Link from 'next/link';
 import { useCart } from '@/app/context/CartContext';
 import { TransformedTire } from '@/app/interfaces/tires';
 import { BrandImage, FreeShippingBadge, ProductImage, StockBadge } from '@/app/ui/components';
+import { useViewItemList } from '@/app/ui/components/ViewItemList/useViewItemList';
 import { trackEcommerce } from '@/app/utils/analytics';
 import { EVENTS } from '@/app/utils/analyticsEvents';
-import { cartPayload } from '@/app/utils/ecommerce';
+import { cartPayload, selectPayload, type GaList } from '@/app/utils/ecommerce';
 import { brandName, modelName, parseTireName } from '@/app/utils/tireNaming';
 import { buildTireSlug, slugify } from '@/app/utils/tireSlug';
 import { patchedNote, treadDepthLabel } from '@/app/utils/tireSpecs';
 
 interface TireCardProps {
   products: TransformedTire[];
+  /**
+   * The listing these cards belong to (feature 046). With it the cards report
+   * `view_item_list` and `select_item`; without it they report nothing.
+   */
+  list?: GaList;
+  /** Tires before this page in the whole result, so positions continue (page 2 → 21). */
+  indexOffset?: number;
 }
 
 const SPEC_KEYS = ['Remaining life', 'Tread depth', 'Patched', 'Run Flat'] as const;
@@ -44,8 +52,16 @@ const CartIcon = () => (
   </svg>
 );
 
-const TireCard: FC<TireCardProps> = ({ products }) => {
+const TireCard: FC<TireCardProps> = ({ products, list, indexOffset = 0 }) => {
   const { addToCart, isInCart } = useCart();
+  useViewItemList(list, products, indexOffset);
+
+  // Any link that opens the tire's page is a selection (046, D2). The card's
+  // brand, size and condition links go elsewhere, and Add to Cart is its own event.
+  const handleSelect = (product: TransformedTire, position: number) => {
+    if (!list) return;
+    void trackEcommerce(EVENTS.SELECT_ITEM, selectPayload(list, [product], position));
+  };
 
   const handleAddToCart = (event: SyntheticEvent, product: TransformedTire) => {
     event.preventDefault();
@@ -105,6 +121,7 @@ const TireCard: FC<TireCardProps> = ({ products }) => {
               {/* ── Image ── */}
               <Link
                 href={detailUrl}
+                onClick={() => handleSelect(product, indexOffset + index + 1)}
                 className="block bg-gray-50 sm:w-52 md:w-64 shrink-0 overflow-hidden"
                 tabIndex={-1}
               >
@@ -157,7 +174,11 @@ const TireCard: FC<TireCardProps> = ({ products }) => {
                 </div>
 
                 {/* Title */}
-                <Link href={detailUrl} className="group/title">
+                <Link
+                  href={detailUrl}
+                  onClick={() => handleSelect(product, indexOffset + index + 1)}
+                  className="group/title"
+                >
                   {/*
                     An <h3>, not an <h2>. Each card sits under the results
                     section's own heading, so twenty tire names as <h2> put

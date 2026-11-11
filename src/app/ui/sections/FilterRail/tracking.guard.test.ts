@@ -80,3 +80,26 @@ describe('a filter reports the group it belongs to', () => {
     expect(source).not.toMatch(/trackGroup="[a-z]/i);
   });
 });
+
+describe('filters report their values (046, FR7)', () => {
+  it.each([
+    'src/app/ui/sections/FilterRail/FacetGroup.tsx',
+    'src/app/ui/sections/FilterRail/SearchableFacet.tsx',
+    'src/app/ui/sections/FilterRail/RangeFacet.tsx',
+  ])('%s carries filter_group and filter_value, and keeps its label', file => {
+    const source = readFileSync(file, 'utf8');
+    expect(source).toContain('data-track-filter-group=');
+    expect(source).toContain('data-track-filter-value=');
+    expect(source).toContain('data-track-label=');
+  });
+
+  it('apply_home_filters carries brand and condition, and keeps its count', () => {
+    const source = readFileSync(
+      'src/app/ui/components/HomeMoreFilters/HomeMoreFilters.tsx',
+      'utf8'
+    );
+    expect(source).toContain('data-track-tire-brand=');
+    expect(source).toContain('data-track-tire-condition=');
+    expect(source).toContain('data-track-value=');
+  });
+});

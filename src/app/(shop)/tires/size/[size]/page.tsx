@@ -8,6 +8,7 @@ import { getStockedSizes, resolveSizeSlug } from '@/app/(shop)/tires/utils/sizeC
 import { TiresData } from '@/app/interfaces/tires';
 import { JsonLd } from '@/app/ui/components';
 import { LOCATIONS_LABEL, SHIPPING, WARRANTY, onlineInventoryLabel } from '@/app/utils/brandClaims';
+import { LISTS } from '@/app/utils/ecommerce';
 import { buildBreadcrumbJsonLd, buildItemListJsonLd, sizeMetadata } from '@/app/utils/seo';
 import { slugify } from '@/app/utils/tireSlug';
 import { transformTireData } from '@/app/utils/transformTireData';
@@ -182,6 +183,7 @@ export default async function SizeCategoryPage({ params }: { params: Promise<{ s
             tires={tires}
             totalCount={totalCount}
             viewAllHref={viewAllHref}
+            list={LISTS.size(originalSize)}
             viewAllLabel={`View all ${totalCount} tires in size ${originalSize}`}
           />
         </section>
