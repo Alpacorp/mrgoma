@@ -140,4 +140,6 @@ interface TireInformationProps {
    * components import — importing it here would drag `mssql` into the browser.
    */
   setSlot?: React.ReactNode;
+  /** Feature 045: shown under "Not available" for a sold tire ("N like it in stock"). */
+  soldSlot?: React.ReactNode;
 }

@@ -99,6 +99,11 @@ To be resumed after the two tracks above; no fixed order yet.
   nearest pickup store, rank local stock first. Constraints: same HTML for
   everyone (no cloaking), no storage of the location, privacy-policy mention.
   Browser GPS only on explicit request. Follows 041.
+- 🟡 **Sold and removed tire pages (`045-sold-tire-pages`).** Sold tire pages
+  stay indexed but tell Google `SoldOut` (was a hard-coded `InStock`), link to
+  the same tire in stock, and tires trashed without being sold are no longer
+  published. Selling also trashes a record (all 19,387 sold rows), so the trash
+  alone is not "removed". Stacked on 043. _Implemented 2026-11-10._
 - ⬜ **Tire sets in the AI chat (`044`).** Step 2 after 041's chat tip: a
   `find_sets` tool for the public chat. Given a size (and optionally brand,
   condition or city) it returns 2–3 sets that can really be built — brand and

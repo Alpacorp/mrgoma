@@ -13,6 +13,7 @@ import {
   canonical,
   productMetadata,
 } from '@/app/utils/seo';
+import { isRemoved, isSoldStatus, schemaAvailability } from '@/app/utils/tireAvailability';
 import { generateTireDescription } from '@/app/utils/tireDescription';
 import { brandName, modelName, tireTitle } from '@/app/utils/tireNaming';
 import { buildTireSlug, extractIdFromSlug } from '@/app/utils/tireSlug';
@@ -27,7 +28,10 @@ export const dynamic = 'force-dynamic';
 const fetchProduct = cache(async (productId: string): Promise<SingleTire | null> => {
   try {
     const record = await fetchTireById(productId);
-    if (!record) return null;
+    // A tire withdrawn without being sold is not published: same path as an
+    // unknown id — "Tire Not Found", noindex, no structured data (045). Sold
+    // tires are trashed too, and keep their page (see `isRemoved`).
+    if (!record || isRemoved(record)) return null;
     return mapTireRecordToSingleTire(record);
   } catch {
     return null;
@@ -69,7 +73,8 @@ export async function generateMetadata({
     condition: product.condition,
     patched: product.patched,
     remainingLife: product.remainingLife,
-    price: product.price,
+    // No price in the title or description of a sold tire (045).
+    price: isSoldStatus(product.status) ? undefined : product.price,
     city: product.city,
     path: `/tires/${canonicalSlug}`,
     images: Array.isArray(product.images) ? product.images.map(image => image.src) : [],
@@ -118,10 +123,12 @@ async function TireJsonLd({ productId }: { productId: string }) {
     brand: brandName(product.brand),
     description: jsonLdDescription,
     images: (product.images || []).map(i => i.src),
-    price: product.price,
+    // A sold tire's offer carries no price: sold records often hold 0 (045).
+    price: isSoldStatus(product.status) ? undefined : product.price,
     currency: 'USD',
     condition: product.condition,
-    availability: 'InStock',
+    // Sold pages stay indexed (045, D1) but never claim stock they do not have.
+    availability: schemaAvailability(product.status),
     sku: String(product.id),
   });
 

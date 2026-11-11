@@ -18,7 +18,7 @@ import { patchedNote, treadDepthLabel } from '@/app/utils/tireSpecs';
 
 // Server Component: renders the product info from props. The only interactive
 // piece (add-to-cart) is delegated to the `AddToCartButton` client island.
-const TireInformation: FC<TireInformationProps> = ({ singleTire, setSlot }) => {
+const TireInformation: FC<TireInformationProps> = ({ singleTire, setSlot, soldSlot }) => {
   // Determine availability from DB Condition (exposed as status)
   const isSold =
     typeof singleTire.status === 'string' && singleTire.status.trim().toLowerCase() === 'sold';
@@ -82,10 +82,22 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire, setSlot }) => {
           </div>
           <div className="mt-3 flex items-center justify-between">
             <h2 className="sr-only">Product information</h2>
-            <div className="flex items-center gap-2">
-              <ProductPrice price={singleTire.price} />
-              <FreeShippingBadge />
-            </div>
+            {/* A sold tire shows no price (045): sold records often carry 0, and a
+                price for something not for sale only invites the wrong question. */}
+            {isSold ? (
+              <div
+                className="inline-flex items-center rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700"
+                role="status"
+                aria-live="polite"
+              >
+                Not available
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <ProductPrice price={singleTire.price} />
+                <FreeShippingBadge />
+              </div>
+            )}
             {/* Every tire, sold included: the page was still viewed, and leaving
                 sold stock out would hide demand for what sold out (040). */}
             <ViewItemTracker
@@ -99,23 +111,16 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire, setSlot }) => {
                 condition: singleTire.condition,
               }}
             />
-            {isSold ? (
-              <div
-                className="inline-flex items-center rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700"
-                role="status"
-                aria-live="polite"
-              >
-                Not available
-              </div>
-            ) : (
-              <AddToCartButton product={singleTire} />
-            )}
+            {/* Sold: "Not available" took the price's place, on the left. */}
+            {isSold ? null : <AddToCartButton product={singleTire} />}
           </div>
           {/* Beneath the primary action, never beside it: Add to cart already
               renders as an outlined green button, so a second outlined button on
               the same row would read as an equal choice rather than a quieter
               one. Present on a sold tire too — that is the moment a customer is
               most likely to want to ask for another in the same size. */}
+          {/* Feature 045: the same tire in stock, given by the page (see `soldSlot`). */}
+          {isSold && soldSlot}
           <WhatsAppEnquiryButton product={singleTire} />
           <div
             aria-label="Key specifications"

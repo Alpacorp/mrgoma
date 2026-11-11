@@ -43,6 +43,8 @@ export type DocumentRecord = {
   VaultName?: string;
   /** The shelf code within a store — NOT a geographic location. See `026`. */
   Location?: string;
+  /** Set when staff remove the record; such a tire is never published (045). */
+  Trash?: boolean | number | string;
   KindSale?: string;
   KindSaleId?: number;
   Height?: string | number;
