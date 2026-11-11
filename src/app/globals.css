@@ -91,12 +91,22 @@ html {
   }
 }
 
+/* The cart drawer's backdrop fades in place; only the panel slides. When the
+   whole layer slid, the dark backdrop was seen travelling left with it. */
+@keyframes fade-in {
+  /* No \`to\`: it ends at the element's own opacity (the backdrop's is 40%). */
+  from {
+    opacity: 0;
+  }
+}
+
 /* Tailwind v4 theme tokens (declared in CSS, the only place v4 reads them): the
    `xs` breakpoint and the slide-in animation utility. Kept low in the file, apart
    from the P1.3 `--font-sans` @theme block, so the two merge without collision. */
 @theme {
   --breakpoint-xs: 350px;
   --animate-slide-in-right: slide-in-right 0.3s ease-out;
+  --animate-fade-in: fade-in 0.3s ease-out;
 
   --color-green-600: #008236;
   --color-green-700: #016630;
@@ -141,6 +151,98 @@ html {
   [role='button']:not(:disabled),
   select:not(:disabled) {
     cursor: pointer;
+  }
+}
+
+/* Side panel / bottom sheet on a native modal <dialog> (feature 041, the set
+   builder). showModal() already makes the page inert and contains focus; these
+   rules only place it, keep scrolling from chaining to the page (no overflow
+   hacks on <body>, which would shift the layout) and animate it in and out. */
+dialog.mg-sheet {
+  margin: auto 0 0; /* phones: pinned to the bottom */
+  width: 100%;
+  max-width: 100%;
+  max-height: 90dvh;
+  padding: 0;
+  border: 0;
+  border-radius: 1rem 1rem 0 0;
+  background: #fff;
+  color: inherit;
+  box-shadow: 0 -8px 32px rgb(0 0 0 / 0.2);
+  padding-bottom: env(safe-area-inset-bottom);
+  overflow-y: auto;
+  opacity: 0;
+  transition-property: opacity, transform, display, overlay;
+  transition-duration: 0.25s;
+  transition-timing-function: ease-out;
+  transition-behavior: allow-discrete;
+}
+@media (min-width: 640px) {
+  dialog.mg-sheet {
+    /* larger screens: a panel on the right, full height */
+    margin: 0 0 0 auto;
+    width: min(28rem, 100%);
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 1rem 0 0 1rem;
+    box-shadow: -8px 0 32px rgb(0 0 0 / 0.2);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  dialog.mg-sheet {
+    transform: translateY(100%);
+  }
+  @media (min-width: 640px) {
+    dialog.mg-sheet {
+      transform: translateX(100%);
+    }
+  }
+}
+dialog.mg-sheet[open] {
+  opacity: 1;
+  transform: none;
+}
+@starting-style {
+  dialog.mg-sheet[open] {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  @starting-style {
+    dialog.mg-sheet[open] {
+      transform: translateY(100%);
+    }
+  }
+  @media (min-width: 640px) {
+    @starting-style {
+      dialog.mg-sheet[open] {
+        transform: translateX(100%);
+      }
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  dialog.mg-sheet {
+    transition-duration: 0.1s;
+  }
+}
+dialog.mg-sheet:modal {
+  overscroll-behavior: contain;
+}
+dialog.mg-sheet::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+  background-color: rgb(0 0 0 / 0);
+  transition-property: background-color, display, overlay;
+  transition-duration: 0.25s;
+  transition-behavior: allow-discrete;
+}
+dialog.mg-sheet[open]::backdrop {
+  background-color: rgb(0 0 0 / 0.45);
+}
+@starting-style {
+  dialog.mg-sheet[open]::backdrop {
+    background-color: rgb(0 0 0 / 0);
   }
 }
 

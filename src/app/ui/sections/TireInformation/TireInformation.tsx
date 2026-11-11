@@ -9,6 +9,7 @@ import {
   FreeShippingBadge,
 } from '@/app/ui/components';
 import AddToCartButton from '@/app/ui/components/AddToCartButton/AddToCartButton';
+import OtherCityMatch from '@/app/ui/components/OtherCityMatch/OtherCityMatch';
 import ViewItemTracker from '@/app/ui/components/ViewItemTracker/ViewItemTracker';
 import { WhatsAppEnquiryButton } from '@/app/ui/components/WhatsAppEnquiryButton/WhatsAppEnquiryButton';
 import { generateTireDescription } from '@/app/utils/tireDescription';
@@ -184,6 +185,29 @@ const TireInformation: FC<TireInformationProps> = ({ singleTire, setSlot }) => {
               </div>
             )}
           </div>
+          {/* Feature 043: where the tire is — the same line for every visitor
+              (no personalised HTML). The match in the visitor's own city, when
+              it differs, is appended on this line in the browser. */}
+          {!isSold && singleTire.city && (
+            <p className="mt-3 flex flex-wrap items-center gap-x-1 text-sm text-gray-700">
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="h-4 w-4 shrink-0 text-gray-500"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="m9.69 18.933.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 0 0 .281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 1 0 3 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 0 0 2.273 1.765 11.842 11.842 0 0 0 .976.544l.062.029.018.008.006.003ZM10 11.25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span>
+                Located in <strong className="font-semibold">{singleTire.city}</strong>
+                <OtherCityMatch tireId={String(singleTire.id)} tireCity={singleTire.city} />
+              </span>
+            </p>
+          )}
           {/* Feature 041. After the specs, so the tire's own state is read first.
               The block is given by the page (see `setSlot`); none for a sold tire. */}
           {!isSold && setSlot}

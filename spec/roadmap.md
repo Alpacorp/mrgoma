@@ -82,18 +82,17 @@ persisted (`SC_Order`/`SC_OrderDetail`), tire marked `sold`, and receipt shown.
 
 To be resumed after the two tracks above; no fixed order yet.
 
-- 🟡 **Build your tire set (`041-tire-sets`).** Shoppers build a set of 2, 3 or
+- ✅ **Build your tire set (`041-tire-sets`).** Shoppers build a set of 2, 3 or
   4 compatible tires (same brand, model, size, run-flat; tread Δ ≤ 2/32"; same
   city) from the detail page and buy it in one go; pickup is restricted to the
   tires' city, closing a gap that also affects single tires. 70% of sellable
-  units sit in groups of four or more. _Implemented (2026-11-10), commit on
-  `feat/041-tire-sets`; the public chat already adds a "Build your set" tip
+  units sit in groups of four or more. _Merged (PR #203, 2026-11-10); the public chat already adds a "Build your set" tip
   when a customer asks for a set (step 1, server-appended, tested)._
-- ⬜ **Quote & receipt PDF + WhatsApp (`042`).** A PDF of the cart (pre-order,
+- ❌ **Quote & receipt PDF + WhatsApp (`042`) — not approved (2026-11-10).** A PDF of the cart (pre-order,
   no stock hold) and of the paid order, shareable to Mr. Goma's WhatsApp from
   the cart and the confirmation page. Generated server-side (JS budget). Follows
   041 so sets are included.
-- ⬜ **Visitor city (`043`).** Approximate city from Vercel's IP geolocation
+- 🟡 **Visitor city (`043-visitor-city`).** Approximate city from Vercel's IP geolocation
   headers, stored in a cookie by the proxy (pages stay cached), always
   changeable by the visitor ("Shopping in Miami · change"). Uses: offer sets in
   the visitor's city when the viewed tire is in the other one, preselect the

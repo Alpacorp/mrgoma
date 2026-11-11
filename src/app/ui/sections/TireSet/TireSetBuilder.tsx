@@ -28,6 +28,11 @@ type Props = {
   product: SetProduct;
   /** Compatible tires besides this one, for the intro line (spec FR4). */
   more?: number;
+  /** Inside the set panel (feature 041, round 3): no card frame, heading id from the panel. */
+  embedded?: boolean;
+  titleId?: string;
+  /** Called after the set is added, so the panel can close before the cart opens. */
+  onAdded?: () => void;
 };
 
 const money = (n: number) => `$${n.toFixed(2)}`;
@@ -47,7 +52,15 @@ const unitLabel = (u: SetUnit) =>
  * per unit for swapping, one polite atomic live region for the total — the
  * decisions in `spec/features/041-tire-sets/ux-notes.md`.
  */
-const TireSetBuilder = ({ anchor, candidates, product, more }: Props) => {
+const TireSetBuilder = ({
+  anchor,
+  candidates,
+  product,
+  more,
+  embedded = false,
+  titleId,
+  onAdded,
+}: Props) => {
   const { addSetToCart, isInCart } = useCart();
   const sizes = useMemo(() => availableSetSizes(anchor, candidates), [anchor, candidates]);
   const quantityMode = isQuantityMode(anchor);
@@ -97,21 +110,26 @@ const TireSetBuilder = ({ anchor, candidates, product, more }: Props) => {
       category: 'cart',
       params: { set_size: set.length, swaps, condition: anchor.condition },
     });
+    onAdded?.();
   };
 
   return (
     <section
-      aria-labelledby={`${groupName}-title`}
-      className="mt-6 rounded-xl border border-gray-200 bg-white p-4 sm:p-5"
+      aria-labelledby={titleId ?? `${groupName}-title`}
+      className={embedded ? '' : 'mt-6 rounded-xl border border-gray-200 bg-white p-4 sm:p-5'}
     >
-      <h2 id={`${groupName}-title`} className="text-lg font-semibold text-gray-900">
+      <h2 id={titleId ?? `${groupName}-title`} className="text-lg font-semibold text-gray-900">
         {quantityMode ? 'Buy more than one' : 'Build your set'}
       </h2>
       {/* The page has two add buttons; say which one does what (user test, 10 nov). */}
       <p className="mt-1 text-sm text-gray-700">
-        {quantityMode
-          ? 'Add to Cart above adds one tire. Choose how many you need here.'
-          : 'Add to Cart above adds only this tire. Here you add it together with matching tires — same model and size, tread within 2/32″.'}
+        {embedded
+          ? quantityMode
+            ? 'Choose how many you need; the tire on the page is one of them.'
+            : 'The tire on the page plus matching ones — same model and size, tread within 2/32″.'
+          : quantityMode
+            ? 'Add to Cart above adds one tire. Choose how many you need here.'
+            : 'Add to Cart above adds only this tire. Here you add it together with matching tires — same model and size, tread within 2/32″.'}
         {more ? (
           <span className="mt-1 block font-medium text-green-800">
             {`We have ${more} more of this tire in ${anchor.city}.`}
@@ -194,15 +212,20 @@ const TireSetBuilder = ({ anchor, candidates, product, more }: Props) => {
                     ) : null}
                   </p>
                   <p className="text-gray-600">
+                    {/* The size on every unit: the shopper sees they all match (round 3). */}
+                    {product.size ? (
+                      <span className="font-medium text-gray-900">{`${product.size} · `}</span>
+                    ) : null}
                     {unitLabel(u)}
                     {u.dot ? ` · DOT ${u.dot}` : ''}
                   </p>
                 </div>
+                {/* In the panel (28rem) the select always takes its own full-width row. */}
                 {options.length > 0 && (
-                  <label className="w-full text-sm sm:w-auto">
+                  <label className={`w-full text-sm ${embedded ? '' : 'sm:w-auto'}`}>
                     <span className="sr-only">{`Swap tire ${i + 1} of ${set.length}`}</span>
                     <select
-                      className="min-h-[44px] w-full rounded-md border border-gray-300 bg-white px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 sm:w-56"
+                      className={`min-h-[44px] w-full rounded-md border border-gray-300 bg-white px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 ${embedded ? '' : 'sm:w-56'}`}
                       value=""
                       onChange={e => {
                         const id = e.target.value;
@@ -225,23 +248,33 @@ const TireSetBuilder = ({ anchor, candidates, product, more }: Props) => {
         </ol>
       )}
 
-      <p
-        className="mt-3 text-base font-semibold text-gray-900"
-        aria-live="polite"
-        aria-atomic="true"
+      {/* In the panel the total and the button stay pinned to its bottom edge, so
+          the decision is always in reach while the list scrolls (phones). */}
+      <div
+        className={
+          embedded
+            ? 'sticky bottom-0 -mx-4 mt-3 border-t border-gray-200 bg-white px-4 pt-3 pb-4'
+            : ''
+        }
       >
-        {`Set of ${set.length} · total ${money(total)}`}
-        {!quantityMode && range ? ` · tread ${range}` : ''}
-      </p>
+        <p
+          className="mt-3 text-base font-semibold text-gray-900"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {`Set of ${set.length} · total ${money(total)}`}
+          {!quantityMode && range ? ` · tread ${range}` : ''}
+        </p>
 
-      <button
-        type="button"
-        onClick={add}
-        disabled={allInCart}
-        className="mt-3 inline-flex min-h-[44px] w-full items-center justify-center rounded-md bg-green-600 px-5 text-base font-semibold text-white hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-      >
-        {allInCart ? 'Set in cart' : `Add all ${set.length} tires to cart`}
-      </button>
+        <button
+          type="button"
+          onClick={add}
+          disabled={allInCart}
+          className={`mt-3 inline-flex min-h-[44px] w-full items-center justify-center rounded-md bg-green-600 px-5 text-base font-semibold text-white hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${embedded ? '' : 'sm:w-auto'}`}
+        >
+          {allInCart ? 'Set in cart' : `Add all ${set.length} tires to cart`}
+        </button>
+      </div>
     </section>
   );
 };

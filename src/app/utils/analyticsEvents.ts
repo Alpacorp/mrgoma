@@ -74,6 +74,12 @@ export const EVENTS = {
   SET_BUILT: 'set_built',
 
   /**
+   * The visitor opened "N like this in {city}" on a tire from the other city
+   * (feature 043). Sent through `data-track`, with the city as the label.
+   */
+  CITY_MATCH_OPEN: 'city_match_open',
+
+  /**
    * An order was handed off to WhatsApp because card payment is disabled. We can
    * see the hand-off; we can never see whether the order was completed, so this
    * must never be counted as or aggregated with `PURCHASE`.

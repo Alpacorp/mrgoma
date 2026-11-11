@@ -11,6 +11,7 @@ import { SelectedFiltersProvider } from '@/app/context/SelectedFilters';
 import { DetailModalProvider } from '@/app/context/ShowDetailModal';
 import { FiltersProvider } from '@/app/context/ShowFilterContext';
 import { MenuProvider } from '@/app/context/ShowMenuContext';
+import { VisitorCityProvider } from '@/app/context/VisitorCityContext';
 import { CookieConsent, JsonLd } from '@/app/ui/components';
 import SiteAiChat from '@/app/ui/components/AiChat/SiteAiChat';
 import GoogleAnalytics from '@/app/ui/components/GoogleAnalytics/GoogleAnalytics';
@@ -71,16 +72,18 @@ export default function RootLayout({
             <SelectedFiltersProvider>
               <MenuProvider>
                 <CartProvider>
-                  <body className="font-sans" suppressHydrationWarning={true}>
-                    <React.Suspense fallback={null}>
-                      <GoogleAnalytics />
-                    </React.Suspense>
-                    <InteractionTracker />
-                    {children}
-                    <SiteAiChat />
-                    <CookieConsent />
-                    <Analytics />
-                  </body>
+                  <VisitorCityProvider>
+                    <body className="font-sans" suppressHydrationWarning={true}>
+                      <React.Suspense fallback={null}>
+                        <GoogleAnalytics />
+                      </React.Suspense>
+                      <InteractionTracker />
+                      {children}
+                      <SiteAiChat />
+                      <CookieConsent />
+                      <Analytics />
+                    </body>
+                  </VisitorCityProvider>
                 </CartProvider>
               </MenuProvider>
             </SelectedFiltersProvider>

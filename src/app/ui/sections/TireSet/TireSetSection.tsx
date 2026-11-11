@@ -3,11 +3,14 @@ import {
   anchorFromTire,
   availableSetSizes,
   countJoinable,
+  isQuantityMode,
+  setTotal,
+  suggestSet,
   type SetUnit,
 } from '@/app/utils/tireSets';
 import { getCachedSetCandidates, setGroupOf } from '@/repositories/tireSetsRepository';
 
-import TireSetBuilder from './TireSetBuilder';
+import TireSetPanel from './TireSetPanel';
 
 const isSold = (tire: SingleTire) =>
   typeof tire.status === 'string' && tire.status.trim().toLowerCase() === 'sold';
@@ -34,15 +37,22 @@ export default async function TireSetSection({ tire }: { tire: SingleTire }) {
 
   const anchor = anchorFromTire(tire);
   const others = candidates.filter(c => c.id !== anchor.id);
-  if (availableSetSizes(anchor, others).length === 0) return null;
+  const sizes = availableSetSizes(anchor, others);
+  if (sizes.length === 0) return null;
 
   const more = countJoinable(anchor, others);
+  const fromSize = sizes[0];
+  const fromTotal = setTotal(suggestSet(anchor, others, fromSize) ?? []);
 
   return (
-    <TireSetBuilder
+    <TireSetPanel
       anchor={anchor}
       candidates={others}
       more={more}
+      sizes={sizes}
+      fromSize={fromSize}
+      fromTotal={fromTotal}
+      quantityMode={isQuantityMode(anchor)}
       product={{ brand: tire.brand, model2: tire.model2, size: tire.size }}
     />
   );

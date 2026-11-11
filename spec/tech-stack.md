@@ -126,6 +126,17 @@ Versions taken from `package.json` (2026-06-30). Update here when they change.
   Pickup is restricted to the tires' city, enforced by `create-session` (409
   `code: 'city'`); the browser only pre-filters. See
   `spec/features/041-tire-sets/`.
+- **Visitor city (feature 043).** The visitor's approximate city (Miami,
+  Orlando or none — within 60 miles of a store) comes from
+  `GET /api/visitor-city`, the **only** code that reads Vercel's
+  `x-vercel-ip-*` headers (guard: `visitorCity.guard.test.ts`). Pages never
+  vary by location: the city is applied in the browser after load through
+  `VisitorCityProvider` / `useVisitorCity()` (lazy — nothing is fetched until a
+  component asks). The browser keeps only the city and a store id
+  (`mg_city_choice` 90 days, `mg_city_guess` 1 day), never coordinates;
+  analytics carry at most the city name. `visitorCity.ts` ships to every page
+  and has no imports; distance logic with the store directory lives in the
+  server-side `visitorCityGeo.ts`. See `spec/features/043-visitor-city/`.
 - Events emitted from a route handler use `@vercel/analytics/server` and must
   never delay or fail the request they observe. See
   `spec/features/015-vercel-event-tracking/`.

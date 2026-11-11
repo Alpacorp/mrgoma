@@ -249,3 +249,21 @@ export function pickReplacement(keep: SetUnit[], candidates: SetUnit[]): SetUnit
     .sort(byPreference(reference));
   return options[0] ?? null;
 }
+
+/**
+ * The unit most like a tire with tread `reference`, in 041's order (closest
+ * tread → unpatched → cheaper → id). No tread limit: used by feature 043 to
+ * point a visitor at "the same tire" in their own city. Units without a tread
+ * come last; `null` for an empty list.
+ */
+export function closestMatch(reference: number | null, candidates: SetUnit[]): SetUnit | null {
+  if (candidates.length === 0) return null;
+  const withTread = candidates.filter(c => effectiveTread(c) !== null);
+  const without = candidates.filter(c => effectiveTread(c) === null);
+  const ref = reference ?? Math.max(0, ...withTread.map(c => effectiveTread(c) as number));
+  const ordered = [
+    ...withTread.sort(byPreference(ref)),
+    ...without.sort((a, b) => Number(a.patched) - Number(b.patched) || a.price - b.price),
+  ];
+  return ordered[0] ?? null;
+}
