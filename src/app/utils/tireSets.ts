@@ -26,6 +26,13 @@ export const MAX_TREAD_SPREAD = 2;
  */
 export const NEW_TIRE_TREAD = 10;
 
+/**
+ * Most units of a group a tire page loads (041). The chat (044) trims each group
+ * to the same units, in the same order, so every tire it proposes is one the
+ * page can see.
+ */
+export const SET_PAGE_CANDIDATES = 60;
+
 /** Float tolerance: `9.6 → 7.6` is exactly 2/32" and must pass. */
 const EPSILON = 1e-9;
 
@@ -266,4 +273,51 @@ export function closestMatch(reference: number | null, candidates: SetUnit[]): S
     ...without.sort((a, b) => Number(a.patched) - Number(b.patched) || a.price - b.price),
   ];
   return ordered[0] ?? null;
+}
+
+/**
+ * The best valid set of `size` units from one group, with no tire "being looked
+ * at" — what the AI chat proposes (feature 044, D1). Same rule as the page: one
+ * city, tread within 2/32". Every 2/32" window starting at a unit's tread is
+ * tried; inside it **unpatched units come first** (owner, 2026-11-10: patched
+ * tires are often the cheapest, and a set of patched tires is not what "the
+ * best price" should mean), then the cheapest, then id. Windows compare on
+ * patched count, then total. `null` when no window holds `size` units.
+ */
+export function cheapestSet(units: SetUnit[], size: SetSize): SetUnit[] | null {
+  const seen = new Set<string>();
+  const pool = units.filter(u => {
+    if (seen.has(u.id) || effectiveTread(u) === null) return false;
+    seen.add(u.id);
+    return true;
+  });
+  const byCheapest = (a: SetUnit, b: SetUnit) =>
+    Number(a.patched) - Number(b.patched) || a.price - b.price || a.id.localeCompare(b.id);
+
+  let best: { units: SetUnit[]; total: number; patched: number } | null = null;
+  for (const city of ['Miami', 'Orlando'] as const) {
+    const inCity = pool.filter(u => u.city === city);
+    const lows = new Set(inCity.map(u => effectiveTread(u) as number));
+    for (const low of lows) {
+      const high = low + MAX_TREAD_SPREAD + EPSILON;
+      const chosen = inCity
+        .filter(u => {
+          const t = effectiveTread(u) as number;
+          return t >= low - EPSILON && t <= high;
+        })
+        .sort(byCheapest)
+        .slice(0, size);
+      if (chosen.length < size) continue;
+      const total = setTotal(chosen);
+      const patched = chosen.filter(u => u.patched).length;
+      if (
+        !best ||
+        patched < best.patched ||
+        (patched === best.patched && total < best.total - EPSILON)
+      ) {
+        best = { units: chosen, total, patched };
+      }
+    }
+  }
+  return best ? best.units : null;
 }

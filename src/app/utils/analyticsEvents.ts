@@ -80,6 +80,13 @@ export const EVENTS = {
   CITY_MATCH_OPEN: 'city_match_open',
 
   /**
+   * The shopper opened a set the AI chat proposed (feature 044). Sent through
+   * `data-track` on the card's link, with `position` (1–3), `set_size` and
+   * `city` — never anything typed by the customer.
+   */
+  CHAT_SET_OPEN: 'chat_set_open',
+
+  /**
    * An order was handed off to WhatsApp because card payment is disabled. We can
    * see the hand-off; we can never see whether the order was completed, so this
    * must never be counted as or aggregated with `PURCHASE`.
@@ -111,6 +118,14 @@ export const EVENTS = {
    * and must never be aggregated with {@link AI_CHAT_FILTERS_APPLIED}.
    */
   AI_CHAT_NO_RESULTS: 'ai_chat_no_results',
+
+  /**
+   * The assistant looked up sets and showed at least one card (feature 044).
+   * Carries `surface`, `dimensions`, `outcome` (`found`, `other_city` or
+   * `smaller`) and `sets` (how many cards). A lookup with none is
+   * {@link AI_CHAT_NO_RESULTS}.
+   */
+  AI_CHAT_SETS_SHOWN: 'ai_chat_sets_shown',
 } as const;
 
 /**

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   availableSetSizes,
+  cheapestSet,
   closestMatch,
   countJoinable,
   isQuantityMode,
@@ -221,5 +222,69 @@ describe('closestMatch (043)', () => {
     expect(closestMatch(9, [noTread, unit({ id: 'y', tread: 4 })])?.id).toBe('y');
     expect(closestMatch(9, [noTread])?.id).toBe('x');
     expect(closestMatch(9, [])).toBeNull();
+  });
+});
+
+describe('cheapestSet (044, D1)', () => {
+  it('puts unpatched tires before cheaper patched ones (owner, 10 nov)', () => {
+    const units = [
+      unit({ id: 'p1', patched: true, price: 40 }),
+      unit({ id: 'p2', patched: true, price: 40 }),
+      unit({ id: 'u1', patched: false, price: 90 }),
+      unit({ id: 'u2', patched: false, price: 95 }),
+      unit({ id: 'u3', patched: false, price: 99 }),
+    ];
+    expect(ids(cheapestSet(units, 2))).toEqual(['u1', 'u2']);
+    expect(ids(cheapestSet(units, 4))).toEqual(['u1', 'u2', 'u3', 'p1']);
+  });
+
+  it('takes the cheapest units inside a 2/32" window', () => {
+    const units = [
+      unit({ id: 'a', tread: 9, price: 200 }),
+      unit({ id: 'b', tread: 8, price: 80 }),
+      unit({ id: 'c', tread: 7, price: 90 }),
+      unit({ id: 'd', tread: 4, price: 10 }),
+    ];
+    expect(ids(cheapestSet(units, 2))).toEqual(['b', 'c']);
+  });
+
+  it('never exceeds the 2/32" spread (the 6–8–10 overshoot)', () => {
+    const units = [
+      unit({ id: 'six', tread: 6, price: 10 }),
+      unit({ id: 'eight', tread: 8, price: 500 }),
+      unit({ id: 'ten', tread: 10, price: 10 }),
+    ];
+    const set = cheapestSet(units, 2);
+    expect(isWithinTolerance(set ?? [])).toBe(true);
+    expect(cheapestSet(units, 3)).toBeNull();
+  });
+
+  it('keeps every set in one city', () => {
+    const units = [
+      unit({ id: 'm1', city: 'Miami', price: 50 }),
+      unit({ id: 'o1', city: 'Orlando', price: 10 }),
+      unit({ id: 'o2', city: 'Orlando', price: 10 }),
+      unit({ id: 'm2', city: 'Miami', price: 50 }),
+    ];
+    expect(ids(cheapestSet(units, 2))).toEqual(['o1', 'o2']);
+    expect(cheapestSet(units, 3)).toBeNull();
+  });
+
+  it('prefers unpatched on equal price, and skips units without tread', () => {
+    const units = [
+      unit({ id: 'p', patched: true, price: 50 }),
+      unit({ id: 'q', patched: false, price: 50 }),
+      unit({ id: 'r', patched: false, price: 50 }),
+      unit({ id: 'x', tread: null, price: 1 }),
+    ];
+    expect(ids(cheapestSet(units, 2))).toEqual(['q', 'r']);
+  });
+
+  it('counts a new tire without tread as full tread', () => {
+    const units = [
+      unit({ id: 'n1', condition: 'New', tread: null, price: 150 }),
+      unit({ id: 'n2', condition: 'New', tread: null, price: 150 }),
+    ];
+    expect(ids(cheapestSet(units, 2))).toEqual(['n1', 'n2']);
   });
 });

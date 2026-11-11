@@ -70,3 +70,28 @@ describe('asking for WhatsApp is not a reason to be interrogated', () => {
     expect(section).toContain('Hola, necesito ayuda con llantas.');
   });
 });
+
+describe('tire sets come from the app, not the model (044)', () => {
+  const section = PROMPT.slice(PROMPT.indexOf('## TIRE SETS'), PROMPT.indexOf('## OUT OF SCOPE'));
+
+  it('sends set requests with a size to find_sets', () => {
+    expect(section).toMatch(/call the find_sets tool IMMEDIATELY/);
+    expect(section).toMatch(/without asking for a city, store, brand or condition first/);
+    expect(section).toMatch(/with no number means 4/);
+  });
+
+  it('names find_sets in RULE ZERO, before the flow that asks for a store', () => {
+    // On 2026-11-10 "necesito 4 llantas 315/30/22" got "which city?" instead of
+    // sets: the flow's "ask which store" step won over the sets section below it.
+    const rule = PROMPT.slice(PROMPT.indexOf('RULE ZERO'), PROMPT.indexOf('## LANGUAGE'));
+    expect(rule).toMatch(/call the find_sets tool IMMEDIATELY/);
+  });
+
+  it('forbids the model from stating prices, counts or availability of sets', () => {
+    expect(section).toMatch(/Do NOT write set prices, counts, treads or availability yourself/);
+  });
+
+  it('says the chat cannot add to the cart and nothing is reserved (AC10)', () => {
+    expect(section).toMatch(/You cannot add anything to the cart and nothing is reserved/);
+  });
+});

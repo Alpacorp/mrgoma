@@ -14,6 +14,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
  */
 const h = vi.hoisted(() => ({
   toolInput: null as Record<string, unknown> | null,
+  toolName: 'apply_filters',
+  sizeUnits: (async () => []) as (size: string) => Promise<unknown[]>,
+  sizeAsked: [] as string[],
   text: 'What size are you looking for?',
   totalCount: 12,
   brands: ['Michelin', 'Pirelli', 'Goodyear'],
@@ -21,6 +24,12 @@ const h = vi.hoisted(() => ({
 
 vi.mock('next/cache', () => ({ unstable_cache: (fn: unknown) => fn }));
 vi.mock('@/repositories/tiresRepository', () => ({ fetchBrands: () => h.brands }));
+vi.mock('@/repositories/tireSetsRepository', () => ({
+  getCachedSizeUnits: (size: string) => {
+    h.sizeAsked.push(size);
+    return h.sizeUnits(size);
+  },
+}));
 vi.mock('@/app/(shop)/tires/utils/fetchTiresServer', () => ({
   fetchTiresServer: vi.fn(async () => ({ totalCount: h.totalCount })),
 }));
@@ -32,7 +41,16 @@ vi.mock('@anthropic-ai/sdk', () => ({
     messages = {
       create: async () => ({
         content: h.toolInput
-          ? [{ type: 'tool_use', input: { confirmationMessage: 'Searching…', ...h.toolInput } }]
+          ? [
+              {
+                type: 'tool_use',
+                name: h.toolName,
+                input:
+                  h.toolName === 'find_sets'
+                    ? h.toolInput
+                    : { confirmationMessage: 'Searching…', ...h.toolInput },
+              },
+            ]
           : [{ type: 'text', text: h.text }],
       }),
     };
@@ -57,6 +75,9 @@ const ask = (text: string) => req({ messages: [{ role: 'user', content: text }] 
 
 beforeEach(() => {
   h.toolInput = null;
+  h.toolName = 'apply_filters';
+  h.sizeUnits = async () => [];
+  h.sizeAsked = [];
   h.text = 'What size are you looking for?';
   h.totalCount = 12;
   h.brands = ['Michelin', 'Pirelli', 'Goodyear'];
@@ -302,5 +323,135 @@ describe('protecting an anonymous, paid endpoint', () => {
     }
 
     expect(last).toBe(429);
+  });
+});
+
+describe('find_sets (044)', () => {
+  let id = 5000;
+  const unit = (over: Record<string, unknown> = {}) => ({
+    id: String(++id),
+    price: 120,
+    tread: 8,
+    patched: false,
+    condition: 'Used',
+    city: 'Miami',
+    brand: 'Michelin',
+    model2: 'Pilot Sport 4',
+    runFlat: false,
+    ...over,
+  });
+  const units = (count: number, over: Record<string, unknown> = {}) =>
+    Array.from({ length: count }, () => unit(over));
+  const findSets = (input: Record<string, unknown>) => {
+    h.toolName = 'find_sets';
+    h.toolInput = input;
+  };
+
+  it('answers with set cards from the inventory, not the model (AC1)', async () => {
+    findSets({ w: 225, s: 45, d: 17, quantity: 4 });
+    h.sizeUnits = async () => units(5);
+
+    const body = await (await POST(ask('I need 4 tires 225/45R17'))).json();
+
+    expect(h.sizeAsked).toEqual(['225/45/17']);
+    expect(body.type).toBe('sets');
+    expect(body.sets).toHaveLength(1);
+    expect(body.sets[0]).toMatchObject({ brand: 'Michelin', count: 4, total: 480, city: 'Miami' });
+    expect(body.message).toMatch(/as of now/);
+    expect(body.historyMessage).toContain('Michelin Pilot Sport 4 · 4 · Miami');
+    expect(body.historyMessage).not.toMatch(/480/);
+  });
+
+  it('means 4 when no number is given (AC6)', async () => {
+    findSets({ w: 225, s: 45, d: 17 });
+    h.sizeUnits = async () => units(4);
+
+    const body = await (await POST(ask('a set of tires 225/45R17'))).json();
+
+    expect(body.sets[0].count).toBe(4);
+  });
+
+  it('narrows by brand and city, and says none when nothing matches (AC8)', async () => {
+    findSets({ w: 225, s: 45, d: 17, quantity: 4, brands: 'Pirelli', city: 'Orlando' });
+    h.sizeUnits = async () => units(8, { city: 'Orlando' });
+
+    const body = await (await POST(ask('4 Pirelli 225/45R17 in Orlando'))).json();
+
+    expect(body.type).toBe('no_results');
+    expect(body.message).toMatch(/No set of Pirelli 225\/45R17 tires in Orlando/);
+  });
+
+  it("orders by the visitor's city hint (AC3)", async () => {
+    findSets({ w: 225, s: 45, d: 17, quantity: 2 });
+    h.sizeUnits = async () => [
+      ...units(2, { price: 50 }),
+      ...units(2, { brand: 'Pirelli', model2: 'P Zero', price: 90, city: 'Orlando' }),
+    ];
+
+    const body = await (
+      await POST(
+        req({ messages: [{ role: 'user', content: '2 tires 225/45R17' }], city: 'Orlando' })
+      )
+    ).json();
+
+    expect(body.sets.map((c: { city: string }) => c.city)).toEqual(['Orlando', 'Miami']);
+  });
+
+  it('answers in Spanish (AC9)', async () => {
+    findSets({ w: 225, s: 45, d: 17, quantity: 4 });
+    h.sizeUnits = async () => units(4);
+
+    const body = await (await POST(ask('necesito un juego de 4 llantas 225/45R17'))).json();
+
+    expect(body.message).toMatch(/juegos de 4 llantas/);
+  });
+
+  it('asks for the size when the model calls it without one (AC11)', async () => {
+    findSets({ quantity: 4 });
+
+    const body = await (await POST(ask('I need 4 tires'))).json();
+
+    expect(body.type).toBe('message');
+    expect(body.message).toMatch(/What size are you looking for/);
+    expect(body.message).toMatch(/Build your set/);
+    expect(h.sizeAsked).toEqual([]);
+  });
+
+  it('falls back to a catalog search when the inventory fails (AC12)', async () => {
+    findSets({ w: 225, s: 45, d: 17, quantity: 4 });
+    h.sizeUnits = async () => {
+      throw new Error('pool exhausted');
+    };
+
+    const body = await (await POST(ask('4 tires 225/45R17'))).json();
+
+    expect(body.type).toBe('filters');
+    expect(body.filters).toEqual({ w: 225, s: 45, d: 17 });
+    expect(body.message).toMatch(/Build your set/);
+  });
+
+  it('gives up after 4 seconds instead of waiting on a slow database (AC12)', async () => {
+    vi.useFakeTimers();
+    try {
+      findSets({ w: 225, s: 45, d: 17, quantity: 4 });
+      h.sizeUnits = () => new Promise(() => {});
+
+      const pending = POST(ask('4 tires 225/45R17'));
+      await vi.advanceTimersByTimeAsync(4001);
+      const body = await (await pending).json();
+
+      expect(body.type).toBe('filters');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('answers an unknown brand as today, without querying (AC8)', async () => {
+    findSets({ w: 225, s: 45, d: 17, brands: 'Acme' });
+
+    const body = await (await POST(ask('4 Acme tires 225/45R17'))).json();
+
+    expect(body.type).toBe('no_results');
+    expect(h.sizeAsked).toEqual([]);
   });
 });

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import Anthropic from '@anthropic-ai/sdk';
+import { z } from 'zod';
 
 import { fetchTiresServer } from '@/app/(shop)/tires/utils/fetchTiresServer';
 import { dimensionsParam, unusedDimensions } from '@/app/api/_lib/aiChat/dimensions';
@@ -10,11 +11,19 @@ import {
   buildNoResultsMessage,
   buildUnknownBrandMessage,
 } from '@/app/api/_lib/aiChat/messages';
-import { asksForSet, buildSetHint } from '@/app/api/_lib/aiChat/sets';
+import {
+  asksForSet,
+  buildSetHint,
+  buildSetsMessage,
+  withSetsSummary,
+} from '@/app/api/_lib/aiChat/sets';
 import { getCachedBrands, parseBrands, unknownBrands } from '@/app/api/_lib/brandCatalogue';
 import { withLogging } from '@/app/api/_lib/withLogging';
 import { buildStoreDirectory } from '@/app/api/tires/ai-chat/_lib/storeDirectory';
+import { pickChatSets } from '@/app/utils/chatSets';
+import type { SetSize } from '@/app/utils/tireSets';
 import { WHATSAPP_DISPLAY, WHATSAPP_NUMBER } from '@/app/utils/whatsapp';
+import { getCachedSizeUnits } from '@/repositories/tireSetsRepository';
 import { logger } from '@/utils/logger';
 import { createRateLimiter } from '@/utils/rateLimit';
 
@@ -48,6 +57,9 @@ rim size, a condition, a price, a tread life, a store — call the apply_filters
 tool IMMEDIATELY with what you have. Do not ask a qualifying question first.
 "michelin" alone → apply_filters(brands="Michelin"). "aro 17" alone →
 apply_filters(d=17). "used under $80" → apply_filters(condition="used", maxPrice=80).
+If they ask for a SET (2, 3 or 4 tires, "a set", "un juego") and gave the full
+size, call the find_sets tool IMMEDIATELY instead — never ask for the city,
+brand or condition first; the cards show each set's city.
 This rule outranks every example, template and flow step below it. Only ask for a
 size or vehicle when the customer has given you nothing searchable at all.
 
@@ -177,15 +189,21 @@ When the customer refines a previous search ("only new ones", "just Michelin"), 
 
 ## TIRE SETS (2, 3 or 4 matching tires)
 Customers often want a set ("4 tires", "a pair", "un juego", "4 llantas").
-Every tire is a unique unit, and each tire page has a "Build your set" block
-that picks 2, 3 or 4 matching tires — same brand, model and size, tread within
-2/32", all in the same city (Miami or Orlando) — and adds them to the cart
-together. The set price is the sum of its tires; there is no set discount.
-- Search exactly as usual (RULE ZERO): the size, brand, condition or price they gave.
-- Do NOT explain "Build your set" yourself: the app adds a one-line tip after
-  your reply whenever the customer asks for a set. Keep your reply short.
-- Never say how many matching tires are in stock or that a set is available;
-  you cannot see it. The tire page shows which set sizes can be built.
+Every tire is a unique unit; a set is 2, 3 or 4 matching tires — same brand,
+model and size, tread within 2/32", all in the same city (Miami or Orlando).
+The set price is the sum of its tires; there is no set discount.
+- When the customer asks for a set AND you know the full size (width, profile
+  and rim), call the find_sets tool IMMEDIATELY — not apply_filters, and
+  without asking for a city, store, brand or condition first. Pass the quantity they
+  asked for; "a set" / "un juego" with no number means 4. Pass a brand,
+  condition or city only if the customer said it.
+- The app looks the sets up and shows them as cards with their real prices.
+  Do NOT write set prices, counts, treads or availability yourself, before or
+  after: you cannot see the inventory.
+- If they ask for a set without a full size, ask for the size (or their car)
+  as usual; the app adds a tip on how sets work.
+- You cannot add anything to the cart and nothing is reserved: the customer
+  reviews the set on the tire page and adds it there.
 - For store pickup, all tires must be in the store's city; delivery has no such limit.
 
 ## OUT OF SCOPE
@@ -271,6 +289,65 @@ const APPLY_FILTERS_TOOL: Anthropic.Tool = {
   },
 };
 
+const FIND_SETS_TOOL: Anthropic.Tool = {
+  name: 'find_sets',
+  description:
+    'Look up sets of 2, 3 or 4 matching tires that can be built now in one size. Call this when the customer asks for a set (or a number of tires) and the full size is known.',
+  input_schema: {
+    type: 'object' as const,
+    properties: {
+      w: { type: 'number', description: 'Tire width in mm (e.g., 225)' },
+      s: { type: 'number', description: 'Aspect ratio / profile (e.g., 45)' },
+      d: { type: 'number', description: 'Rim diameter in inches (e.g., 17)' },
+      quantity: {
+        type: 'number',
+        enum: [2, 3, 4],
+        description: 'How many tires the customer wants. "A set" with no number means 4.',
+      },
+      brands: {
+        type: 'string',
+        description: 'Comma-separated brands, only if the customer named one',
+      },
+      condition: { type: 'string', enum: ['new', 'used'], description: 'Only if the customer said it' },
+      city: {
+        type: 'string',
+        enum: ['Miami', 'Orlando'],
+        description: 'Only if the customer named the city',
+      },
+    },
+    required: ['w', 's', 'd'],
+  },
+};
+
+/** The model's `find_sets` input, checked at the boundary. */
+const FindSetsInput = z.object({
+  w: z.coerce.number().int().min(125).max(395),
+  s: z.coerce.number().int().min(20).max(95),
+  d: z.coerce.number().int().min(12).max(30),
+  quantity: z.coerce.number().int().min(2).max(4).catch(4).default(4),
+  brands: z.string().optional(),
+  condition: z.enum(['new', 'used']).optional().catch(undefined),
+  city: z.enum(['Miami', 'Orlando']).optional().catch(undefined),
+});
+
+/** The visitor's estimated city (043), sent by the browser as a hint. */
+const VisitorCity = z.enum(['Miami', 'Orlando']).nullable().catch(null);
+
+/**
+ * The longest the chat waits for the inventory (AC12). The pool of 10
+ * connections has made queries wait 4–30 s under bot traffic; past this the
+ * customer gets today's catalog search instead of a spinner.
+ */
+export const SET_LOOKUP_TIMEOUT_MS = 4000;
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error('set lookup timed out')), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
 interface ApiMessage {
   role: 'user' | 'assistant';
   content: string;
@@ -311,11 +388,15 @@ export const POST = withLogging('tires.aiChat.POST', async (req: NextRequest) =>
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 1024,
       system: SYSTEM_PROMPT,
-      tools: [APPLY_FILTERS_TOOL],
+      tools: [APPLY_FILTERS_TOOL, FIND_SETS_TOOL],
       messages: messages,
     });
 
     const toolUseBlock = response.content.find(block => block.type === 'tool_use');
+
+    if (toolUseBlock && toolUseBlock.type === 'tool_use' && toolUseBlock.name === 'find_sets') {
+      return await answerWithSets(messages, toolUseBlock.input, body?.city);
+    }
 
     if (toolUseBlock && toolUseBlock.type === 'tool_use') {
       const filters = toolUseBlock.input as Record<string, unknown>;
@@ -385,3 +466,95 @@ export const POST = withLogging('tires.aiChat.POST', async (req: NextRequest) =>
     return NextResponse.json({ message: errorMessage }, { status: 500 });
   }
 });
+
+/**
+ * `find_sets` (feature 044). The model only extracted what was asked; the sets,
+ * their prices and the reply text all come from the inventory and the server.
+ */
+async function answerWithSets(messages: ApiMessage[], input: unknown, cityHint: unknown) {
+  const spanish = isSpanish(messages);
+  const parsed = FindSetsInput.safeParse(input);
+
+  // No usable size: ask for it, as the chat does today, with the 041 tip.
+  if (!parsed.success) {
+    const ask = spanish
+      ? '¿Qué medida buscas? (ejemplo: 225/45R17) o dime tu carro (año, marca y modelo).'
+      : 'What size are you looking for? (example: 225/45R17) or tell me your car (year, make, model).';
+    return NextResponse.json({ type: 'message', message: `${ask}${buildSetHint(spanish)}` });
+  }
+
+  const { w, s, d, quantity, brands, condition, city } = parsed.data;
+  const size = `${w}/${s}/${d}`;
+  const filterParams: Record<string, unknown> = { w, s, d, brands, condition };
+  const dimensions = dimensionsParam(filterParams);
+
+  const requestedBrands = parseBrands(brands);
+  if (requestedBrands.length > 0) {
+    const absent = unknownBrands(requestedBrands, await getCachedBrands({}));
+    if (absent.length > 0) {
+      return NextResponse.json({
+        type: 'no_results',
+        message: buildUnknownBrandMessage(spanish, absent),
+        dimensions,
+      });
+    }
+  }
+
+  let units;
+  try {
+    units = await withTimeout(getCachedSizeUnits(size), SET_LOOKUP_TIMEOUT_MS);
+  } catch (err) {
+    // Slow or failing inventory: today's answer — the catalog for the size,
+    // with the tip on how to build the set there (AC12).
+    logger.warn('AI chat set lookup failed; falling back to a catalog search', {
+      reason: err instanceof Error ? err.message : String(err),
+    });
+    const filters = Object.fromEntries(
+      Object.entries(filterParams).filter(([, v]) => v !== undefined)
+    );
+    const confirm = spanish ? `Te muestro llantas ${w}/${s}R${d}.` : `Here are ${w}/${s}R${d} tires.`;
+    return NextResponse.json({
+      type: 'filters',
+      filters,
+      message: `${confirm}${buildSetHint(spanish)}`,
+      dimensions,
+    });
+  }
+
+  const visitorCity = VisitorCity.parse(cityHint ?? null);
+  const result = pickChatSets(units, {
+    size,
+    quantity: quantity as SetSize,
+    brands: requestedBrands,
+    condition,
+    city,
+    visitorCity,
+  });
+
+  const message = buildSetsMessage(spanish, {
+    outcome: result.outcome,
+    requested: quantity as SetSize,
+    shown: result.quantity,
+    size,
+    city: result.sets[0]?.city,
+    wantedCity: city ?? visitorCity,
+    brands: requestedBrands,
+    condition,
+    namedCity: city,
+  });
+
+  if (result.outcome === 'none') {
+    return NextResponse.json({ type: 'no_results', message, dimensions });
+  }
+
+  return NextResponse.json({
+    type: 'sets',
+    message,
+    sets: result.sets,
+    outcome: result.outcome,
+    spanish,
+    // What the browser sends back as this turn: short, priceless (044 analyze).
+    historyMessage: withSetsSummary(message, result.sets),
+    dimensions,
+  });
+}

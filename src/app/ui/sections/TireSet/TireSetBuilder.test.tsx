@@ -145,3 +145,57 @@ describe('TireSetBuilder', () => {
     expect(container).toBeEmptyDOMElement();
   });
 });
+
+describe('a set from the AI chat (044, D6)', () => {
+  const anchor = unit('1', { price: 100 });
+  const cands = [
+    unit('2', { price: 100 }),
+    unit('3', { price: 100 }),
+    unit('4', { price: 300, tread: 8 }),
+    unit('5', { price: 300, tread: 8 }),
+  ];
+  const renderWith = (initialSet: SetUnit[], notice?: string, a = anchor, c = cands) =>
+    render(
+      <CartProvider>
+        <TireSetBuilder
+          anchor={a}
+          candidates={c}
+          product={product}
+          initialSet={initialSet}
+          notice={notice}
+        />
+      </CartProvider>
+    );
+
+  it('starts from exactly those tires and their total (AC4)', () => {
+    renderWith([anchor, cands[2], cands[3]]);
+
+    expect(screen.getByRole('radio', { name: '3 tires' })).toBeChecked();
+    expect(screen.getByText(/Set of 3 · total \$700\.00/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /#C4/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /#C5/ })).toBeInTheDocument();
+  });
+
+  it('shows the notice when a tire was replaced (AC5)', () => {
+    renderWith([anchor, cands[0]], '1 tire sold; we picked the closest match.');
+
+    expect(screen.getByRole('status')).toHaveTextContent('1 tire sold');
+  });
+
+  it('returns to the suggestion when the shopper picks another size', async () => {
+    renderWith([anchor, cands[2], cands[3]]);
+
+    await userEvent.click(screen.getByRole('radio', { name: '2 tires' }));
+    await userEvent.click(screen.getByRole('radio', { name: '3 tires' }));
+
+    expect(screen.getByText(/Set of 3 · total \$300\.00/)).toBeInTheDocument();
+  });
+
+  it('uses the quantity and total of a set of new tires', () => {
+    const n = (id: string) => unit(id, { condition: 'New', tread: null, price: 150 });
+    renderWith([n('1'), n('2'), n('3')], undefined, n('1'), [n('2'), n('3'), n('4')]);
+
+    expect(screen.getByRole('radio', { name: '3 tires' })).toBeChecked();
+    expect(screen.getByText(/Set of 3 · total \$450\.00/)).toBeInTheDocument();
+  });
+});

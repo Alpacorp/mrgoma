@@ -6,13 +6,19 @@ import { useRouter } from 'next/navigation';
 
 import { trackEvent } from '@/app/utils/analytics';
 import { EVENTS } from '@/app/utils/analyticsEvents';
+import type { ChatSetCard } from '@/app/utils/chatSets';
 import { encodeLocationPairs } from '@/app/utils/filterUtils';
+import { readGuess } from '@/app/utils/visitorCity';
 
 export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   isFilterApplication?: boolean;
+  /** Set cards the server looked up (feature 044). */
+  sets?: ChatSetCard[];
+  /** The conversation's language when the cards were shown. */
+  setsSpanish?: boolean;
 }
 
 interface ApiMessage {
@@ -27,12 +33,22 @@ interface AiChatResponse {
    * which is a different outcome from ordinary conversation and must not be
    * counted as a successful one.
    */
-  type: 'filters' | 'message' | 'no_results';
+  type: 'filters' | 'message' | 'no_results' | 'sets';
   filters?: Record<string, unknown>;
   message: string;
   /** Names of what was filtered on, never the customer's own words. */
   dimensions?: string;
+  /** `sets` only: the cards, how they were found, and what goes into the history. */
+  sets?: ChatSetCard[];
+  outcome?: string;
+  historyMessage?: string;
+  spanish?: boolean;
 }
+
+const visitorCity = (): string | null => {
+  if (typeof window === 'undefined') return null;
+  return readGuess()?.city ?? null;
+};
 
 export function useAiChat(options?: {
   apiEndpoint?: string;
@@ -105,7 +121,12 @@ export function useAiChat(options?: {
       const response = await fetch(apiEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: apiHistoryRef.current }),
+        // The visitor's estimated city (043), only if one is already stored —
+        // never fetched for the chat. The server uses it to order sets.
+        body: JSON.stringify({
+          messages: apiHistoryRef.current,
+          ...(visitorCity() ? { city: visitorCity() } : {}),
+        }),
       });
 
       if (!response.ok) {
@@ -115,9 +136,11 @@ export function useAiChat(options?: {
 
       const data: AiChatResponse = await response.json();
 
+      // For sets the history gets a short, priceless summary of the cards, so a
+      // follow-up ("only Michelin") refines the same search (044).
       const assistantApiMessage: ApiMessage = {
         role: 'assistant',
-        content: data.message,
+        content: data.type === 'sets' && data.historyMessage ? data.historyMessage : data.message,
       };
       apiHistoryRef.current = [...apiHistoryRef.current, assistantApiMessage];
 
@@ -126,6 +149,9 @@ export function useAiChat(options?: {
         role: 'assistant',
         content: data.message,
         isFilterApplication: data.type === 'filters',
+        ...(data.type === 'sets' && data.sets?.length
+          ? { sets: data.sets, setsSpanish: !!data.spanish }
+          : {}),
       };
 
       setMessages(prev => [...prev, assistantMessage]);
@@ -139,6 +165,18 @@ export function useAiChat(options?: {
           params: { surface, dimensions: data.dimensions ?? '' },
         });
         applyFiltersToUrl(data.filters);
+      } else if (data.type === 'sets' && data.sets?.length) {
+        // No navigation: the cards stay in the chat until the shopper opens one.
+        trackEvent({
+          action: EVENTS.AI_CHAT_SETS_SHOWN,
+          category: 'ai_chat',
+          params: {
+            surface,
+            dimensions: data.dimensions ?? '',
+            outcome: data.outcome ?? '',
+            sets: data.sets.length,
+          },
+        });
       } else if (data.type === 'no_results') {
         trackEvent({
           action: EVENTS.AI_CHAT_NO_RESULTS,

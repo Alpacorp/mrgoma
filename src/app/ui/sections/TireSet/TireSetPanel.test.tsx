@@ -89,3 +89,80 @@ describe('TireSetPanel', () => {
     expect(document.querySelector('dialog')).not.toHaveAttribute('open');
   });
 });
+
+describe('a set opened from the AI chat (044)', () => {
+  const anchor = unit('10', { price: 100 });
+  const cands = [unit('11'), unit('12'), unit('13', { price: 300 }), unit('14', { price: 300 })];
+  const renderAt = (search: string) => {
+    window.history.replaceState(null, '', `/tires/10-michelin-225-65-17${search}`);
+    return render(
+      <CartProvider>
+        <TireSetPanel
+          anchor={anchor}
+          candidates={cands}
+          product={{ brand: 'MICHELIN', model2: 'DEFENDER', size: '225/65/17' }}
+          more={4}
+          sizes={[2, 3, 4]}
+          fromSize={2}
+          fromTotal={200}
+          quantityMode={false}
+        />
+      </CartProvider>
+    );
+  };
+  const dialog = () => document.querySelector('dialog') as HTMLDialogElement;
+
+  it('opens the panel with exactly those tires and removes ?set= (AC4)', async () => {
+    renderAt('?set=10,13,14');
+
+    expect(await screen.findByText(/Set of 3 · total \$700\.00/)).toBeInTheDocument();
+    expect(dialog()).toHaveAttribute('open');
+    expect(window.location.search).toBe('');
+    expect(window.location.pathname).toBe('/tires/10-michelin-225-65-17');
+  });
+
+  it('replaces a tire that sold and says so (AC5)', async () => {
+    renderAt('?set=10,13,99');
+
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      '1 tire of that set just sold; we picked the closest match.'
+    );
+    expect(dialog()).toHaveAttribute('open');
+  });
+
+  it('keeps the panel closed with a notice when the set cannot be built (AC5)', async () => {
+    window.history.replaceState(null, '', '/tires/10?set=10,97,98,99');
+    render(
+      <CartProvider>
+        <TireSetPanel
+          anchor={anchor}
+          candidates={[unit('11')]}
+          product={{ brand: 'MICHELIN', model2: 'DEFENDER', size: '225/65/17' }}
+          more={1}
+          sizes={[2]}
+          fromSize={2}
+          fromTotal={200}
+          quantityMode={false}
+        />
+      </CartProvider>
+    );
+
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      'That set of 4 is no longer available'
+    );
+    expect(dialog()).not.toHaveAttribute('open');
+  });
+
+  it('ignores a tampered link and behaves as today', () => {
+    renderAt('?set=10,10,abc');
+
+    expect(dialog()).not.toHaveAttribute('open');
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  });
+
+  it('does nothing without ?set=', () => {
+    renderAt('');
+
+    expect(dialog()).not.toHaveAttribute('open');
+  });
+});
