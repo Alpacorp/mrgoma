@@ -78,6 +78,8 @@ describe('TireSetBuilder', () => {
     const list = screen.getByRole('list', { name: 'Tires in your set of 4' });
     expect(list.querySelectorAll('li')).toHaveLength(4);
     expect(screen.getByText('This tire')).toBeInTheDocument();
+    // Every unit says its size, so the shopper sees they all match.
+    expect(list.textContent!.match(/225\/65\/17 · /g)).toHaveLength(4);
     // Every other tire links to its own page, in a new tab so the set survives.
     const link = screen.getByRole('link', { name: /#Cb/ });
     expect(link).toHaveAttribute('href', '/tires/b-michelin-225-65-17');

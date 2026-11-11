@@ -70,3 +70,13 @@ describe('legal policies — withdrawing consent (feature 016)', () => {
     expect(container.textContent ?? '').toMatch(/cart is stored on your device/i);
   });
 });
+
+describe('legal policies — visitor city (feature 043, FR8)', () => {
+  it('explains the estimate, how long it is kept, and that it is not stored', () => {
+    const { container } = render(<LegalPoliciesPage />);
+    const text = container.textContent ?? '';
+    expect(text).toMatch(/estimate whether you are near our Miami or Orlando stores/i);
+    expect(text).toMatch(/kept only on your device for one\s+day/i);
+    expect(text).toMatch(/do not store your location/i);
+  });
+});

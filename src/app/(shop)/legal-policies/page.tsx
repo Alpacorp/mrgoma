@@ -152,6 +152,12 @@ export default function LegalPoliciesPage() {
                 visits, and to remember whether you accepted this notice.
               </li>
               <li>
+                <strong>Your city:</strong> To point you to nearby stock and the closest store for
+                pickup, we estimate whether you are near our Miami or Orlando stores from your
+                internet connection. The estimate is kept only on your device for one day, and we do
+                not store your location.
+              </li>
+              <li>
                 <strong>Analytics:</strong> We measure how the site is used so we can improve it,
                 with two tools. <strong>Google Analytics</strong> uses cookies to recognize
                 returning visitors, so it runs only after you accept cookies — if you decline, it is

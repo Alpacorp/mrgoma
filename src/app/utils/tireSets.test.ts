@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   availableSetSizes,
+  closestMatch,
   countJoinable,
   isQuantityMode,
   isWithinTolerance,
@@ -203,5 +204,22 @@ describe('quantity mode (D11, AC16)', () => {
 
   it('is off for used tires', () => {
     expect(isQuantityMode(unit())).toBe(false);
+  });
+});
+
+describe('closestMatch (043)', () => {
+  it('follows 041 order with no tread limit', () => {
+    const far = unit({ id: 'far', tread: 3 });
+    const near = unit({ id: 'near', tread: 8, patched: true });
+    const nearClean = unit({ id: 'nearClean', tread: 8, price: 300 });
+    expect(closestMatch(9, [far, near, nearClean])?.id).toBe('nearClean');
+    expect(closestMatch(2, [far, near])?.id).toBe('far');
+  });
+
+  it('puts units without tread last, and is null for nothing', () => {
+    const noTread = unit({ id: 'x', tread: null });
+    expect(closestMatch(9, [noTread, unit({ id: 'y', tread: 4 })])?.id).toBe('y');
+    expect(closestMatch(9, [noTread])?.id).toBe('x');
+    expect(closestMatch(9, [])).toBeNull();
   });
 });

@@ -94,18 +94,18 @@ const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
       open={showCartModal}
       onCloseAction={closeModal}
       ariaLabelledby="cart-modal-title"
-      className="fixed inset-0 z-50 overflow-y-auto animate-slide-in-right"
+      className="fixed inset-0 z-50 overflow-y-auto"
     >
       <DialogBackdrop
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300"
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm animate-fade-in"
         transition={true}
       />
-      <div className="flex h-full justify-end animate-slide-in-right">
+      <div className="flex h-full justify-end">
         <DialogPanel
           className="w-full sm:max-w-md bg-white shadow-xl h-full overflow-y-auto animate-slide-in-right sm:rounded-l-2xl ring-1 ring-black/5"
           transition={true}
         >
-          <div className="flex flex-col h-full animate-slide-in-right">
+          <div className="flex flex-col h-full">
             {/* Header */}
             <div className="sticky top-0 z-10 flex items-center justify-between p-4 border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/75">
               <h2 id="cart-modal-title" className="text-lg font-semibold text-gray-900">

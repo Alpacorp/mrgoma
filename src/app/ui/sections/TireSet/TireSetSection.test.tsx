@@ -22,8 +22,10 @@ vi.mock('@/repositories/tireSetsRepository', async () => {
     },
   };
 });
-vi.mock('./TireSetBuilder', () => ({
-  default: ({ more }: { more?: number }) => <div data-testid="builder">{`more:${more}`}</div>,
+vi.mock('./TireSetPanel', () => ({
+  default: ({ more, sizes, fromSize }: { more: number; sizes: number[]; fromSize: number }) => (
+    <div data-testid="builder">{`more:${more} sizes:${sizes.join(',')} from:${fromSize}`}</div>
+  ),
 }));
 
 const { default: TireSetSection } = await import('./TireSetSection');
@@ -69,7 +71,7 @@ describe('TireSetSection', () => {
       unit('8', 6),
     ];
     await renderSection(tire());
-    expect(screen.getByTestId('builder')).toHaveTextContent('more:6');
+    expect(screen.getByTestId('builder')).toHaveTextContent('more:6 sizes:2,3,4 from:2');
   });
 
   it('renders nothing when no set can be built (AC3)', async () => {

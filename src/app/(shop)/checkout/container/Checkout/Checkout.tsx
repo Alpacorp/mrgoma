@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { useCart } from '@/app/context/CartContext';
+import { useVisitorCity } from '@/app/context/VisitorCityContext';
 import { LoadingScreen } from '@/app/ui/components';
 import CityTag from '@/app/ui/components/CityTag/CityTag';
 import ProductMeta from '@/app/ui/components/ProductMeta/ProductMeta';
@@ -103,8 +104,11 @@ export default function Checkout() {
   const isBlockedState = selectedState ? blockedStates.has(selectedState) : false;
 
   // Fulfillment selection: delivery vs. pickup in store
-  const [fulfillmentMethod, setFulfillmentMethod] = React.useState<'delivery' | 'pickup'>(
-    'delivery'
+  // No method preselected: the shopper chooses first, and each choice reveals
+  // only what it needs — the state for delivery, the store (or why pickup is
+  // impossible) for pickup.
+  const [fulfillmentMethod, setFulfillmentMethod] = React.useState<'delivery' | 'pickup' | null>(
+    null
   );
   const [pickupStoreId, setPickupStoreId] = React.useState<string>('');
 
@@ -134,11 +138,30 @@ export default function Checkout() {
   // Keep the choice valid as the cart changes: no pickup with mixed cities, and
   // no store selected that is no longer offered.
   React.useEffect(() => {
-    if (mixedCities && fulfillmentMethod === 'pickup') setFulfillmentMethod('delivery');
-  }, [mixedCities, fulfillmentMethod]);
-  React.useEffect(() => {
     if (pickupStoreId && !pickupStores.some(s => s.id === pickupStoreId)) setPickupStoreId('');
   }, [pickupStoreId, pickupStores]);
+
+  // Feature 043 (FR6): with pickup chosen, preselect the store nearest to the
+  // visitor — only when the cart's tires are all in the visitor's city, the
+  // store is one of those allowed, and nothing was picked yet. Once per visit,
+  // so a shopper who clears the choice is not overruled.
+  const visitor = useVisitorCity();
+  const preselectedRef = React.useRef(false);
+  React.useEffect(() => {
+    if (preselectedRef.current || fulfillmentMethod !== 'pickup' || pickupStoreId) return;
+    const store = visitor.nearestStoreId;
+    if (!store || !visitor.city || visitor.city !== pickupCity) return;
+    if (!pickupStores.some(s => s.id === store)) return;
+    preselectedRef.current = true;
+    setPickupStoreId(store);
+  }, [
+    fulfillmentMethod,
+    pickupStoreId,
+    pickupCity,
+    pickupStores,
+    visitor.city,
+    visitor.nearestStoreId,
+  ]);
 
   /**
    * A set tire that sold before payment, and what can replace it (feature 041,
@@ -335,6 +358,14 @@ export default function Checkout() {
   const proceedToPayment = async () => {
     if (isEmpty || loading) return;
     setError(null);
+    if (!fulfillmentMethod) {
+      setError('Choose delivery or store pickup to continue.');
+      return;
+    }
+    if (fulfillmentMethod === 'pickup' && mixedCities) {
+      setError('Store pickup needs all tires in one city. Choose delivery or remove some tires.');
+      return;
+    }
     if (fulfillmentMethod === 'delivery') {
       if (!selectedState) {
         setError('Please select your state to continue.');
@@ -981,25 +1012,20 @@ export default function Checkout() {
                     <dd className="font-semibold text-gray-900">{currency(total)}</dd>
                   </div>
                 </dl>
-                {/* Shipping state restriction */}
-                <ShippingStateGate
-                  selectedState={selectedState}
-                  onChange={setSelectedState}
-                  isBlockedState={isBlockedState}
-                />
-
-                {/* Fulfillment method */}
-                <div className="mt-3">
-                  <label className="block text-sm font-medium text-gray-900">
+                {/* Fulfillment method first (2026-11-10): each choice reveals only
+                    what it needs, so the shopper is not shown a state for a
+                    pickup, or told pickup is impossible before choosing it. */}
+                <div className="mt-4">
+                  <p id="fulfillment-label" className="block text-sm font-medium text-gray-900">
                     How would you like to receive your tires?
-                  </label>
+                  </p>
                   <div
                     className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2"
                     role="radiogroup"
-                    aria-label="Fulfillment method"
+                    aria-labelledby="fulfillment-label"
                   >
                     <label
-                      className={`flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm ${fulfillmentMethod === 'delivery' ? 'border-green-300 bg-green-50 text-green-800' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}
+                      className={`flex min-h-[44px] cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm ${fulfillmentMethod === 'delivery' ? 'border-green-300 bg-green-50 text-green-800' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}
                     >
                       <input
                         type="radio"
@@ -1013,36 +1039,34 @@ export default function Checkout() {
                       <span>Delivery to my address</span>
                     </label>
                     <label
-                      className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${
-                        mixedCities
-                          ? 'cursor-not-allowed border-dashed border-gray-300 bg-gray-100 text-gray-400'
-                          : fulfillmentMethod === 'pickup'
-                            ? 'cursor-pointer border-green-300 bg-green-50 text-green-800'
-                            : 'cursor-pointer border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-                      }`}
+                      className={`flex min-h-[44px] cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm ${fulfillmentMethod === 'pickup' ? 'border-green-300 bg-green-50 text-green-800' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}
                     >
                       <input
                         type="radio"
                         name="fulfillment"
                         value="pickup"
-                        className="h-4 w-4 text-green-600 focus:ring-green-500 disabled:cursor-not-allowed"
+                        className="h-4 w-4 text-green-600 focus:ring-green-500"
                         checked={fulfillmentMethod === 'pickup'}
                         onChange={() => setFulfillmentMethod('pickup')}
-                        disabled={mixedCities}
                         aria-describedby={mixedCities ? 'pickup-mixed-note' : undefined}
                         aria-label="Pick up in store"
                       />
-                      <span>
-                        Pick up in store
-                        {mixedCities ? (
-                          <span className="block text-xs">Not available for this cart</span>
-                        ) : null}
-                      </span>
+                      <span>Pick up in store</span>
                     </label>
                   </div>
-                  {mixedCities && (
+
+                  {fulfillmentMethod === 'delivery' && (
+                    <ShippingStateGate
+                      selectedState={selectedState}
+                      onChange={setSelectedState}
+                      isBlockedState={isBlockedState}
+                    />
+                  )}
+
+                  {fulfillmentMethod === 'pickup' && mixedCities && (
                     <div
                       id="pickup-mixed-note"
+                      role="status"
                       className="mt-2 flex gap-2 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900"
                     >
                       <svg
@@ -1083,7 +1107,7 @@ export default function Checkout() {
                     </div>
                   )}
 
-                  {fulfillmentMethod === 'pickup' && (
+                  {fulfillmentMethod === 'pickup' && !mixedCities && (
                     <div className="mt-3">
                       <label
                         htmlFor="pickup-store"
@@ -1171,14 +1195,16 @@ export default function Checkout() {
                     disabled={
                       isEmpty ||
                       loading ||
+                      !fulfillmentMethod ||
                       (fulfillmentMethod === 'delivery' && (!selectedState || isBlockedState)) ||
-                      (fulfillmentMethod === 'pickup' && !pickupStoreId)
+                      (fulfillmentMethod === 'pickup' && (mixedCities || !pickupStoreId))
                     }
                     aria-disabled={
                       isEmpty ||
                       loading ||
+                      !fulfillmentMethod ||
                       (fulfillmentMethod === 'delivery' && (!selectedState || isBlockedState)) ||
-                      (fulfillmentMethod === 'pickup' && !pickupStoreId)
+                      (fulfillmentMethod === 'pickup' && (mixedCities || !pickupStoreId))
                     }
                   >
                     {loading
