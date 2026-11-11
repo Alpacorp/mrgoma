@@ -105,15 +105,22 @@ To be resumed after the two tracks above; no fixed order yet.
   published. Selling also trashes a record (all 19,387 sold rows), so the trash
   alone is not "removed". Sold tires show no price. _Merged (PR #205,
   2026-11-10)._
-- 🟡 **Tire sets in the AI chat (`044-chat-tire-sets`).** Step 2 after 041's chat tip: a
+- ✅ **Tire sets in the AI chat (`044-chat-tire-sets`).** Step 2 after 041's chat tip: a
   `find_sets` tool for the public chat. Given a size (and optionally brand,
   condition or city) it returns 2–3 sets that can really be built — brand and
   model, city, total price, tread range — each linking to the tire page with
   the set block ready. Reuses 041's engine so the rules are identical; needs a
   new grouped count query per size, cached (the mssql pool of 10 has saturated
   before). The chat never adds to the cart (a wrong pick ends in a real
-  payment); the shopper confirms on the page. Follows 041. _Implemented
-  2026-11-10 (cards in the chat, panel opens with the same tires)._
+  payment); the shopper confirms on the page. Follows 041. _Merged (PR #206,
+  2026-11-10)._
+- 🟡 **Catalog and search events in GA4 (`046-ga4-catalog-events`).** The
+  consultant's review of 2026-11-11: `view_item_list`, `select_item`,
+  `view_cart`, `remove_from_cart` and GA4's `search` are missing, and the
+  home and catalog filters report counts and labels instead of the size,
+  brand and condition searched. Builds on 040's item format. (The missing
+  `items` they saw on `add_to_cart` / `begin_checkout` / `add_shipping_info`
+  are production running pre-040 code — fixed by deploying 040.)
 
 - ⬜ **Tailwind v4 config activation (bug).** `tailwind.config.ts` is ignored by
   Tailwind v4 (no `@config` directive), so its custom tokens are dormant **in

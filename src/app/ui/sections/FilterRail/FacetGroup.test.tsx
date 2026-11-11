@@ -82,6 +82,9 @@ describe('FacetGroup', () => {
     const link = screen.getByRole('link', { name: /Pirelli/ });
     expect(link).toHaveAttribute('data-track', 'filter_apply');
     expect(link).toHaveAttribute('data-track-label', 'brand:PIRELLI');
+    // Group and value as their own parameters (046, AC10).
+    expect(link).toHaveAttribute('data-track-filter-group', 'brand');
+    expect(link).toHaveAttribute('data-track-filter-value', 'PIRELLI');
   });
 
   /**

@@ -3,11 +3,16 @@ import { join } from 'node:path';
 
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { ChatSetCard } from '@/app/utils/chatSets';
+import type { ListPayload } from '@/app/utils/ecommerce';
 
-import ChatSetCards from './ChatSetCards';
+import ChatSetCards, { resetChatSetList } from './ChatSetCards';
+
+vi.mock('@/app/utils/analytics', () => ({ trackEcommerce: vi.fn(() => Promise.resolve()) }));
+const { trackEcommerce } = await import('@/app/utils/analytics');
+const sent = vi.mocked(trackEcommerce);
 
 const card = (over: Partial<ChatSetCard> = {}): ChatSetCard => ({
   brand: 'Michelin',
@@ -18,6 +23,13 @@ const card = (over: Partial<ChatSetCard> = {}): ChatSetCard => ({
   total: 480,
   treadLabel: '7–8/32, Δ1/32',
   href: '/tires/12-michelin-225-45-17?set=12,13,14,15',
+  size: '225/45/17',
+  units: [
+    { id: '12', price: 120 },
+    { id: '13', price: 120 },
+    { id: '14', price: 120 },
+    { id: '15', price: 120 },
+  ],
   ...over,
 });
 
@@ -32,7 +44,9 @@ describe('ChatSetCards (044)', () => {
   });
 
   it('names each link after the set it opens', () => {
-    render(<ChatSetCards sets={[card(), card({ brand: 'Pirelli', model: 'P Zero', href: '/b' })]} />);
+    render(
+      <ChatSetCards sets={[card(), card({ brand: 'Pirelli', model: 'P Zero', href: '/b' })]} />
+    );
 
     const links = screen.getAllByRole('link');
     expect(links[0]).toHaveAccessibleName(
@@ -82,6 +96,71 @@ describe('ChatSetCards (044)', () => {
   it('renders nothing without sets', () => {
     const { container } = render(<ChatSetCards sets={[]} />);
     expect(container).toBeEmptyDOMElement();
+  });
+});
+
+describe('chat sets in GA4 (046, AC4)', () => {
+  beforeEach(() => {
+    sent.mockClear();
+    resetChatSetList();
+  });
+
+  it('reports the cards as one chat_sets list, each tire at its card position', () => {
+    const second = card({
+      brand: 'Pirelli',
+      model: 'P Zero',
+      href: '/b',
+      units: [
+        { id: '21', price: 90 },
+        { id: '22', price: 90 },
+      ],
+    });
+    render(
+      <ChatSetCards
+        sets={[card(), second, card({ href: '/c', units: [{ id: '31', price: 1 }] })]}
+      />
+    );
+
+    const lists = sent.mock.calls.filter(([e]) => e === 'view_item_list');
+    expect(lists).toHaveLength(1);
+    const payload = lists[0][1] as ListPayload;
+    expect(payload.item_list_id).toBe('chat_sets');
+    expect(payload.items.map(i => [i.item_id, i.index])).toEqual([
+      ['12', 1],
+      ['13', 1],
+      ['14', 1],
+      ['15', 1],
+      ['21', 2],
+      ['22', 2],
+      ['31', 3],
+    ]);
+    expect(payload.items[4]).toMatchObject({ item_brand: 'Pirelli', item_variant: '225/45/17' });
+  });
+
+  it('sends select_item with the opened set at its position', async () => {
+    const second = card({
+      href: '#two',
+      units: [
+        { id: '21', price: 90 },
+        { id: '22', price: 90 },
+      ],
+    });
+    render(<ChatSetCards sets={[card({ href: '#one' }), second]} />);
+
+    await userEvent.click(screen.getAllByRole('link')[1]);
+
+    const selects = sent.mock.calls.filter(([e]) => e === 'select_item');
+    expect(selects).toHaveLength(1);
+    expect((selects[0][1] as ListPayload).items.map(i => [i.item_id, i.index])).toEqual([
+      ['21', 2],
+      ['22', 2],
+    ]);
+  });
+
+  it('does not resend the same cards on a re-render', () => {
+    const { rerender } = render(<ChatSetCards sets={[card()]} />);
+    rerender(<ChatSetCards sets={[card()]} />);
+    expect(sent.mock.calls.filter(([e]) => e === 'view_item_list')).toHaveLength(1);
   });
 });
 

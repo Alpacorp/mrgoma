@@ -41,7 +41,18 @@ describe('pickChatSets (044, FR2–FR8)', () => {
     expect(r.sets).toHaveLength(1);
     const card = r.sets[0];
     expect(Object.keys(card).sort()).toEqual(
-      ['brand', 'city', 'condition', 'count', 'href', 'model', 'total', 'treadLabel'].sort()
+      [
+        'brand',
+        'city',
+        'condition',
+        'count',
+        'href',
+        'model',
+        'size',
+        'total',
+        'treadLabel',
+        'units',
+      ].sort()
     );
     expect(card).toMatchObject({ brand: 'Michelin', model: 'Pilot Sport 4', count: 4, total: 360 });
     expect(card.href).toMatch(/^\/tires\/\d+-michelin-225-45-17\?set=(\d+,){3}\d+$/);
@@ -98,7 +109,10 @@ describe('pickChatSets (044, FR2–FR8)', () => {
       ...many(4, { brand: 'Pirelli', model2: 'P Zero', city: 'Orlando' }),
       ...many(4, { city: 'Miami', condition: 'New', tread: null }),
     ];
-    const r = pickChatSets(units, req({ brands: ['michelin'], city: 'Orlando', condition: 'used' }));
+    const r = pickChatSets(
+      units,
+      req({ brands: ['michelin'], city: 'Orlando', condition: 'used' })
+    );
     expect(r.sets).toHaveLength(1);
     expect(r.sets[0]).toMatchObject({ brand: 'Michelin', city: 'Orlando', condition: 'Used' });
     expect(pickChatSets(units, req({ brands: ['Goodyear'] })).outcome).toBe('none');
@@ -127,7 +141,7 @@ describe('pickChatSets (044, FR2–FR8)', () => {
     expect(pickChatSets(many(1), req())).toEqual({ outcome: 'none', quantity: 4, sets: [] });
   });
 
-  it("only uses the 60 tires the page loads for a group (plan risk)", () => {
+  it('only uses the 60 tires the page loads for a group (plan risk)', () => {
     // 70 good-tread expensive tires the page shows, 2 cheap worn ones it does not.
     const units = [...many(70, { tread: 9, price: 200 }), ...many(2, { tread: 5, price: 10 })];
     const r = pickChatSets(units, req({ quantity: 2 }));

@@ -117,3 +117,61 @@ describe('TireCard', () => {
     expect(container.querySelector('[data-track="add_to_cart"]')).toBeNull();
   });
 });
+
+describe('lists and selection (046)', () => {
+  const tire = (id: string, over: Partial<TransformedTire> = {}) =>
+    ({ ...product, id, ...over }) as TransformedTire;
+  const used = { id: 'used_tires', name: 'Used tires' };
+
+  beforeEach(async () => {
+    track.mockClear();
+    const { resetViewItemList } = await import('@/app/ui/components/ViewItemList/useViewItemList');
+    resetViewItemList();
+  });
+
+  const renderList = (list?: { id: string; name: string }) =>
+    render(
+      <CartProvider>
+        <TireCard products={[tire('1'), tire('2'), tire('3')]} list={list} />
+      </CartProvider>
+    );
+
+  it('reports the list it shows', () => {
+    renderList(used);
+    const lists = track.mock.calls.filter(([e]) => e === 'view_item_list');
+    expect(lists).toHaveLength(1);
+    expect(lists[0][1]).toMatchObject({ item_list_id: 'used_tires' });
+    expect(lists[0][1].items).toHaveLength(3);
+  });
+
+  it('reports select_item from the photo and from the title, at the position (AC3)', async () => {
+    renderList(used);
+    const third = screen.getAllByRole('listitem')[2];
+    const detailLinks = [...third.querySelectorAll('a[href^="/tires/3-"]')] as HTMLAnchorElement[];
+    expect(detailLinks).toHaveLength(2);
+
+    for (const link of detailLinks) {
+      link.addEventListener('click', e => e.preventDefault());
+      await userEvent.click(link);
+    }
+
+    const selects = track.mock.calls.filter(([e]) => e === 'select_item');
+    expect(selects).toHaveLength(2);
+    for (const [, payload] of selects) {
+      expect(payload).toMatchObject({ item_list_id: 'used_tires' });
+      expect(payload.items).toMatchObject([{ item_id: '3', index: 3 }]);
+    }
+  });
+
+  it('Add to Cart is add_to_cart, never select_item', async () => {
+    renderList(used);
+    track.mockClear();
+    await userEvent.click(screen.getAllByRole('button', { name: /add to cart/i })[0]);
+    expect(track.mock.calls.map(([e]) => e)).toEqual(['add_to_cart']);
+  });
+
+  it('reports nothing without a list', async () => {
+    renderList();
+    expect(track).not.toHaveBeenCalled();
+  });
+});

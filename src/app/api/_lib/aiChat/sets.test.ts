@@ -129,6 +129,8 @@ describe('summarizeSetsForHistory (044, analyze #2, #3)', () => {
     total: 480,
     treadLabel: '7–8/32, Δ1/32',
     href: '/tires/1-michelin-225-45-17?set=1,2,3,4',
+    size: '225/45/17',
+    units: [{ id: '1', price: 120 }],
     ...over,
   });
 

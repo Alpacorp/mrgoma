@@ -23,6 +23,7 @@ import {
   setUnitToLine,
   type SetProduct,
 } from '@/app/utils/cartSets';
+import { trackRemoval } from '@/app/utils/cartTracking';
 import { hasConsent } from '@/app/utils/consent';
 import { cartPayload, purchasePayload, type StripeLine } from '@/app/utils/ecommerce';
 import { GENERIC_TIRE_IMAGE } from '@/app/utils/genericTireImage';
@@ -877,7 +878,11 @@ export default function Checkout() {
                                 </p>
                                 <button
                                   type="button"
-                                  onClick={() => removeSet(group.setId)}
+                                  onClick={() => {
+                                    // The shopper's removal (046, D4).
+                                    trackRemoval(group.items);
+                                    removeSet(group.setId);
+                                  }}
                                   className="inline-flex min-h-[44px] items-center rounded-md px-2 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
                                   aria-label={`Remove set of ${group.items.length} from cart`}
                                 >
@@ -958,7 +963,10 @@ export default function Checkout() {
                                 <td className="px-4 py-4 text-right">
                                   <button
                                     type="button"
-                                    onClick={() => removeFromCart(item.id)}
+                                    onClick={() => {
+                                      trackRemoval([item]);
+                                      removeFromCart(item.id);
+                                    }}
                                     className="inline-flex items-center cursor-pointer rounded-md border border-red-200 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
                                     aria-label={`Remove ${item.name} from cart`}
                                   >
@@ -1093,11 +1101,12 @@ export default function Checkout() {
                         {odd && (
                           <button
                             type="button"
-                            onClick={() =>
-                              cartItems
-                                .filter(i => i.city === odd.city)
-                                .forEach(i => removeFromCart(i.id))
-                            }
+                            onClick={() => {
+                              const lines = cartItems.filter(i => i.city === odd.city);
+                              // One event for the city's tires (046, AC6).
+                              trackRemoval(lines);
+                              lines.forEach(i => removeFromCart(i.id));
+                            }}
                             className="mt-2 inline-flex min-h-[44px] items-center rounded-md border border-amber-400 bg-white px-3 text-sm font-semibold text-amber-900 transition-colors hover:border-amber-500 hover:bg-amber-200 active:bg-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                           >
                             {`Remove the ${odd.city} tire${odd.count > 1 ? 's' : ''} (${odd.count})`}

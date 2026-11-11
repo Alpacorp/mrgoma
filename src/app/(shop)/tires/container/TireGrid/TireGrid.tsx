@@ -4,20 +4,23 @@ import Link from 'next/link';
 
 import { TransformedTire } from '@/app/interfaces/tires';
 import { TireCard } from '@/app/ui/sections';
+import type { GaList } from '@/app/utils/ecommerce';
 
 interface TireGridProps {
   tires: TransformedTire[];
   totalCount: number;
   viewAllHref: string;
   viewAllLabel?: string;
+  /** The listing, for GA4 list events (feature 046). */
+  list?: GaList;
 }
 
-export function TireGrid({ tires, totalCount, viewAllHref, viewAllLabel }: TireGridProps) {
+export function TireGrid({ tires, totalCount, viewAllHref, viewAllLabel, list }: TireGridProps) {
   return (
     <div>
       {tires.length > 0 ? (
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <TireCard products={tires} />
+          <TireCard products={tires} list={list} />
         </div>
       ) : (
         <p className="text-center text-gray-500 py-20 text-lg">

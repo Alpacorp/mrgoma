@@ -4,12 +4,16 @@ import React, { FC } from 'react';
 
 import { TransformedTire } from '@/app/interfaces/tires';
 import { TireCard } from '@/app/ui/sections';
+import type { GaList } from '@/app/utils/ecommerce';
 
 interface TireResultsProps {
   products: TransformedTire[];
+  /** The listing, for GA4 list events (feature 046). */
+  list?: GaList;
+  indexOffset?: number;
 }
 
-const TireResults: FC<TireResultsProps> = ({ products }) => {
+const TireResults: FC<TireResultsProps> = ({ products, list, indexOffset }) => {
   return (
     /*
      * No `mx-auto max-w-3xl` any more. The list used to be capped at 768 px and
@@ -19,7 +23,7 @@ const TireResults: FC<TireResultsProps> = ({ products }) => {
      */
     <div className="px-3 sm:px-0">
       {products && products.length > 0 ? (
-        <TireCard products={products} />
+        <TireCard products={products} list={list} indexOffset={indexOffset} />
       ) : (
         <div className="text-center py-8">
           <p className="text-lg font-medium text-gray-700">

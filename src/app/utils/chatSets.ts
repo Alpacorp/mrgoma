@@ -53,6 +53,10 @@ export type ChatSetCard = {
   total: number;
   treadLabel: string;
   href: string;
+  /** `w/s/d`, for analytics (046). */
+  size: string;
+  /** Each tire's id and price, for analytics items (046). Nothing internal. */
+  units: { id: string; price: number }[];
 };
 
 export type ChatSetsResult = {
@@ -94,7 +98,8 @@ function bestSets(units: SizeUnit[], quantity: SetSize, first: TireCity | null):
   for (const list of groups.values()) {
     const visible = [...list].sort(pageOrder).slice(0, SET_PAGE_CANDIDATES);
     const set = cheapestSet(visible, quantity) as SizeUnit[] | null;
-    if (set) sets.push({ units: set, total: setTotal(set), patched: set.filter(u => u.patched).length });
+    if (set)
+      sets.push({ units: set, total: setTotal(set), patched: set.filter(u => u.patched).length });
   }
 
   sets.sort(
@@ -136,6 +141,8 @@ export function toChatSetCard(units: SizeUnit[], size: string): ChatSetCard {
     total: setTotal(units),
     treadLabel: treadRange(units)?.label ?? '',
     href: `/tires/${buildTireSlug(anchor.id, anchor.brand, size)}?set=${ids}`,
+    size,
+    units: ordered.map(u => ({ id: u.id, price: u.price })),
   };
 }
 
@@ -163,7 +170,8 @@ export function pickChatSets(units: SizeUnit[], req: ChatSetRequest): ChatSetsRe
 
   for (let q = req.quantity - 1; q >= 2; q--) {
     const smaller = bestSets(narrowed, q as SetSize, first);
-    if (smaller.length > 0) return { outcome: 'smaller', quantity: q as SetSize, sets: cards(smaller) };
+    if (smaller.length > 0)
+      return { outcome: 'smaller', quantity: q as SetSize, sets: cards(smaller) };
   }
   return { outcome: 'none', quantity: req.quantity, sets: [] };
 }
@@ -213,7 +221,10 @@ export function resolvePresetSet(
   if (!isWithinTolerance(kept)) return { status: 'unavailable', size };
 
   for (let i = 0; i < missing; i++) {
-    const next = pickReplacement(kept, candidates.filter(c => c.id !== anchor.id));
+    const next = pickReplacement(
+      kept,
+      candidates.filter(c => c.id !== anchor.id)
+    );
     if (!next) return { status: 'unavailable', size };
     kept.push(next);
   }

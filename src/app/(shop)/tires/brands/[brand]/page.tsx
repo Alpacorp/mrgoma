@@ -10,6 +10,7 @@ import { TireGrid } from '@/app/(shop)/tires/container/TireGrid/TireGrid';
 import { TiresData } from '@/app/interfaces/tires';
 import { BrandImage, JsonLd } from '@/app/ui/components';
 import { LOCATIONS_LABEL, SHIPPING, WARRANTY, onlineInventoryLabel } from '@/app/utils/brandClaims';
+import { LISTS } from '@/app/utils/ecommerce';
 import { brandMetadata, buildBreadcrumbJsonLd, buildItemListJsonLd } from '@/app/utils/seo';
 import { brandName as displayBrand } from '@/app/utils/tireNaming';
 import { matchSlug, slugify } from '@/app/utils/tireSlug';
@@ -154,6 +155,7 @@ export default async function BrandCategoryPage({
             tires={tires}
             totalCount={totalCount}
             viewAllHref={`/tires?brand=${encodeURIComponent(brandName)}`}
+            list={LISTS.brand(displayBrand(brandName))}
             viewAllLabel={`View all ${totalCount} ${brandName} tires`}
           />
         </section>

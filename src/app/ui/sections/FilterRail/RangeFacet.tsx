@@ -134,6 +134,8 @@ const RangeFacet: FC<RangeFacetProps> = ({
               data-track="filter_apply"
               data-track-category="tires_filter"
               data-track-label={`${trackGroup}:${option.id}`}
+              data-track-filter-group={trackGroup}
+              data-track-filter-value={option.id}
               className={`flex items-center justify-between gap-2 rounded-md px-2 py-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 lg:py-1.5 ${
                 option.applied
                   ? 'bg-green-50 font-semibold text-green-700'

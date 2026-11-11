@@ -1,6 +1,6 @@
 'use client';
 
-import React, { FC } from 'react';
+import React, { FC, useEffect, useRef } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
@@ -12,6 +12,7 @@ import { Dialog, DialogBackdrop, DialogPanel } from '@/app/ui/components/Dialog/
 import ProductMeta from '@/app/ui/components/ProductMeta/ProductMeta';
 import { cartLine } from '@/app/utils/cartLine';
 import { groupCartLines, oddCity } from '@/app/utils/cartSets';
+import { trackRemoval, trackViewCart } from '@/app/utils/cartTracking';
 import { GENERIC_TIRE_IMAGE } from '@/app/utils/genericTireImage';
 import { tireDetailHref } from '@/app/utils/tireSlug';
 
@@ -85,6 +86,24 @@ const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
 
   const odd = oddCity(cartItems);
 
+  // `view_cart` when the drawer opens with tires (046, D3) — once per opening.
+  const itemsRef = useRef(cartItems);
+  itemsRef.current = cartItems;
+  useEffect(() => {
+    if (showCartModal) trackViewCart(itemsRef.current);
+  }, [showCartModal]);
+
+  // The shopper's own removals (046, D4). Reported here, not in the cart
+  // context, which the checkout also calls when a tire sold.
+  const removeOne = (id: string | number) => {
+    trackRemoval(cartItems.filter(i => String(i.id) === String(id)));
+    removeFromCart(id);
+  };
+  const removeWholeSet = (setId: string, items: CartItem[]) => {
+    trackRemoval(items);
+    removeSet(setId);
+  };
+
   const closeModal = () => {
     setShowCartModal(false);
   };
@@ -140,7 +159,7 @@ const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
                         <CartLine
                           key={group.item.id}
                           item={group.item}
-                          onRemove={removeFromCart}
+                          onRemove={removeOne}
                           onOpen={closeModal}
                           city={{ odd: odd?.city === group.item.city }}
                         />
@@ -166,7 +185,7 @@ const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
                               <button
                                 type="button"
                                 className="inline-flex min-h-[44px] items-center rounded-md font-medium text-gray-600 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
-                                onClick={() => removeSet(group.setId)}
+                                onClick={() => removeWholeSet(group.setId, group.items)}
                                 aria-label={`Remove set of ${group.items.length} from cart`}
                               >
                                 Remove set
@@ -180,7 +199,7 @@ const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
                                 <CartLine
                                   key={item.id}
                                   item={item}
-                                  onRemove={removeFromCart}
+                                  onRemove={removeOne}
                                   onOpen={closeModal}
                                 />
                               ))}

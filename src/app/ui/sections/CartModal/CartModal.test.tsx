@@ -26,6 +26,8 @@ const cart = vi.hoisted(() => ({
 }));
 
 vi.mock('@/app/context/CartContext', () => ({ useCart: () => cart.value }));
+vi.mock('@/app/utils/cartTracking', () => ({ trackViewCart: vi.fn(), trackRemoval: vi.fn() }));
+const { trackViewCart, trackRemoval } = await import('@/app/utils/cartTracking');
 vi.mock('next/image', () => ({
   default: ({ src, alt }: { src: unknown; alt?: string }) => (
     <img src={typeof src === 'string' ? src : ''} alt={typeof alt === 'string' ? alt : ''} />
@@ -35,6 +37,8 @@ vi.mock('next/image', () => ({
 import CartModal from './CartModal';
 
 beforeEach(() => {
+  vi.mocked(trackViewCart).mockClear();
+  vi.mocked(trackRemoval).mockClear();
   cart.value = {
     cartItems: [],
     removeFromCart: vi.fn(),
@@ -146,5 +150,50 @@ describe('CartModal with sets (feature 041)', () => {
     cart.value.cartItems = [member('1', 9)];
     render(<CartModal />);
     expect(screen.queryByText(/Set of/)).toBeNull();
+  });
+});
+
+describe('cart events (046)', () => {
+  const tire = (id: string, over: Partial<CartItem> = {}): CartItem => ({
+    id,
+    name: `(C${id}) | MICHELIN | PILOT | 225/40/18`,
+    price: 100,
+    quantity: 1,
+    ...over,
+  });
+
+  it('sends view_cart with the cart when the drawer opens, once (AC5)', () => {
+    cart.value.showCartModal = false;
+    cart.value.cartItems = [tire('1'), tire('2'), tire('3')];
+    const { rerender } = render(<CartModal />);
+    expect(trackViewCart).not.toHaveBeenCalled();
+
+    cart.value = { ...cart.value, showCartModal: true };
+    rerender(<CartModal />);
+    rerender(<CartModal />);
+
+    expect(trackViewCart).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(trackViewCart).mock.calls[0][0]).toHaveLength(3);
+  });
+
+  it('reports a removed tire and a removed set (AC6)', async () => {
+    const user = userEvent.setup();
+    cart.value.cartItems = [
+      tire('1'),
+      ...['2', '3', '4', '5'].map(id => tire(id, { setId: 'set-a' })),
+    ];
+    render(<CartModal />);
+
+    await user.click(screen.getByRole('button', { name: /remove set of 4/i }));
+    expect(trackRemoval).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(trackRemoval).mock.calls[0][0].map(i => i.id)).toEqual(['2', '3', '4', '5']);
+    expect(cart.value.removeSet).toHaveBeenCalledWith('set-a');
+
+    const removeOne = screen
+      .getAllByRole('button', { name: /remove/i })
+      .find(b => !/set/i.test(b.getAttribute('aria-label') ?? b.textContent ?? ''))!;
+    await user.click(removeOne);
+    expect(trackRemoval).toHaveBeenCalledTimes(2);
+    expect(vi.mocked(trackRemoval).mock.calls[1][0]).toHaveLength(1);
   });
 });

@@ -320,6 +320,9 @@ const HomeMoreFilters: FC<HomeMoreFiltersProps> = ({ value, onApply }) => {
             data-track="apply_home_filters"
             data-track-category="home_search"
             data-track-value={brands.length + condition.length}
+            // What was chosen, not only how many (feature 046, FR7).
+            data-track-tire-brand={brands.join(',') || undefined}
+            data-track-tire-condition={condition.join(',').toLowerCase() || undefined}
             className="rounded-md bg-green-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2"
           >
             Apply
