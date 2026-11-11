@@ -22,13 +22,16 @@ describe('the set block stays on the server side of the barrel', () => {
 
   it('is not imported by TireInformation (which the barrel exports)', () => {
     expect(read('src/app/ui/sections/TireInformation/TireInformation.tsx')).not.toMatch(
-      /TireSetSection|tireSetsRepository/
+      /TireSetSection|SoldTireAlternative|tireSetsRepository/
     );
   });
 
   it('is mounted from DetailView, which only server pages import', () => {
     expect(read('src/app/(shop)/detail/container/DetailView/DetailView.tsx')).toMatch(
       /TireSetSection/
+    );
+    expect(read('src/app/(shop)/detail/container/DetailView/DetailView.tsx')).toMatch(
+      /SoldTireAlternative/
     );
   });
 });

@@ -56,3 +56,24 @@ describe('TireInformation — location line (043)', () => {
     expect(screen.queryByText(/Located in/)).toBeNull();
   });
 });
+
+describe('TireInformation — sold tire alternative (045)', () => {
+  it('shows the sold slot only for a sold tire (AC4, AC5)', () => {
+    const slot = <p data-testid="sold-slot" />;
+    const { unmount } = render(<TireInformation singleTire={tire()} soldSlot={slot} />);
+    expect(screen.queryByTestId('sold-slot')).toBeNull();
+    unmount();
+    render(<TireInformation singleTire={tire({ status: 'sold' })} soldSlot={slot} />);
+    expect(screen.getByTestId('sold-slot')).toBeInTheDocument();
+    expect(screen.getByText('Not available')).toBeInTheDocument();
+  });
+
+  it('shows no price and no shipping badge for a sold tire', () => {
+    const { unmount } = render(<TireInformation singleTire={tire()} />);
+    expect(screen.getByText('Free Shipping')).toBeInTheDocument();
+    unmount();
+    render(<TireInformation singleTire={tire({ status: 'sold', price: '650' })} />);
+    expect(screen.queryByText(/\$650/)).toBeNull();
+    expect(screen.queryByText('Free Shipping')).toBeNull();
+  });
+});

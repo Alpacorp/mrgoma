@@ -4,6 +4,7 @@ import { SingleTire } from '@/app/interfaces/tires';
 import ScrollToTopOnOpen from '@/app/ui/components/ScrollToTopOnOpen/ScrollToTopOnOpen';
 import TreadWearExplorer from '@/app/ui/components/TreadWearExplorer/TreadWearExplorer';
 import { ProductCarousel, TireInformation, TireFeatures, Benefits } from '@/app/ui/sections';
+import SoldTireAlternative from '@/app/ui/sections/TireSet/SoldTireAlternative';
 import TireSetSection from '@/app/ui/sections/TireSet/TireSetSection';
 import { brandName, modelName } from '@/app/utils/tireNaming';
 
@@ -115,6 +116,11 @@ const DetailView = ({ product }: { product: SingleTire }) => {
                 setSlot={
                   <Suspense fallback={null}>
                     <TireSetSection tire={product} />
+                  </Suspense>
+                }
+                soldSlot={
+                  <Suspense fallback={null}>
+                    <SoldTireAlternative tire={product} />
                   </Suspense>
                 }
               />
