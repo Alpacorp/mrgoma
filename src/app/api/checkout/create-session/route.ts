@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import type Stripe from 'stripe';
 
+import { siteHostsFrom, stripeProduct, type StripeTire } from '@/app/api/_lib/stripeProduct';
 import { withLogging } from '@/app/api/_lib/withLogging';
 
 // Helper to build the application's origin from the request URL
@@ -157,6 +158,8 @@ export const POST = withLogging('checkout.createSession.POST', async (req: NextR
       model?: string;
       size?: string;
       tireCondition?: string;
+      /** What Stripe's page shows for this tire (feature 048). */
+      stripe: StripeTire;
     }[] = [];
 
     for (const it of normalized) {
@@ -234,17 +237,12 @@ export const POST = withLogging('checkout.createSession.POST', async (req: NextR
           ? data.images[0]?.src || data.images[0]
           : data?.imageSrc || data?.image || null;
 
-      let image: string | null =
+      // The fallback (the generic image Stripe can fetch, 048) is applied by
+      // `stripeProduct()`, which also refuses any image on the site's own host.
+      const image: string | null =
         typeof firstImage === 'string' && firstImage.trim()
           ? normalizeProductImage(origin, firstImage, assetsBase)
           : null;
-
-      // If the image could not be normalized (e.g., localhost in dev without asset base),
-      // optionally use a public fallback image if provided
-      if (!image && fallbackImage && fallbackImage.trim()) {
-        const fb = normalizeProductImage(origin, fallbackImage.trim(), assetsBase);
-        if (fb) image = fb;
-      }
 
       // Brand, model and size travel to Stripe as metadata so the confirmation
       // page can describe what was bought to analytics without re-parsing the
@@ -264,6 +262,18 @@ export const POST = withLogging('checkout.createSession.POST', async (req: NextR
         // New / Used. Not `condition`, which already carries the stock status
         // (`data.status`) and is shown on the confirmation page as such.
         tireCondition: meta(data?.condition),
+        stripe: {
+          name: baseName,
+          brand: data?.brand ?? data?.Brand,
+          model: model2,
+          size: data?.size ?? data?.Size,
+          code: data?.code ?? data?.Code,
+          condition: data?.condition,
+          treadDepth: data?.treadDepth,
+          remainingLife: data?.remainingLife,
+          patched: data?.patched,
+          image,
+        },
       });
     }
 
@@ -354,13 +364,19 @@ export const POST = withLogging('checkout.createSession.POST', async (req: NextR
 
     // Build line items with authoritative data
     const currency = (process.env.NEXT_PUBLIC_STRIPE_CURRENCY || 'usd').toLowerCase();
+    // Readable name, a description with what tells the tire apart, and only
+    // images Stripe can fetch (feature 048). `v.name` — the internal
+    // `(CODE) | BRAND | MODEL | SIZE` — stays for the WhatsApp order message.
+    const siteHosts = siteHostsFrom([
+      origin,
+      process.env.NEXT_PUBLIC_SITE_URL,
+      process.env.NEXT_PUBLIC_BASE_URL,
+    ]);
     const productLineItems = validated.map(v => ({
       price_data: {
         currency,
         product_data: {
-          name: v.name,
-          // Only send images that Stripe will accept; omit otherwise
-          images: v.image && /^https?:\/\//i.test(v.image) ? [v.image] : undefined,
+          ...stripeProduct(v.stripe, { siteHosts, fallbackImage }),
           metadata: {
             productId: v.id,
             condition: (v.condition || '').toString(),
