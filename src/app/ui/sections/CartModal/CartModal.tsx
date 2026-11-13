@@ -9,82 +9,99 @@ import { useCart, type CartItem } from '@/app/context/CartContext';
 import { XMarkIcon } from '@/app/ui/components';
 import CityTag from '@/app/ui/components/CityTag/CityTag';
 import { Dialog, DialogBackdrop, DialogPanel } from '@/app/ui/components/Dialog/Dialog';
-import ProductMeta from '@/app/ui/components/ProductMeta/ProductMeta';
+import { factsParts } from '@/app/utils/cartFacts';
 import { cartLine } from '@/app/utils/cartLine';
-import { groupCartLines, oddCity } from '@/app/utils/cartSets';
+import { citiesLabel, groupCartLines } from '@/app/utils/cartSets';
 import { trackRemoval, trackViewCart } from '@/app/utils/cartTracking';
 import { GENERIC_TIRE_IMAGE } from '@/app/utils/genericTireImage';
 import { tireDetailHref } from '@/app/utils/tireSlug';
 
-/** One tire in the drawer — the same markup for single tires and set members. */
+import { useCartTireHovercard } from './CartTireHovercard';
+
+/**
+ * One tire in the drawer — the same markup for single tires and set members.
+ *
+ * Kept short (owner review, 047): what a shopper compares — tread, life, patch
+ * — stays on the line, because phones have no hover; the rest (DOT, stock
+ * code, the full list) lives in the card beside the drawer and on the tire's
+ * page. A set member drops the size and condition its set header already says,
+ * and "Qty" shows only when it is not 1 (every tire is a unique unit).
+ */
 const CartLine: FC<{
   item: CartItem;
   onRemove: (id: string | number) => void;
   onOpen: () => void;
-  /** Show the city (set members show it once, in the set header). */
-  city?: { odd: boolean };
-}> = ({ item, onRemove, onOpen, city }) => (
-  <li className="py-3 flex gap-3 -mx-2 px-2 rounded-md hover:bg-gray-50 transition-colors group">
-    {/* Product Image — a second, mouse-only way into the tire's page */}
-    <Link
-      href={tireDetailHref(item)}
-      onClick={onOpen}
-      tabIndex={-1}
-      aria-hidden="true"
-      className="shrink-0 w-16 h-16 border border-gray-200 rounded-md overflow-hidden group-hover:ring-1 group-hover:ring-green-200"
+  /** Show the city (members of a one-city set show it once, in the set header). */
+  city?: boolean;
+  /** A member of a set: its header carries the size and condition. */
+  inSet?: boolean;
+  /** Hover / focus handlers that show the tire's card beside the drawer (047). */
+  interest?: React.HTMLAttributes<HTMLLIElement>;
+}> = ({ item, onRemove, onOpen, city, inSet, interest }) => {
+  const line = cartLine(item);
+  const meta = inSet ? [] : [line.size, item.condition].filter(Boolean);
+  const facts = factsParts({ tread: item.tread, life: item.life, patched: item.patched });
+  return (
+    <li
+      className="py-3 flex gap-3 -mx-2 px-2 rounded-md hover:bg-gray-50 transition-colors group"
+      {...interest}
     >
-      <Image
-        src={item.image || GENERIC_TIRE_IMAGE}
-        alt={cartLine(item).title}
-        width={64}
-        height={64}
-        className="w-full h-full object-center object-cover"
-      />
-    </Link>
+      {/* Product Image — a second, mouse-only way into the tire's page */}
+      <Link
+        href={tireDetailHref(item)}
+        onClick={onOpen}
+        tabIndex={-1}
+        aria-hidden="true"
+        className="shrink-0 w-14 h-14 border border-gray-200 rounded-md overflow-hidden group-hover:ring-1 group-hover:ring-green-200"
+      >
+        <Image
+          src={item.image || GENERIC_TIRE_IMAGE}
+          alt={line.title}
+          width={56}
+          height={56}
+          className="w-full h-full object-center object-cover"
+        />
+      </Link>
 
-    {/* Product Details */}
-    <div className="ml-4 flex-1 flex flex-col">
-      <div>
-        <div className="flex justify-between text-base font-medium text-gray-900">
-          <h3>
+      <div className="min-w-0 flex-1">
+        <div className="flex justify-between gap-3 font-medium text-gray-900">
+          <h3 className="min-w-0">
             <Link
               href={tireDetailHref(item)}
               onClick={onOpen}
               className="underline-offset-2 hover:text-green-700 hover:underline rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
             >
-              {cartLine(item).title}
+              {line.title}
             </Link>
           </h3>
-          <p className="ml-4">${item.price.toFixed(2)}</p>
+          <p className="shrink-0">${item.price.toFixed(2)}</p>
         </div>
-        {cartLine(item).size && <p className="text-sm text-gray-500">{cartLine(item).size}</p>}
-        {/* Condition and city side by side, so the line does not grow. */}
-        <div className="mt-1 flex flex-wrap items-center gap-2">
-          <ProductMeta condition={item.condition} className="mt-0!" />
-          {city ? <CityTag city={item.city} odd={city.odd} /> : null}
+        {meta.length > 0 && <p className="text-sm text-gray-500">{meta.join(' · ')}</p>}
+        {/* What shoppers compare between tires, always visible (047). */}
+        {facts.length > 0 && <p className="mt-0.5 text-sm text-gray-700">{facts.join(' · ')}</p>}
+        <div className="mt-1 flex items-center justify-between gap-2 text-sm">
+          <div className="flex items-center gap-2">
+            {city ? <CityTag city={item.city} /> : null}
+            {item.quantity > 1 ? <span className="text-gray-500">Qty {item.quantity}</span> : null}
+          </div>
+          <button
+            type="button"
+            className="font-medium text-gray-500 hover:text-red-600 transition-colors cursor-pointer inline-flex items-center min-h-[44px] py-2 -my-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+            onClick={() => onRemove(item.id)}
+            aria-label={`Remove ${item.name} from cart`}
+          >
+            Remove
+          </button>
         </div>
-        {cartLine(item).code && <p className="text-xs text-gray-400">{cartLine(item).code}</p>}
       </div>
-      <div className="flex-1 flex items-end justify-between text-sm">
-        <p className="text-gray-500">Qty {item.quantity}</p>
-        <button
-          type="button"
-          className="font-medium text-gray-500 hover:text-red-600 transition-colors cursor-pointer inline-flex items-center min-h-[44px] py-2 -my-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
-          onClick={() => onRemove(item.id)}
-          aria-label={`Remove ${item.name} from cart`}
-        >
-          Remove
-        </button>
-      </div>
-    </div>
-  </li>
-);
+    </li>
+  );
+};
 
 const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
   const { cartItems, removeFromCart, removeSet, cartTotal, showCartModal, setShowCartModal } =
     useCart();
-
-  const odd = oddCity(cartItems);
+  const hovercard = useCartTireHovercard();
 
   // `view_cart` when the drawer opens with tires (046, D3) — once per opening.
   const itemsRef = useRef(cartItems);
@@ -124,7 +141,7 @@ const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
           className="w-full sm:max-w-md bg-white shadow-xl h-full overflow-y-auto animate-slide-in-right sm:rounded-l-2xl ring-1 ring-black/5"
           transition={true}
         >
-          <div className="flex flex-col h-full">
+          <div className="flex flex-col h-full" data-cart-panel>
             {/* Header */}
             <div className="sticky top-0 z-10 flex items-center justify-between p-4 border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/75">
               <h2 id="cart-modal-title" className="text-lg font-semibold text-gray-900">
@@ -161,7 +178,8 @@ const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
                           item={group.item}
                           onRemove={removeOne}
                           onOpen={closeModal}
-                          city={{ odd: odd?.city === group.item.city }}
+                          city
+                          interest={hovercard.bind(group.item)}
                         />
                       ) : (
                         <li key={group.setId} className="py-3">
@@ -169,19 +187,24 @@ const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
                               cannot be read as part of it. */}
                           <div className="rounded-lg border-2 border-green-600/70 bg-green-50/50">
                             <div className="flex items-center justify-between gap-2 rounded-t-md bg-green-600/10 px-3 text-sm">
-                              <p className="font-semibold text-green-900">
-                                {`Set of ${group.items.length} · $${group.total.toFixed(2)}`}
-                                {group.range ? (
-                                  <span className="ml-1 font-normal text-green-900/80">
-                                    {` · tread ${group.range}`}
+                              <div className="py-1.5">
+                                <p className="font-semibold text-green-900">
+                                  {`Set of ${group.items.length} · $${group.total.toFixed(2)}`}
+                                </p>
+                                {/* What every tire of the set shares, said once (047). */}
+                                <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-green-900/80">
+                                  <span>
+                                    {[
+                                      cartLine(group.items[0]).size,
+                                      group.items[0].condition,
+                                      group.range ? `tread ${group.range}` : null,
+                                    ]
+                                      .filter(Boolean)
+                                      .join(' · ')}
                                   </span>
-                                ) : null}
-                                <CityTag
-                                  city={group.items[0].city}
-                                  odd={odd?.city === group.items[0].city}
-                                  className="ml-2 align-middle"
-                                />
-                              </p>
+                                  <CityTag cities={group.items.map(i => i.city)} />
+                                </p>
+                              </div>
                               <button
                                 type="button"
                                 className="inline-flex min-h-[44px] items-center rounded-md font-medium text-gray-600 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
@@ -201,6 +224,10 @@ const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
                                   item={item}
                                   onRemove={removeOne}
                                   onOpen={closeModal}
+                                  inSet
+                                  interest={hovercard.bind(item)}
+                                  // A set across cities: each tire says where it is (047, D5).
+                                  city={citiesLabel(group.items.map(i => i.city)).includes(' and ')}
                                 />
                               ))}
                             </ul>
@@ -257,6 +284,7 @@ const CartModal: FC<{ footer?: React.ReactNode }> = ({ footer }) => {
           </div>
         </DialogPanel>
       </div>
+      {showCartModal ? hovercard.card : null}
     </Dialog>
   );
 };

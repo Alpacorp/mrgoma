@@ -128,12 +128,12 @@ Versions taken from `package.json` (2026-06-30). Update here when they change.
   only. Filters carry `filter_group` / `filter_value` and `tire_brand` /
   `tire_condition` as `data-track-*`. See `spec/features/046-ga4-catalog-events/`.
 - **Tire sets (feature 041).** The rules live in one pure module,
-  `src/app/utils/tireSets.ts` (compatible = same brand, model, size, run-flat,
-  condition class and city; tread Δ ≤ 2/32"). A set in the cart is just lines
-  sharing a `setId` — the cart stays a flat list of unique tires.
-  Pickup is restricted to the tires' city, enforced by `create-session` (409
-  `code: 'city'`); the browser only pre-filters. See
-  `spec/features/041-tire-sets/`.
+  `src/app/utils/tireSets.ts` (compatible = same brand, model, size, run-flat
+  and condition class; tread Δ ≤ 2/32"; **any city** — the city only breaks
+  ties, since 047). A set in the cart is just lines sharing a `setId` — the
+  cart stays a flat list of unique tires. Pickup is at any store whatever the
+  tires' city (047); each tire still shows its city (`CityTag`). See
+  `spec/features/041-tire-sets/` and `spec/features/047-sets-any-city/`.
 - **Visitor city (feature 043).** The visitor's approximate city (Miami,
   Orlando or none — within 60 miles of a store) comes from
   `GET /api/visitor-city`, the **only** code that reads Vercel's

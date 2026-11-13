@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { CartContext, type CartItem } from '@/app/context/CartContext';
 import { VisitorCityProvider } from '@/app/context/VisitorCityContext';
+import { locationsData } from '@/app/ui/sections/LocationsSlider/locationsData';
 import { trackEcommerce, trackEvent } from '@/app/utils/analytics';
 import { writeGuess } from '@/app/utils/visitorCity';
 
@@ -410,41 +411,33 @@ describe('tire sets at checkout (feature 041)', () => {
       .map(o => o.textContent ?? '')
       .filter(t => t !== 'Select a store…');
 
-  it('offers only Orlando stores for an Orlando cart (AC8)', async () => {
+  it('offers all 7 stores for an Orlando cart, with the ready time (047, AC6, AC8)', async () => {
     const user = userEvent.setup({ delay: null });
     renderWith([
       tire('1', { city: 'Orlando', setId: 's' }),
       tire('2', { city: 'Orlando', setId: 's' }),
     ]);
     await user.click(screen.getByRole('radio', { name: /pick up in store/i }));
-    expect(storeOptions().length).toBeGreaterThan(0);
-    expect(storeOptions().every(t => /Orlando/.test(t))).toBe(true);
-    expect(screen.getByText(/only Orlando stores are shown/)).toBeInTheDocument();
+    expect(storeOptions()).toHaveLength(locationsData.length);
+    expect(storeOptions().some(t => /Cutler Bay|Hialeah|Coral Gables/.test(t))).toBe(true);
+    expect(screen.queryByText(/stores are shown/)).toBeNull();
+    expect(screen.getByText(/ready within 24–48 business hours/)).toBeInTheDocument();
   });
 
-  it('hides Miami stores for a single Orlando tire too (AC10)', async () => {
-    const user = userEvent.setup({ delay: null });
-    renderWith([tire('1', { city: 'Orlando' })]);
-    await user.click(screen.getByRole('radio', { name: /pick up in store/i }));
-    expect(storeOptions().some(t => /Cutler Bay|Hialeah|Coral Gables/.test(t))).toBe(false);
-  });
-
-  it('explains why pickup is impossible only once pickup is chosen (AC9)', async () => {
+  it('lets a mixed-city cart pick up anywhere, with no one-city notice (047, AC7)', async () => {
     const user = userEvent.setup({ delay: null });
     renderWith([tire('1', { city: 'Orlando' }), tire('2', { city: 'Miami' })]);
-    // Nothing chosen yet: no notice, no state, no store, and no way to pay.
-    expect(screen.queryByText(/Store pickup isn’t available/)).toBeNull();
-    expect(screen.queryByLabelText(/Shipping State/i)).toBeNull();
     expect(submitButton()).toBeDisabled();
     await user.click(screen.getByRole('radio', { name: /pick up in store/i }));
-    expect(screen.getByText(/Store pickup isn’t available for this cart/)).toBeInTheDocument();
-    expect(screen.getByText(/tires are in Orlando \(1\) and Miami \(1\)/)).toBeInTheDocument();
-    expect(screen.queryByLabelText('Choose a store for pick-up')).toBeNull();
-    expect(submitButton()).toBeDisabled();
-    // Delivery hides the notice and asks for the state instead.
-    await user.click(screen.getByRole('radio', { name: /delivery to my address/i }));
     expect(screen.queryByText(/Store pickup isn’t available/)).toBeNull();
-    expect(screen.getByLabelText(/Shipping State/i)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Remove the/ })).toBeNull();
+    expect(storeOptions()).toHaveLength(locationsData.length);
+    await user.selectOptions(
+      screen.getByLabelText('Choose a store for pick-up'),
+      locationsData[0].id
+    );
+    expect(submitButton()).toBeEnabled();
+    expect(screen.getByText(/ready within 24–48 business hours/)).toBeInTheDocument();
   });
 
   it('asks for the state only with delivery, and the store only with pickup', async () => {
@@ -457,24 +450,25 @@ describe('tire sets at checkout (feature 041)', () => {
     expect(screen.queryByLabelText(/Shipping State/i)).toBeNull();
   });
 
-  it('marks the odd-city tire and removes it from the pickup notice', async () => {
-    const user = userEvent.setup({ delay: null });
+  it('names both cities for a mixed set and each tire its own (047, AC13)', () => {
+    renderWith([
+      tire('1', { city: 'Miami', setId: 's' }),
+      tire('2', { city: 'Orlando', setId: 's' }),
+      tire('3', { city: 'Orlando' }),
+    ]);
+    expect(screen.getByText('Miami and Orlando')).toBeInTheDocument();
+    expect(screen.getAllByText('Miami')).toHaveLength(1);
+    expect(screen.getAllByText('Orlando')).toHaveLength(2);
+    // Nothing is flagged as stopping pickup any more.
+    expect(document.querySelector('span.bg-amber-100')).toBeNull();
+  });
+
+  it('shows a one-city set its city once, in its header', () => {
     renderWith([
       tire('1', { city: 'Miami', setId: 's' }),
       tire('2', { city: 'Miami', setId: 's' }),
-      tire('3', { city: 'Orlando' }),
     ]);
-    // The set shows its city once; the single shows its own.
     expect(screen.getAllByText('Miami')).toHaveLength(1);
-    expect(screen.getByText('Orlando').closest('span.bg-amber-100')).not.toBeNull();
-    expect(screen.getByText('Miami').closest('span.bg-amber-100')).toBeNull();
-    await user.click(screen.getByRole('radio', { name: /pick up in store/i }));
-    await user.click(screen.getByRole('button', { name: 'Remove the Orlando tire (1)' }));
-    expect(api.removeFromCart).toHaveBeenCalledWith('3');
-    // The shopper's choice is a removal (046, AC6), reported once.
-    const removals = ecom.mock.calls.filter(([n]) => n === 'remove_from_cart');
-    expect(removals).toHaveLength(1);
-    expect(removals[0][1].items.map((i: { item_id: string }) => i.item_id)).toEqual(['3']);
   });
 
   it('groups a set in the order table with its total and a Remove set action', async () => {
@@ -597,12 +591,17 @@ describe('nearest pickup store (feature 043)', () => {
     expect(store().value).toBe('location-1');
   });
 
-  it.each([
-    ['an Orlando cart', () => writeGuess('Miami', 'location-5'), ['Orlando']],
-    ['no estimated city', () => writeGuess(null, null), ['Miami']],
-  ] as const)('preselects nothing for %s (AC7)', async (_label, setup, cities) => {
-    setup();
-    renderCity(cities.map((c, i) => tire(String(i + 1), c)));
+  it('preselects the nearest store whatever city the tires are in (047, AC17)', async () => {
+    const orlando = locationsData.find(l => l.city === 'Orlando')!.id;
+    writeGuess('Orlando', orlando);
+    renderCity([tire('1', 'Miami'), tire('2', 'Miami')]);
+    await pickup();
+    await waitFor(() => expect(store().value).toBe(orlando));
+  });
+
+  it('preselects nothing with no estimated city (AC17)', async () => {
+    writeGuess(null, null);
+    renderCity([tire('1', 'Miami')]);
     await pickup();
     await new Promise(r => setTimeout(r, 0));
     expect(store().value).toBe('');

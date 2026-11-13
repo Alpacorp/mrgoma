@@ -12,8 +12,8 @@ import { fetchTireById } from '@/repositories/tiresRepository';
  * FR13 / D7).
  *
  * `GET ?sold=<id>&keep=<id,id,…>` → `{ replacement, product }`, where
- * `replacement` is the best compatible tire — same group and city, within 2/32"
- * of every kept tire, D6 order — or `null`. `product` carries the group's brand,
+ * `replacement` is the best compatible tire — same group, any city (047),
+ * within 2/32" of every kept tire, D6 order — or `null`. `product` carries the group's brand,
  * model and size so the browser can write the cart line the same way the set
  * builder does.
  *

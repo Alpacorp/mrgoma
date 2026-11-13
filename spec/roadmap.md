@@ -87,7 +87,8 @@ To be resumed after the two tracks above; no fixed order yet.
   city) from the detail page and buy it in one go; pickup is restricted to the
   tires' city, closing a gap that also affects single tires. 70% of sellable
   units sit in groups of four or more. _Merged (PR #203, 2026-11-10); the public chat already adds a "Build your set" tip
-  when a customer asks for a set (step 1, server-appended, tested)._
+  when a customer asks for a set (step 1, server-appended, tested). The city
+  rule and the pickup restriction were lifted by 047._
 - ❌ **Quote & receipt PDF + WhatsApp (`042`) — not approved (2026-11-10).** A PDF of the cart (pre-order,
   no stock hold) and of the paid order, shareable to Mr. Goma's WhatsApp from
   the cart and the confirmation page. Generated server-side (JS budget). Follows
@@ -114,13 +115,18 @@ To be resumed after the two tracks above; no fixed order yet.
   before). The chat never adds to the cart (a wrong pick ends in a real
   payment); the shopper confirms on the page. Follows 041. _Merged (PR #206,
   2026-11-10)._
-- 🟡 **Catalog and search events in GA4 (`046-ga4-catalog-events`).** The
+- ✅ **Catalog and search events in GA4 (`046-ga4-catalog-events`).** The
   consultant's review of 2026-11-11: `view_item_list`, `select_item`,
   `view_cart`, `remove_from_cart` and GA4's `search` are missing, and the
   home and catalog filters report counts and labels instead of the size,
   brand and condition searched. Builds on 040's item format. (The missing
   `items` they saw on `add_to_cart` / `begin_checkout` / `add_shipping_info`
-  are production running pre-040 code — fixed by deploying 040.)
+  are production running pre-040 code — fixed by deploying 040.) _Merged
+  (PR #207, 2026-11-11)._
+- 🟡 **Sets and pickup across Miami and Orlando (`047-sets-any-city`).** The
+  owner approved sets (041/044) on 2026-11-13 with one change: location does
+  not count for compatibility, and pickup is allowed at any store whatever the
+  tires' city. Reverses 041's D1 and D5.
 
 - ⬜ **Tailwind v4 config activation (bug).** `tailwind.config.ts` is ignored by
   Tailwind v4 (no `@config` directive), so its custom tokens are dormant **in

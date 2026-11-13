@@ -24,7 +24,7 @@ DebugView sin entrar en los informes.
 | `view_item_list` | Cada vez que un listado muestra un resultado nuevo: al cargar, al cambiar de página, de filtro o de orden. El mismo resultado no se repite. | `item_list_id`, `item_list_name`, todas las llantas mostradas con su `index` (posición en todo el resultado: la página 2 empieza en 21) |
 | `select_item` | Al abrir la ficha de una llanta desde un listado (foto o título de la tarjeta), o un juego desde el chat. "Add to Cart" de la tarjeta **no** es `select_item`. | la llanta (o las llantas del juego), lista e `index` |
 | `view_cart` | Al abrir el carrito lateral con llantas. En `/checkout` no se envía (allí va `begin_checkout`). | todo el carrito, `value`, `currency` |
-| `remove_from_cart` | Cuando el cliente quita una llanta, un juego completo o pulsa "Remove the {ciudad} tire" en el checkout. Si el sitio quita una llanta porque se vendió, **no** se envía. | las llantas quitadas, `value`, `currency` |
+| `remove_from_cart` | Cuando el cliente quita una llanta o un juego completo. Si el sitio quita una llanta porque se vendió, **no** se envía. (El botón "Remove the {ciudad} tire" del checkout desapareció con la feature 047: ya se puede recoger en cualquier tienda.) | las llantas quitadas, `value`, `currency` |
 | `search` | Cuando una búsqueda por medida llega al catálogo: buscador por medida o por texto del home, o los filtros de medida de `/tires`. Solo un **cambio de medida** cuenta como búsqueda nueva. | `search_term` (`225/45R17`, o parcial: `225/45`), `tire_width`, `tire_profile`, `tire_rim`; `tire_brand` y `tire_condition` si se eligieron |
 
 Los productos usan exactamente los mismos campos que la 040 (`item_id`,
@@ -63,3 +63,11 @@ De ámbito evento: `tire_width`, `tire_profile`, `tire_rim`, `tire_brand`,
 Ningún evento lleva datos personales (nombre, correo, teléfono, dirección ni
 datos de pago). Como en la 040, GA4 solo recibe eventos de quien acepta las
 cookies; Vercel Analytics recibe un resumen sin productos de todos.
+
+## Cambio posterior (feature 047, 13 nov 2026)
+
+`ai_chat_sets_shown` lleva `outcome` = `found`, `any_city` o `smaller`. El
+valor `other_city` ya no existe: los juegos pueden mezclar llantas de Miami y
+Orlando y se recogen en cualquier tienda. `any_city` significa que el cliente
+pidió una ciudad, no había un juego con todas las llantas allí, y se le
+mostraron los mejores de las dos ciudades.

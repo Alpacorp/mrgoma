@@ -3,9 +3,10 @@ import type { NextRequest } from 'next/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 /**
- * Feature 041: the server is the authority on pickup-by-city. Every request
- * stops at the availability check (409) or — when nothing is wrong — at the
- * WhatsApp branch, so Stripe is never reached and needs no mock beyond the env.
+ * Feature 041 made the server the authority on pickup-by-city; feature 047
+ * lifted the rule (pickup at any store). Every request stops at the
+ * availability check (409) or — when nothing is wrong — at the WhatsApp
+ * branch, so Stripe is never reached and needs no mock beyond the env.
  */
 
 vi.mock('@/utils/logger', () => ({
@@ -58,15 +59,42 @@ const req = (body: unknown) =>
     json: async () => body,
   }) as unknown as NextRequest;
 
-describe('POST /api/checkout/create-session — pickup by city', () => {
-  it('rejects a pickup in Miami for a tire in Orlando, with code "city" (AC10)', async () => {
+describe('POST /api/checkout/create-session — pickup at any store (047)', () => {
+  it('accepts a pickup in Miami for a tire in Orlando (AC9)', async () => {
     tires = { '1': { city: 'Orlando' } };
     const res = await POST(
       req({ items: [{ id: '1' }], fulfillmentMethod: 'pickup', pickupStoreId: miamiStore.id })
     );
+    expect(res.status).toBe(200);
+  });
+
+  it('accepts a pickup for a cart with tires in both cities (AC7)', async () => {
+    tires = { '1': { city: 'Orlando' }, '2': { city: 'Miami' } };
+    for (const store of [miamiStore, orlandoStore]) {
+      const res = await POST(
+        req({
+          items: [{ id: '1' }, { id: '2' }],
+          fulfillmentMethod: 'pickup',
+          pickupStoreId: store.id,
+        })
+      );
+      expect(res.status).toBe(200);
+    }
+  });
+
+  it('still refuses a sold tire on a pickup in another city (AC11)', async () => {
+    tires = { '1': { city: 'Orlando', status: 'sold' }, '2': { city: 'Orlando' } };
+    const res = await POST(
+      req({
+        items: [{ id: '1' }, { id: '2' }],
+        fulfillmentMethod: 'pickup',
+        pickupStoreId: miamiStore.id,
+      })
+    );
     expect(res.status).toBe(409);
-    const body = await res.json();
-    expect(body.unavailable).toEqual([expect.objectContaining({ id: '1', code: 'city' })]);
+    expect((await res.json()).unavailable).toEqual([
+      { id: '1', reason: 'Product is already sold', code: 'sold' },
+    ]);
   });
 
   it('accepts a pickup in the tires’ own city', async () => {

@@ -8,6 +8,7 @@ import { BrandImage, FreeShippingBadge, ProductImage, StockBadge } from '@/app/u
 import { useViewItemList } from '@/app/ui/components/ViewItemList/useViewItemList';
 import { trackEcommerce } from '@/app/utils/analytics';
 import { EVENTS } from '@/app/utils/analyticsEvents';
+import { factsFromCardTire } from '@/app/utils/cartFacts';
 import { cartPayload, selectPayload, type GaList } from '@/app/utils/ecommerce';
 import { brandName, modelName, parseTireName } from '@/app/utils/tireNaming';
 import { buildTireSlug, slugify } from '@/app/utils/tireSlug';
@@ -65,7 +66,14 @@ const TireCard: FC<TireCardProps> = ({ products, list, indexOffset = 0 }) => {
 
   const handleAddToCart = (event: SyntheticEvent, product: TransformedTire) => {
     event.preventDefault();
-    addToCart({ ...product, model: product.model, size: product.size, city: product.city });
+    addToCart({
+      ...product,
+      model: product.model,
+      size: product.size,
+      city: product.city,
+      // What the cart shows to compare tires (047).
+      ...factsFromCardTire(product),
+    });
     // Sent from here, not from `addToCart`: the seller dashboard calls that too,
     // and staff activity must not read as shopper demand (feature 040).
     void trackEcommerce(EVENTS.ADD_TO_CART, cartPayload([product]));

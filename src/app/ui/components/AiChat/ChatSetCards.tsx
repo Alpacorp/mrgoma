@@ -6,6 +6,7 @@ import Link from 'next/link';
 
 import { trackEcommerce } from '@/app/utils/analytics';
 import { EVENTS } from '@/app/utils/analyticsEvents';
+import { citiesLabel } from '@/app/utils/cartSets';
 import type { ChatSetCard } from '@/app/utils/chatSets';
 import { LISTS, selectPayload, type ListPayload, type TireLike } from '@/app/utils/ecommerce';
 
@@ -73,7 +74,7 @@ export default function ChatSetCards({ sets, spanish = false, onOpen }: Props) {
     <ul className="mt-2 flex w-full flex-col gap-2" aria-label={spanish ? 'Juegos' : 'Sets'}>
       {sets.map((s, i) => {
         const condition = s.condition === 'New' ? t.new : t.used;
-        const facts = `${s.count} ${t.tires} · ${condition} · ${s.city}`;
+        const facts = `${s.count} ${t.tires} · ${condition} · ${citiesLabel(s.cities)}`;
         return (
           <li key={s.href}>
             <article className="rounded-xl border border-gray-200 bg-white p-3 text-sm text-gray-700">
@@ -101,7 +102,7 @@ export default function ChatSetCards({ sets, spanish = false, onOpen }: Props) {
                   data-track-category="ai_chat"
                   data-track-position={String(i + 1)}
                   data-track-set-size={String(s.count)}
-                  data-track-city={s.city}
+                  data-track-city={citiesLabel(s.cities)}
                   className="inline-flex min-h-[44px] items-center rounded-md bg-green-600 px-3 text-sm font-semibold text-white transition-colors hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2"
                 >
                   {t.review}

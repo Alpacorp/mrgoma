@@ -16,13 +16,7 @@ import { locationsData } from '@/app/ui/sections/LocationsSlider/locationsData';
 import { trackEcommerce, trackEvent } from '@/app/utils/analytics';
 import { EVENTS } from '@/app/utils/analyticsEvents';
 import { cartLine } from '@/app/utils/cartLine';
-import {
-  cartCities,
-  groupCartLines,
-  oddCity,
-  setUnitToLine,
-  type SetProduct,
-} from '@/app/utils/cartSets';
+import { citiesLabel, groupCartLines, setUnitToLine, type SetProduct } from '@/app/utils/cartSets';
 import { trackRemoval } from '@/app/utils/cartTracking';
 import { hasConsent } from '@/app/utils/consent';
 import { cartPayload, purchasePayload, type StripeLine } from '@/app/utils/ecommerce';
@@ -113,56 +107,24 @@ export default function Checkout() {
   );
   const [pickupStoreId, setPickupStoreId] = React.useState<string>('');
 
-  // Pickup by city (feature 041, D1). Lines saved before tires carried their
-  // city are "unknown": they do not narrow the list here, and the server still
-  // rejects a wrong-city pickup for them.
-  const cartCityList = React.useMemo(() => cartCities(cartItems).cities, [cartItems]);
-  const mixedCities = cartCityList.length > 1;
-  const pickupCity = cartCityList.length === 1 ? cartCityList[0] : undefined;
-  /** "Miami (4) and Orlando (1)" — what the mixed-city notice tells the buyer. */
-  /** The tires that stop pickup at one store, marked on their lines. */
-  const odd = React.useMemo(() => oddCity(cartItems), [cartItems]);
-  const isOdd = (city?: string) => Boolean(odd && city === odd.city);
-  const cityCounts = React.useMemo(
-    () =>
-      cartCityList.map(city => ({
-        city,
-        count: cartItems.filter(i => i.city === city).length,
-      })),
-    [cartCityList, cartItems]
-  );
-  const pickupStores = React.useMemo(
-    () => (pickupCity ? locationsData.filter(l => l.city === pickupCity) : locationsData),
-    [pickupCity]
-  );
+  // Pickup at any of the stores, whatever city the tires are in (feature 047,
+  // D2): the owner moves tires between Miami and Orlando.
+  const pickupStores = locationsData;
 
-  // Keep the choice valid as the cart changes: no pickup with mixed cities, and
-  // no store selected that is no longer offered.
-  React.useEffect(() => {
-    if (pickupStoreId && !pickupStores.some(s => s.id === pickupStoreId)) setPickupStoreId('');
-  }, [pickupStoreId, pickupStores]);
-
-  // Feature 043 (FR6): with pickup chosen, preselect the store nearest to the
-  // visitor — only when the cart's tires are all in the visitor's city, the
-  // store is one of those allowed, and nothing was picked yet. Once per visit,
-  // so a shopper who clears the choice is not overruled.
+  // Feature 043 (FR6), widened by 047 (D9): with pickup chosen, preselect the
+  // store nearest to the visitor whenever their city is known, and nothing was
+  // picked yet. Once per visit, so a shopper who clears the choice is not
+  // overruled.
   const visitor = useVisitorCity();
   const preselectedRef = React.useRef(false);
   React.useEffect(() => {
     if (preselectedRef.current || fulfillmentMethod !== 'pickup' || pickupStoreId) return;
     const store = visitor.nearestStoreId;
-    if (!store || !visitor.city || visitor.city !== pickupCity) return;
+    if (!store || !visitor.city) return;
     if (!pickupStores.some(s => s.id === store)) return;
     preselectedRef.current = true;
     setPickupStoreId(store);
-  }, [
-    fulfillmentMethod,
-    pickupStoreId,
-    pickupCity,
-    pickupStores,
-    visitor.city,
-    visitor.nearestStoreId,
-  ]);
+  }, [fulfillmentMethod, pickupStoreId, pickupStores, visitor.city, visitor.nearestStoreId]);
 
   /**
    * A set tire that sold before payment, and what can replace it (feature 041,
@@ -363,10 +325,6 @@ export default function Checkout() {
       setError('Choose delivery or store pickup to continue.');
       return;
     }
-    if (fulfillmentMethod === 'pickup' && mixedCities) {
-      setError('Store pickup needs all tires in one city. Choose delivery or remove some tires.');
-      return;
-    }
     if (fulfillmentMethod === 'delivery') {
       if (!selectedState) {
         setError('Please select your state to continue.');
@@ -411,22 +369,6 @@ export default function Checkout() {
         if (soldInSet.length > 0) {
           await offerReplacements(soldInSet);
           setError('Some tires in your set sold while you were shopping. Review them below.');
-          return;
-        }
-
-        const wrongCity = unavailable.filter(u => u.code === 'city');
-        if (wrongCity.length > 0) {
-          // Name the tires: a cart saved before tires carried their city cannot
-          // be pre-filtered in the browser, so this is where the shopper learns
-          // which tire is elsewhere (feature 041).
-          const named = wrongCity.map(u => {
-            const line = cartItems.find(i => String(i.id) === String(u.id));
-            const title = line
-              ? `${cartLine(line).title}${line.code ? ` #${line.code}` : ''}`
-              : `Tire ${u.id}`;
-            return `${title}: ${(u as { reason?: string }).reason ?? 'in another city'}`;
-          });
-          setError(`${named.join('. ')}. Remove it, choose delivery, or pick a store in its city.`);
           return;
         }
 
@@ -858,6 +800,10 @@ export default function Checkout() {
                       // single tire after it cannot be read as part of it.
                       const isSet = group.kind === 'set';
                       const items = isSet ? group.items : [group.item];
+                      // A set may mix cities (047): its header says both, and
+                      // then each tire shows its own city too (D5).
+                      const setCities = isSet ? citiesLabel(group.items.map(i => i.city)) : '';
+                      const mixedSet = setCities.includes(' and ');
                       const header =
                         group.kind === 'set' ? (
                           <tr key={`set-${group.setId}`} className="bg-green-600/10">
@@ -871,8 +817,7 @@ export default function Checkout() {
                                     </span>
                                   ) : null}
                                   <CityTag
-                                    city={group.items[0].city}
-                                    odd={isOdd(group.items[0].city)}
+                                    cities={group.items.map(i => i.city)}
                                     className="ml-2 align-middle"
                                   />
                                 </p>
@@ -938,10 +883,8 @@ export default function Checkout() {
                                       )}
                                       <div className="mt-0.5 flex flex-wrap items-center gap-2">
                                         <ProductMeta condition={item.condition} className="mt-0!" />
-                                        {/* A set shows its city once, in its header. */}
-                                        {!isSet && (
-                                          <CityTag city={item.city} odd={isOdd(item.city)} />
-                                        )}
+                                        {/* A one-city set shows its city once, in its header. */}
+                                        {(!isSet || mixedSet) && <CityTag city={item.city} />}
                                       </div>
                                       {cartLine(item).code && (
                                         <p className="text-xs text-gray-600">
@@ -1056,7 +999,6 @@ export default function Checkout() {
                         className="h-4 w-4 text-green-600 focus:ring-green-500"
                         checked={fulfillmentMethod === 'pickup'}
                         onChange={() => setFulfillmentMethod('pickup')}
-                        aria-describedby={mixedCities ? 'pickup-mixed-note' : undefined}
                         aria-label="Pick up in store"
                       />
                       <span>Pick up in store</span>
@@ -1071,52 +1013,7 @@ export default function Checkout() {
                     />
                   )}
 
-                  {fulfillmentMethod === 'pickup' && mixedCities && (
-                    <div
-                      id="pickup-mixed-note"
-                      role="status"
-                      className="mt-2 flex gap-2 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900"
-                    >
-                      <svg
-                        aria-hidden="true"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        className="mt-0.5 h-5 w-5 shrink-0 text-amber-600"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 6a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 6Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <div>
-                        <p className="font-semibold">Store pickup isn’t available for this cart</p>
-                        <p className="mt-1">
-                          {`Your tires are in ${cityCounts
-                            .map(c => `${c.city} (${c.count})`)
-                            .join(
-                              ' and '
-                            )}, and each store can only hand over tires from its own city. Choose delivery, or remove the tires from one city to pick up.`}
-                        </p>
-                        {odd && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const lines = cartItems.filter(i => i.city === odd.city);
-                              // One event for the city's tires (046, AC6).
-                              trackRemoval(lines);
-                              lines.forEach(i => removeFromCart(i.id));
-                            }}
-                            className="mt-2 inline-flex min-h-[44px] items-center rounded-md border border-amber-400 bg-white px-3 text-sm font-semibold text-amber-900 transition-colors hover:border-amber-500 hover:bg-amber-200 active:bg-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
-                          >
-                            {`Remove the ${odd.city} tire${odd.count > 1 ? 's' : ''} (${odd.count})`}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {fulfillmentMethod === 'pickup' && !mixedCities && (
+                  {fulfillmentMethod === 'pickup' && (
                     <div className="mt-3">
                       <label
                         htmlFor="pickup-store"
@@ -1137,11 +1034,6 @@ export default function Checkout() {
                           </option>
                         ))}
                       </select>
-                      {pickupCity && (
-                        <p className="mt-1 text-xs text-gray-700">
-                          {`Your tires are in ${pickupCity}, so only ${pickupCity} stores are shown.`}
-                        </p>
-                      )}
                       <p className="mt-1 text-xs text-gray-500">
                         Most orders are ready within 24–48 business hours. You will receive
                         confirmation before pickup.
@@ -1206,14 +1098,14 @@ export default function Checkout() {
                       loading ||
                       !fulfillmentMethod ||
                       (fulfillmentMethod === 'delivery' && (!selectedState || isBlockedState)) ||
-                      (fulfillmentMethod === 'pickup' && (mixedCities || !pickupStoreId))
+                      (fulfillmentMethod === 'pickup' && !pickupStoreId)
                     }
                     aria-disabled={
                       isEmpty ||
                       loading ||
                       !fulfillmentMethod ||
                       (fulfillmentMethod === 'delivery' && (!selectedState || isBlockedState)) ||
-                      (fulfillmentMethod === 'pickup' && (mixedCities || !pickupStoreId))
+                      (fulfillmentMethod === 'pickup' && !pickupStoreId)
                     }
                   >
                     {loading

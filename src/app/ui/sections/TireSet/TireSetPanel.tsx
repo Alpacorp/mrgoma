@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from 'react';
 
-import type { SetProduct } from '@/app/utils/cartSets';
+import { citiesLabel, type SetProduct } from '@/app/utils/cartSets';
 import { parseSetParam, resolvePresetSet } from '@/app/utils/chatSets';
 import type { SetSize, SetUnit } from '@/app/utils/tireSets';
 
@@ -48,6 +48,8 @@ const TireSetPanel = ({
 }: Props) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
+  /** Where the tires to choose from are: one city, or both (047, D5). */
+  const cities = citiesLabel([anchor.city, ...candidates.map(c => c.city)]);
   /** A set opened from the AI chat (feature 044): the builder starts from it. */
   const [preset, setPreset] = useState<{ set: SetUnit[]; notice?: string; key: string } | null>(
     null
@@ -87,7 +89,11 @@ const TireSetPanel = ({
     const raw = url.searchParams.get('set');
     if (raw === null) return;
     url.searchParams.delete('set');
-    window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+    window.history.replaceState(
+      window.history.state,
+      '',
+      `${url.pathname}${url.search}${url.hash}`
+    );
 
     const result = resolvePresetSet(parseSetParam(raw), anchor, candidates);
     if (result.status === 'exact') {
@@ -137,7 +143,7 @@ const TireSetPanel = ({
             {quantityMode ? 'Need more than one?' : `Need ${sizeText} tires?`}
           </p>
           <p className="mt-0.5">
-            {`We have ${more} more like this in ${anchor.city} · from ${money(fromTotal)} for ${fromSize}`}
+            {`We have ${more} more like this in ${cities} · from ${money(fromTotal)} for ${fromSize}`}
           </p>
         </div>
         <button
@@ -163,7 +169,7 @@ const TireSetPanel = ({
       >
         <div className="flex items-start justify-between gap-3 border-b border-gray-100 px-4 py-3">
           <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-            {`${anchor.city} · ${product.brand} ${product.size ?? ''}`}
+            {`${cities} · ${product.brand} ${product.size ?? ''}`}
           </p>
           <button
             type="button"

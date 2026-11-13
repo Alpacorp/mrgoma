@@ -307,3 +307,77 @@ input[type='range']::-moz-range-thumb {
   width: 1.1rem;
   border-radius: 4px;
 }
+
+/*
+ * The tire card beside the cart drawer (feature 047, owner review). Placed by
+ * `--card-y` through `translate`, so moving between tires stays on the
+ * compositor. Static by default (a plain fade); with motion allowed it grows
+ * out of the drawer's edge — scale from the right, a short slide, a decelerating
+ * curve — leaves faster than it came, glides between tires, and cross-fades the
+ * details. `allow-discrete` after the shorthand (modern-web-guidance, motion).
+ */
+.cart-tire-card {
+  translate: 0 var(--card-y, 0);
+  opacity: 0;
+  transition:
+    opacity 0.12s ease-in,
+    display 0.12s,
+    overlay 0.12s;
+  transition-behavior: allow-discrete;
+}
+.cart-tire-card:popover-open {
+  opacity: 1;
+}
+@starting-style {
+  .cart-tire-card:popover-open {
+    opacity: 0;
+  }
+}
+/* The pointer toward the tire: a rotated square on the right edge, sharing the
+   card's border and fill, at the tire's height (`--arrow-y`). */
+.cart-tire-card::after {
+  content: '';
+  position: absolute;
+  top: calc(var(--arrow-y, 24px) - 6px);
+  right: -7px;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-top: 1px solid var(--color-gray-200, #e5e7eb);
+  border-right: 1px solid var(--color-gray-200, #e5e7eb);
+  rotate: 45deg;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .cart-tire-card {
+    transform-origin: right var(--arrow-y, center);
+    scale: 0.94;
+    translate: 10px var(--card-y, 0);
+    transition:
+      opacity 0.12s ease-in,
+      scale 0.12s ease-in,
+      translate 0.12s ease-in,
+      display 0.12s,
+      overlay 0.12s;
+    transition-behavior: allow-discrete;
+  }
+  .cart-tire-card:popover-open {
+    scale: 1;
+    translate: 0 var(--card-y, 0);
+    transition-duration: 0.22s;
+    transition-timing-function: cubic-bezier(0.2, 0.9, 0.3, 1);
+  }
+  @starting-style {
+    .cart-tire-card:popover-open {
+      scale: 0.94;
+      translate: 10px var(--card-y, 0);
+    }
+  }
+  .cart-tire-card__body {
+    animation: cart-card-fade 0.16s ease-out;
+  }
+}
+@keyframes cart-card-fade {
+  from {
+    opacity: 0;
+  }
+}

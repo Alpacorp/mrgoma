@@ -1,6 +1,9 @@
 # Spec — Build your tire set
 
 > Feature: `041-tire-sets` · Status: Implemented (Lighthouse check pending) · Created: 2026-11-10
+> **Superseded in part by `047-sets-any-city` (2026-11-13):** D1 and D5 no
+> longer hold — sets may mix Miami and Orlando, and pickup is at any store
+> (FR2, FR11, AC8–AC10, AC14 replaced by 047's).
 > Roadmap: Backlog — owner's "sets" idea (block 5 of the SEO audit, product
 > track) · Branch: `feat/041-tire-sets`
 

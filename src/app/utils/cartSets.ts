@@ -27,6 +27,9 @@ export function setUnitToLine(u: SetUnit, product: SetProduct): AddToCartProduct
     size: product.size,
     city: u.city,
     tread: u.tread,
+    life: u.life,
+    patched: u.patched,
+    dot: u.dot,
   };
 }
 
@@ -84,32 +87,13 @@ export function groupCartLines(items: CartItem[]): CartGroup[] {
   return groups;
 }
 
-/** The cities of the tires in the cart, for the pickup rule. `unknown` for older lines. */
-export function cartCities(items: CartItem[]): {
-  cities: Array<'Miami' | 'Orlando'>;
-  unknown: boolean;
-} {
-  const cities = new Set<'Miami' | 'Orlando'>();
-  let unknown = false;
-  for (const item of items) {
-    if (item.city) cities.add(item.city);
-    else unknown = true;
-  }
-  return { cities: [...cities], unknown };
-}
-
 /**
- * When the cart mixes cities, the one with fewer tires — the tires that stop
- * pickup at a single store. `null` with one city or an even split, where
- * neither side is "the odd one".
+ * Where a set's tires are, for a header or a card (feature 047, D5): "Miami",
+ * "Orlando", or "Miami and Orlando" when the set mixes them — never just one of
+ * them. Lines without a city (carts saved before 041) are skipped; `''` when
+ * none has one.
  */
-export function oddCity(items: CartItem[]): {
-  city: 'Miami' | 'Orlando';
-  count: number;
-} | null {
-  const counts = new Map<'Miami' | 'Orlando', number>();
-  for (const item of items) if (item.city) counts.set(item.city, (counts.get(item.city) ?? 0) + 1);
-  if (counts.size < 2) return null;
-  const [a, b] = [...counts.entries()].sort((x, y) => x[1] - y[1]);
-  return a[1] === b[1] ? null : { city: a[0], count: a[1] };
+export function citiesLabel(cities: Array<'Miami' | 'Orlando' | undefined>): string {
+  const known = [...new Set(cities.filter((c): c is 'Miami' | 'Orlando' => Boolean(c)))].sort();
+  return known.join(' and ');
 }

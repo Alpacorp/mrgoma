@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -12,6 +12,12 @@ type CartItem = {
   image?: string;
   setId?: string;
   tread?: number;
+  city?: 'Miami' | 'Orlando';
+  size?: string;
+  code?: string;
+  life?: string;
+  patched?: boolean;
+  dot?: string;
 };
 
 const cart = vi.hoisted(() => ({
@@ -122,6 +128,7 @@ describe('CartModal with sets (feature 041)', () => {
   const member = (id: string, tread: number): CartItem => ({
     id,
     name: `(${id}) | MICHELIN | 225/65/17`,
+    size: '225/65/17',
     price: 100,
     quantity: 1,
     setId: 's1',
@@ -132,7 +139,8 @@ describe('CartModal with sets (feature 041)', () => {
     cart.value.cartItems = [member('1', 9), member('2', 10), member('3', 9)];
     render(<CartModal />);
     expect(screen.getByText(/Set of 3 · \$300\.00/)).toBeInTheDocument();
-    expect(screen.getByText('· tread 9–10/32', { exact: false })).toBeInTheDocument();
+    // What the tires share is said once, in the header (047).
+    expect(screen.getByText('225/65/17 · tread 9–10/32', { exact: false })).toBeInTheDocument();
     expect(screen.getByRole('list', { name: 'Set of 3' }).querySelectorAll('li')).toHaveLength(3);
   });
 
@@ -144,6 +152,28 @@ describe('CartModal with sets (feature 041)', () => {
     expect(cart.value.removeSet).toHaveBeenCalledWith('s1');
     await user.click(screen.getAllByRole('button', { name: /^Remove \(1\)/ })[0]);
     expect(cart.value.removeFromCart).toHaveBeenCalledWith('1');
+  });
+
+  it('names both cities for a mixed set and each tire its own (047, AC13)', () => {
+    cart.value.cartItems = [
+      { ...member('1', 9), city: 'Miami' },
+      { ...member('2', 9), city: 'Orlando' },
+    ];
+    render(<CartModal />);
+    expect(screen.getByText('Miami and Orlando')).toBeInTheDocument();
+    const list = screen.getByRole('list', { name: 'Set of 2' });
+    expect(list.textContent).toMatch(/Located in Miami/);
+    expect(list.textContent).toMatch(/Located in Orlando/);
+  });
+
+  it('names a one-city set once, in its header', () => {
+    cart.value.cartItems = [
+      { ...member('1', 9), city: 'Miami' },
+      { ...member('2', 9), city: 'Miami' },
+    ];
+    render(<CartModal />);
+    expect(screen.getAllByText('Miami')).toHaveLength(1);
+    expect(screen.getByRole('list', { name: 'Set of 2' }).textContent).not.toMatch(/Located in/);
   });
 
   it('shows a set reduced to one tire as a single tire', () => {
@@ -195,5 +225,110 @@ describe('cart events (046)', () => {
     await user.click(removeOne);
     expect(trackRemoval).toHaveBeenCalledTimes(2);
     expect(vi.mocked(trackRemoval).mock.calls[1][0]).toHaveLength(1);
+  });
+});
+
+describe('comparing tires in the cart (047, owner review)', () => {
+  const tire: CartItem = {
+    id: '7',
+    name: '(7) | CONTINENTAL | 235/50/19',
+    size: '235/50/19',
+    price: 140,
+    quantity: 1,
+    condition: 'Used',
+    city: 'Miami',
+    tread: 8.6,
+    life: '86%',
+    patched: true,
+    dot: '2325',
+  };
+
+  it('keeps the line short: tread, life and patch; no DOT, code or "Qty 1"', () => {
+    cart.value.cartItems = [{ ...tire, code: '257012' }];
+    render(<CartModal />);
+    expect(screen.getByText('8.6/32 · 86% life · Patched')).toBeInTheDocument();
+    expect(screen.getByText('235/50/19 · Used')).toBeInTheDocument();
+    const list = screen.getByRole('list', { name: 'Cart items' });
+    expect(list.textContent).not.toMatch(/DOT|257012|Qty/);
+  });
+
+  it('drops size and condition from set members (the header says them)', () => {
+    cart.value.cartItems = [
+      { ...tire, id: '1', setId: 's' },
+      { ...tire, id: '2', setId: 's' },
+    ];
+    render(<CartModal />);
+    expect(screen.getByText(/235\/50\/19 · Used · tread 8\.6\/32/)).toBeInTheDocument();
+    expect(screen.queryByText('235/50/19 · Used')).toBeNull();
+  });
+
+  it('shows no facts line for an old line without them', () => {
+    cart.value.cartItems = [
+      { ...tire, tread: undefined, life: undefined, patched: undefined, dot: undefined },
+    ];
+    render(<CartModal />);
+    expect(screen.queryByText(/\/32/)).toBeNull();
+  });
+
+  const withHover = (matches: boolean) =>
+    vi.stubGlobal('matchMedia', (q: string) => ({ matches, media: q }) as MediaQueryList);
+
+  it('opens the card beside the drawer after a short hover with a mouse', () => {
+    vi.useFakeTimers();
+    withHover(true);
+    cart.value.cartItems = [tire];
+    render(<CartModal />);
+    const panel = document.querySelector('[data-cart-panel]') as HTMLElement;
+    panel.getBoundingClientRect = () => ({ left: 900, top: 0 }) as DOMRect;
+    const line = screen.getByText('8.6/32 · 86% life · Patched').closest('li')!;
+    fireEvent.pointerEnter(line, { pointerType: 'mouse' });
+    const card = screen.getByTestId('cart-tire-card');
+    expect(card).toBeEmptyDOMElement(); // not before the delay
+    act(() => void vi.advanceTimersByTime(300));
+    expect(card).toHaveAttribute('aria-hidden', 'true');
+    expect(card).toHaveTextContent('Remaining life86%');
+    expect(card).toHaveTextContent('PatchedYes');
+    expect(card).toHaveTextContent('LocationMiami');
+    expect(card.style.left).toBe(`${900 - 288 - 12}px`);
+    expect(card.style.getPropertyValue('--card-y')).toBe('8px');
+    expect(card).toHaveTextContent('DOT2325');
+    expect(card).toHaveAttribute('data-state', 'open');
+    // The line sits at 0 and the card is held at 8 px: the pointer keeps its 16 px minimum.
+    expect(card.style.getPropertyValue('--arrow-y')).toBe('16px');
+    // Moving onto the card keeps it open…
+    fireEvent.pointerLeave(line);
+    fireEvent.pointerEnter(card);
+    act(() => void vi.advanceTimersByTime(400));
+    expect(card).toHaveAttribute('data-state', 'open');
+    // …and leaving the card closes it.
+    fireEvent.pointerLeave(card);
+    act(() => void vi.advanceTimersByTime(150));
+    // Closed, but it keeps the tire while it fades out.
+    expect(card).toHaveAttribute('data-state', 'closed');
+    expect(card).toHaveTextContent('Remaining life86%');
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  it('never opens on a touch screen or without room beside the drawer', () => {
+    vi.useFakeTimers();
+    cart.value.cartItems = [tire];
+    withHover(false);
+    const { unmount } = render(<CartModal />);
+    const line = () => screen.getByText('8.6/32 · 86% life · Patched').closest('li')!;
+    fireEvent.focus(line());
+    act(() => void vi.advanceTimersByTime(400));
+    expect(screen.getByTestId('cart-tire-card')).toBeEmptyDOMElement();
+    unmount();
+
+    withHover(true);
+    render(<CartModal />);
+    (document.querySelector('[data-cart-panel]') as HTMLElement).getBoundingClientRect = () =>
+      ({ left: 100, top: 0 }) as DOMRect;
+    fireEvent.pointerEnter(line(), { pointerType: 'mouse' });
+    act(() => void vi.advanceTimersByTime(400));
+    expect(screen.getByTestId('cart-tire-card')).toBeEmptyDOMElement();
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
   });
 });

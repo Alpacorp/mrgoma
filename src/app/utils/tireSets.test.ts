@@ -88,11 +88,19 @@ describe('availableSetSizes (FR3, AC1–AC3)', () => {
     expect(availableSetSizes(anchor, [unit(), unit(), unit()])).toEqual([2, 3, 4]);
   });
 
-  it('ignores tires outside 2/32, in another city, or without tread (AC3)', () => {
+  it('ignores tires outside 2/32 or without tread (AC3)', () => {
     const far = unit({ tread: 5 });
-    const orlando = unit({ city: 'Orlando' });
     const unknown = unit({ tread: null });
-    expect(availableSetSizes(anchor, [far, orlando, unknown])).toEqual([]);
+    expect(availableSetSizes(anchor, [far, unknown])).toEqual([]);
+  });
+
+  it('builds with tires from the other city (047, AC1)', () => {
+    const orlando = [
+      unit({ city: 'Orlando' }),
+      unit({ city: 'Orlando' }),
+      unit({ city: 'Orlando' }),
+    ];
+    expect(availableSetSizes(anchor, orlando)).toEqual([2, 3, 4]);
   });
 
   it('never counts the anchor itself or duplicates', () => {
@@ -191,7 +199,62 @@ describe('pickReplacement (FR13, AC11)', () => {
 
   it('returns null when nothing fits', () => {
     const keep = [unit({ id: 'a', tread: 9 })];
-    expect(pickReplacement(keep, [unit({ tread: 5 }), unit({ city: 'Orlando' })])).toBeNull();
+    expect(pickReplacement(keep, [unit({ tread: 5 }), unit({ tread: null })])).toBeNull();
+  });
+
+  it('offers a replacement in the other city (047, AC4)', () => {
+    const keep = [unit({ id: 'a', tread: 9 })];
+    expect(pickReplacement(keep, [unit({ id: 'o', city: 'Orlando' })])?.id).toBe('o');
+  });
+
+  it("breaks a full tie on the first kept tire's city (047, D3)", () => {
+    const keep = [unit({ id: 'a', tread: 9, city: 'Orlando' })];
+    const options = [unit({ id: 'm', city: 'Miami' }), unit({ id: 'o', city: 'Orlando' })];
+    expect(pickReplacement(keep, options)?.id).toBe('o');
+  });
+});
+
+describe('city across cities (047)', () => {
+  const anchor = unit({ id: 'a', tread: 9, city: 'Miami' });
+
+  it('never offers a mixed-city tire outside 2/32 (AC2)', () => {
+    const set = suggestSet(
+      anchor,
+      [unit({ tread: 6, city: 'Orlando' }), unit({ tread: 9, city: 'Orlando' })],
+      3
+    );
+    expect(set).toBeNull();
+    const two = suggestSet(
+      anchor,
+      [
+        unit({ id: 'far', tread: 6, city: 'Orlando' }),
+        unit({ id: 'ok', tread: 8, city: 'Orlando' }),
+      ],
+      2
+    );
+    expect(ids(two)).toEqual(['a', 'ok']);
+  });
+
+  it('lists swap options from both cities (AC3)', () => {
+    const m = unit({ id: 'm', city: 'Miami' });
+    const o = unit({ id: 'o', city: 'Orlando' });
+    const set = suggestSet(anchor, [m, o], 2)!;
+    expect(ids(swapOptions(set, 1, [m, o])).sort()).toEqual(
+      ['m', 'o'].filter(id => id !== set[1].id)
+    );
+  });
+
+  it("prefers the page tire's city only on a full tie (AC12)", () => {
+    const miami = unit({ id: 'z-miami', tread: 9, price: 100, city: 'Miami' });
+    const orlando = unit({ id: 'a-orlando', tread: 9, price: 100, city: 'Orlando' });
+    expect(ids(suggestSet(anchor, [orlando, miami], 2))).toEqual(['a', 'z-miami']);
+
+    const closer = unit({ id: 'closer', tread: 9, city: 'Orlando' });
+    const further = unit({ id: 'further', tread: 8, city: 'Miami' });
+    expect(ids(suggestSet(anchor, [further, closer], 2))).toEqual(['a', 'closer']);
+
+    const cheaper = unit({ id: 'cheap', tread: 9, price: 90, city: 'Orlando' });
+    expect(ids(suggestSet(anchor, [miami, cheaper], 2))).toEqual(['a', 'cheap']);
   });
 });
 
@@ -259,7 +322,7 @@ describe('cheapestSet (044, D1)', () => {
     expect(cheapestSet(units, 3)).toBeNull();
   });
 
-  it('keeps every set in one city', () => {
+  it('builds sets across cities (047)', () => {
     const units = [
       unit({ id: 'm1', city: 'Miami', price: 50 }),
       unit({ id: 'o1', city: 'Orlando', price: 10 }),
@@ -267,7 +330,25 @@ describe('cheapestSet (044, D1)', () => {
       unit({ id: 'm2', city: 'Miami', price: 50 }),
     ];
     expect(ids(cheapestSet(units, 2))).toEqual(['o1', 'o2']);
-    expect(cheapestSet(units, 3)).toBeNull();
+    expect(ids(cheapestSet(units, 3))).toEqual(['o1', 'o2', 'm1']);
+  });
+
+  it('prefers a city only on a full tie (047, D8)', () => {
+    const units = [
+      unit({ id: 'a-o', city: 'Orlando', price: 50 }),
+      unit({ id: 'b-o', city: 'Orlando', price: 50 }),
+      unit({ id: 'c-m', city: 'Miami', price: 50 }),
+      unit({ id: 'd-m', city: 'Miami', price: 50 }),
+    ];
+    expect(ids(cheapestSet(units, 2))).toEqual(['a-o', 'b-o']);
+    expect(ids(cheapestSet(units, 2, 'Miami'))).toEqual(['c-m', 'd-m']);
+    const patchedMiami = [
+      unit({ id: 'pm1', city: 'Miami', price: 50, patched: true }),
+      unit({ id: 'pm2', city: 'Miami', price: 50, patched: true }),
+      unit({ id: 'o1', city: 'Orlando', price: 80 }),
+      unit({ id: 'o2', city: 'Orlando', price: 80 }),
+    ];
+    expect(ids(cheapestSet(patchedMiami, 2, 'Miami'))).toEqual(['o1', 'o2']);
   });
 
   it('prefers unpatched on equal price, and skips units without tread', () => {

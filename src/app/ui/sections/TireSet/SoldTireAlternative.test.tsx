@@ -5,7 +5,8 @@ import type { SingleTire } from '@/app/interfaces/tires';
 import type { SetUnit } from '@/app/utils/tireSets';
 
 const h = vi.hoisted(() => ({
-  byCity: {} as Record<string, SetUnit[]>,
+  units: [] as SetUnit[],
+  groups: [] as Array<{ city?: string }>,
   fail: false,
 }));
 
@@ -18,9 +19,11 @@ vi.mock('@/repositories/tireSetsRepository', async () => {
   );
   return {
     setGroupOf: real.setGroupOf,
-    getCachedSetCandidates: async (g: { city: string }) => {
+    MAX_CANDIDATES: real.MAX_CANDIDATES,
+    getCachedSetCandidates: async (g: { city?: string }) => {
+      h.groups.push(g);
       if (h.fail) throw new Error('db down');
-      return h.byCity[g.city] ?? [];
+      return h.units;
     },
   };
 });
@@ -59,20 +62,29 @@ const tire: SingleTire = {
 const renderIt = async () => render(await SoldTireAlternative({ tire }));
 
 beforeEach(() => {
-  h.byCity = {};
+  h.units = [];
+  h.groups = [];
   h.fail = false;
 });
 
 describe('SoldTireAlternative (045)', () => {
   it('links the closest match in either city with the count (AC4)', async () => {
-    h.byCity = {
-      Miami: [unit('10', 9), unit('20', 6)],
-      Orlando: [unit('30', 8.8, { city: 'Orlando' })],
-    };
+    h.units = [unit('10', 9), unit('20', 6), unit('30', 8.8, { city: 'Orlando' })];
     await renderIt();
+    // One group for both cities (047): one lookup, no city filter.
+    expect(h.groups).toHaveLength(1);
+    expect(h.groups[0].city).toBeUndefined();
     const link = screen.getByRole('link', { name: 'We have 2 like it in stock →' });
     expect(link).toHaveAttribute('href', '/tires/30-pirelli-295-30-21');
     expect(screen.getByText(/This tire is sold\./)).toBeInTheDocument();
+  });
+
+  it('says "60+" at the query cap', async () => {
+    h.units = Array.from({ length: 60 }, (_, i) => unit(String(100 + i), 8));
+    await renderIt();
+    expect(
+      screen.getByRole('link', { name: 'We have 60+ like it in stock →' })
+    ).toBeInTheDocument();
   });
 
   it('renders nothing with no match or when the lookup fails', async () => {

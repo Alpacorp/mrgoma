@@ -66,15 +66,21 @@ describe('buildSetsMessage (044, D4, D5)', () => {
     expect(es).toMatch(/Precios y disponibilidad de este momento/);
   });
 
-  it('other_city: says none at home and explains pickup vs delivery', () => {
-    const m = buildSetsMessage(false, {
-      ...base,
-      outcome: 'other_city',
-      city: 'Orlando',
-      wantedCity: 'Miami',
-    });
-    expect(m).toContain('in Miami right now, but there is in Orlando');
-    expect(m).toContain('Store pickup is only in Orlando; home delivery reaches both cities');
+  it('any_city: none all in the named city, these from both, pickup there (047, AC15)', () => {
+    const m = buildSetsMessage(false, { ...base, outcome: 'any_city', namedCity: 'Orlando' });
+    expect(m).toContain('no set of 4 225/45R17 tires all in Orlando right now');
+    expect(m).toContain('these can be built (each one says where its tires are)');
+    expect(m).toContain('You can pick them up at any of our Orlando stores.');
+    // The cards may all be in the other city: the text names no city for them.
+    expect(m).not.toMatch(/Miami/);
+    expect(m).not.toMatch(/only in|none in your city/i);
+    const es = buildSetsMessage(true, { ...base, outcome: 'any_city', namedCity: 'Orlando' });
+    expect(es).toContain('Puedes recogerlas en cualquiera de nuestras tiendas de Orlando.');
+  });
+
+  it('found with a named city: the sets are all there', () => {
+    const m = buildSetsMessage(false, { ...base, outcome: 'found', namedCity: 'Orlando' });
+    expect(m).toContain('sets of 4 225/45R17 tires in Orlando can be built');
   });
 
   it('smaller: never presents the fallback as what was asked', () => {
@@ -99,7 +105,9 @@ describe('buildSetsMessage (044, D4, D5)', () => {
       condition: 'used',
       namedCity: 'Orlando',
     });
-    expect(m).toContain("There's no set of 4 used Pirelli 225/45R17 tires in Orlando right now");
+    // The ladder searches both cities (047): the city becomes a pickup line.
+    expect(m).toContain("There's no set of 4 used Pirelli 225/45R17 tires right now");
+    expect(m).toContain('You can pick them up at any of our Orlando stores.');
     const es = buildSetsMessage(true, {
       ...base,
       outcome: 'none',
@@ -107,12 +115,12 @@ describe('buildSetsMessage (044, D4, D5)', () => {
       condition: 'new',
       namedCity: 'Miami',
     });
-    expect(es).toContain('No hay ningún juego de llantas Pirelli 225/45R17 nuevas en Miami');
+    expect(es).toContain('No hay ningún juego de llantas Pirelli 225/45R17 nuevas que');
   });
 
   it('never mentions warehouses or shelves', () => {
-    for (const outcome of ['found', 'other_city', 'smaller', 'none'] as const) {
-      expect(buildSetsMessage(false, { ...base, outcome, city: 'Miami' })).not.toMatch(
+    for (const outcome of ['found', 'any_city', 'smaller', 'none'] as const) {
+      expect(buildSetsMessage(false, { ...base, outcome, namedCity: 'Miami' })).not.toMatch(
         /vault|warehouse|shelf|location code/i
       );
     }
@@ -124,7 +132,7 @@ describe('summarizeSetsForHistory (044, analyze #2, #3)', () => {
     brand: 'Michelin',
     model: 'Pilot Sport 4',
     condition: 'Used',
-    city: 'Miami',
+    cities: ['Miami'],
     count: 4,
     total: 480,
     treadLabel: '7–8/32, Δ1/32',
@@ -134,9 +142,12 @@ describe('summarizeSetsForHistory (044, analyze #2, #3)', () => {
     ...over,
   });
 
-  it('carries brand, model, count and city — never prices or treads', () => {
+  it('carries brand, model, count and cities — never prices or treads', () => {
     const s = summarizeSetsForHistory([card()]);
     expect(s).toContain('Michelin Pilot Sport 4 · 4 · Miami');
+    expect(summarizeSetsForHistory([card({ cities: ['Miami', 'Orlando'] })])).toContain(
+      '· 4 · Miami and Orlando'
+    );
     expect(s).not.toMatch(/\$|480|\/32/);
     expect(summarizeSetsForHistory([])).toBe('');
   });
@@ -145,12 +156,11 @@ describe('summarizeSetsForHistory (044, analyze #2, #3)', () => {
     const long = 'X'.repeat(300);
     const cards = [1, 2, 3].map(() => card({ brand: long, model: long }));
     const message = buildSetsMessage(false, {
-      outcome: 'other_city',
+      outcome: 'any_city',
       requested: 4,
       shown: 4,
       size: '225/45/17',
-      city: 'Orlando',
-      wantedCity: 'Miami',
+      namedCity: 'Orlando',
     });
     expect(withSetsSummary(message, cards).length).toBeLessThanOrEqual(2000);
     expect(withSetsSummary('a'.repeat(1990), cards).length).toBeLessThanOrEqual(2000);
