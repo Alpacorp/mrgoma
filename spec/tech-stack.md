@@ -30,6 +30,12 @@ Versions taken from `package.json` (2026-06-30). Update here when they change.
 ### Product / features
 
 - **Stripe 20** — checkout (with a temporary fallback to WhatsApp orders).
+  What Stripe's page shows per tire (name, description, image) comes from
+  `stripeProduct()` (`src/app/api/_lib/stripeProduct.ts`, feature 048): the
+  cart's title, a facts description, and never an image on the site's own
+  host (the firewall answers Stripe with a 429 challenge); tires without a
+  photo use `CHECKOUT_FALLBACK_IMAGE_URL` (generic PNG on Vercel Blob) or no
+  image. The WhatsApp order message keeps the internal composed name.
 - **@anthropic-ai/sdk** — dashboard AI chat (model `claude-haiku-4-5`).
 - **Three.js 0.185** + **@react-three/fiber 9** + **@react-three/drei 10** — 3D
   visualizations (home size selector, tread & wear on the detail page).

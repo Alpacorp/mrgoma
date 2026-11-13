@@ -73,6 +73,12 @@ persisted (`SC_Order`/`SC_OrderDetail`), tire marked `sold`, and receipt shown.
   `GET /api/checkout/session`, `receipt_url`, email and a copyable reference.
 - ⬜ **S2.5 — Switch default.** Make Stripe the default flow; keep WhatsApp as a
   fallback via flag.
+- 🟡 **Tires on Stripe Checkout (`048-stripe-line-items`).** Found on the
+  production payment page (2026-11-13): broken images (the site's images get a
+  firewall challenge; 72% of tires have no photo), internal-format names, and
+  prices in the visitor's local currency. Readable names and descriptions, no
+  broken image (a generic image on Vercel Blob), the firewall exception
+  documented but not applied; Adaptive Pricing stays on.
 - ⬜ **S2.6 — Live + smoke test.** Live keys on Vercel, a real end-to-end test,
   logging/monitoring of payment errors.
 
@@ -123,10 +129,11 @@ To be resumed after the two tracks above; no fixed order yet.
   `items` they saw on `add_to_cart` / `begin_checkout` / `add_shipping_info`
   are production running pre-040 code — fixed by deploying 040.) _Merged
   (PR #207, 2026-11-11)._
-- 🟡 **Sets and pickup across Miami and Orlando (`047-sets-any-city`).** The
+- ✅ **Sets and pickup across Miami and Orlando (`047-sets-any-city`).** The
   owner approved sets (041/044) on 2026-11-13 with one change: location does
   not count for compatibility, and pickup is allowed at any store whatever the
-  tires' city. Reverses 041's D1 and D5.
+  tires' city. Reverses 041's D1 and D5. Also a facts line and a hover card to
+  compare tires in the cart. _Merged (PR #208, 2026-11-13)._
 
 - ⬜ **Tailwind v4 config activation (bug).** `tailwind.config.ts` is ignored by
   Tailwind v4 (no `@config` directive), so its custom tokens are dormant **in
