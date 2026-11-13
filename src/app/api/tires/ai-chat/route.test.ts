@@ -356,7 +356,12 @@ describe('find_sets (044)', () => {
     expect(h.sizeAsked).toEqual(['225/45/17']);
     expect(body.type).toBe('sets');
     expect(body.sets).toHaveLength(1);
-    expect(body.sets[0]).toMatchObject({ brand: 'Michelin', count: 4, total: 480, city: 'Miami' });
+    expect(body.sets[0]).toMatchObject({
+      brand: 'Michelin',
+      count: 4,
+      total: 480,
+      cities: ['Miami'],
+    });
     expect(body.message).toMatch(/as of now/);
     expect(body.historyMessage).toContain('Michelin Pilot Sport 4 · 4 · Miami');
     expect(body.historyMessage).not.toMatch(/480/);
@@ -378,14 +383,15 @@ describe('find_sets (044)', () => {
     const body = await (await POST(ask('4 Pirelli 225/45R17 in Orlando'))).json();
 
     expect(body.type).toBe('no_results');
-    expect(body.message).toMatch(/No set of Pirelli 225\/45R17 tires in Orlando/);
+    // The city is a preference (047): "none" means none in either city.
+    expect(body.message).toMatch(/No set of Pirelli 225\/45R17 tires can be built/);
   });
 
-  it("orders by the visitor's city hint (AC3)", async () => {
+  it("breaks ties with the visitor's city hint (047, AC16)", async () => {
     findSets({ w: 225, s: 45, d: 17, quantity: 2 });
     h.sizeUnits = async () => [
       ...units(2, { price: 50 }),
-      ...units(2, { brand: 'Pirelli', model2: 'P Zero', price: 90, city: 'Orlando' }),
+      ...units(2, { brand: 'Pirelli', model2: 'P Zero', price: 50, city: 'Orlando' }),
     ];
 
     const body = await (
@@ -394,7 +400,10 @@ describe('find_sets (044)', () => {
       )
     ).json();
 
-    expect(body.sets.map((c: { city: string }) => c.city)).toEqual(['Orlando', 'Miami']);
+    expect(body.sets.map((c: { cities: string[] }) => c.cities)).toEqual([
+      ['Orlando'],
+      ['Miami'],
+    ]);
   });
 
   it('answers in Spanish (AC9)', async () => {

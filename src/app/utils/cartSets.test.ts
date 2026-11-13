@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { CartItem } from '@/app/context/CartContext';
 
-import { cartCities, groupCartLines, oddCity, treadRangeLabel } from './cartSets';
+import { citiesLabel, groupCartLines, setUnitToLine, treadRangeLabel } from './cartSets';
 
 const item = (id: string, over: Partial<CartItem> = {}): CartItem => ({
   id,
@@ -46,23 +46,41 @@ describe('treadRangeLabel', () => {
   });
 });
 
-describe('cartCities', () => {
-  it('lists the cities and flags lines saved before cities were stored', () => {
-    expect(
-      cartCities([item('1', { city: 'Miami' }), item('2', { city: 'Orlando' }), item('3')])
-    ).toEqual({
-      cities: ['Miami', 'Orlando'],
-      unknown: true,
-    });
+describe('citiesLabel (047, D5)', () => {
+  it('names one city once, and both when a set mixes them', () => {
+    expect(citiesLabel(['Orlando', 'Orlando'])).toBe('Orlando');
+    expect(citiesLabel(['Orlando', 'Miami', 'Orlando'])).toBe('Miami and Orlando');
+  });
+
+  it('skips lines without a city', () => {
+    expect(citiesLabel([undefined, 'Miami'])).toBe('Miami');
+    expect(citiesLabel([undefined])).toBe('');
   });
 });
 
-describe('oddCity', () => {
-  it('names the city with fewer tires, and nothing for one city or a tie', () => {
-    const m = (id: string) => item(id, { city: 'Miami' });
-    const o = (id: string) => item(id, { city: 'Orlando' });
-    expect(oddCity([m('1'), m('2'), o('3')])).toEqual({ city: 'Orlando', count: 1 });
-    expect(oddCity([m('1'), m('2')])).toBeNull();
-    expect(oddCity([m('1'), o('2')])).toBeNull();
+describe('setUnitToLine (047, owner review)', () => {
+  it('carries what the cart compares: tread, life, patch and DOT', () => {
+    const line = setUnitToLine(
+      {
+        id: '9',
+        code: 'C9',
+        price: 120,
+        tread: 8.6,
+        life: '86%',
+        patched: true,
+        dot: '2325',
+        image: null,
+        condition: 'Used',
+        city: 'Orlando',
+      },
+      { brand: 'CONTINENTAL', model2: 'PROCONTACT TX', size: '235/50/19' }
+    );
+    expect(line).toMatchObject({
+      tread: 8.6,
+      life: '86%',
+      patched: true,
+      dot: '2325',
+      city: 'Orlando',
+    });
   });
 });

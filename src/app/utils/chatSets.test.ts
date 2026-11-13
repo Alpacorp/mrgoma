@@ -43,7 +43,7 @@ describe('pickChatSets (044, FR2–FR8)', () => {
     expect(Object.keys(card).sort()).toEqual(
       [
         'brand',
-        'city',
+        'cities',
         'condition',
         'count',
         'href',
@@ -58,10 +58,9 @@ describe('pickChatSets (044, FR2–FR8)', () => {
     expect(card.href).toMatch(/^\/tires\/\d+-michelin-225-45-17\?set=(\d+,){3}\d+$/);
   });
 
-  it('never mixes cities, models, run-flat or condition, and keeps the 2/32" rule (AC2)', () => {
+  it('never mixes models, run-flat or condition, and keeps the 2/32" rule (AC2)', () => {
     const units = [
       u({ id: '1', tread: 9 }),
-      u({ id: '2', tread: 9, city: 'Orlando' }),
       u({ id: '3', tread: 9, runFlat: true }),
       u({ id: '4', tread: 9, condition: 'New' }),
       u({ id: '5', tread: 9, model2: 'Pilot Sport 5' }),
@@ -70,10 +69,19 @@ describe('pickChatSets (044, FR2–FR8)', () => {
     expect(pickChatSets(units, req({ quantity: 2 })).outcome).toBe('none');
   });
 
+  it('builds a set across cities (047, AC5)', () => {
+    const r = pickChatSets(
+      [...many(2, { city: 'Miami' }), ...many(2, { city: 'Orlando' })],
+      req({ quantity: 4 })
+    );
+    expect(r.outcome).toBe('found');
+    expect(r.sets[0].cities).toEqual(['Miami', 'Orlando']);
+  });
+
   it('shows at most 3 cards, one per brand and model, cheapest first (D1)', () => {
     const units = [
       ...many(2, { price: 50 }), // Michelin PS4 $100
-      ...many(2, { price: 60, city: 'Orlando' }), // Michelin PS4 Orlando — same model, dropped
+      ...many(2, { price: 60, city: 'Orlando' }), // Michelin PS4 Orlando — same model, one card
       ...many(2, { brand: 'Pirelli', model2: 'P Zero', price: 40 }),
       ...many(2, { brand: 'Bridgestone', model2: 'Potenza', price: 70 }),
       ...many(2, { brand: 'Goodyear', model2: 'Eagle', price: 80 }),
@@ -92,15 +100,29 @@ describe('pickChatSets (044, FR2–FR8)', () => {
     expect(r.sets.map(s => s.brand)).toEqual(['Pirelli', 'Michelin']);
   });
 
-  it("puts the visitor's city first, else ascending total (AC3)", () => {
+  it("uses the visitor's city only to break ties (047, AC16)", () => {
     const units = [
       ...many(2, { price: 50, city: 'Miami' }),
       ...many(2, { brand: 'Pirelli', model2: 'P Zero', price: 90, city: 'Orlando' }),
     ];
     const orlando = pickChatSets(units, req({ quantity: 2, visitorCity: 'Orlando' }));
-    expect(orlando.sets.map(s => s.city)).toEqual(['Orlando', 'Miami']);
-    const none = pickChatSets(units, req({ quantity: 2 }));
-    expect(none.sets.map(s => s.total)).toEqual([100, 180]);
+    expect(orlando.sets.map(s => s.total)).toEqual([100, 180]);
+
+    const patched = [
+      ...many(2, { price: 40, city: 'Orlando', patched: true }),
+      ...many(2, { brand: 'Pirelli', model2: 'P Zero', price: 90, city: 'Miami' }),
+    ];
+    expect(
+      pickChatSets(patched, req({ quantity: 2, visitorCity: 'Orlando' })).sets.map(s => s.cities)
+    ).toEqual([['Miami'], ['Orlando']]);
+
+    const tie = [
+      ...many(2, { price: 50, city: 'Miami' }),
+      ...many(2, { brand: 'Pirelli', model2: 'P Zero', price: 50, city: 'Orlando' }),
+    ];
+    expect(
+      pickChatSets(tie, req({ quantity: 2, visitorCity: 'Orlando' })).sets.map(s => s.cities)
+    ).toEqual([['Orlando'], ['Miami']]);
   });
 
   it('respects brand, condition and city (AC8)', () => {
@@ -114,24 +136,31 @@ describe('pickChatSets (044, FR2–FR8)', () => {
       req({ brands: ['michelin'], city: 'Orlando', condition: 'used' })
     );
     expect(r.sets).toHaveLength(1);
-    expect(r.sets[0]).toMatchObject({ brand: 'Michelin', city: 'Orlando', condition: 'Used' });
+    expect(r.outcome).toBe('found');
+    expect(r.sets[0]).toMatchObject({ brand: 'Michelin', cities: ['Orlando'], condition: 'Used' });
     expect(pickChatSets(units, req({ brands: ['Goodyear'] })).outcome).toBe('none');
   });
 
-  it("says other_city when the visitor's city has none (AC7, step 1)", () => {
+  it("offers the visitor's other city as plain found sets (047, AC5)", () => {
     const r = pickChatSets(many(4, { city: 'Orlando' }), req({ visitorCity: 'Miami' }));
-    expect(r.outcome).toBe('other_city');
-    expect(r.sets[0].city).toBe('Orlando');
+    expect(r.outcome).toBe('found');
+    expect(r.sets[0].cities).toEqual(['Orlando']);
   });
 
-  it('skips the other city when the customer named one (FR8)', () => {
-    const r = pickChatSets(
+  it('a named city is a preference: all there first, else any_city (047, AC15)', () => {
+    const local = pickChatSets(
+      [...many(4, { city: 'Orlando', price: 200 }), ...many(4, { city: 'Miami', price: 50 })],
+      req({ city: 'Orlando' })
+    );
+    expect(local.outcome).toBe('found');
+    expect(local.sets[0].cities).toEqual(['Orlando']);
+
+    const anywhere = pickChatSets(
       [...many(4, { city: 'Orlando' }), ...many(2, { city: 'Miami' })],
       req({ city: 'Miami' })
     );
-    expect(r.outcome).toBe('smaller');
-    expect(r).toMatchObject({ quantity: 2 });
-    expect(r.sets[0].city).toBe('Miami');
+    expect(anywhere).toMatchObject({ outcome: 'any_city', quantity: 4 });
+    expect(anywhere.sets[0].cities).toEqual(['Miami', 'Orlando']);
   });
 
   it('falls back to the largest smaller set, then none (AC7)', () => {
@@ -208,16 +237,20 @@ describe('resolvePresetSet (D6, AC4, AC5)', () => {
     });
   });
 
-  it('never builds an invalid set from tires of another city or tread', () => {
+  it('never builds an invalid set from tires outside the tread rule', () => {
     const far = u({ id: '6', tread: 3 });
-    const orl = u({ id: '7', city: 'Orlando' });
-    const r = resolvePresetSet(['1', '6', '7'], anchor, [...cands, far, orl]);
+    const r = resolvePresetSet(['1', '6'], anchor, [...cands, far]);
     expect(r.status).toBe('replaced');
     if (r.status === 'replaced') {
       expect(r.set.map(x => x.id)).not.toContain('6');
-      expect(r.set.map(x => x.id)).not.toContain('7');
       expect(isWithinTolerance(r.set)).toBe(true);
     }
+  });
+
+  it('keeps a mixed-city set from a chat link as it is (047, AC4)', () => {
+    const orl = u({ id: '7', city: 'Orlando' });
+    const r = resolvePresetSet(['1', '7'], anchor, [...cands, orl]);
+    expect(r).toEqual({ status: 'exact', set: [anchor, orl] });
   });
 
   it('ignores a link without this tire or without a valid value', () => {

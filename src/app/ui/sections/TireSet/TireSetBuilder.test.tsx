@@ -199,3 +199,39 @@ describe('a set from the AI chat (044, D6)', () => {
     expect(screen.getByText(/Set of 3 · total \$450\.00/)).toBeInTheDocument();
   });
 });
+
+describe('sets across cities (047)', () => {
+  it('builds a set with tires from the other city and names each city (AC1, AC13)', () => {
+    render(
+      <CartProvider>
+        <TireSetBuilder
+          anchor={unit('a')}
+          candidates={[unit('b', { city: 'Orlando' }), unit('c', { city: 'Orlando' })]}
+          product={product}
+          more={2}
+        />
+      </CartProvider>
+    );
+    expect(
+      screen.getByText('We have 2 more of this tire in Miami and Orlando.')
+    ).toBeInTheDocument();
+    const list = screen.getByRole('list', { name: 'Tires in your set of 3' });
+    const rows = [...list.querySelectorAll('li')].map(li => li.textContent ?? '');
+    expect(rows[0]).toMatch(/· Miami/);
+    expect(rows[1]).toMatch(/· Orlando/);
+  });
+
+  it('names the city in swap options when candidates span both (AC3)', async () => {
+    renderBuilder(unit('a'), [unit('b'), unit('c', { city: 'Orlando', price: 120 })]);
+    await userEvent.click(screen.getByRole('radio', { name: '2 tires' }));
+    const select = screen.getByRole('combobox', { name: 'Swap tire 2 of 2' });
+    const options = [...select.querySelectorAll('option')].map(o => o.textContent);
+    expect(options.some(t => /^#Cc · .* · Orlando$/.test(t ?? ''))).toBe(true);
+  });
+
+  it('names no city per tire when they are all in one city', () => {
+    renderBuilder(unit('a'), [unit('b')]);
+    const list = screen.getByRole('list', { name: 'Tires in your set of 2' });
+    expect(list.textContent).not.toMatch(/· Miami/);
+  });
+});

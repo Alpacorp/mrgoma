@@ -4,14 +4,18 @@
  * sold. Pure — no React, no database — so every rule in the spec is a unit test.
  *
  * Every tire is a unique physical unit, so a "set" is never a quantity: it is a
- * choice of distinct units of the same brand, model, size and run-flat type, in
- * the same city (the query guarantees those). This module adds the last rule —
+ * choice of distinct units of the same brand, model, size, run-flat type and
+ * condition (the query guarantees those). This module adds the last rule —
  * **the tread may differ by at most 2/32" across the set** — and the order in
  * which units are preferred (decision D6 of the spec):
  *
  *   1. tread closest to the tire the shopper is looking at,
  *   2. unpatched before patched,
- *   3. lower price.
+ *   3. lower price,
+ *   4. in the same city as the tire on the page (047, D3 — fewer trips).
+ *
+ * The city is never a filter (047, D1: the owner moves tires between Miami and
+ * Orlando, and pickup is at any store). It only breaks ties, after 1–3.
  */
 
 export type SetSize = 2 | 3 | 4;
@@ -132,23 +136,27 @@ export function isQuantityMode(anchor: SetUnit): boolean {
   return anchor.condition === 'New';
 }
 
-/** Candidates that can ever join a set with `anchor`: same city, a tread, not itself. */
+/** Candidates that can ever join a set with `anchor`: a tread, not itself. Any city (047). */
 function eligible(anchor: SetUnit, candidates: SetUnit[]): SetUnit[] {
   const seen = new Set<string>([anchor.id]);
   return candidates.filter(c => {
     if (seen.has(c.id)) return false;
     seen.add(c.id);
-    return c.city === anchor.city && effectiveTread(c) !== null;
+    return effectiveTread(c) !== null;
   });
 }
 
-/** D6 as a comparator, relative to a reference tread. */
-function byPreference(reference: number) {
+/** 1 when `unit` is outside `city` — the last tie-break (047, D3). */
+const awayFrom = (unit: SetUnit, city?: TireCity) => (city && unit.city !== city ? 1 : 0);
+
+/** D6 as a comparator, relative to a reference tread; `city` breaks the last tie. */
+function byPreference(reference: number, city?: TireCity) {
   return (a: SetUnit, b: SetUnit) =>
     Math.abs((effectiveTread(a) as number) - reference) -
       Math.abs((effectiveTread(b) as number) - reference) ||
     Number(a.patched) - Number(b.patched) ||
     a.price - b.price ||
+    awayFrom(a, city) - awayFrom(b, city) ||
     a.id.localeCompare(b.id);
 }
 
@@ -177,7 +185,7 @@ export function suggestSet(
   const anchorTread = effectiveTread(anchor);
   if (anchorTread === null) return null;
   const pool = eligible(anchor, candidates);
-  const prefer = byPreference(anchorTread);
+  const prefer = byPreference(anchorTread, anchor.city);
 
   const lowerBounds = new Set<number>([anchorTread]);
   for (const c of pool) {
@@ -185,7 +193,7 @@ export function suggestSet(
     if (t <= anchorTread && anchorTread - t <= MAX_TREAD_SPREAD + EPSILON) lowerBounds.add(t);
   }
 
-  let best: { units: SetUnit[]; score: [number, number, number] } | null = null;
+  let best: { units: SetUnit[]; score: [number, number, number, number] } | null = null;
   for (const low of lowerBounds) {
     const high = low + MAX_TREAD_SPREAD + EPSILON;
     const inWindow = pool
@@ -196,16 +204,20 @@ export function suggestSet(
       .sort(prefer);
     if (inWindow.length < size - 1) continue;
     const chosen = inWindow.slice(0, size - 1);
-    const score: [number, number, number] = [
+    const score: [number, number, number, number] = [
       chosen.reduce((s, c) => s + Math.abs((effectiveTread(c) as number) - anchorTread), 0),
       chosen.filter(c => c.patched).length,
       setTotal(chosen),
+      chosen.filter(c => c.city !== anchor.city).length,
     ];
     if (
       !best ||
       score[0] < best.score[0] - EPSILON ||
       (Math.abs(score[0] - best.score[0]) <= EPSILON &&
-        (score[1] < best.score[1] || (score[1] === best.score[1] && score[2] < best.score[2])))
+        (score[1] < best.score[1] ||
+          (score[1] === best.score[1] &&
+            (score[2] < best.score[2] - EPSILON ||
+              (Math.abs(score[2] - best.score[2]) <= EPSILON && score[3] < best.score[3])))))
     ) {
       best = { units: [anchor, ...chosen], score };
     }
@@ -231,29 +243,23 @@ export function swapOptions(set: SetUnit[], index: number, candidates: SetUnit[]
   const inSet = new Set(set.map(u => u.id));
   return eligible(anchor, candidates)
     .filter(c => !inSet.has(c.id) && isWithinTolerance([...others, c]))
-    .sort(byPreference(anchorTread));
+    .sort(byPreference(anchorTread, anchor.city));
 }
 
 /**
  * The best unit to replace one that sold, given the units the shopper keeps
- * (spec FR13). Same city as the kept units, within 2/32" of all of them, D6
- * order relative to the first kept unit. `null` when nothing fits.
+ * (spec FR13). Within 2/32" of all of them, D6 order relative to the first
+ * kept unit, in any city; on a full tie, the first kept unit's city wins (047,
+ * D3). `null` when nothing fits.
  */
 export function pickReplacement(keep: SetUnit[], candidates: SetUnit[]): SetUnit | null {
   if (keep.length === 0) return null;
   const reference = effectiveTread(keep[0]);
   if (reference === null) return null;
   const kept = new Set(keep.map(u => u.id));
-  const city = keep[0].city;
   const options = candidates
-    .filter(
-      c =>
-        !kept.has(c.id) &&
-        c.city === city &&
-        effectiveTread(c) !== null &&
-        isWithinTolerance([...keep, c])
-    )
-    .sort(byPreference(reference));
+    .filter(c => !kept.has(c.id) && effectiveTread(c) !== null && isWithinTolerance([...keep, c]))
+    .sort(byPreference(reference, keep[0].city));
   return options[0] ?? null;
 }
 
@@ -277,46 +283,56 @@ export function closestMatch(reference: number | null, candidates: SetUnit[]): S
 
 /**
  * The best valid set of `size` units from one group, with no tire "being looked
- * at" — what the AI chat proposes (feature 044, D1). Same rule as the page: one
- * city, tread within 2/32". Every 2/32" window starting at a unit's tread is
- * tried; inside it **unpatched units come first** (owner, 2026-11-10: patched
- * tires are often the cheapest, and a set of patched tires is not what "the
- * best price" should mean), then the cheapest, then id. Windows compare on
- * patched count, then total. `null` when no window holds `size` units.
+ * at" — what the AI chat proposes (feature 044, D1). Same rule as the page:
+ * tread within 2/32", any city (047). Every 2/32" window starting at a unit's
+ * tread is tried; inside it **unpatched units come first** (owner, 2026-11-10:
+ * patched tires are often the cheapest, and a set of patched tires is not what
+ * "the best price" should mean), then the cheapest, then — on a full tie — the
+ * `preferCity` (047), then id. Windows compare on patched count, then total,
+ * then how many tires are outside `preferCity`. `null` when no window holds
+ * `size` units.
  */
-export function cheapestSet(units: SetUnit[], size: SetSize): SetUnit[] | null {
+export function cheapestSet(
+  units: SetUnit[],
+  size: SetSize,
+  preferCity?: TireCity | null
+): SetUnit[] | null {
   const seen = new Set<string>();
   const pool = units.filter(u => {
     if (seen.has(u.id) || effectiveTread(u) === null) return false;
     seen.add(u.id);
     return true;
   });
+  const city = preferCity ?? undefined;
   const byCheapest = (a: SetUnit, b: SetUnit) =>
-    Number(a.patched) - Number(b.patched) || a.price - b.price || a.id.localeCompare(b.id);
+    Number(a.patched) - Number(b.patched) ||
+    a.price - b.price ||
+    awayFrom(a, city) - awayFrom(b, city) ||
+    a.id.localeCompare(b.id);
 
-  let best: { units: SetUnit[]; total: number; patched: number } | null = null;
-  for (const city of ['Miami', 'Orlando'] as const) {
-    const inCity = pool.filter(u => u.city === city);
-    const lows = new Set(inCity.map(u => effectiveTread(u) as number));
-    for (const low of lows) {
-      const high = low + MAX_TREAD_SPREAD + EPSILON;
-      const chosen = inCity
-        .filter(u => {
-          const t = effectiveTread(u) as number;
-          return t >= low - EPSILON && t <= high;
-        })
-        .sort(byCheapest)
-        .slice(0, size);
-      if (chosen.length < size) continue;
-      const total = setTotal(chosen);
-      const patched = chosen.filter(u => u.patched).length;
-      if (
-        !best ||
-        patched < best.patched ||
-        (patched === best.patched && total < best.total - EPSILON)
-      ) {
-        best = { units: chosen, total, patched };
-      }
+  let best: { units: SetUnit[]; total: number; patched: number; away: number } | null = null;
+  const lows = new Set(pool.map(u => effectiveTread(u) as number));
+  for (const low of lows) {
+    const high = low + MAX_TREAD_SPREAD + EPSILON;
+    const chosen = pool
+      .filter(u => {
+        const t = effectiveTread(u) as number;
+        return t >= low - EPSILON && t <= high;
+      })
+      .sort(byCheapest)
+      .slice(0, size);
+    if (chosen.length < size) continue;
+    const total = setTotal(chosen);
+    const patched = chosen.filter(u => u.patched).length;
+    const away = chosen.reduce((n, u) => n + awayFrom(u, city), 0);
+    if (
+      !best ||
+      patched < best.patched ||
+      (patched === best.patched &&
+        (total < best.total - EPSILON ||
+          (Math.abs(total - best.total) <= EPSILON && away < best.away)))
+    ) {
+      best = { units: chosen, total, patched, away };
     }
   }
   return best ? best.units : null;

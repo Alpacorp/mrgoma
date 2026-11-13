@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import type Stripe from 'stripe';
 
 import { withLogging } from '@/app/api/_lib/withLogging';
-import { locationsData } from '@/app/ui/sections/LocationsSlider/locationsData';
 
 // Helper to build the application's origin from the request URL
 function getOrigin(req: NextRequest) {
@@ -143,17 +142,10 @@ export const POST = withLogging('checkout.createSession.POST', async (req: NextR
 
     // Re-validate availability and get authoritative pricing and names
     // `code` is machine-readable (feature 041): `sold` lets checkout offer a
-    // replacement for a set tire, `city` explains a pickup in the wrong city.
-    // `reason` stays the human text it always was.
-    const unavailable: { id: string; reason: string; code: 'sold' | 'city' | 'unavailable' }[] = [];
-
-    // Pickup is only possible in the city where the tires are (feature 041,
-    // D1). The browser filters stores already; this is the authority, and the
-    // only check for carts saved before tires carried their city.
-    const pickupCity =
-      fulfillmentMethod === 'pickup'
-        ? locationsData.find(l => l.id === pickupStoreId)?.city
-        : undefined;
+    // replacement for a set tire. `reason` stays the human text it always was.
+    // Pickup is at any store whatever city the tires are in (feature 047, D2):
+    // there is no city check any more.
+    const unavailable: { id: string; reason: string; code: 'sold' | 'unavailable' }[] = [];
     const validated: {
       id: string;
       name: string;
@@ -195,15 +187,6 @@ export const POST = withLogging('checkout.createSession.POST', async (req: NextR
 
       if (typeof conditionVal === 'string' && conditionVal.trim().toLowerCase() === 'sold') {
         unavailable.push({ id: it.id, reason: 'Product is already sold', code: 'sold' });
-        continue;
-      }
-
-      if (pickupCity && data.city && data.city !== pickupCity) {
-        unavailable.push({
-          id: it.id,
-          reason: `This tire is in ${data.city}; it cannot be picked up in ${pickupCity}`,
-          code: 'city',
-        });
         continue;
       }
 

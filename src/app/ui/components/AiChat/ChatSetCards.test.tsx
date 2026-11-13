@@ -18,7 +18,7 @@ const card = (over: Partial<ChatSetCard> = {}): ChatSetCard => ({
   brand: 'Michelin',
   model: 'Pilot Sport 4',
   condition: 'Used',
-  city: 'Orlando',
+  cities: ['Orlando'],
   count: 4,
   total: 480,
   treadLabel: '7–8/32, Δ1/32',
@@ -43,6 +43,12 @@ describe('ChatSetCards (044)', () => {
     expect(screen.getByText(/tread 7–8\/32/)).toBeInTheDocument();
   });
 
+  it('says both cities for a set that mixes them (047, AC13)', () => {
+    render(<ChatSetCards sets={[card({ cities: ['Miami', 'Orlando'] })]} />);
+    expect(screen.getByText('4 tires · Used · Miami and Orlando')).toBeInTheDocument();
+    expect(screen.getByRole('link')).toHaveAttribute('data-track-city', 'Miami and Orlando');
+  });
+
   it('names each link after the set it opens', () => {
     render(
       <ChatSetCards sets={[card(), card({ brand: 'Pirelli', model: 'P Zero', href: '/b' })]} />
@@ -57,7 +63,7 @@ describe('ChatSetCards (044)', () => {
   });
 
   it('tracks the open declaratively with position, size and city only (AC13)', () => {
-    render(<ChatSetCards sets={[card(), card({ href: '/b', city: 'Miami', count: 2 })]} />);
+    render(<ChatSetCards sets={[card(), card({ href: '/b', cities: ['Miami'], count: 2 })]} />);
 
     const second = screen.getAllByRole('link')[1];
     expect(second).toHaveAttribute('data-track', 'chat_set_open');

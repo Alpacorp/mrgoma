@@ -53,7 +53,7 @@ export const GET = withLogging('tireSets.elsewhere.GET', async (req: NextRequest
     const tire = mapTireRecordToSingleTire(record);
     const group = setGroupOf(tire);
     if (!group) return NextResponse.json(NONE);
-    if (group.city === city) {
+    if ((tire.city ?? 'Miami') === city) {
       return NextResponse.json({ message: 'The tire is already in that city' }, { status: 400 });
     }
 

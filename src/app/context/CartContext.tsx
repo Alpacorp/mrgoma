@@ -38,6 +38,10 @@ export interface CartItem {
   city?: 'Miami' | 'Orlando';
   /** Tread in 32nds, for the set's range in the cart. */
   tread?: number | null;
+  /** Remaining life, patch and DOT, to compare tires in the cart (047). */
+  life?: string;
+  patched?: boolean;
+  dot?: string;
 }
 
 // Define the cart context type
@@ -61,6 +65,9 @@ export interface AddToCartProduct {
   size?: string;
   city?: 'Miami' | 'Orlando';
   tread?: number | null;
+  life?: string;
+  patched?: boolean;
+  dot?: string;
 }
 
 interface CartContextType {
@@ -102,6 +109,9 @@ function toCartItem(product: AddToCartProduct, setId?: string): CartItem {
     size: product.size,
     city: product.city,
     tread: product.tread,
+    life: product.life,
+    patched: product.patched,
+    dot: product.dot,
     price,
     quantity: 1,
     ...(setId ? { setId } : {}),
@@ -200,6 +210,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             size: product.size,
             city: product.city,
             tread: product.tread,
+            life: product.life,
+            patched: product.patched,
+            dot: product.dot,
             price: price,
             quantity: 1,
           },

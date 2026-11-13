@@ -16,10 +16,15 @@ import { STOREFRONT_SELLABLE_WHERE } from '@/repositories/feedQuery';
 /**
  * Compatible tires for a set (feature 041).
  *
- * A set's members share brand, model, size, run-flat type, condition class and
- * city. Those six values are the **group**; every tire of a group sees the same
+ * A set's members share brand, model, size, run-flat type and condition class.
+ * Those five values are the **group**; every tire of a group sees the same
  * candidates, which is why the cache is keyed by the group and not by tire id —
  * the hundred pages of a hundred-unit group share one query.
+ *
+ * The city is **not** part of a set's group (feature 047, D1: the owner moves
+ * tires between Miami and Orlando). A group may still carry a city to count
+ * the tires of one city — 043's "N like this in {city}" — and then the query
+ * filters by it.
  *
  * Only whitelisted columns are read. `VaultName` is read to derive the city and
  * is never returned; `Location` (the shelf code) is not read at all.
@@ -31,7 +36,8 @@ export type SetGroup = {
   size: string;
   runFlat: boolean;
   isNew: boolean;
-  city: TireCity;
+  /** Only to count one city's tires (043); sets never pass it (047). */
+  city?: TireCity;
 };
 
 /** The group a tire belongs to, or `null` when it cannot form sets (no model). */
@@ -47,13 +53,19 @@ export function setGroupOf(tire: SingleTire): SetGroup | null {
     size,
     runFlat: tire.runFlat === 'Yes',
     isNew: tire.condition === 'New',
-    city: tire.city ?? 'Miami',
   };
 }
 
 /** Stable cache key for a group. Two tires of one group → one key. */
 export function setGroupKey(g: SetGroup): string {
-  return [g.brand, g.model2, g.size, g.runFlat ? 'rf' : 'std', g.isNew ? 'new' : 'used', g.city]
+  return [
+    g.brand,
+    g.model2,
+    g.size,
+    g.runFlat ? 'rf' : 'std',
+    g.isNew ? 'new' : 'used',
+    g.city ?? 'any',
+  ]
     .map(part => part.toLowerCase())
     .join('|');
 }
@@ -68,21 +80,23 @@ const ORLANDO_LIST = ORLANDO_VAULTS.map(v => `'${v}'`).join(', ');
 
 /**
  * The SQL for a group. Pure and exported so a test can assert it binds every
- * value and filters by city the same way `storeCity` reads it (unknown vaults
- * count as Miami).
+ * value and, given a city, filters by it the same way `storeCity` reads it
+ * (unknown vaults count as Miami). Without a city, both cities (047).
  */
 export function buildSetCandidatesQuery(g: SetGroup): string {
   const city =
     g.city === 'Orlando'
-      ? `VaultName IN (${ORLANDO_LIST})`
-      : `(VaultName IS NULL OR VaultName NOT IN (${ORLANDO_LIST}))`;
+      ? ` AND VaultName IN (${ORLANDO_LIST})`
+      : g.city === 'Miami'
+        ? ` AND (VaultName IS NULL OR VaultName NOT IN (${ORLANDO_LIST}))`
+        : '';
   const runFlat = g.runFlat ? 'KindSaleId = 1' : 'ISNULL(KindSaleId, 0) <> 1';
   const condition = g.isNew ? 'ProductTypeId = 1' : 'ISNULL(ProductTypeId, 0) <> 1';
   return (
     `SELECT TOP ${MAX_CANDIDATES} ${SET_COLUMNS} FROM dbo.View_Tires ` +
     `WHERE ${STOREFRONT_SELLABLE_WHERE} ` +
     `AND Brand = @brand AND Model2 = @model2 AND RealSize = @size ` +
-    `AND ${runFlat} AND ${condition} AND ${city} ` +
+    `AND ${runFlat} AND ${condition}${city} ` +
     `ORDER BY TRY_CAST(Tread AS float) DESC, Price ASC`
   );
 }

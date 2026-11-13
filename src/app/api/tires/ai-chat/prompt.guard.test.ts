@@ -91,6 +91,12 @@ describe('tire sets come from the app, not the model (044)', () => {
     expect(section).toMatch(/Do NOT write set prices, counts, treads or availability yourself/);
   });
 
+  it('never states the old one-city rule (047, D1, D2)', () => {
+    expect(PROMPT).not.toMatch(/same city|store's city|only in (Miami|Orlando)/i);
+    expect(section).toMatch(/A set may mix tires from Miami and Orlando/);
+    expect(section).toMatch(/pick up at any of our stores/);
+  });
+
   it('says the chat cannot add to the cart and nothing is reserved (AC10)', () => {
     expect(section).toMatch(/You cannot add anything to the cart and nothing is reserved/);
   });

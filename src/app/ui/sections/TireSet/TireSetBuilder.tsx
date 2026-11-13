@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { useCart } from '@/app/context/CartContext';
 import { trackEcommerce, trackEvent } from '@/app/utils/analytics';
 import { EVENTS } from '@/app/utils/analyticsEvents';
-import { setUnitToLine, type SetProduct } from '@/app/utils/cartSets';
+import { citiesLabel, setUnitToLine, type SetProduct } from '@/app/utils/cartSets';
 import { cartPayload } from '@/app/utils/ecommerce';
 import { GENERIC_TIRE_IMAGE } from '@/app/utils/genericTireImage';
 import {
@@ -74,6 +74,14 @@ const TireSetBuilder = ({
   const { addSetToCart, isInCart } = useCart();
   const sizes = useMemo(() => availableSetSizes(anchor, candidates), [anchor, candidates]);
   const quantityMode = isQuantityMode(anchor);
+  // Sets cross cities (047, D1). When the tires to choose from are in both,
+  // every tire and swap option names its city (D5); otherwise the one city is
+  // named once, as before.
+  const cities = useMemo(
+    () => citiesLabel([anchor.city, ...candidates.map(c => c.city)]),
+    [anchor, candidates]
+  );
+  const mixed = cities.includes(' and ');
   const [preset, setPreset] = useState<SetUnit[] | null>(
     initialSet && initialSet.length >= 2 ? initialSet : null
   );
@@ -149,7 +157,7 @@ const TireSetBuilder = ({
             : 'Add to Cart above adds only this tire. Here you add it together with matching tires — same model and size, tread within 2/32″.'}
         {more ? (
           <span className="mt-1 block font-medium text-green-800">
-            {`We have ${more} more of this tire in ${anchor.city}.`}
+            {`We have ${more} more of this tire in ${cities}.`}
           </span>
         ) : null}
       </p>
@@ -241,6 +249,9 @@ const TireSetBuilder = ({
                     ) : null}
                     {unitLabel(u)}
                     {u.dot ? ` · DOT ${u.dot}` : ''}
+                    {mixed ? (
+                      <span className="font-medium text-gray-900">{` · ${u.city}`}</span>
+                    ) : null}
                   </p>
                 </div>
                 {/* In the panel (28rem) the select always takes its own full-width row. */}
@@ -259,7 +270,7 @@ const TireSetBuilder = ({
                       <option value="">Swap this tire…</option>
                       {options.map(o => (
                         <option key={o.id} value={o.id}>
-                          {`${o.code ? `#${o.code} · ` : ''}${unitLabel(o)}`}
+                          {`${o.code ? `#${o.code} · ` : ''}${unitLabel(o)}${mixed ? ` · ${o.city}` : ''}`}
                         </option>
                       ))}
                     </select>

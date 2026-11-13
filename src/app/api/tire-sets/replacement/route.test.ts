@@ -86,6 +86,12 @@ describe('GET /api/tire-sets/replacement', () => {
     expect(body.product).toEqual({ brand: 'MICHELIN', model2: 'DEFENDER', size: '225/65/17' });
   });
 
+  it('offers a replacement from the other city (047, AC4)', async () => {
+    h.candidates = [unit('13', 9), unit('40', 9, { city: 'Orlando' })];
+    const body = await (await GET(req('sold=10&keep=13'))).json();
+    expect(body.replacement).toMatchObject({ id: '40', city: 'Orlando' });
+  });
+
   it('returns null when nothing fits', async () => {
     h.candidates = [unit('11', 9), unit('30', 5)];
     const body = await (await GET(req('sold=10&keep=11'))).json();

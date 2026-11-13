@@ -29,26 +29,31 @@ export type ChatSetRequest = {
   quantity: SetSize;
   brands?: string[];
   condition?: 'new' | 'used';
-  /** A city the customer named: only that city is searched (D4 skips step 1). */
+  /**
+   * A city the customer named: a preference (047, D7) — sets all in that city
+   * first, otherwise the best from anywhere (pickup is at any store).
+   */
   city?: TireCity;
-  /** The visitor's estimated city (043): ordering only. */
+  /** The visitor's estimated city (043): breaks ties only (047, D8). */
   visitorCity?: TireCity | null;
 };
 
 /**
- * - `found`: sets of the requested number (in the named city, if any).
- * - `other_city`: none in the visitor's city; these are in the other one.
+ * - `found`: sets of the requested number (all in the named city, if any).
+ * - `any_city`: a city was named and no set is all there; these are the best
+ *   from anywhere, and can be picked up there (047, D7).
  * - `smaller`: no set of the requested number; these are smaller sets.
  * - `none`: no set at all.
  */
-export type ChatSetOutcome = 'found' | 'other_city' | 'smaller' | 'none';
+export type ChatSetOutcome = 'found' | 'any_city' | 'smaller' | 'none';
 
 /** What a chat card shows. Nothing internal: no warehouse, no shelf, no codes. */
 export type ChatSetCard = {
   brand: string;
   model: string;
   condition: 'New' | 'Used';
-  city: TireCity;
+  /** Where the set's tires are, sorted: one city, or both (047, D5). */
+  cities: TireCity[];
   count: number;
   total: number;
   treadLabel: string;
@@ -68,11 +73,9 @@ export type ChatSetsResult = {
 
 export const MAX_CHAT_SETS = 3;
 
-const otherCity = (c: TireCity): TireCity => (c === 'Miami' ? 'Orlando' : 'Miami');
-
-/** 041's group: brand, model, size, run-flat, condition and city. */
+/** 041's group: brand, model, size, run-flat and condition — any city (047, D1). */
 const groupKey = (u: SizeUnit) =>
-  [u.brand, u.model2, u.runFlat ? 'rf' : 'std', u.condition, u.city].join('|').toLowerCase();
+  [u.brand, u.model2, u.runFlat ? 'rf' : 'std', u.condition].join('|').toLowerCase();
 
 /** The page's order for its 60 candidates: tread desc (none last), then price. */
 function pageOrder(a: SizeUnit, b: SizeUnit): number {
@@ -81,10 +84,13 @@ function pageOrder(a: SizeUnit, b: SizeUnit): number {
   return tb - ta || a.price - b.price;
 }
 
-type Candidate = { units: SizeUnit[]; total: number; patched: number };
+type Candidate = { units: SizeUnit[]; total: number; patched: number; away: number };
 
-/** Up to 3 sets of `quantity`, one per brand and model, D1 order. */
-function bestSets(units: SizeUnit[], quantity: SetSize, first: TireCity | null): Candidate[] {
+/**
+ * Up to 3 sets of `quantity`, one per brand and model: unpatched first, then
+ * total; `prefer` (a named city or the visitor's) only breaks ties (047, D8).
+ */
+function bestSets(units: SizeUnit[], quantity: SetSize, prefer: TireCity | null): Candidate[] {
   const groups = new Map<string, SizeUnit[]>();
   for (const u of units) {
     if (!u.brand || !u.model2 || u.brand === 'Unknown') continue;
@@ -97,16 +103,21 @@ function bestSets(units: SizeUnit[], quantity: SetSize, first: TireCity | null):
   const sets: Candidate[] = [];
   for (const list of groups.values()) {
     const visible = [...list].sort(pageOrder).slice(0, SET_PAGE_CANDIDATES);
-    const set = cheapestSet(visible, quantity) as SizeUnit[] | null;
+    const set = cheapestSet(visible, quantity, prefer) as SizeUnit[] | null;
     if (set)
-      sets.push({ units: set, total: setTotal(set), patched: set.filter(u => u.patched).length });
+      sets.push({
+        units: set,
+        total: setTotal(set),
+        patched: set.filter(u => u.patched).length,
+        away: prefer ? set.filter(u => u.city !== prefer).length : 0,
+      });
   }
 
   sets.sort(
     (a, b) =>
-      Number(b.units[0].city === first) - Number(a.units[0].city === first) ||
       a.patched - b.patched ||
       a.total - b.total ||
+      a.away - b.away ||
       a.units[0].id.localeCompare(b.units[0].id)
   );
 
@@ -136,7 +147,7 @@ export function toChatSetCard(units: SizeUnit[], size: string): ChatSetCard {
     brand: anchor.brand,
     model: anchor.model2,
     condition: anchor.condition,
-    city: anchor.city,
+    cities: [...new Set(units.map(u => u.city))].sort(),
     count: units.length,
     total: setTotal(units),
     treadLabel: treadRange(units)?.label ?? '',
@@ -152,24 +163,33 @@ export function pickChatSets(units: SizeUnit[], req: ChatSetRequest): ChatSetsRe
   const narrowed = units.filter(
     u =>
       (brands.length === 0 || brands.includes(u.brand.toLowerCase())) &&
-      (!req.condition || u.condition.toLowerCase() === req.condition) &&
-      (!req.city || u.city === req.city)
+      (!req.condition || u.condition.toLowerCase() === req.condition)
   );
 
   const cards = (cs: Candidate[]) => cs.map(c => toChatSetCard(c.units, req.size));
-  const first = req.city ?? req.visitorCity ?? null;
+  const prefer = req.city ?? req.visitorCity ?? null;
 
-  const found = bestSets(narrowed, req.quantity, first);
+  // A named city first: sets whose tires are all there (047, D7).
+  if (req.city) {
+    const local = bestSets(
+      narrowed.filter(u => u.city === req.city),
+      req.quantity,
+      req.city
+    );
+    if (local.length > 0) return { outcome: 'found', quantity: req.quantity, sets: cards(local) };
+  }
+
+  const found = bestSets(narrowed, req.quantity, prefer);
   if (found.length > 0) {
-    // Nothing in the visitor's own city: say so rather than imply it is local.
-    const home = !req.city && req.visitorCity ? req.visitorCity : null;
-    const outcome: ChatSetOutcome =
-      home && found.every(c => c.units[0].city === otherCity(home)) ? 'other_city' : 'found';
-    return { outcome, quantity: req.quantity, sets: cards(found) };
+    return {
+      outcome: req.city ? 'any_city' : 'found',
+      quantity: req.quantity,
+      sets: cards(found),
+    };
   }
 
   for (let q = req.quantity - 1; q >= 2; q--) {
-    const smaller = bestSets(narrowed, q as SetSize, first);
+    const smaller = bestSets(narrowed, q as SetSize, prefer);
     if (smaller.length > 0)
       return { outcome: 'smaller', quantity: q as SetSize, sets: cards(smaller) };
   }
@@ -215,7 +235,8 @@ export function resolvePresetSet(
   for (const id of ids) {
     if (id === anchor.id) continue;
     const unit = byId.get(id);
-    if (unit && unit.city === anchor.city && isWithinTolerance([...kept, unit])) kept.push(unit);
+    // Any city (047, D1): only the 2/32" rule decides.
+    if (unit && isWithinTolerance([...kept, unit])) kept.push(unit);
     else missing++;
   }
   if (!isWithinTolerance(kept)) return { status: 'unavailable', size };

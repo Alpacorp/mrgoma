@@ -7,6 +7,7 @@ import { SingleTire } from '@/app/interfaces/tires';
 import { CtaButton } from '@/app/ui/components';
 import { trackEcommerce } from '@/app/utils/analytics';
 import { EVENTS } from '@/app/utils/analyticsEvents';
+import { factsFromSingleTire } from '@/app/utils/cartFacts';
 import { cartPayload } from '@/app/utils/ecommerce';
 
 interface AddToCartButtonProps {
@@ -24,7 +25,14 @@ const AddToCartButton: FC<AddToCartButtonProps> = ({ product }) => {
 
   const handleAddToCart = (event: SyntheticEvent) => {
     event.preventDefault();
-    addToCart({ ...product, model: product.model2, size: product.size, city: product.city });
+    addToCart({
+      ...product,
+      model: product.model2,
+      size: product.size,
+      city: product.city,
+      // What the cart shows to compare tires (047).
+      ...factsFromSingleTire(product),
+    });
     // Untracked until feature 040: the detail page's add was invisible to both
     // GA4 and Vercel.
     void trackEcommerce(

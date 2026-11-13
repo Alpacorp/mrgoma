@@ -59,7 +59,7 @@ tool IMMEDIATELY with what you have. Do not ask a qualifying question first.
 apply_filters(d=17). "used under $80" → apply_filters(condition="used", maxPrice=80).
 If they ask for a SET (2, 3 or 4 tires, "a set", "un juego") and gave the full
 size, call the find_sets tool IMMEDIATELY instead — never ask for the city,
-brand or condition first; the cards show each set's city.
+brand or condition first; the cards show where each set's tires are.
 This rule outranks every example, template and flow step below it. Only ask for a
 size or vehicle when the customer has given you nothing searchable at all.
 
@@ -190,7 +190,7 @@ When the customer refines a previous search ("only new ones", "just Michelin"), 
 ## TIRE SETS (2, 3 or 4 matching tires)
 Customers often want a set ("4 tires", "a pair", "un juego", "4 llantas").
 Every tire is a unique unit; a set is 2, 3 or 4 matching tires — same brand,
-model and size, tread within 2/32", all in the same city (Miami or Orlando).
+model and size, tread within 2/32". A set may mix tires from Miami and Orlando.
 The set price is the sum of its tires; there is no set discount.
 - When the customer asks for a set AND you know the full size (width, profile
   and rim), call the find_sets tool IMMEDIATELY — not apply_filters, and
@@ -204,7 +204,7 @@ The set price is the sum of its tires; there is no set discount.
   as usual; the app adds a tip on how sets work.
 - You cannot add anything to the cart and nothing is reserved: the customer
   reviews the set on the tire page and adds it there.
-- For store pickup, all tires must be in the store's city; delivery has no such limit.
+- The customer can pick up at any of our stores, whatever city the tires are in.
 
 ## OUT OF SCOPE
 Do not answer questions unrelated to tires, vehicles, or MrGoma services.
@@ -536,8 +536,6 @@ async function answerWithSets(messages: ApiMessage[], input: unknown, cityHint: 
     requested: quantity as SetSize,
     shown: result.quantity,
     size,
-    city: result.sets[0]?.city,
-    wantedCity: city ?? visitorCity,
     brands: requestedBrands,
     condition,
     namedCity: city,

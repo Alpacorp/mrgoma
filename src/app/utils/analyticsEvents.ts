@@ -33,9 +33,9 @@ export const EVENTS = {
   VIEW_CART: 'view_cart',
 
   /**
-   * The shopper removed tires from the cart — one tire, a set, or "Remove the
-   * {city} tire" at checkout (046, D4). Never for a tire the site removes
-   * because it sold.
+   * The shopper removed tires from the cart — one tire or a set (046, D4).
+   * ("Remove the {city} tire" at checkout went away with the one-city pickup
+   * rule, 047.) Never for a tire the site removes because it sold.
    */
   REMOVE_FROM_CART: 'remove_from_cart',
 
@@ -151,8 +151,8 @@ export const EVENTS = {
 
   /**
    * The assistant looked up sets and showed at least one card (feature 044).
-   * Carries `surface`, `dimensions`, `outcome` (`found`, `other_city` or
-   * `smaller`) and `sets` (how many cards). A lookup with none is
+   * Carries `surface`, `dimensions`, `outcome` (`found`, `any_city` or
+   * `smaller`; `other_city` until feature 047) and `sets` (how many cards). A lookup with none is
    * {@link AI_CHAT_NO_RESULTS}.
    */
   AI_CHAT_SETS_SHOWN: 'ai_chat_sets_shown',

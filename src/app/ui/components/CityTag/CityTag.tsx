@@ -1,21 +1,28 @@
 import React from 'react';
 
+import { citiesLabel } from '@/app/utils/cartSets';
+
+type City = 'Miami' | 'Orlando';
+
 /**
  * Where a cart tire is: the city only, never the warehouse (feature 041).
- * `odd` marks the tires that stop a cart from being picked up at one store.
+ * `cities` names where a set's tires are — one city, or "Miami and Orlando"
+ * (feature 047, D5). Nothing marks a tire as blocking pickup any more: pickup
+ * is at any store (047, D2).
  */
-const CityTag: React.FC<{ city?: 'Miami' | 'Orlando'; odd?: boolean; className?: string }> = ({
+const CityTag: React.FC<{ city?: City; cities?: Array<City | undefined>; className?: string }> = ({
   city,
-  odd = false,
+  cities,
   className,
 }) => {
-  if (!city) return null;
+  const label = cities ? citiesLabel(cities) : city;
+  if (!label) return null;
   return (
     <span
       className={[
         'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ring-1 ring-inset',
-        // Same shape as the condition pill; amber for the tires that block pickup.
-        odd ? 'bg-amber-100 text-amber-900 ring-amber-300' : 'bg-white text-gray-800 ring-gray-300',
+        // Same shape as the condition pill.
+        'bg-white text-gray-800 ring-gray-300',
         className,
       ]
         .filter(Boolean)
@@ -35,7 +42,7 @@ const CityTag: React.FC<{ city?: 'Miami' | 'Orlando'; odd?: boolean; className?:
       </svg>
       <span>
         <span className="sr-only">Located in </span>
-        {city}
+        {label}
       </span>
     </span>
   );

@@ -69,9 +69,21 @@ describe('setGroupOf / setGroupKey', () => {
     expect(a && b && setGroupKey(a)).toBe(b && setGroupKey(b));
   });
 
-  it('separates by city, run-flat and condition', () => {
+  it('puts both cities in one group (047, D1)', () => {
+    const miami = setGroupOf(tire({ city: 'Miami' }))!;
+    const orlando = setGroupOf(tire({ city: 'Orlando' }))!;
+    expect(setGroupKey(orlando)).toBe(setGroupKey(miami));
+    expect(setGroupKey(miami)).toMatch(/\|any$/);
+    expect(miami.city).toBeUndefined();
+  });
+
+  it('keys a city-filtered group apart (043 count)', () => {
+    const g = setGroupOf(tire())!;
+    expect(setGroupKey({ ...g, city: 'Orlando' })).not.toBe(setGroupKey(g));
+  });
+
+  it('separates by run-flat and condition', () => {
     const base = setGroupKey(setGroupOf(tire())!);
-    expect(setGroupKey(setGroupOf(tire({ city: 'Orlando' }))!)).not.toBe(base);
     expect(setGroupKey(setGroupOf(tire({ runFlat: 'Yes' }))!)).not.toBe(base);
     expect(setGroupKey(setGroupOf(tire({ condition: 'New' }))!)).not.toBe(base);
   });
@@ -97,12 +109,17 @@ describe('buildSetCandidatesQuery', () => {
     expect(buildSetCandidatesQuery(g)).not.toMatch(/\bLocation\b/);
   });
 
-  it('filters Orlando by its vaults and Miami as everything else (AC14)', () => {
+  it('reads both cities for a set (047, AC1)', () => {
+    expect(buildSetCandidatesQuery(g)).not.toContain('VaultName IN');
+    expect(buildSetCandidatesQuery(g)).not.toContain('VaultName NOT IN');
+  });
+
+  it('given a city, filters Orlando by its vaults and Miami as everything else (043)', () => {
     expect(buildSetCandidatesQuery({ ...g, city: 'Orlando' })).toContain(
-      "VaultName IN ('Clifton', 'Semoran', 'Orlando')"
+      "AND VaultName IN ('Clifton', 'Semoran', 'Orlando')"
     );
-    expect(buildSetCandidatesQuery(g)).toContain(
-      "VaultName NOT IN ('Clifton', 'Semoran', 'Orlando')"
+    expect(buildSetCandidatesQuery({ ...g, city: 'Miami' })).toContain(
+      "AND (VaultName IS NULL OR VaultName NOT IN ('Clifton', 'Semoran', 'Orlando'))"
     );
   });
 
